@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.exemple.grecrutement.MissionController">
+
+    <top>
+        <Label text="Gestion des Missions"
+               style="-fx-font-size: 20px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="20" bottom="20"/>
+            </padding>
+        </Label>
+    </top>
+
+    <center>
+        <TableView fx:id="missionTable" BorderPane.alignment="CENTER">
+            <columns>
+                <TableColumn text="ID" fx:id="idColumn" prefWidth="50"/>
+                <TableColumn text="Description" fx:id="descriptionColumn" prefWidth="200"/>
+                <TableColumn text="Score Min" fx:id="scoreColumn" prefWidth="80"/>
+                <TableColumn text="Date Création" fx:id="dateColumn" prefWidth="150"/>
+                <TableColumn text="Créé par ID" fx:id="createdByColumn" prefWidth="80"/>
+            </columns>
+            <BorderPane.margin>
+                <Insets left="20" right="20" bottom="20"/>
+            </BorderPane.margin>
+        </TableView>
+    </center>
+
+    <bottom>
+        <VBox spacing="10" style="-fx-padding: 20;">
+            <GridPane hgap="10" vgap="10">
+                <Label text="ID:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <TextField fx:id="idField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200"/>
+
+                <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <TextField fx:id="descriptionField" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="200"/>
+
+                <Label text="Score Minimum:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <TextField fx:id="scoreField" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="200"/>
+
+                <Label text="Créé par ID:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <TextField fx:id="createdByIdField" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="200"/>
+            </GridPane>
+
+            <HBox spacing="10">
+                <Button text="Ajouter" onAction="#ajouterMission"
+                        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-pref-width: 100;"/>
+                <Button text="Modifier" onAction="#modifierMission"
+                        style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-pref-width: 100;"/>
+                <Button text="Supprimer" onAction="#supprimerMission"
+                        style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-pref-width: 100;"/>
+                <Button text="Vider" onAction="#viderChamps"
+                        style="-fx-background-color: #9E9E9E; -fx-text-fill: white; -fx-pref-width: 100;"/>
+                <Button text="Actualiser" onAction="#actualiserTableau"
+                        style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-pref-width: 100;"/>
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>

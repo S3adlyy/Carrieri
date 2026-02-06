@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.exemple.grecrutement.MissionController"
+      spacing="10"
+      style="-fx-padding: 20;">
+
+    <Label text="Gestion des Missions" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <!-- Formulaire d'ajout/modification -->
+    <GridPane hgap="10" vgap="10" style="-fx-padding: 10 0 10 0;">
+
+        <Label text="ID:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="idField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+        <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="descriptionField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+        <Label text="Score Minimum:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="scoreField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+        <Label text="Créé par ID:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <TextField fx:id="createdByIdField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+    </GridPane>
+
+    <!-- Boutons d'action -->
+    <HBox spacing="10">
+        <Button text="Ajouter" onAction="#ajouterMission" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+        <Button text="Modifier" onAction="#modifierMission" style="-fx-background-color: #2196F3; -fx-text-fill: white;"/>
+        <Button text="Supprimer" onAction="#supprimerMission" style="-fx-background-color: #f44336; -fx-text-fill: white;"/>
+        <Button text="Vider" onAction="#viderChamps" style="-fx-background-color: #9E9E9E; -fx-text-fill: white;"/>
+    </HBox>
+
+    <!-- Tableau des missions -->
+    <Label text="Liste des Missions:" style="-fx-font-weight: bold; -fx-padding: 10 0 5 0;"/>
+    <TableView fx:id="missionTable" VBox.vgrow="ALWAYS" style="-fx-max-height: 300;">
+        <columns>
+            <TableColumn text="ID" prefWidth="50">
+                <cellValueFactory>
+                    <PropertyValueFactory property="id" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Description" prefWidth="200">
+                <cellValueFactory>
+                    <PropertyValueFactory property="description" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Score Min" prefWidth="80">
+                <cellValueFactory>
+                    <PropertyValueFactory property="score_min" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Date Création" prefWidth="150">
+                <cellValueFactory>
+                    <PropertyValueFactory property="created_at" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Créé par ID" prefWidth="80">
+                <cellValueFactory>
+                    <PropertyValueFactory property="created_by_id" />
+                </cellValueFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
+
+</VBox>
