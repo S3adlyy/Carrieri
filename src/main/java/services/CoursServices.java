@@ -32,7 +32,7 @@ public class CoursServices implements ICoursService<Cours> {
             throw new IllegalArgumentException("Les compétences visées ne peuvent pas être vides");
         }
 
-        String sql = "INSERT INTO cours (titre, description, duree, niveau, competences_visees, est_obligatoire) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO cours (titre, description, duree, niveau, competences_visees, est_obligatoire, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, cours.getTitre().trim());
@@ -41,6 +41,7 @@ public class CoursServices implements ICoursService<Cours> {
             preparedStatement.setString(4, cours.getNiveau().trim());
             preparedStatement.setString(5, cours.getCompetences_visees().trim());
             preparedStatement.setBoolean(6, cours.isEst_obligatoire());
+            preparedStatement.setInt(7, cours.getCreatedBy());
 
             int rowsInserted = preparedStatement.executeUpdate();
             System.out.println("Rows inserted: " + rowsInserted);
@@ -93,7 +94,8 @@ public class CoursServices implements ICoursService<Cours> {
                         resultSet.getInt("duree"),
                         resultSet.getString("niveau"),
                         resultSet.getString("competences_visees"),
-                        resultSet.getBoolean("est_obligatoire")
+                        resultSet.getBoolean("est_obligatoire"),
+                        resultSet.getInt("created_by")
                 );
                 coursList.add(cours);
             }
