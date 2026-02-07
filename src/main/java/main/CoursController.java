@@ -49,6 +49,8 @@ public class CoursController {
     private ObservableList<Cours> coursList;
     private FilteredList<Cours> filteredList;
 
+    private int currentUserId = 2;
+
     @FXML
     public void initialize() {
         coursServices = new CoursServices();
@@ -236,7 +238,8 @@ public class CoursController {
                     Integer.parseInt(txtDuree.getText()),
                     comboNiveau.getValue(),
                     txtCompetences.getText(),
-                    chkObligatoire.isSelected()
+                    chkObligatoire.isSelected(),
+                    1
             );
 
             coursServices.ajouter(cours);
@@ -257,6 +260,11 @@ public class CoursController {
         Cours selected = tableCours.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Veuillez sélectionner un cours à modifier !");
+            return;
+        }
+
+        if (selected.getCreatedBy() != currentUserId) {
+            showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Vous ne pouvez pas modifier ce cours, vous n'êtes pas le créateur !");
             return;
         }
 
@@ -292,7 +300,10 @@ public class CoursController {
             showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Veuillez sélectionner un cours à supprimer !");
             return;
         }
-
+        if (selected.getCreatedBy() != currentUserId) {
+            showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Vous ne pouvez pas supprimer ce cours, vous n'êtes pas le créateur !");
+            return;
+        }
         // Confirmation de suppression
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("🗑️ Confirmation");

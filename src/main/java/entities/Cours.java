@@ -9,17 +9,28 @@ public class Cours {
     private String competences_visees;
     private boolean est_obligatoire;
 
+    private int createdBy;
+
+    public int getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(int createdBy) {
+        this.createdBy = createdBy;
+    }
+
     public Cours(){}
-    public Cours(String titre, String description, int duree, String niveau, String competences_visees, boolean est_obligatoire) {
+    public Cours(String titre, String description, int duree, String niveau, String competences_visees, boolean est_obligatoire,int createdBy) {
         this.titre = titre;
         this.description = description;
         this.duree = duree;
         this.niveau = niveau;
         this.competences_visees = competences_visees;
         this.est_obligatoire = est_obligatoire;
+        this.createdBy = createdBy;
     }
 
-    public Cours(int id, String titre, String description, int duree, String niveau, String competences_visees, boolean est_obligatoire) {
+    public Cours(int id, String titre, String description, int duree, String niveau, String competences_visees, boolean est_obligatoire,int createdBy) {
         this.id = id;
         this.titre = titre;
         this.description = description;
@@ -27,6 +38,7 @@ public class Cours {
         this.niveau = niveau;
         this.competences_visees = competences_visees;
         this.est_obligatoire = est_obligatoire;
+        this.createdBy = createdBy;
     }
 
     public int getId() {
@@ -97,4 +109,6 @@ public class Cours {
                 ", est_obligatoire=" + est_obligatoire +
                 '}';
     }
+
+
 }
