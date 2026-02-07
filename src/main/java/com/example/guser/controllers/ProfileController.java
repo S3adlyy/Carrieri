@@ -2,6 +2,7 @@ package com.example.guser.controllers;
 
 import com.example.guser.SceneManager;
 import entities.User;
+import javafx.event.ActionEvent;
 import services.ProfileService;
 import session.ProfileViewContext;
 import session.SessionContext;
@@ -20,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
+import javafx.scene.image.ImageView;
 
 import java.io.File;
 import java.time.Duration;
@@ -51,6 +53,15 @@ public class ProfileController {
     @FXML private Button headerBackBtn;
     @FXML private Button headerSaveBtn;
     @FXML private Button changePicBtn;
+    @FXML private TextField headerHeadlineField;
+
+
+    @FXML private Label headerBioLabel;
+    @FXML private Label statsViewsLabel;
+    @FXML private Label statsConnectionsLabel;
+    @FXML private Label statsOpenToLabel;
+
+
 
     @FXML private Label errorLabel;
 
@@ -85,10 +96,10 @@ public class ProfileController {
     @FXML private Button aboutBackBtn;
     @FXML private Button aboutSaveBtn;
 
-    @FXML private Label headlineView;
+    //@FXML private Label headlineView;
     @FXML private Label bioView;
 
-    @FXML private TextField headlineField;
+    //@FXML private TextField headlineField;
     @FXML private TextArea bioArea;
 
     // EDUCATION
@@ -102,6 +113,9 @@ public class ProfileController {
     @FXML private Label degreeView;
     @FXML private Label fieldView;
     @FXML private Label gradYearView;
+    @FXML private ImageView eduLogoImage;
+    private static final String DEMO_EDU_LOGO_URL = "https://via.placeholder.com/64x64.png?text=UTM";
+
 
     @FXML private TextField schoolField;
     @FXML private TextField degreeField;
@@ -188,6 +202,14 @@ public class ProfileController {
             targetUser = u;
             owner = (SessionContext.getCurrentUser().getId() == u.getId());
 
+// placeholders until backend exists:
+            if (statsViewsLabel != null) statsViewsLabel.setText("—");
+            if (statsConnectionsLabel != null) statsConnectionsLabel.setText("—");
+
+            if (statsOpenToLabel != null) {
+                statsOpenToLabel.setText("CANDIDATE".equals(u.getRoles()) ? "Open to work" : "Hiring");
+            }
+
             boolean isCandidate = "CANDIDATE".equals(u.getRoles());
             boolean isRecruiter = "RECRUITER".equals(u.getRoles());
 
@@ -206,13 +228,16 @@ public class ProfileController {
             locationField.setText(n(u.getLocation()));
             phoneField.setText(n(u.getPhone()));
 
-            headlineField.setText(n(u.getHeadline()));
             bioArea.setText(n(u.getBio()));
 
             schoolField.setText(n(u.getSchool()));
             degreeField.setText(n(u.getDegree()));
             fieldOfStudyField.setText(n(u.getFieldofstudy()));
             graduationYearField.setText(u.getGraduationyear() == null ? "" : String.valueOf(u.getGraduationyear()));
+            // demo education logo (replace later with a real per-school image)
+            if (eduLogoImage != null) {
+                eduLogoImage.setImage(new Image(DEMO_EDU_LOGO_URL, true));
+            }
 
             hardSkillsArea.setText(n(u.getHardskills()));
             softSkillsArea.setText(n(u.getSoftskills()));
@@ -230,7 +255,6 @@ public class ProfileController {
             locationView.setText(blankToDash(u.getLocation()));
             phoneView.setText(blankToDash(u.getPhone()));
 
-            headlineView.setText(blankToDash(u.getHeadline()));
             bioView.setText(blankToDash(u.getBio()));
 
             schoolView.setText(blankToDash(u.getSchool()));
@@ -260,9 +284,12 @@ public class ProfileController {
             setVisibleManaged(linksPencilBtn, owner && isCandidate);
             setVisibleManaged(orgPencilBtn, owner && isRecruiter);
 
+
+
             refreshHeaderTexts();
 
             String key = isRecruiter ? u.getLogourl() : u.getProfilepic();
+            System.out.println("picture get key:" + key);
             Platform.runLater(() -> renderAvatarFromS3Key(key));
 
             workspaceHintLabel.setText("Workspace: coming next (tracks, files, videos, folders).");
@@ -287,7 +314,6 @@ public class ProfileController {
         metaLabel.setText(meta.toString());
     }
 
-    // ===== Header edit: open multiple cards WITHOUT closing others =====
     @FXML private void onHeaderEdit() {
         if (!owner) return;
 
@@ -296,25 +322,55 @@ public class ProfileController {
         setVisibleManaged(headerSaveBtn, true);
         setVisibleManaged(changePicBtn, true);
 
-        // open BASIC and ABOUT/ORG together
-        openCard(Card.BASIC, true);          // closes others first
+        // show headline editor in hero (candidate only)
+        if ("CANDIDATE".equals(targetUser.getRoles())) {
+            setVisibleManaged(subTitleLabel, false);
+            setVisibleManaged(headerHeadlineField, true);
+            if (headerHeadlineField != null) headerHeadlineField.setText(n(targetUser.getHeadline()));
+        }
+
+        // open BASIC and ABOUT/ORG together (your existing behavior)
+        openCard(Card.BASIC, true);
         if ("CANDIDATE".equals(targetUser.getRoles())) openCard(Card.ABOUT, false);
         if ("RECRUITER".equals(targetUser.getRoles())) openCard(Card.ORG, false);
     }
 
+
     @FXML private void onHeaderBack() {
         if (!owner) return;
+
+        // restore hero headline view
+        setVisibleManaged(headerHeadlineField, false);
+        setVisibleManaged(subTitleLabel, true);
+
         loadProfile(targetUser.getId());
     }
 
+
     @FXML private void onHeaderSave() {
         if (!owner) return;
-        // Save basic + about/org then reload (exits edit mode)
+
+        // Apply headline from hero editor first (so About headline doesn't override it)
+        if ("CANDIDATE".equals(targetUser.getRoles())) {
+            if (headerHeadlineField != null) {
+                targetUser.setHeadline(emptyToNull(headerHeadlineField.getText()));
+                // keep About editor synced if it exists
+                if (headerHeadlineField != null) headerHeadlineField.setText(n(targetUser.getHeadline()));
+            }
+        }
+
+        // Save basic + about/org then reload (exits edit mode) — your old flow
         onBasicSave();
         if ("CANDIDATE".equals(targetUser.getRoles())) onAboutSave();
         if ("RECRUITER".equals(targetUser.getRoles())) onOrgSave();
+
+        // restore hero headline view state (loadProfile will also reset buttons)
+        setVisibleManaged(headerHeadlineField, false);
+        setVisibleManaged(subTitleLabel, true);
+
         loadProfile(targetUser.getId());
     }
+
 
     // ===== BASIC =====
     @FXML private void onBasicEdit() { if (owner) openCard(Card.BASIC, true); }
@@ -351,8 +407,10 @@ public class ProfileController {
         if (!owner) return;
         try {
             hideError();
-            targetUser.setHeadline(emptyToNull(headlineField.getText()));
-            targetUser.setBio(emptyToNull(bioArea.getText()));
+
+            // About is bio-only now
+            if (bioArea != null) targetUser.setBio(emptyToNull(bioArea.getText()));
+
             profileService.updateCandidateProfile(targetUser);
             SessionContext.setCurrentUser(targetUser);
             loadProfile(targetUser.getId());
@@ -360,6 +418,7 @@ public class ProfileController {
             showError(e.getMessage());
         }
     }
+
 
     // ===== EDUCATION =====
     @FXML private void onEducationEdit() { if (owner) openCard(Card.EDU, true); }
@@ -541,9 +600,11 @@ public class ProfileController {
                 return;
             }
 
-            for (User u : suggestions) {
-                peopleBox.getChildren().add(peopleRow(u));
+            for (entities.User u : suggestions) {
+                if (u.getId() == SessionContext.getCurrentUser().getId()) continue;
+                peopleBox.getChildren().add(buildPersonRow(u));
             }
+
         } catch (Exception e) {
             Label err = new Label("Could not load suggestions.");
             err.getStyleClass().add("prf-muted");
@@ -556,6 +617,7 @@ public class ProfileController {
         c.setFill(javafx.scene.paint.Paint.valueOf("rgba(0,0,0,0.08)"));
 
         String key = "RECRUITER".equals(u.getRoles()) ? u.getLogourl() : u.getProfilepic();
+        System.out.println("picture get key:" + key);
         Platform.runLater(() -> renderCircleFromS3Key(c, key));
 
         Label name = new Label((n(u.getFirstname()) + " " + n(u.getLastname())).trim());
@@ -578,6 +640,68 @@ public class ProfileController {
 
         return new HBox(10, c, texts, spacer, view);
     }
+
+    private Node buildPersonRow(entities.User u) {
+        javafx.scene.layout.HBox row = new javafx.scene.layout.HBox();
+        row.getStyleClass().add("prf-personRow");
+
+        Circle avatar = new Circle(18);
+        avatar.setFill(javafx.scene.paint.Paint.valueOf("rgba(0,0,0,0.08)"));
+        //avatar.setStyle("-fx-fill: rgba(35,25,66,0.10);");
+        String key = "RECRUITER".equals(u.getRoles())
+                ? n(u.getLogourl())
+                : n(u.getProfilepic());
+        Platform.runLater(() -> renderCircleFromS3Key(avatar, key));
+
+
+        javafx.scene.control.Label name = new javafx.scene.control.Label(
+                (n(u.getFirstname()) + " " + n(u.getLastname())).trim()
+        );
+        name.getStyleClass().add("prf-personName");
+
+        // Show headline if candidate, or org name if recruiter (adapt getters to your model)
+        String sub = "RECRUITER".equals(u.getRoles())
+                ? n(u.getOrgname())
+                : n(u.getHeadline());
+        javafx.scene.control.Label subLabel = new javafx.scene.control.Label(sub.isBlank() ? n(u.getRoles()) : sub);
+        subLabel.getStyleClass().add("prf-personSub");
+
+        javafx.scene.control.Label meta = new javafx.scene.control.Label(n(u.getLocation()));
+        meta.getStyleClass().add("prf-personMeta");
+
+        javafx.scene.layout.VBox text = new javafx.scene.layout.VBox(2, name, subLabel, meta);
+        javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
+        javafx.scene.layout.HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+
+        javafx.scene.control.Button connect = new javafx.scene.control.Button("Connect");
+        connect.getStyleClass().add("prf-connectBtn");
+
+        // Make row open profile (no "View" button)
+        row.setOnMouseClicked(e -> openProfile(u.getId()));
+
+        // Clicking the button should NOT trigger row click
+        connect.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_CLICKED, e -> e.consume());
+        connect.setOnAction(e -> {
+            // TODO: implement connect/follow action
+        });
+
+        row.getChildren().addAll(avatar, text, spacer, connect);
+        return row;
+    }
+
+    @FXML
+    private void onShowAllPeople(ActionEvent event) {
+        // TODO: later navigate to a full People page
+        // For now, just a safe no-op or show a message
+        System.out.println("Show all people clicked");
+    }
+
+    private void openProfile(int userId) {
+        session.ProfileViewContext.viewUser(userId);
+        com.example.guser.SceneManager.switchTo("/com/example/guser/profile.fxml", "Carrieri • Profile");
+    }
+
+
 
     // ===== Rendering =====
     private void renderAvatarFromS3Key(String s3Key) {

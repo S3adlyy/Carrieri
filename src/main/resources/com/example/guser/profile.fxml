@@ -4,13 +4,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.SVGPath?>
 
+<?import javafx.scene.image.ImageView?>
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.guser.controllers.ProfileController"
             stylesheets="@app.css">
 
     <top>
-        <!-- If app_nav.fxml is in a subfolder, update source accordingly (e.g. components/app_nav.fxml). -->
         <fx:include fx:id="appNav" source="app_nav.fxml"/>
     </top>
 
@@ -20,87 +21,206 @@
 
             <ScrollPane fitToWidth="true" styleClass="prf-scroll">
                 <content>
-                    <VBox alignment="TOP_CENTER" styleClass="prf-page">
-                        <padding><Insets top="18" right="18" bottom="24" left="18"/></padding>
+                    <VBox alignment="TOP_CENTER" styleClass="prf-centerWrap" spacing="0">
+                        <padding><Insets top="18" right="18" bottom="26" left="18"/></padding>
 
-                        <VBox spacing="14" styleClass="prf-container">
+                        <VBox styleClass="prf-page" spacing="16">
 
-                            <!-- ================= HEADER ================= -->
-                            <StackPane styleClass="prf-card prf-headerCard">
-                                <VBox>
-                                    <Pane prefHeight="150" styleClass="prf-cover"/>
-
-                                    <VBox styleClass="prf-headerBody" spacing="10">
-                                        <HBox spacing="14" alignment="CENTER_LEFT">
-                                            <StackPane styleClass="prf-avatarWrap">
-                                                <Circle radius="46" styleClass="prf-avatarRing"/>
-                                                <Circle fx:id="avatarCircle" radius="42" fill="#d9d9d9"/>
-                                            </StackPane>
-
-                                            <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                                <Label fx:id="fullNameLabel" text="Full Name" styleClass="prf-h1"/>
-                                                <Label fx:id="subTitleLabel" text="Headline / Orgname" styleClass="prf-subtitle"/>
-                                                <Label fx:id="metaLabel" text="ROLE • Location • Website" styleClass="prf-meta"/>
-                                            </VBox>
-
-                                            <VBox spacing="8" alignment="TOP_RIGHT">
-                                                <HBox spacing="8" alignment="CENTER_RIGHT">
-                                                    <Button fx:id="headerEditBtn" text="Edit" onAction="#onHeaderEdit"
-                                                            styleClass="prf-btn prf-btnSoft"/>
-
-                                                    <Button fx:id="headerBackBtn" text="← Back" onAction="#onHeaderBack"
-                                                            styleClass="prf-btn prf-btnSoft"
-                                                            visible="false" managed="false"/>
-
-                                                    <Button fx:id="headerSaveBtn" text="Save" onAction="#onHeaderSave"
-                                                            styleClass="prf-btn prf-btnPrimary"
-                                                            visible="false" managed="false"/>
-                                                </HBox>
-
-                                                <Button fx:id="changePicBtn" text="Change picture" onAction="#onChangePicture"
-                                                        styleClass="prf-linkBtn" visible="false" managed="false"/>
-                                            </VBox>
-                                        </HBox>
-                                    </VBox>
-                                </VBox>
-                            </StackPane>
-
-                            <Label fx:id="errorLabel" text="" styleClass="prf-error" visible="false" managed="false"/>
-
-                            <!-- ================= GRID ================= -->
-                            <GridPane hgap="14" vgap="14">
+                            <!-- TOP ROW -->
+                            <GridPane hgap="16" vgap="16">
                                 <columnConstraints>
                                     <ColumnConstraints percentWidth="66"/>
                                     <ColumnConstraints percentWidth="34"/>
                                 </columnConstraints>
 
-                                <!-- LEFT -->
-                                <VBox spacing="14" GridPane.columnIndex="0">
+                                <!-- HERO (LEFT) -->
+                                <VBox GridPane.columnIndex="0" styleClass="prf-heroCard prf-heroPop">
+                                    <Pane minHeight="160" prefHeight="160" maxHeight="160" styleClass="prf-cover"/>
 
-                                    <!-- ================= BASIC ================= -->
-                                    <VBox styleClass="prf-card" spacing="10">
+                                    <VBox spacing="10" styleClass="prf-heroBody">
+                                        <HBox spacing="14" alignment="TOP_LEFT">
+                                            <StackPane styleClass="prf-avatarWrap">
+                                                <Circle radius="50" styleClass="prf-avatarHalo"/>
+                                                <Circle fx:id="avatarCircle" radius="44" fill="#d9d9d9"/>
+                                            </StackPane>
+
+                                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                                <HBox spacing="10" alignment="BASELINE_LEFT">
+                                                    <Label fx:id="fullNameLabel" text="Full Name" styleClass="prf-name"/>
+
+                                                    <!-- Headline view + edit (edit field hidden until Header Edit) -->
+                                                    <StackPane alignment="BASELINE_LEFT">
+                                                        <Label fx:id="subTitleLabel" text="Headline" styleClass="prf-headlineBadge"/>
+                                                        <TextField fx:id="headerHeadlineField"
+                                                                   promptText="Add a headline"
+                                                                   styleClass="prf-editorField prf-headlineEditor"
+                                                                   visible="false" managed="false"/>
+                                                    </StackPane>
+                                                </HBox>
+
+
+                                                <Label fx:id="metaLabel" text="ROLE • Location • Website" styleClass="prf-meta"/>
+
+                                                <Label fx:id="headerBioLabel" text="" wrapText="true" styleClass="prf-bioPreview"
+                                                       visible="false" managed="false"/>
+
+
+                                                <Label fx:id="errorLabel" text="" styleClass="prf-error"
+                                                       visible="false" managed="false"/>
+
+                                                <HBox spacing="10" styleClass="prf-statsRow">
+                                                    <HBox spacing="8" styleClass="prf-statPill">
+                                                        <Label text="Profile views" styleClass="prf-statKey"/>
+                                                        <Label fx:id="statsViewsLabel" text="—" styleClass="prf-statVal"/>
+                                                    </HBox>
+
+                                                    <HBox spacing="8" styleClass="prf-statPill">
+                                                        <Label text="Connections" styleClass="prf-statKey"/>
+                                                        <Label fx:id="statsConnectionsLabel" text="—" styleClass="prf-statVal"/>
+                                                    </HBox>
+
+                                                    <HBox spacing="8" styleClass="prf-openToPill">
+                                                        <SVGPath styleClass="prf-ico prf-icoBriefcase"
+                                                                 content="M10 4h4v2h-4V4z M4 7h16v12H4V7z"/>
+                                                        <Label fx:id="statsOpenToLabel" text="Open to work" styleClass="prf-openToText"/>
+                                                    </HBox>
+                                                </HBox>
+                                            </VBox>
+
+                                            <!-- Header actions -->
+                                            <VBox spacing="8" alignment="TOP_RIGHT">
+                                                <HBox spacing="8" alignment="CENTER_RIGHT">
+                                                    <Button fx:id="headerEditBtn" onAction="#onHeaderEdit"
+                                                            styleClass="prf-actBtn prf-actNeutral">
+                                                        <graphic>
+                                                            <SVGPath styleClass="prf-ico"
+                                                                     content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
+                                                        </graphic>
+                                                    </Button>
+
+                                                    <Button fx:id="headerBackBtn" onAction="#onHeaderBack"
+                                                            styleClass="prf-actBtn prf-actCancel"
+                                                            visible="false" managed="false">
+                                                        <graphic>
+                                                            <SVGPath styleClass="prf-ico"
+                                                                     content="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.71 2.88 18.29 9.17 12 2.88 5.71 4.29 4.29 10.59 10.6 16.89 4.29z"/>
+                                                        </graphic>
+                                                    </Button>
+
+                                                    <Button fx:id="headerSaveBtn" onAction="#onHeaderSave"
+                                                            styleClass="prf-actBtn prf-actSave"
+                                                            visible="false" managed="false">
+                                                        <graphic>
+                                                            <SVGPath styleClass="prf-ico prf-icoOnDark"
+                                                                     content="M9 16.2l-3.5-3.5L4 14.2 9 19.2 20 8.2 18.5 6.7z"/>
+                                                        </graphic>
+                                                    </Button>
+                                                </HBox>
+
+                                                <Button fx:id="changePicBtn" text="Change picture" onAction="#onChangePicture"
+                                                        styleClass="prf-linkBtn"
+                                                        visible="false" managed="false"/>
+                                            </VBox>
+                                        </HBox>
+                                    </VBox>
+                                </VBox>
+
+                                <!-- SIDE (RIGHT) -->
+                                <VBox GridPane.columnIndex="1" spacing="14" alignment="TOP_LEFT">
+
+                                    <VBox styleClass="prf-card prf-sideCard" spacing="10">
                                         <HBox alignment="CENTER_LEFT">
-                                            <Label text="Basic info" styleClass="prf-cardTitle"/>
+                                            <Label text="Profile language" styleClass="prf-cardTitle"/>
                                             <Region HBox.hgrow="ALWAYS"/>
-                                            <Button fx:id="basicPencilBtn" text="✎" onAction="#onBasicEdit" styleClass="prf-iconBtn"/>
+                                            <Button disable="true" styleClass="prf-actBtn prf-actNeutral">
+                                                <graphic>
+                                                    <SVGPath styleClass="prf-ico"
+                                                             content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
+                                                </graphic>
+                                            </Button>
+                                        </HBox>
+                                        <Label text="English" styleClass="prf-muted"/>
 
-                                            <Button fx:id="basicBackBtn" text="← Back" onAction="#onBasicBack"
-                                                    styleClass="prf-btn prf-btnSoft prf-miniBtn"
-                                                    visible="false" managed="false"/>
+                                        <Separator/>
 
-                                            <Button fx:id="basicSaveBtn" text="Save" onAction="#onBasicSave"
-                                                    styleClass="prf-btn prf-btnPrimary prf-miniBtn"
-                                                    visible="false" managed="false"/>
+                                        <HBox alignment="CENTER_LEFT">
+                                            <Label text="Public profile URL" styleClass="prf-cardTitle"/>
+                                            <Region HBox.hgrow="ALWAYS"/>
+                                            <Button disable="true" styleClass="prf-actBtn prf-actNeutral">
+                                                <graphic>
+                                                    <SVGPath styleClass="prf-ico"
+                                                             content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
+                                                </graphic>
+                                            </Button>
+                                        </HBox>
+                                        <Label text="carrieri.app/in/username" styleClass="prf-muted"/>
+                                    </VBox>
+
+                                    <VBox styleClass="prf-card prf-sideCard" spacing="10">
+                                        <HBox alignment="CENTER_LEFT">
+                                            <Label text="People you may know" styleClass="prf-cardTitle"/>
+                                            <Region HBox.hgrow="ALWAYS"/>
                                         </HBox>
 
-                                        <!-- view -->
+                                        <VBox fx:id="peopleBox" spacing="10"/>
+
+                                        <Separator/>
+
+                                        <Button text="Show all →" onAction="#onShowAllPeople"
+                                                styleClass="prf-sideFooterBtn"/>
+                                    </VBox>
+
+                                </VBox>
+                            </GridPane>
+
+                            <!-- MAIN CONTENT -->
+                            <GridPane hgap="16" vgap="16">
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="66"/>
+                                    <ColumnConstraints percentWidth="34"/>
+                                </columnConstraints>
+
+                                <!-- LEFT COLUMN -->
+                                <VBox spacing="14" GridPane.columnIndex="0">
+
+                                    <!-- BASIC -->
+                                    <VBox styleClass="prf-card" spacing="10">
+                                        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="prf-cardHeader">
+                                            <Label text="Basic info" styleClass="prf-cardTitle"/>
+                                            <Region HBox.hgrow="ALWAYS"/>
+
+                                            <Button fx:id="basicPencilBtn" onAction="#onBasicEdit"
+                                                    styleClass="prf-actBtn prf-actNeutral">
+                                                <graphic>
+                                                    <SVGPath styleClass="prf-ico" content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
+                                                </graphic>
+                                            </Button>
+
+                                            <Button fx:id="basicBackBtn" onAction="#onBasicBack"
+                                                    styleClass="prf-actBtn prf-actCancel"
+                                                    visible="false" managed="false">
+                                                <graphic>
+                                                    <SVGPath styleClass="prf-ico"
+                                                             content="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.71 2.88 18.29 9.17 12 2.88 5.71 4.29 4.29 10.59 10.6 16.89 4.29z"/>
+                                                </graphic>
+                                            </Button>
+
+                                            <Button fx:id="basicSaveBtn" onAction="#onBasicSave"
+                                                    styleClass="prf-actBtn prf-actSave"
+                                                    visible="false" managed="false">
+                                                <graphic>
+                                                    <SVGPath styleClass="prf-ico prf-icoOnDark"
+                                                             content="M9 16.2l-3.5-3.5L4 14.2 9 19.2 20 8.2 18.5 6.7z"/>
+                                                </graphic>
+                                            </Button>
+                                        </HBox>
+
                                         <VBox fx:id="basicViewBox" spacing="10">
-                                            <GridPane hgap="10" vgap="10">
+                                            <GridPane hgap="14" vgap="10">
                                                 <columnConstraints>
                                                     <ColumnConstraints percentWidth="50"/>
                                                     <ColumnConstraints percentWidth="50"/>
                                                 </columnConstraints>
-
                                                 <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                                     <Label text="First name" styleClass="prf-label"/>
                                                     <Label fx:id="firstNameView" styleClass="prf-value"/>
@@ -120,14 +240,12 @@
                                             </GridPane>
                                         </VBox>
 
-                                        <!-- edit -->
                                         <VBox fx:id="basicEditBox" spacing="10" visible="false" managed="false">
-                                            <GridPane hgap="10" vgap="10">
+                                            <GridPane hgap="14" vgap="10">
                                                 <columnConstraints>
                                                     <ColumnConstraints percentWidth="50"/>
                                                     <ColumnConstraints percentWidth="50"/>
                                                 </columnConstraints>
-
                                                 <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                                     <Label text="First name" styleClass="prf-label"/>
                                                     <TextField fx:id="firstNameField" styleClass="prf-editorField"/>
@@ -148,120 +266,143 @@
                                         </VBox>
                                     </VBox>
 
-                                    <!-- ================= CANDIDATE SECTION ================= -->
+                                    <!-- ========== CANDIDATE SECTION (DO NOT LEAVE EMPTY) ========== -->
                                     <VBox fx:id="candidateSection" spacing="14">
 
-                                        <!-- ABOUT -->
+                                        <!-- ABOUT (required for headlineField/bioArea injection) -->
                                         <VBox styleClass="prf-card" spacing="10">
-                                            <HBox alignment="CENTER_LEFT">
+                                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="prf-cardHeader">
                                                 <Label text="About" styleClass="prf-cardTitle"/>
                                                 <Region HBox.hgrow="ALWAYS"/>
-                                                <Button fx:id="aboutPencilBtn" text="✎" onAction="#onAboutEdit" styleClass="prf-iconBtn"/>
 
-                                                <Button fx:id="aboutBackBtn" text="← Back" onAction="#onAboutBack"
-                                                        styleClass="prf-btn prf-btnSoft prf-miniBtn"
-                                                        visible="false" managed="false"/>
+                                                <Button fx:id="aboutPencilBtn" onAction="#onAboutEdit"
+                                                        styleClass="prf-actBtn prf-actNeutral">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico"
+                                                                 content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
+                                                    </graphic>
+                                                </Button>
 
-                                                <Button fx:id="aboutSaveBtn" text="Save" onAction="#onAboutSave"
-                                                        styleClass="prf-btn prf-btnPrimary prf-miniBtn"
-                                                        visible="false" managed="false"/>
+                                                <Button fx:id="aboutBackBtn" onAction="#onAboutBack"
+                                                        styleClass="prf-actBtn prf-actCancel"
+                                                        visible="false" managed="false">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico"
+                                                                 content="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.71 2.88 18.29 9.17 12 2.88 5.71 4.29 4.29 10.59 10.6 16.89 4.29z"/>
+                                                    </graphic>
+                                                </Button>
+
+                                                <Button fx:id="aboutSaveBtn" onAction="#onAboutSave"
+                                                        styleClass="prf-actBtn prf-actSave"
+                                                        visible="false" managed="false">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico prf-icoOnDark"
+                                                                 content="M9 16.2l-3.5-3.5L4 14.2 9 19.2 20 8.2 18.5 6.7z"/>
+                                                    </graphic>
+                                                </Button>
                                             </HBox>
 
                                             <VBox fx:id="aboutViewBox" spacing="10">
-                                                <VBox spacing="4">
-                                                    <Label text="Headline" styleClass="prf-label"/>
-                                                    <Label fx:id="headlineView" styleClass="prf-value"/>
-                                                </VBox>
                                                 <VBox spacing="4">
                                                     <Label text="Bio" styleClass="prf-label"/>
                                                     <Label fx:id="bioView" styleClass="prf-paragraph" wrapText="true"/>
                                                 </VBox>
                                             </VBox>
 
+
                                             <VBox fx:id="aboutEditBox" spacing="10" visible="false" managed="false">
-                                                <VBox spacing="6">
-                                                    <Label text="Headline" styleClass="prf-label"/>
-                                                    <TextField fx:id="headlineField" styleClass="prf-editorField"/>
-                                                </VBox>
                                                 <VBox spacing="6">
                                                     <Label text="Bio" styleClass="prf-label"/>
                                                     <TextArea fx:id="bioArea" styleClass="prf-editorArea"
-                                                              prefRowCount="4" wrapText="true"
-                                                              promptText="Write a short bio..."/>
+                                                              prefRowCount="4" wrapText="true"/>
                                                 </VBox>
                                             </VBox>
                                         </VBox>
 
                                         <!-- EDUCATION -->
                                         <VBox styleClass="prf-card" spacing="10">
-                                            <HBox alignment="CENTER_LEFT">
+                                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="prf-cardHeader">
                                                 <Label text="Education" styleClass="prf-cardTitle"/>
                                                 <Region HBox.hgrow="ALWAYS"/>
-                                                <Button fx:id="eduPencilBtn" text="✎" onAction="#onEducationEdit" styleClass="prf-iconBtn"/>
+                                                <Button text="+" disable="true" styleClass="prf-actBtn prf-actNeutral prf-plusBtn"/>
+                                                <Button fx:id="eduPencilBtn" onAction="#onEducationEdit"
+                                                        styleClass="prf-actBtn prf-actNeutral">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico" content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
+                                                    </graphic>
+                                                </Button>
 
-                                                <Button fx:id="eduBackBtn" text="← Back" onAction="#onEducationBack"
-                                                        styleClass="prf-btn prf-btnSoft prf-miniBtn"
-                                                        visible="false" managed="false"/>
+                                                <Button fx:id="eduBackBtn" onAction="#onEducationBack"
+                                                        styleClass="prf-actBtn prf-actCancel"
+                                                        visible="false" managed="false">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico"
+                                                                 content="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.71 2.88 18.29 9.17 12 2.88 5.71 4.29 4.29 10.59 10.6 16.89 4.29z"/>
+                                                    </graphic>
+                                                </Button>
 
-                                                <Button fx:id="eduSaveBtn" text="Save" onAction="#onEducationSave"
-                                                        styleClass="prf-btn prf-btnPrimary prf-miniBtn"
-                                                        visible="false" managed="false"/>
+                                                <Button fx:id="eduSaveBtn" onAction="#onEducationSave"
+                                                        styleClass="prf-actBtn prf-actSave"
+                                                        visible="false" managed="false">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico prf-icoOnDark"
+                                                                 content="M9 16.2l-3.5-3.5L4 14.2 9 19.2 20 8.2 18.5 6.7z"/>
+                                                    </graphic>
+                                                </Button>
                                             </HBox>
 
                                             <VBox fx:id="eduViewBox" spacing="10">
-                                                <GridPane hgap="10" vgap="10">
-                                                    <columnConstraints>
-                                                        <ColumnConstraints percentWidth="50"/>
-                                                        <ColumnConstraints percentWidth="50"/>
-                                                    </columnConstraints>
+                                                <HBox spacing="12" alignment="CENTER_LEFT" styleClass="prf-eduRow">
 
-                                                    <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                                                        <Label text="School" styleClass="prf-label"/>
-                                                        <Label fx:id="schoolView" styleClass="prf-value"/>
-                                                    </VBox>
+                                                    <!-- Logo box -->
+                                                    <StackPane styleClass="prf-eduLogo">
+                                                        <ImageView fx:id="eduLogoImage"
+                                                                   fitWidth="46" fitHeight="46"
+                                                                   preserveRatio="true" smooth="true"
+                                                                   styleClass="prf-eduLogoImg"/>
+                                                    </StackPane>
 
-                                                    <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                                                        <Label text="Degree" styleClass="prf-label"/>
-                                                        <Label fx:id="degreeView" styleClass="prf-value"/>
-                                                    </VBox>
+                                                    <!-- Texts -->
+                                                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                                        <!-- School -->
+                                                        <Label fx:id="schoolView" styleClass="prf-eduTitle"/>
 
-                                                    <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                                                        <Label text="Field of study" styleClass="prf-label"/>
-                                                        <Label fx:id="fieldView" styleClass="prf-value"/>
-                                                    </VBox>
+                                                        <!-- Degree • Field (same row) -->
+                                                        <HBox spacing="6" alignment="BASELINE_LEFT">
+                                                            <Label fx:id="degreeView" styleClass="prf-eduSubStrong"/>
+                                                            <Label text="•" styleClass="prf-muted"/>
+                                                            <Label fx:id="fieldView" styleClass="prf-eduSubStrong"/>
+                                                        </HBox>
 
-                                                    <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                                        <Label text="Graduation year" styleClass="prf-label"/>
-                                                        <Label fx:id="gradYearView" styleClass="prf-value"/>
+                                                        <!-- Dates / graduation year -->
+                                                        <Label fx:id="gradYearView" styleClass="prf-eduSub"/>
                                                     </VBox>
-                                                </GridPane>
+                                                </HBox>
                                             </VBox>
 
+
+
                                             <VBox fx:id="eduEditBox" spacing="10" visible="false" managed="false">
-                                                <GridPane hgap="10" vgap="10">
+                                                <GridPane hgap="14" vgap="10">
                                                     <columnConstraints>
                                                         <ColumnConstraints percentWidth="50"/>
                                                         <ColumnConstraints percentWidth="50"/>
                                                     </columnConstraints>
-
                                                     <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                                         <Label text="School" styleClass="prf-label"/>
                                                         <TextField fx:id="schoolField" styleClass="prf-editorField"/>
                                                     </VBox>
-
                                                     <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
                                                         <Label text="Degree" styleClass="prf-label"/>
                                                         <TextField fx:id="degreeField" styleClass="prf-editorField"/>
                                                     </VBox>
-
                                                     <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="1">
                                                         <Label text="Field of study" styleClass="prf-label"/>
                                                         <TextField fx:id="fieldOfStudyField" styleClass="prf-editorField"/>
                                                     </VBox>
-
                                                     <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                                         <Label text="Graduation year" styleClass="prf-label"/>
-                                                        <TextField fx:id="graduationYearField" styleClass="prf-editorField" promptText="2028"/>
+                                                        <TextField fx:id="graduationYearField" styleClass="prf-editorField"/>
                                                     </VBox>
                                                 </GridPane>
                                             </VBox>
@@ -269,65 +410,105 @@
 
                                         <!-- SKILLS -->
                                         <VBox styleClass="prf-card" spacing="10">
-                                            <HBox alignment="CENTER_LEFT">
+                                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="prf-cardHeader">
                                                 <Label text="Skills" styleClass="prf-cardTitle"/>
                                                 <Region HBox.hgrow="ALWAYS"/>
-                                                <Button fx:id="skillsPencilBtn" text="✎" onAction="#onSkillsEdit" styleClass="prf-iconBtn"/>
 
-                                                <Button fx:id="skillsBackBtn" text="← Back" onAction="#onSkillsBack"
-                                                        styleClass="prf-btn prf-btnSoft prf-miniBtn"
-                                                        visible="false" managed="false"/>
+                                                <Button fx:id="skillsPencilBtn" onAction="#onSkillsEdit"
+                                                        styleClass="prf-actBtn prf-actNeutral">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico" content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
+                                                    </graphic>
+                                                </Button>
 
-                                                <Button fx:id="skillsSaveBtn" text="Save" onAction="#onSkillsSave"
-                                                        styleClass="prf-btn prf-btnPrimary prf-miniBtn"
-                                                        visible="false" managed="false"/>
+                                                <Button fx:id="skillsBackBtn" onAction="#onSkillsBack"
+                                                        styleClass="prf-actBtn prf-actCancel"
+                                                        visible="false" managed="false">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico"
+                                                                 content="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.71 2.88 18.29 9.17 12 2.88 5.71 4.29 4.29 10.59 10.6 16.89 4.29z"/>
+                                                    </graphic>
+                                                </Button>
+
+                                                <Button fx:id="skillsSaveBtn" onAction="#onSkillsSave"
+                                                        styleClass="prf-actBtn prf-actSave"
+                                                        visible="false" managed="false">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico prf-icoOnDark"
+                                                                 content="M9 16.2l-3.5-3.5L4 14.2 9 19.2 20 8.2 18.5 6.7z"/>
+                                                    </graphic>
+                                                </Button>
                                             </HBox>
 
                                             <VBox fx:id="skillsViewBox" spacing="10">
-                                                <VBox spacing="6">
-                                                    <Label text="Hard skills" styleClass="prf-label"/>
-                                                    <FlowPane fx:id="hardSkillsPane" hgap="8" vgap="8"/>
-                                                </VBox>
+
+                                                <Label text="Communicate your fit for new opportunities — skills help recruiters match you faster."
+                                                       styleClass="prf-muted"/>
+
                                                 <VBox spacing="6">
                                                     <Label text="Soft skills" styleClass="prf-label"/>
                                                     <FlowPane fx:id="softSkillsPane" hgap="8" vgap="8"/>
                                                 </VBox>
+
+                                                <Separator/>
+
+                                                <VBox spacing="6">
+                                                    <Label text="Technical skills" styleClass="prf-label"/>
+                                                    <FlowPane fx:id="hardSkillsPane" hgap="8" vgap="8"/>
+                                                </VBox>
+
+                                                <Button text="Add skills" onAction="#onSkillsEdit" styleClass="prf-outlineBtn"/>
                                             </VBox>
 
-                                            <VBox fx:id="skillsEditBox" spacing="10" visible="false" managed="false">
+
+                                            <VBox fx:id="skillsEditBox" spacing="10" visible="false" managed="false" styleClass="prf-editPanel">
                                                 <VBox spacing="6">
                                                     <Label text="Hard skills (comma separated)" styleClass="prf-label"/>
                                                     <TextArea fx:id="hardSkillsArea" styleClass="prf-editorArea"
-                                                              prefRowCount="2" wrapText="true"
-                                                              promptText="Java, SQL, Docker"/>
+                                                              prefRowCount="2" wrapText="true"/>
                                                 </VBox>
                                                 <VBox spacing="6">
                                                     <Label text="Soft skills (comma separated)" styleClass="prf-label"/>
                                                     <TextArea fx:id="softSkillsArea" styleClass="prf-editorArea"
-                                                              prefRowCount="2" wrapText="true"
-                                                              promptText="Communication, Teamwork"/>
+                                                              prefRowCount="2" wrapText="true"/>
                                                 </VBox>
                                             </VBox>
                                         </VBox>
 
                                         <!-- LINKS -->
                                         <VBox styleClass="prf-card" spacing="10">
-                                            <HBox alignment="CENTER_LEFT">
+                                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="prf-cardHeader">
                                                 <Label text="Links" styleClass="prf-cardTitle"/>
                                                 <Region HBox.hgrow="ALWAYS"/>
-                                                <Button fx:id="linksPencilBtn" text="✎" onAction="#onLinksEdit" styleClass="prf-iconBtn"/>
 
-                                                <Button fx:id="linksBackBtn" text="← Back" onAction="#onLinksBack"
-                                                        styleClass="prf-btn prf-btnSoft prf-miniBtn"
-                                                        visible="false" managed="false"/>
+                                                <Button fx:id="linksPencilBtn" onAction="#onLinksEdit"
+                                                        styleClass="prf-actBtn prf-actNeutral">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico" content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
+                                                    </graphic>
+                                                </Button>
 
-                                                <Button fx:id="linksSaveBtn" text="Save" onAction="#onLinksSave"
-                                                        styleClass="prf-btn prf-btnPrimary prf-miniBtn"
-                                                        visible="false" managed="false"/>
+                                                <Button fx:id="linksBackBtn" onAction="#onLinksBack"
+                                                        styleClass="prf-actBtn prf-actCancel"
+                                                        visible="false" managed="false">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico"
+                                                                 content="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.71 2.88 18.29 9.17 12 2.88 5.71 4.29 4.29 10.59 10.6 16.89 4.29z"/>
+                                                    </graphic>
+                                                </Button>
+
+                                                <Button fx:id="linksSaveBtn" onAction="#onLinksSave"
+                                                        styleClass="prf-actBtn prf-actSave"
+                                                        visible="false" managed="false">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico prf-icoOnDark"
+                                                                 content="M9 16.2l-3.5-3.5L4 14.2 9 19.2 20 8.2 18.5 6.7z"/>
+                                                    </graphic>
+                                                </Button>
                                             </HBox>
 
                                             <VBox fx:id="linksViewBox" spacing="10">
-                                                <GridPane hgap="10" vgap="10">
+                                                <GridPane hgap="14" vgap="10">
                                                     <columnConstraints>
                                                         <ColumnConstraints percentWidth="50"/>
                                                         <ColumnConstraints percentWidth="50"/>
@@ -346,7 +527,7 @@
                                             </VBox>
 
                                             <VBox fx:id="linksEditBox" spacing="10" visible="false" managed="false">
-                                                <GridPane hgap="10" vgap="10">
+                                                <GridPane hgap="14" vgap="10">
                                                     <columnConstraints>
                                                         <ColumnConstraints percentWidth="50"/>
                                                         <ColumnConstraints percentWidth="50"/>
@@ -354,12 +535,12 @@
 
                                                     <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                                         <Label text="GitHub" styleClass="prf-label"/>
-                                                        <TextField fx:id="githubField" styleClass="prf-editorField" promptText="https://github.com/..."/>
+                                                        <TextField fx:id="githubField" styleClass="prf-editorField"/>
                                                     </VBox>
 
                                                     <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
                                                         <Label text="Portfolio" styleClass="prf-label"/>
-                                                        <TextField fx:id="portfolioField" styleClass="prf-editorField" promptText="https://..."/>
+                                                        <TextField fx:id="portfolioField" styleClass="prf-editorField"/>
                                                     </VBox>
                                                 </GridPane>
                                             </VBox>
@@ -367,22 +548,38 @@
 
                                     </VBox>
 
-                                    <!-- ================= RECRUITER SECTION ================= -->
+                                    <!-- ========== RECRUITER SECTION (kept for role switch) ========== -->
                                     <VBox fx:id="recruiterSection" spacing="14" visible="false" managed="false">
 
                                         <VBox styleClass="prf-card" spacing="10">
-                                            <HBox alignment="CENTER_LEFT">
+                                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="prf-cardHeader">
                                                 <Label text="Organization" styleClass="prf-cardTitle"/>
                                                 <Region HBox.hgrow="ALWAYS"/>
-                                                <Button fx:id="orgPencilBtn" text="✎" onAction="#onOrgEdit" styleClass="prf-iconBtn"/>
 
-                                                <Button fx:id="orgBackBtn" text="← Back" onAction="#onOrgBack"
-                                                        styleClass="prf-btn prf-btnSoft prf-miniBtn"
-                                                        visible="false" managed="false"/>
+                                                <Button fx:id="orgPencilBtn" onAction="#onOrgEdit"
+                                                        styleClass="prf-actBtn prf-actNeutral">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico" content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
+                                                    </graphic>
+                                                </Button>
 
-                                                <Button fx:id="orgSaveBtn" text="Save" onAction="#onOrgSave"
-                                                        styleClass="prf-btn prf-btnPrimary prf-miniBtn"
-                                                        visible="false" managed="false"/>
+                                                <Button fx:id="orgBackBtn" onAction="#onOrgBack"
+                                                        styleClass="prf-actBtn prf-actCancel"
+                                                        visible="false" managed="false">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico"
+                                                                 content="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.71 2.88 18.29 9.17 12 2.88 5.71 4.29 4.29 10.59 10.6 16.89 4.29z"/>
+                                                    </graphic>
+                                                </Button>
+
+                                                <Button fx:id="orgSaveBtn" onAction="#onOrgSave"
+                                                        styleClass="prf-actBtn prf-actSave"
+                                                        visible="false" managed="false">
+                                                    <graphic>
+                                                        <SVGPath styleClass="prf-ico prf-icoOnDark"
+                                                                 content="M9 16.2l-3.5-3.5L4 14.2 9 19.2 20 8.2 18.5 6.7z"/>
+                                                    </graphic>
+                                                </Button>
                                             </HBox>
 
                                             <VBox fx:id="orgViewBox" spacing="10">
@@ -407,18 +604,18 @@
                                                 </VBox>
                                                 <VBox spacing="6">
                                                     <Label text="Website" styleClass="prf-label"/>
-                                                    <TextField fx:id="websiteField" styleClass="prf-editorField" promptText="https://..."/>
+                                                    <TextField fx:id="websiteField" styleClass="prf-editorField"/>
                                                 </VBox>
                                                 <VBox spacing="6">
                                                     <Label text="Description" styleClass="prf-label"/>
-                                                    <TextArea fx:id="orgDescArea" styleClass="prf-editorArea" prefRowCount="4" wrapText="true"/>
+                                                    <TextArea fx:id="orgDescArea" styleClass="prf-editorArea"
+                                                              prefRowCount="4" wrapText="true"/>
                                                 </VBox>
                                             </VBox>
                                         </VBox>
 
                                     </VBox>
 
-                                    <!-- WORKSPACE -->
                                     <VBox styleClass="prf-card" spacing="10">
                                         <Label text="Workspace" styleClass="prf-cardTitle"/>
                                         <Label fx:id="workspaceHintLabel" text="Workspace: coming next." styleClass="prf-muted"/>
@@ -426,13 +623,7 @@
 
                                 </VBox>
 
-                                <!-- RIGHT -->
-                                <VBox spacing="14" GridPane.columnIndex="1">
-                                    <VBox styleClass="prf-card" spacing="10">
-                                        <Label text="People you may know" styleClass="prf-cardTitle"/>
-                                        <VBox fx:id="peopleBox" spacing="10"/>
-                                    </VBox>
-                                </VBox>
+                                <VBox spacing="14" GridPane.columnIndex="1"/>
 
                             </GridPane>
 

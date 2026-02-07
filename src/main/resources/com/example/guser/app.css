@@ -1,6 +1,9 @@
+/* =========================
+   GLOBALS
+   ========================= */
 .root {
     -fx-font-family: "Segoe UI", "Inter", "Arial";
-    -fx-background-color: #0f1020;
+    -fx-background-color: #F6F2FA;
 }
 
 .bg {
@@ -195,367 +198,457 @@
     -fx-text-fill: rgba(255,255,255,0.82);
 }
 
-/* =========================================================
-   Carrieri Profile — LinkedIn-like + Carrieri branding
-   (scoped to .prf-*)
-   ========================================================= */
 
-.prf-bg {
-    -fx-background-color: #f3f2ef; /* LinkedIn-ish */
-}
 
-/* ScrollPane background + viewport must be transparent */
-.prf-scroll { -fx-background-color: transparent; }
-.prf-scroll > .viewport { -fx-background-color: transparent; }
 
-.prf-page { -fx-background-color: transparent; }
-.prf-container { -fx-max-width: 1120; -fx-min-width: 860; }
 
-.prf-card {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 12;
-    -fx-border-color: #e0dfdc;
-    -fx-border-radius: 12;
-    -fx-padding: 14;
-    -fx-effect: dropshadow(three-pass-box, rgba(16,24,40,0.06), 18, 0, 0, 6);
-}
-
-/* Header */
-.prf-headerCard { -fx-padding: 0; }
-.prf-cover {
-    -fx-background-radius: 12 12 0 0;
-    -fx-background-color: linear-gradient(to right, #6d5efc, #22c1c3); /* your branding */
-}
-.prf-headerBody { -fx-padding: 12 14 14 14; }
-
-.prf-avatarWrap { -fx-translate-y: -30; }
-.prf-avatarRing { -fx-fill: rgba(0,0,0,0.06); }
-
-/* Typography */
-.prf-h1 { -fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #111827; }
-.prf-subtitle { -fx-font-size: 13px; -fx-text-fill: #374151; }
-.prf-meta { -fx-font-size: 12px; -fx-text-fill: #6b7280; }
-
-.prf-cardTitle { -fx-font-size: 14px; -fx-font-weight: 800; -fx-text-fill: #111827; }
-.prf-label { -fx-font-size: 12px; -fx-text-fill: #6b7280; }
-
-.prf-value { -fx-text-fill: #111827; -fx-font-size: 13px; }
-.prf-paragraph { -fx-text-fill: #111827; -fx-font-size: 13px; -fx-line-spacing: 2px; }
-
-.prf-linkValue { -fx-text-fill: #0a66c2; -fx-font-size: 13px; }
-.prf-linkValue:hover { -fx-underline: true; }
-
-.prf-muted { -fx-text-fill: #6b7280; }
-.prf-error { -fx-text-fill: #b42318; -fx-font-weight: 800; }
-
-/* Buttons */
-.prf-btn {
-    -fx-background-radius: 999;
-    -fx-padding: 7 14 7 14;
-    -fx-font-weight: 800;
-}
-
-.prf-miniBtn { -fx-padding: 6 12 6 12; }
-
-.prf-btnPrimary {
-    -fx-background-color: #6d5efc; /* branding primary */
-    -fx-text-fill: white;
-}
-.prf-btnPrimary:hover { -fx-background-color: #5a4ff0; }
-
-.prf-btnSoft {
-    -fx-background-color: rgba(17,24,39,0.04);
-    -fx-text-fill: #111827;
-    -fx-border-color: rgba(17,24,39,0.12);
-    -fx-border-radius: 999;
-    -fx-background-radius: 999;
-}
-.prf-btnSoft:hover { -fx-background-color: rgba(17,24,39,0.06); }
-
-.prf-linkBtn {
-    -fx-background-color: transparent;
-    -fx-text-fill: #0a66c2;
-    -fx-padding: 0;
-}
-.prf-linkBtn:hover { -fx-underline: true; }
-
-/* Pencil icon button like LinkedIn */
-.prf-iconBtn {
-    -fx-background-color: rgba(17,24,39,0.04);
-    -fx-text-fill: #111827;
-    -fx-background-radius: 999;
-    -fx-border-radius: 999;
-    -fx-border-color: rgba(17,24,39,0.10);
-    -fx-padding: 6 10 6 10;
-    -fx-font-size: 13px;
-    -fx-font-weight: 800;
-}
-.prf-iconBtn:hover { -fx-background-color: rgba(109,94,252,0.12); -fx-border-color: rgba(109,94,252,0.22); }
-
-/* Editors: TextField + TextArea match */
-.prf-editorField {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #cfd3d7;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-    -fx-padding: 8;
-    -fx-text-fill: #111827;
-    -fx-prompt-text-fill: #9ca3af;
-}
-.prf-editorField:focused { -fx-border-color: #6d5efc; }
-
-/* TextArea needs inner background + .content styling to match. [web:242][web:251] */
-.prf-editorArea {
-    -fx-border-color: #cfd3d7;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-padding: 8;
-
-    -fx-text-fill: #111827;
-    -fx-prompt-text-fill: #9ca3af;
-
-    -fx-control-inner-background: #ffffff;
-}
-.prf-editorArea .content {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 8;
-    -fx-padding: 6;
-}
-.prf-editorArea:focused { -fx-border-color: #6d5efc; }
-
-/* Skill pills (view) */
-.prf-chip {
-    -fx-padding: 6 10 6 10;
-    -fx-background-radius: 999;
-    -fx-background-color: rgba(17,24,39,0.04);
-    -fx-border-color: rgba(17,24,39,0.12);
-    -fx-border-radius: 999;
-    -fx-text-fill: #111827;
-    -fx-font-weight: 800;
-    -fx-font-size: 11px;
-}
 
 /* =========================
-   NAV (reusable component)
-   Branding: #6d5efc -> #22c1c3
+   NAVBAR
    ========================= */
-
 .navBar {
-    -fx-background-color: rgba(255,255,255,0.92);
-    -fx-border-color: #e0dfdc;
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: rgba(35,25,66,0.10);
     -fx-border-width: 0 0 1 0;
     -fx-padding: 10 14 10 14;
-    -fx-effect: dropshadow(three-pass-box, rgba(16,24,40,0.06), 18, 0, 0, 6);
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.08), 22, 0.18, 0, 10);
 }
 
 .navBrand {
     -fx-font-size: 16px;
     -fx-font-weight: 900;
-    -fx-text-fill: #111827;
+    -fx-text-fill: #231942;
 }
 
 .navBrandDot {
-    -fx-min-width: 10;
-    -fx-min-height: 10;
-    -fx-max-width: 10;
-    -fx-max-height: 10;
+    -fx-min-width: 10; -fx-min-height: 10;
+    -fx-max-width: 10; -fx-max-height: 10;
     -fx-background-radius: 999;
-    -fx-background-color: linear-gradient(to right, #6d5efc, #22c1c3);
+    -fx-background-color: linear-gradient(to bottom right, #231942, #5E548E, #9F86C0, #BE95C4, #E0B1CB);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.22), 16, 0.22, 0, 0);
 }
 
 .navIconBtn {
-    -fx-background-radius: 999;
-    -fx-background-color: rgba(17,24,39,0.06);
-    -fx-border-color: rgba(17,24,39,0.12);
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-border-color: rgba(35,25,66,0.14);
     -fx-border-radius: 999;
-    -fx-font-weight: 900;
+    -fx-background-radius: 999;
     -fx-padding: 6 10 6 10;
+    -fx-cursor: hand;
 }
+.navIconBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-border-color: rgba(94,84,142,0.22);
+}
+
+.navIco { -fx-fill: #231942; }
 
 .navSearch {
     -fx-pref-width: 320;
     -fx-background-radius: 999;
     -fx-border-radius: 999;
-    -fx-background-color: rgba(17,24,39,0.05);
-    -fx-border-color: rgba(17,24,39,0.10);
-    -fx-padding: 8 14 8 14;
+    -fx-background-color: rgba(35,25,66,0.04);
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-padding: 9 14 9 14;
+    -fx-text-fill: #231942;
+    -fx-prompt-text-fill: rgba(35,25,66,0.50);
+}
+.navSearch:focused {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: rgba(159,134,192,0.75);
+    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.18), 18, 0.18, 0, 8);
 }
 
 .navLinkBtn {
     -fx-background-color: transparent;
-    -fx-text-fill: #111827;
-    -fx-font-weight: 800;
-    -fx-padding: 6 10 6 10;
+    -fx-text-fill: rgba(35,25,66,0.78);
+    -fx-font-weight: 900;
+    -fx-padding: 7 12 7 12;
     -fx-background-radius: 999;
+    -fx-cursor: hand;
 }
-
-.navLinkBtn:hover { -fx-background-color: rgba(109,94,252,0.10); }
-
+.navLinkBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-text-fill: #231942;
+}
 .navLinkBtnActive {
-    -fx-background-color: rgba(109,94,252,0.16);
-    -fx-text-fill: #2f2af0;
+    -fx-background-color: rgba(35,25,66,0.08);
+    -fx-border-color: rgba(35,25,66,0.14);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-text-fill: #231942;
 }
 
-.navAvatar { -fx-fill: rgba(0,0,0,0.08); }
-.navName { -fx-text-fill: #111827; -fx-font-weight: 800; }
+.navAvatar { -fx-fill: rgba(35,25,66,0.10); }
+.navName { -fx-text-fill: #231942; -fx-font-weight: 900; }
 
 .navLogoutBtn {
-    -fx-background-radius: 999;
     -fx-background-color: transparent;
-    -fx-border-color: rgba(17,24,39,0.18);
+    -fx-border-color: rgba(35,25,66,0.18);
     -fx-border-radius: 999;
-    -fx-text-fill: #111827;
-    -fx-font-weight: 800;
+    -fx-background-radius: 999;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
     -fx-padding: 6 12 6 12;
+    -fx-cursor: hand;
+}
+.navLogoutBtn:hover {
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-border-color: rgba(94,84,142,0.26);
 }
 
 /* =========================
-   PROFILE (LinkedIn-like)
+   PROFILE LAYOUT
    ========================= */
+.prf-bg { -fx-background-color: #F6F2FA; }
 
-.prf-bg { -fx-background-color: #f3f2ef; }
-
+/* ScrollPane viewport must be transparent. [web:238] */
 .prf-scroll { -fx-background-color: transparent; }
 .prf-scroll > .viewport { -fx-background-color: transparent; }
 
-.prf-page { -fx-background-color: transparent; }
+.prf-centerWrap { -fx-background-color: transparent; }
 
-.prf-container {
+.prf-page {
     -fx-max-width: 1120;
-    -fx-min-width: 860;
+    -fx-min-width: 920;
+    -fx-background-color: transparent;
 }
 
-.prf-card {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 12;
-    -fx-border-color: #e0dfdc;
-    -fx-border-radius: 12;
-    -fx-padding: 14;
-    -fx-effect: dropshadow(three-pass-box, rgba(16,24,40,0.06), 18, 0, 0, 6);
+/* =========================
+   HERO
+   ========================= */
+.prf-heroCard {
+    -fx-background-color: #FFFFFF;
+    -fx-background-insets: 0;
+    -fx-background-radius: 16;
+    -fx-border-color: rgba(35,25,66,0.12);
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.12), 30, 0.20, 0, 12);
 }
-
-.prf-headerCard { -fx-padding: 0; }
 
 .prf-cover {
-    -fx-background-radius: 12 12 0 0;
-    -fx-background-color: linear-gradient(to right, #6d5efc, #22c1c3);
+    -fx-background-insets: 0;
+    -fx-background-radius: 16 16 0 0;
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E, #9F86C0, #BE95C4);
 }
 
-.prf-headerBody { -fx-padding: 12 14 14 14; }
+.prf-heroBody { -fx-padding: 12 14 14 14; }
 
-.prf-avatarWrap { -fx-translate-y: -30; }
-.prf-avatarRing { -fx-fill: rgba(0,0,0,0.06); }
+.prf-avatarWrap { -fx-translate-y: -22; }
+.prf-avatarHalo {
+    -fx-fill: rgba(255,255,255,0.92);
+    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.28), 22, 0.18, 0, 0);
+}
 
-.prf-h1 { -fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #111827; }
-.prf-subtitle { -fx-font-size: 13px; -fx-text-fill: #374151; }
-.prf-meta { -fx-font-size: 12px; -fx-text-fill: #6b7280; }
-
-.prf-cardTitle { -fx-font-size: 14px; -fx-font-weight: 900; -fx-text-fill: #111827; }
-.prf-label { -fx-font-size: 12px; -fx-text-fill: #6b7280; }
-
-.prf-value { -fx-text-fill: #111827; -fx-font-size: 13px; }
-.prf-paragraph { -fx-text-fill: #111827; -fx-font-size: 13px; -fx-line-spacing: 2px; }
-
-.prf-linkValue { -fx-text-fill: #0a66c2; -fx-font-size: 13px; }
-.prf-linkValue:hover { -fx-underline: true; }
-
-.prf-muted { -fx-text-fill: #6b7280; }
-.prf-error { -fx-text-fill: #b42318; -fx-font-weight: 900; }
-
-.prf-btn {
-    -fx-background-radius: 999;
-    -fx-padding: 7 14 7 14;
+.prf-name {
+    -fx-font-size: 20px;
     -fx-font-weight: 900;
+    -fx-text-fill: #231942;
 }
 
-.prf-miniBtn { -fx-padding: 6 12 6 12; }
-
-.prf-btnPrimary {
-    -fx-background-color: #6d5efc;
-    -fx-text-fill: white;
-}
-
-.prf-btnPrimary:hover { -fx-background-color: #5a4ff0; }
-
-.prf-btnSoft {
-    -fx-background-color: rgba(17,24,39,0.04);
-    -fx-text-fill: #111827;
-    -fx-border-color: rgba(17,24,39,0.12);
+.prf-headlineBadge {
+    -fx-font-size: 12px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+    -fx-background-color: rgba(159,134,192,0.22);
+    -fx-border-color: rgba(94,84,142,0.18);
     -fx-border-radius: 999;
     -fx-background-radius: 999;
+    -fx-padding: 4 10 4 10;
 }
 
-.prf-btnSoft:hover { -fx-background-color: rgba(17,24,39,0.06); }
-
-.prf-linkBtn {
-    -fx-background-color: transparent;
-    -fx-text-fill: #0a66c2;
-    -fx-padding: 0;
-    -fx-font-weight: 800;
+.prf-meta {
+    -fx-font-size: 12px;
+    -fx-text-fill: rgba(35,25,66,0.62);
 }
 
-.prf-linkBtn:hover { -fx-underline: true; }
-
-/* Pencil button */
-.prf-iconBtn {
-    -fx-background-color: rgba(17,24,39,0.04);
-    -fx-text-fill: #111827;
-    -fx-background-radius: 999;
-    -fx-border-radius: 999;
-    -fx-border-color: rgba(17,24,39,0.10);
-    -fx-padding: 6 10 6 10;
+.prf-bioPreview {
     -fx-font-size: 13px;
-    -fx-font-weight: 900;
+    -fx-text-fill: rgba(17,24,39,0.88);
+    -fx-line-spacing: 2px;
 }
 
-.prf-iconBtn:hover {
-    -fx-background-color: rgba(109,94,252,0.12);
-    -fx-border-color: rgba(109,94,252,0.25);
-}
+/* Stats */
+.prf-statsRow { -fx-padding: 2 0 0 0; }
 
-/* Editors (TextField + TextArea match) */
-.prf-editorField {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #cfd3d7;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-    -fx-padding: 8;
-    -fx-text-fill: #111827;
-    -fx-prompt-text-fill: #9ca3af;
-}
-
-.prf-editorField:focused { -fx-border-color: #6d5efc; }
-
-/* TextArea needs inner styling too. [web:242][web:251] */
-.prf-editorArea {
-    -fx-border-color: #cfd3d7;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-padding: 8;
-
-    -fx-text-fill: #111827;
-    -fx-prompt-text-fill: #9ca3af;
-
-    -fx-control-inner-background: #ffffff;
-}
-
-.prf-editorArea .content {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 8;
-    -fx-padding: 6;
-}
-
-.prf-editorArea:focused { -fx-border-color: #6d5efc; }
-
-/* Skill chips */
-.prf-chip {
-    -fx-padding: 6 10 6 10;
-    -fx-background-radius: 999;
-    -fx-background-color: rgba(17,24,39,0.04);
-    -fx-border-color: rgba(17,24,39,0.12);
+.prf-statPill {
+    -fx-background-color: #F4F1FB;
+    -fx-border-color: rgba(35,25,66,0.10);
     -fx-border-radius: 999;
-    -fx-text-fill: #111827;
+    -fx-background-radius: 999;
+    -fx-padding: 7 12 7 12;
+}
+.prf-statKey {
+    -fx-text-fill: rgba(35,25,66,0.70);
     -fx-font-weight: 900;
     -fx-font-size: 11px;
 }
+.prf-statVal {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 11px;
+}
+
+/* Open to work value badge */
+.prf-openToPill {
+    -fx-background-color: linear-gradient(to right, rgba(94,84,142,0.18), rgba(224,177,203,0.22));
+    -fx-border-color: rgba(94,84,142,0.22);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 7 12 7 12;
+    -fx-alignment: center-left;
+}
+.prf-openToText {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 11px;
+}
+
+.prf-ico { -fx-fill: #231942; }
+.prf-icoOnDark { -fx-fill: #FFFFFF; }
+.prf-icoBriefcase { -fx-fill: #5E548E; }
+
+/* =========================
+   CARDS (solid)
+   ========================= */
+.prf-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 16;
+    -fx-border-color: rgba(35,25,66,0.12);
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-padding: 14;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.08), 22, 0.18, 0, 10);
+}
+
+.prf-sideCard { -fx-padding: 12; }
+
+.prf-cardHeader { -fx-padding: 0 0 6 0; }
+
+.prf-cardTitle {
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+}
+
+.prf-label { -fx-font-size: 12px; -fx-font-weight: 900; -fx-text-fill: rgba(35,25,66,0.58); }
+.prf-value { -fx-font-size: 13px; -fx-text-fill: rgba(17,24,39,0.92); }
+.prf-paragraph { -fx-font-size: 13px; -fx-text-fill: rgba(17,24,39,0.90); -fx-line-spacing: 2px; }
+.prf-muted { -fx-text-fill: rgba(35,25,66,0.55); }
+
+.prf-linkBtn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: 900;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+.prf-linkBtn:hover { -fx-underline: true; }
+
+.prf-sideFooterBtn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: 900;
+    -fx-padding: 6 0 0 0;
+    -fx-cursor: hand;
+}
+.prf-sideFooterBtn:hover { -fx-underline: true; }
+
+/* Action icon buttons */
+.prf-actBtn {
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-border-color: rgba(35,25,66,0.14);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 6 10 6 10;
+    -fx-cursor: hand;
+}
+.prf-actBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-border-color: rgba(94,84,142,0.22);
+}
+
+.prf-actSave {
+    -fx-background-color: #231942;
+    -fx-border-color: #231942;
+}
+.prf-actSave:hover { -fx-background-color: #5E548E; -fx-border-color: #5E548E; }
+
+.prf-actCancel {
+    -fx-background-color: rgba(35,25,66,0.08);
+    -fx-border-color: rgba(35,25,66,0.18);
+}
+
+/* People suggestion rows (LinkedIn-like) */
+.prf-personRow {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-radius: 12;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+}
+.prf-personRow:hover {
+    -fx-background-color: #F4F1FB;
+}
+
+.prf-personName {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 13px;
+}
+
+.prf-personSub {
+    -fx-text-fill: rgba(35,25,66,0.65);
+    -fx-font-weight: 800;
+    -fx-font-size: 12px;
+}
+
+.prf-personMeta {
+    -fx-text-fill: rgba(35,25,66,0.55);
+    -fx-font-size: 11px;
+}
+
+/* Connect / Follow button */
+.prf-connectBtn {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(35,25,66,0.22);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-padding: 6 12 6 12;
+    -fx-cursor: hand;
+}
+.prf-connectBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-border-color: rgba(94,84,142,0.30);
+}
+
+/* Editors */
+.prf-editorField {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: rgba(35,25,66,0.16);
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-padding: 10 12 10 12;
+    -fx-text-fill: #231942;
+    -fx-prompt-text-fill: rgba(35,25,66,0.45);
+}
+.prf-editorField:focused {
+    -fx-border-color: rgba(159,134,192,0.75);
+    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.18), 18, 0.18, 0, 8);
+}
+
+/* TextArea inner background fix. [web:242] */
+.prf-editorArea {
+    -fx-border-color: rgba(35,25,66,0.16);
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-padding: 10 12 10 12;
+    -fx-text-fill: #231942;
+    -fx-prompt-text-fill: rgba(35,25,66,0.45);
+    -fx-control-inner-background: #FFFFFF;
+}
+.prf-editorArea .content {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12;
+    -fx-padding: 8;
+}
+.prf-editorArea:focused {
+    -fx-border-color: rgba(159,134,192,0.75);
+    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.18), 18, 0.18, 0, 8);
+}
+
+.prf-error { -fx-text-fill: #B91C1C; -fx-font-weight: 900; }
+/* Bigger + stronger hero than other cards */
+.prf-heroPop {
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.18), 38, 0.22, 0, 14);
+}
+
+.prf-coverLarge {
+    -fx-background-insets: 0;
+
+    -fx-background-radius: 16 16 0 0;
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E, #9F86C0, #BE95C4);
+}
+
+/* Headline editor inside hero */
+.prf-headlineEditor {
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 4 10 4 10;
+    -fx-pref-width: 370;
+}
+
+/* Remove emoji later if you replace with ImageView */
+.prf-eduRow { -fx-padding: 6 0 0 0; }
+
+.prf-eduLogo {
+    -fx-min-width: 46; -fx-min-height: 46;
+    -fx-max-width: 46; -fx-max-height: 46;
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-radius: 12;
+}
+.prf-eduLogoText {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+}
+
+.prf-eduTitle {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 13px;
+}
+.prf-eduSub {
+    -fx-text-fill: rgba(35,25,66,0.60);
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+}
+
+.prf-plusBtn {
+    -fx-font-size: 16px;
+    -fx-padding: 2 10 2 10;
+}
+
+/* Skills “Add skills” button */
+.prf-outlineBtn {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(35,25,66,0.26);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-padding: 6 14 6 14;
+    -fx-cursor: hand;
+}
+.prf-outlineBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-border-color: rgba(94,84,142,0.30);
+}
+
+/* Dashed edit panel like screenshot */
+.prf-editPanel {
+    -fx-border-color: rgba(35,25,66,0.25);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-border-style: line-cap round;
+    -fx-padding: 12;
+}
+
+.prf-eduSubStrong {
+    -fx-text-fill: rgba(35,25,66,0.72);
+    -fx-font-weight: 900;
+    -fx-font-size: 12px;
+}
+
+.prf-eduLogoImg {
+    -fx-opacity: 0.98;
+}
+
 

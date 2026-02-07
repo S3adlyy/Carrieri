@@ -3,19 +3,24 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.SVGPath?>
 
 <HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.example.guser.controllers.AppNavController"
-      styleClass="navBar" spacing="10" alignment="CENTER_LEFT">
+      styleClass="navBar" spacing="12" alignment="CENTER_LEFT">
 
-    <Button fx:id="backBtn" text="←" onAction="#onBack" styleClass="navIconBtn"/>
+    <Button fx:id="backBtn" onAction="#onBack" styleClass="navIconBtn">
+        <graphic>
+            <SVGPath styleClass="navIco" content="M15.41 7.41 14 6 8 12l6 6 1.41-1.41L10.83 12z"/>
+        </graphic>
+    </Button>
 
     <HBox spacing="8" alignment="CENTER_LEFT">
         <Region styleClass="navBrandDot"/>
         <Label text="Carrieri" styleClass="navBrand"/>
     </HBox>
 
-    <TextField fx:id="searchField" promptText="Search people, skills..." styleClass="navSearch"/>
+    <TextField fx:id="searchField" promptText="Search..." styleClass="navSearch"/>
 
     <HBox spacing="6" alignment="CENTER" styleClass="navLinks">
         <Button fx:id="profileBtn" text="Profile" onAction="#onProfile" styleClass="navLinkBtn"/>
