@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="main.CoursController"
+            prefHeight="800.0"
+            prefWidth="1200.0"
+            style="-fx-background-color: #f8fafc;">
+
+    <!-- TOP HEADER -->
+    <top>
+        <VBox alignment="CENTER"
+              style="-fx-background-color: linear-gradient(to right, #5E548E, #9F86C0);">
+            <padding>
+                <Insets top="25" right="0" bottom="25" left="0"/>
+            </padding>
+            <Label text="🎓 GESTION DES COURS"
+                   style="-fx-text-fill: white; -fx-font-size: 32px; -fx-font-weight: bold;">
+                <font>
+                    <Font name="System" size="32"/>
+                </font>
+            </Label>
+            <Label text="Système de gestion académique complet"
+                   style="-fx-text-fill: #E0B1CB; -fx-font-size: 14px;"/>
+        </VBox>
+    </top>
+
+    <!-- CENTER CONTENT -->
+    <center>
+        <GridPane hgap="25" vgap="25" alignment="CENTER">
+            <padding>
+                <Insets top="30" right="40" bottom="30" left="40"/>
+            </padding>
+            <columnConstraints>
+                <ColumnConstraints percentWidth="35" />
+                <ColumnConstraints percentWidth="65" />
+            </columnConstraints>
+
+            <!-- LEFT PANEL - FORMULAIRE -->
+            <VBox GridPane.columnIndex="0" spacing="20">
+                <padding>
+                    <Insets top="25" right="25" bottom="25" left="25"/>
+                </padding>
+                <style>
+                    -fx-background-color: white;
+                    -fx-background-radius: 10;
+                    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+                </style>
+
+                <Label text="📝 Formulaire Cours"
+                       style="-fx-text-fill: #5E548E; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+                <VBox spacing="12">
+                    <!-- TITRE -->
+                    <Label text="Titre *"/>
+                    <TextField fx:id="txtTitre" promptText="Ex: Mathématiques Avancées"/>
+
+                    <!-- NIVEAU -->
+                    <Label text="Niveau *"/>
+                    <ComboBox fx:id="comboNiveau" promptText="Sélectionner le niveau"/>
+
+                    <!-- DURÉE -->
+                    <Label text="Durée (heures) *"/>
+                    <TextField fx:id="txtDuree" promptText="Ex: 45"/>
+
+                    <!-- COMPÉTENCES -->
+                    <Label text="Compétences visées"/>
+                    <TextField fx:id="txtCompetences" promptText="Ex: Analyse, Algèbre"/>
+
+                    <!-- DESCRIPTION -->
+                    <Label text="Description"/>
+                    <TextArea fx:id="txtDescription"
+                              promptText="Description détaillée du cours..."
+                              wrapText="true"
+                              prefRowCount="3"/>
+
+                    <!-- CHECKBOX -->
+                    <CheckBox fx:id="chkObligatoire" text="Cours obligatoire"/>
+                    <Label fx:id="lblObligatoire" text="Optionnel"
+                           style="-fx-text-fill: #718096; -fx-font-size: 12px;"/>
+                </VBox>
+
+                <!-- BOUTONS -->
+                <VBox spacing="10">
+                    <padding>
+                        <Insets top="10" right="0" bottom="0" left="0"/>
+                    </padding>
+                    <Button fx:id="btnAjouter" text="➕ AJOUTER"
+                            onAction="#ajouter">
+                        <style>
+                            -fx-background-color: #5E548E;
+                            -fx-text-fill: white;
+                            -fx-font-weight: bold;
+                            -fx-padding: 12;
+                            -fx-background-radius: 8;
+                        </style>
+                    </Button>
+
+                    <HBox spacing="10">
+                        <Button fx:id="btnModifier" text="✏️ MODIFIER"
+                                onAction="#modifier"
+                                HBox.hgrow="ALWAYS">
+                            <style>
+                                -fx-background-color: #E0B1CB;
+                                -fx-text-fill: white;
+                                -fx-font-weight: bold;
+                                -fx-padding: 12;
+                                -fx-background-radius: 8;
+                            </style>
+                        </Button>
+                        <Button fx:id="btnSupprimer" text="🗑️ SUPPRIMER"
+                                onAction="#supprimer"
+                                HBox.hgrow="ALWAYS">
+                            <style>
+                                -fx-background-color: #ff6b6b;
+                                -fx-text-fill: white;
+                                -fx-font-weight: bold;
+                                -fx-padding: 12;
+                                -fx-background-radius: 8;
+                            </style>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <!-- RIGHT PANEL - TABLEAU -->
+            <VBox GridPane.columnIndex="1" spacing="15">
+                <padding>
+                    <Insets top="25" right="25" bottom="25" left="25"/>
+                </padding>
+                <style>
+                    -fx-background-color: white;
+                    -fx-background-radius: 10;
+                    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+                </style>
+
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <VBox spacing="5">
+                        <Label text="📋 Liste des Cours"
+                               style="-fx-text-fill: #5E548E; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblCount" text="0 cours(s)"
+                               style="-fx-text-fill: #718096; -fx-font-size: 13px;"/>
+                    </VBox>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <!-- BARRE DE RECHERCHE -->
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <TextField fx:id="txtSearch" promptText="Rechercher..."
+                                   style="-fx-background-radius: 20; -fx-padding: 8 15;"/>
+                        <Button fx:id="btnRefresh" text="🔄"
+                                onAction="#refresh"
+                                style="-fx-background-color: #5E548E; -fx-text-fill: white; -fx-background-radius: 20;"/>
+                    </HBox>
+                </HBox>
+
+                <!-- TABLEAU -->
+                <TableView fx:id="tableCours" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                        <TableColumn fx:id="colTitre" text="TITRE" prefWidth="150"/>
+                        <TableColumn fx:id="colNiveau" text="NIVEAU" prefWidth="100"/>
+                        <TableColumn fx:id="colDuree" text="DURÉE" prefWidth="80"/>
+                        <TableColumn fx:id="colDescription" text="DESCRIPTION" prefWidth="200"/>
+                        <TableColumn fx:id="colCompetences" text="COMPÉTENCES" prefWidth="150"/>
+                        <TableColumn fx:id="colObligatoire" text="STATUT" prefWidth="100"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </GridPane>
+    </center>
+
+    <!-- BOTTOM STATUS BAR -->
+    <bottom>
+        <HBox alignment="CENTER"
+              style="-fx-background-color: #5E548E;">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
+            <Label fx:id="lblStatus" text="✅ Prêt"
+                   style="-fx-text-fill: white; -fx-font-size: 12px;"/>
+        </HBox>
+    </bottom>
+</BorderPane>

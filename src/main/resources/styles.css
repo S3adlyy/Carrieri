@@ -1,0 +1,200 @@
+/* ===== STYLES GÉNÉRAUX ===== */
+.root {
+    -fx-font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* ===== BOUTONS HOVER EFFECT ===== */
+.button:hover {
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.25), 8, 0, 0, 2);
+    -fx-cursor: hand;
+}
+
+.button:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* ===== CHAMPS DE TEXTE ===== */
+.text-field, .text-area, .combo-box {
+    -fx-font-size: 14px;
+}
+
+.text-field:focused, .text-area:focused, .combo-box:focused {
+    -fx-border-color: #5E548E !important;
+    -fx-border-width: 2px !important;
+    -fx-effect: dropshadow(three-pass-box, rgba(94, 84, 142, 0.2), 5, 0, 0, 0);
+}
+
+/* ===== TABLE VIEW ===== */
+.table-view {
+    -fx-background-color: transparent;
+    -fx-table-cell-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-padding: 12 10;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #5E548E;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+    -fx-padding: 8 0;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #f8fafc;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #f1f5f9 !important;
+    -fx-cursor: hand;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #E0B1CB !important;
+    -fx-text-fill: white;
+}
+
+/* Scrollbar personnalisée */
+.table-view .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.table-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #9F86C0;
+    -fx-background-radius: 5;
+}
+
+.table-view .scroll-bar:horizontal .thumb {
+    -fx-background-color: #E0B1CB;
+    -fx-background-radius: 5;
+}
+
+/* ===== CHECKBOX STYLÉE ===== */
+.check-box .box {
+    -fx-background-color: white;
+    -fx-border-color: #9F86C0;
+    -fx-border-radius: 4;
+    -fx-border-width: 2;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #5E548E;
+    -fx-border-color: #5E548E;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: white;
+}
+
+/* ===== COMBOBOX STYLÉE ===== */
+.combo-box-popup .list-view {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.combo-box-popup .list-cell {
+    -fx-padding: 10 15;
+    -fx-background-color: transparent;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #f8fafc;
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: bold;
+}
+
+/* ===== TEXTAREA ===== */
+.text-area .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.text-area .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.text-area .scroll-pane .content {
+    -fx-background-color: transparent;
+}
+
+/* ===== ALERTES ===== */
+.dialog-pane {
+    -fx-background-color: white;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+}
+
+.dialog-pane .button {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: #9F86C0;
+}
+
+/* ===== TRANSITIONS ===== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        -fx-translate-y: -20;
+        opacity: 0;
+    }
+    to {
+        -fx-translate-y: 0;
+        opacity: 1;
+    }
+}
+
+/* Animation pour les nouveaux éléments */
+.table-row-cell {
+    -fx-animation: fadeIn 0.3s;
+}
+
+/* ===== TOOLTIP ===== */
+.tooltip {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12;
+    -fx-font-size: 12px;
+}
+
+/* ===== SCROLL PANE ===== */
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
