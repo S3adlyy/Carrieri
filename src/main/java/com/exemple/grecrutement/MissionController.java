@@ -4,11 +4,16 @@ import entities.Mission;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import services.MissionService;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -277,4 +282,35 @@ public class MissionController implements Initializable {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    @FXML
+    public void ouvrirEvaluationAI() {
+        try {
+            // Load the AI evaluation interface
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("rendu-view.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Évaluation AI - Gestion Recrutement");
+            stage.setScene(new Scene(root, 1200, 700));
+            stage.show();
+
+            // Optional: Close current mission window if you want
+            // ((Stage) missionTable.getScene().getWindow()).close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            afficherAlert("Erreur", "Impossible d'ouvrir l'interface d'évaluation AI: " + e.getMessage());
+        }
+    }
+
+    // Helper method to show alerts
+    private void afficherAlert(String titre, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titre);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 }

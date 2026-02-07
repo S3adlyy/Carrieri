@@ -3,64 +3,121 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.exemple.grecrutement.MissionController">
+            fx:controller="com.exemple.grecrutement.MissionController"
+            style="-fx-background-color: #231942;">
 
+    <!-- Top Header -->
     <top>
-        <Label text="Gestion des Missions"
-               style="-fx-font-size: 20px; -fx-font-weight: bold;"
-               BorderPane.alignment="CENTER">
-            <padding>
-                <Insets top="20" bottom="20"/>
-            </padding>
-        </Label>
+        <VBox spacing="10" style="-fx-background-color: #5E548E; -fx-padding: 20;">
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label text="🚀 Gestion des Missions"
+                       style="-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <!-- Navigation Button to AI Evaluation -->
+                <Button text="🤖 Évaluation AI" onAction="#ouvrirEvaluationAI"
+                        style="-fx-background-color: #2E7D32; -fx-text-fill: white; -fx-font-weight: bold;
+                               -fx-pref-width: 150; -fx-background-radius: 5; -fx-padding: 8 15;
+                               -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 2);"/>
+            </HBox>
+            <Label text="Interface professionnelle de gestion des missions"
+                   style="-fx-text-fill: #E0B1CB; -fx-font-size: 14px;"/>
+        </VBox>
     </top>
 
+    <!-- Center - Table -->
     <center>
-        <TableView fx:id="missionTable" BorderPane.alignment="CENTER">
-            <columns>
-                <TableColumn text="ID" fx:id="idColumn" prefWidth="50"/>
-                <TableColumn text="Description" fx:id="descriptionColumn" prefWidth="200"/>
-                <TableColumn text="Score Min" fx:id="scoreColumn" prefWidth="80"/>
-                <TableColumn text="Date Création" fx:id="dateColumn" prefWidth="150"/>
-                <TableColumn text="Créé par ID" fx:id="createdByColumn" prefWidth="80"/>
-            </columns>
-            <BorderPane.margin>
-                <Insets left="20" right="20" bottom="20"/>
-            </BorderPane.margin>
-        </TableView>
+        <VBox spacing="15" style="-fx-padding: 20;">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="📋 Liste des Missions"
+                       style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="🔄 Actualiser" onAction="#actualiserTableau"
+                        style="-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-weight: bold;
+                               -fx-pref-width: 120; -fx-background-radius: 5; -fx-padding: 8 15;"/>
+            </HBox>
+
+            <TableView fx:id="missionTable" style="-fx-background-color: rgba(255,255,255,0.05);
+                                                   -fx-border-color: #5E548E; -fx-border-width: 2;
+                                                   -fx-border-radius: 10;">
+                <columns>
+                    <TableColumn text="ID" fx:id="idColumn" prefWidth="60"
+                                 style="-fx-background-color: #5E548E; -fx-text-fill: white;"/>
+                    <TableColumn text="Description" fx:id="descriptionColumn" prefWidth="250"
+                                 style="-fx-background-color: #5E548E; -fx-text-fill: white;"/>
+                    <TableColumn text="Score Min" fx:id="scoreColumn" prefWidth="100"
+                                 style="-fx-background-color: #5E548E; -fx-text-fill: white;"/>
+                    <TableColumn text="Date Création" fx:id="dateColumn" prefWidth="180"
+                                 style="-fx-background-color: #5E548E; -fx-text-fill: white;"/>
+                    <TableColumn text="Créé par ID" fx:id="createdByColumn" prefWidth="100"
+                                 style="-fx-background-color: #5E548E; -fx-text-fill: white;"/>
+                </columns>
+            </TableView>
+        </VBox>
     </center>
 
+    <!-- Bottom - Form -->
     <bottom>
-        <VBox spacing="10" style="-fx-padding: 20;">
-            <GridPane hgap="10" vgap="10">
-                <Label text="ID:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                <TextField fx:id="idField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200"/>
+        <VBox spacing="20" style="-fx-background-color: #5E548E; -fx-padding: 25;">
+            <Label text="✏️ Formulaire Mission"
+                   style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
 
-                <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                <TextField fx:id="descriptionField" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="200"/>
+            <GridPane hgap="20" vgap="15">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="120"/>
+                    <ColumnConstraints prefWidth="250"/>
+                </columnConstraints>
 
-                <Label text="Score Minimum:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                <TextField fx:id="scoreField" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="200"/>
+                <Label text="ID:" GridPane.columnIndex="0" GridPane.rowIndex="0"
+                       style="-fx-text-fill: #E0B1CB; -fx-font-weight: bold;"/>
+                <TextField fx:id="idField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                           style="-fx-background-color: white; -fx-background-radius: 5; -fx-padding: 8;"/>
 
-                <Label text="Créé par ID:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                <TextField fx:id="createdByIdField" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="200"/>
+                <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="1"
+                       style="-fx-text-fill: #E0B1CB; -fx-font-weight: bold;"/>
+                <TextField fx:id="descriptionField" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                           style="-fx-background-color: white; -fx-background-radius: 5; -fx-padding: 8;"/>
+
+                <Label text="Score Minimum:" GridPane.columnIndex="0" GridPane.rowIndex="2"
+                       style="-fx-text-fill: #E0B1CB; -fx-font-weight: bold;"/>
+                <TextField fx:id="scoreField" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                           style="-fx-background-color: white; -fx-background-radius: 5; -fx-padding: 8;"/>
+
+                <Label text="Créé par ID:" GridPane.columnIndex="0" GridPane.rowIndex="3"
+                       style="-fx-text-fill: #E0B1CB; -fx-font-weight: bold;"/>
+                <TextField fx:id="createdByIdField" GridPane.columnIndex="1" GridPane.rowIndex="3"
+                           style="-fx-background-color: white; -fx-background-radius: 5; -fx-padding: 8;"/>
             </GridPane>
 
-            <HBox spacing="10">
-                <Button text="Ajouter" onAction="#ajouterMission"
-                        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-pref-width: 100;"/>
-                <Button text="Modifier" onAction="#modifierMission"
-                        style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-pref-width: 100;"/>
-                <Button text="Supprimer" onAction="#supprimerMission"
-                        style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-pref-width: 100;"/>
-                <Button text="Vider" onAction="#viderChamps"
-                        style="-fx-background-color: #9E9E9E; -fx-text-fill: white; -fx-pref-width: 100;"/>
-                <Button text="Actualiser" onAction="#actualiserTableau"
-                        style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-pref-width: 100;"/>
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="➕ Ajouter" onAction="#ajouterMission"
+                        style="-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-weight: bold;
+                               -fx-pref-width: 120; -fx-pref-height: 40; -fx-background-radius: 5;"/>
+
+                <Button text="✏️ Modifier" onAction="#modifierMission"
+                        style="-fx-background-color: #BE95C4; -fx-text-fill: white; -fx-font-weight: bold;
+                               -fx-pref-width: 120; -fx-pref-height: 40; -fx-background-radius: 5;"/>
+
+                <Button text="🗑️ Supprimer" onAction="#supprimerMission"
+                        style="-fx-background-color: #E0B1CB; -fx-text-fill: white; -fx-font-weight: bold;
+                               -fx-pref-width: 120; -fx-pref-height: 40; -fx-background-radius: 5;"/>
+
+                <Button text="🧹 Vider" onAction="#viderChamps"
+                        style="-fx-background-color: #5E548E; -fx-text-fill: white; -fx-font-weight: bold;
+                               -fx-pref-width: 120; -fx-pref-height: 40; -fx-background-radius: 5;
+                               -fx-border-color: #9F86C0; -fx-border-width: 2;"/>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="🔵" style="-fx-text-fill: #00E676;"/>
+                <Label text="Statut: Prêt" style="-fx-text-fill: #E0B1CB;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="© 2024 Carrieri Recrutement"
+                       style="-fx-text-fill: #BE95C4; -fx-font-size: 12px;"/>
             </HBox>
         </VBox>
     </bottom>
