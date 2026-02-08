@@ -10,9 +10,9 @@
 <VBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.exemple.grecrutement.RenduListController"
+      stylesheets="@rendu-list.css"
       spacing="25"
       alignment="TOP_CENTER"
-      styleClass="rendu-container"
       style="-fx-background-color: linear-gradient(to bottom right, #f8fafc, #e2e8f0); -fx-padding: 25;">
 
     <!-- HEADER SECTION -->
