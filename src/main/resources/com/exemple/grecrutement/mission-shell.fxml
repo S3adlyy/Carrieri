@@ -2,40 +2,64 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.effect.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.exemple.grecrutement.MissionShellController"
-            stylesheets="@mission-styles.css"
+            stylesheets="@navbar.css"
             styleClass="mission-bg">
 
-    <!-- NAVBAR -->
+    <!-- Enhanced Glass Navbar with Liquid Effects -->
     <top>
-        <HBox spacing="15"
-              alignment="CENTER"
-              styleClass="mission-header">
+        <VBox styleClass="mission-header" prefHeight="70">
+            <!-- Main navbar container -->
+            <HBox fx:id="navbarContainer" styleClass="navbar-container"
+                  alignment="CENTER" prefHeight="70">
 
-            <Button text="➕ Add Mission"
-                    onAction="#showAddMission"
-                    styleClass="mission-btn"/>
+                <!-- Left spacer -->
+                <Region HBox.hgrow="ALWAYS"/>
 
-            <Button text="📋 Mission List"
-                    onAction="#showMissionList"
-                    styleClass="mission-btn-outline"/>
+                <!-- Navbar buttons -->
+                <Button fx:id="btnAddMission"
+                        text="➕ Add Mission"
+                        onAction="#showAddMission"
+                        styleClass="liquid-btn"/>
 
-            <Button text="🤖 Submit Rendu"
-                    onAction="#showRenduAdd"
-                    styleClass="mission-btn"/>
+                <Button fx:id="btnMissionList"
+                        text="📋 Mission List"
+                        onAction="#showMissionList"
+                        styleClass="liquid-btn-outline"/>
 
-            <Button text="📑 Rendu List"
-                    onAction="#showRenduList"
-                    styleClass="mission-btn-outline"/>
-        </HBox>
+                <Button fx:id="btnSubmitRendu"
+                        text="🤖 Submit Rendu"
+                        onAction="#showRenduAdd"
+                        styleClass="liquid-btn"/>
+
+                <Button fx:id="btnRenduList"
+                        text="📑 Rendu List"
+                        onAction="#showRenduList"
+                        styleClass="liquid-btn-outline"/>
+
+                <!-- Right spacer -->
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <!-- Glass effect bottom border -->
+            <Rectangle height="1"
+                       styleClass="glass-overlay"
+                       fill="linear-gradient(to right,
+                            transparent,
+                            rgba(255,255,255,0.3),
+                            transparent)"/>
+        </VBox>
     </top>
 
-    <!-- CONTENT -->
+    <!-- Content Area with Ripple Container -->
     <center>
-        <StackPane fx:id="contentPane"/>
+        <StackPane fx:id="contentPane"
+                   styleClass="liquid-ripple-container"/>
     </center>
 
 </BorderPane>
