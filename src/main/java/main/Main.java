@@ -8,10 +8,28 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class Main extends Application {
-
+    private static String currentRole; // "admin" or "candidat"
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/cours.fxml"));
+        // --- TEST ROLE ---
+        // 1 = admin, 2 = candidat
+        int roleChoice = 2; // change this to 1 to simulate admin
+
+        if (roleChoice == 1) {
+            currentRole = "admin";
+        } else {
+            currentRole = "candidat";
+        }
+
+        // --- LOAD FXML BASED ON ROLE ---
+        String fxmlFile;
+        if (currentRole.equalsIgnoreCase("admin")) {
+            fxmlFile = "/cours.fxml"; // admin interface
+        } else {
+            fxmlFile = "/cours_candidat.fxml"; // candidat interface
+        }
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
         Scene scene = new Scene(loader.load());
 
         // Appliquer le style CSS

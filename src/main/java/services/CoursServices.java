@@ -102,4 +102,28 @@ public class CoursServices implements ICoursService<Cours> {
         }
         return coursList;
     }
+    public List<Cours> readByAdmin(int userId) throws SQLException {
+        List<Cours> coursList = new ArrayList<>();
+        String sql = "SELECT * FROM cours WHERE created_by = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                Cours cours = new Cours(
+                        resultSet.getInt("id"),
+                        resultSet.getString("titre"),
+                        resultSet.getString("description"),
+                        resultSet.getInt("duree"),
+                        resultSet.getString("niveau"),
+                        resultSet.getString("competences_visees"),
+                        resultSet.getBoolean("est_obligatoire"),
+                        resultSet.getInt("created_by")
+                );
+                coursList.add(cours);
+            }
+        }
+        return coursList;
+    }
+
 }

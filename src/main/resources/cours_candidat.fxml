@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+
+<?import java.lang.String?>
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="main.CoursCandidatController"
+            stylesheets="@stylescc.css"
+            prefWidth="1100" prefHeight="700">
+
+    <top>
+        <HBox styleClass="header-gradient" spacing="20">
+            <padding><Insets top="15" bottom="15" left="20" right="20"/></padding>
+            <VBox spacing="4">
+                <Label text="Formation &amp; Certifications" styleClass="header-title"/>
+                <Label text="Développez vos compétences professionnelles" styleClass="header-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <VBox alignment="CENTER_RIGHT">
+                <Label text="Mes Certificats" styleClass="nav-link"/>
+                <Label text="Catalogue de cours" styleClass="nav-link-active"/>
+            </VBox>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="20" style="-fx-padding: 20;">
+
+            <!-- Titre -->
+            <VBox spacing="5">
+                <Label text="Catalogue de cours" styleClass="catalog-title"/>
+                <Label fx:id="lblTotalCours" text="8 cours disponibles" styleClass="catalog-subtitle"/>
+            </VBox>
+
+            <!-- FILTRES SUR UNE LIGNE -->
+            <VBox styleClass="filter-box" spacing="12">
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Filtres" styleClass="filter-title"/>
+                </HBox>
+
+                <HBox spacing="25" alignment="CENTER_LEFT">
+                    <!-- Domaine -->
+                    <VBox spacing="4" alignment="CENTER_LEFT">
+                        <Label text="Domaine" styleClass="filter-label"/>
+                        <ComboBox fx:id="comboDomaine" styleClass="filter-combo" prefWidth="200">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Tous"/>
+                                    <String fx:value="Développement Web"/>
+                                    <String fx:value="Design"/>
+                                    <String fx:value="Data Science"/>
+                                    <String fx:value="Marketing"/>
+                                </FXCollections>
+                            </items>
+                            <value><String fx:value="Tous"/></value>
+                        </ComboBox>
+                    </VBox>
+
+                    <!-- Niveau avec TOUS les options -->
+                    <VBox spacing="4" alignment="CENTER_LEFT">
+                        <Label text="Niveau" styleClass="filter-label"/>
+                        <ComboBox fx:id="comboNiveau" styleClass="filter-combo" prefWidth="200">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Tous"/>
+                                    <String fx:value="Débutant"/>
+                                    <String fx:value="Intermédiaire"/>
+                                    <String fx:value="Avancé"/>
+                                    <String fx:value="Expert"/>
+                                    <String fx:value="Master"/>
+                                </FXCollections>
+                            </items>
+                            <value><String fx:value="Tous"/></value>
+                        </ComboBox>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Recherche -->
+            <HBox styleClass="search-container" spacing="10">
+                <TextField fx:id="txtRecherche"
+                           promptText="Rechercher un cours par titre ou description..."
+                           styleClass="search-field"
+                           HBox.hgrow="ALWAYS"/>
+                <Button text="Rechercher" onAction="#rechercherCours" styleClass="search-button"/>
+            </HBox>
+
+            <!-- Statistiques -->
+            <HBox spacing="15">
+                <VBox styleClass="stat-box">
+                    <Label text="Cours disponibles" styleClass="stat-label"/>
+                    <Label fx:id="lblTotalCoursStat" text="0" styleClass="stat-value"/>
+                </VBox>
+                <VBox styleClass="stat-box">
+                    <Label text="En cours" styleClass="stat-label"/>
+                    <Label fx:id="lblEnCours" text="0" styleClass="stat-value"/>
+                </VBox>
+                <VBox styleClass="stat-box">
+                    <Label text="Complétés" styleClass="stat-label"/>
+                    <Label fx:id="lblCompletes" text="0" styleClass="stat-value"/>
+                </VBox>
+            </HBox>
+
+            <!-- Cours -->
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
+                <content>
+                    <TilePane fx:id="tileCours" prefColumns="3" hgap="20" vgap="20" style="-fx-padding: 10;"/>
+                </content>
+            </ScrollPane>
+
+        </VBox>
+    </center>
+
+</BorderPane>

@@ -49,7 +49,7 @@ public class CoursController {
     private ObservableList<Cours> coursList;
     private FilteredList<Cours> filteredList;
 
-    private int currentUserId = 2;
+    private int currentUserId = 1;
 
     @FXML
     public void initialize() {
@@ -239,7 +239,7 @@ public class CoursController {
                     comboNiveau.getValue(),
                     txtCompetences.getText(),
                     chkObligatoire.isSelected(),
-                    1
+                    currentUserId
             );
 
             coursServices.ajouter(cours);
@@ -327,7 +327,7 @@ public class CoursController {
     @FXML
     private void refresh() {
         try {
-            List<Cours> list = coursServices.read();
+            List<Cours> list = coursServices.readByAdmin(currentUserId);
             coursList.setAll(list);
             updateCount();
             updateStatus("Liste actualisée - " + list.size() + " cours(s)");
