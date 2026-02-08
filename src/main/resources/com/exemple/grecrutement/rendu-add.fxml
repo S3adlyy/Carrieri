@@ -1,46 +1,124 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.Circle?>
 
-<VBox xmlns="http://javafx.com/javafx/17"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.exemple.grecrutement.RenduAddController"
-      spacing="20"
-      alignment="TOP_CENTER"
-      styleClass="mission-form-container">
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.exemple.grecrutement.RenduAddController"
+           stylesheets="@rendu-styles.css"
+           style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0a66c2 0%, #378fe9 50%, #8b5cf6 100%);">
 
-    <Label text="🤖 AI Code Submission" styleClass="mission-h1"/>
+    <!-- Background Circles -->
+    <Circle radius="60" styleClass="circle-large" fill="rgba(255,255,255,0.1)">
+        <translateY>50</translateY>
+        <translateX>-100</translateX>
+    </Circle>
 
-    <GridPane hgap="10" vgap="10">
-        <Label text="ID Candidat:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="white-text"/>
-        <TextField fx:id="txtCandidatId" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                   promptText="Entrez ID candidat"/>
+    <Circle radius="40" styleClass="circle-medium" fill="rgba(255,255,255,0.08)">
+        <translateY>-100</translateY>
+        <translateX>150</translateX>
+    </Circle>
 
-        <Label text="ID Mission:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="white-text"/>
-        <TextField fx:id="txtMissionId" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                   promptText="Entrez ID mission"/>
+    <Circle radius="80" styleClass="circle-small" fill="rgba(255,255,255,0.05)">
+        <translateY>100</translateY>
+        <translateX>200</translateX>
+    </Circle>
 
-        <Label text="Type Mission:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="white-text"/>
-        <ComboBox fx:id="comboMissionType" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                  prefWidth="150"/>
-    </GridPane>
+    <!-- Main Container -->
+    <VBox styleClass="main-container">
+        <!-- Header Section -->
+        <VBox styleClass="header-section" spacing="10">
+            <Label text="AI Code Submission" styleClass="main-title"/>
+            <Label text="Submit Python code for AI evaluation" styleClass="sub-title"/>
+        </VBox>
 
-    <TextArea fx:id="txtCode"
-              prefRowCount="14"
-              promptText="Write Python code here..."
-              styleClass="mission-input"/>
+        <!-- Split Layout Container -->
+        <HBox styleClass="split-container" spacing="40">
+            <!-- LEFT: Form Section -->
+            <VBox styleClass="form-section" spacing="25" prefWidth="350">
+                <!-- Form Title -->
+                <Label text="Submission Form" styleClass="section-title"/>
 
-    <HBox spacing="15">
-        <Button text="🚀 Evaluate"
-                onAction="#evaluer"
-                styleClass="mission-btn-ai"/>
+                <!-- Form Fields -->
+                <VBox spacing="20">
+                    <!-- Candidate ID -->
+                    <VBox spacing="5">
+                        <Label text="ID Candidate" styleClass="field-label"/>
+                        <TextField fx:id="txtCandidatId"
+                                   promptText="Enter candidate ID"
+                                   styleClass="form-field"/>
+                    </VBox>
 
-        <ProgressIndicator fx:id="progress"
-                           visible="false"/>
-    </HBox>
+                    <!-- Mission ID -->
+                    <VBox spacing="5">
+                        <Label text="ID Mission" styleClass="field-label"/>
+                        <TextField fx:id="txtMissionId"
+                                   promptText="Enter mission ID"
+                                   styleClass="form-field"/>
+                    </VBox>
 
-    <Label fx:id="lblResultat"
-           text="Waiting..."
-           styleClass="mission-muted"/>
-</VBox>
+                    <!-- Mission Type -->
+                    <VBox spacing="5">
+                        <Label text="Type Mission" styleClass="field-label"/>
+                        <ComboBox fx:id="comboMissionType"
+                                  promptText="Select mission type"
+                                  styleClass="form-combo"/>
+                    </VBox>
+                </VBox>
+
+                <!-- Evaluate Button -->
+                <VBox spacing="15" style="-fx-padding: 20px 0;">
+                    <Button text="🚀 Evaluate with AI"
+                            onAction="#evaluer"
+                            styleClass="evaluate-button"/>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <ProgressIndicator fx:id="progress"
+                                           styleClass="progress-indicator"
+                                           visible="false"/>
+                        <Label fx:id="lblProcessing"
+                               text="Processing..."
+                               styleClass="processing-label"
+                               visible="false"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Result -->
+                <Label fx:id="lblResultat"
+                       text="Waiting for code submission..."
+                       styleClass="result-label"
+                       wrapText="true"/>
+            </VBox>
+
+            <!-- RIGHT: Code Editor Section -->
+            <VBox styleClass="editor-section" spacing="15" prefWidth="600">
+                <!-- Editor Title -->
+                <Label text="Python Code" styleClass="section-title"/>
+                <Label text="Write your solution in Python 3" styleClass="editor-subtitle"/>
+
+                <!-- Code Editor Container -->
+                <VBox styleClass="code-editor-container">
+                    <!-- Editor Header -->
+                    <HBox styleClass="editor-header">
+                        <Label text="main.py" styleClass="file-name"/>
+                        <HBox HBox.hgrow="ALWAYS"/>
+                        <Label text="Python 3" styleClass="language-tag"/>
+                    </HBox>
+
+                    <!-- Code Editor -->
+                    <TextArea fx:id="txtCode"
+                              promptText="# Write your Python solution here"
+                              styleClass="code-editor"/>
+                </VBox>
+
+                <!-- Editor Tips -->
+                <HBox styleClass="editor-tips">
+                    <Label text="💡 Tip: Use Ctrl+Space for autocomplete"
+                           styleClass="tip-text"/>
+                </HBox>
+            </VBox>
+        </HBox>
+    </VBox>
+</StackPane>

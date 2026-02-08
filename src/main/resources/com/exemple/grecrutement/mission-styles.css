@@ -1,235 +1,142 @@
-/* =========================
-   MISSION MANAGEMENT THEME
-   ========================= */
+/* ========================================================================
+   PROFESSIONAL RECRUITMENT PLATFORM - CORRECTED FOR JAVAFX
+   ======================================================================== */
 
-/* =========================
-   GLOBALS
-   ========================= */
+/* ========================================================================
+   CSS VARIABLES (CUSTOM PROPERTIES) - LINKEDIN COLOR PALETTE
+   ======================================================================== */
 .root {
-    -fx-font-family: "Segoe UI", "Inter", "Arial";
+    /* Primary Colors - LinkedIn Blue Theme */
+    -fx-primary-color: #0a66c2;
+    -fx-primary-dark: #004182;
+    -fx-primary-light: #378fe9;
+    -fx-primary-extra-light: #d0e8ff;
+
+    /* Neutral Colors */
+    -fx-neutral-white: #ffffff;
+    -fx-neutral-0: #f9fafb;
+    -fx-neutral-50: #f3f4f6;
+    -fx-neutral-100: #e5e7eb;
+    -fx-neutral-200: #d1d5db;
+    -fx-neutral-300: #9ca3af;
+    -fx-neutral-400: #6b7280;
+    -fx-neutral-500: #4b5563;
+    -fx-neutral-600: #374151;
+    -fx-neutral-700: #1f2937;
+    -fx-neutral-800: #111827;
+    -fx-neutral-900: #0d0f14;
+
+    /* Semantic Colors */
+    -fx-success-color: #10b981;
+    -fx-success-light: #d1fae5;
+    -fx-warning-color: #f59e0b;
+    -fx-warning-light: #fef3c7;
+    -fx-error-color: #ef4444;
+    -fx-error-light: #fee2e2;
+    -fx-info-color: #3b82f6;
+    -fx-info-light: #dbeafe;
+
+    /* Typography */
+    -fx-font-family: "Segoe UI", "Inter", "Arial", sans-serif;
+    -fx-font-size-base: 14px;
 }
 
+/* ========================================================================
+   BASE STYLES
+   ======================================================================== */
+* {
+    -fx-font-family: inherit;
+}
+
+/* ========================================================================
+   BACKGROUND GRADIENTS - CORRECT JAVAFX SYNTAX
+   ======================================================================== */
+
+/* Main App Background */
 .mission-bg {
-    -fx-background-color: linear-gradient(to bottom, #0f0c29, #231942, #5E548E);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0f0c29 0%, #231942 50%, #5E548E 100%);
 }
 
-.mission-glass {
-    -fx-background-color: rgba(255,255,255,0.08);
-    -fx-background-radius: 16;
-    -fx-border-radius: 16;
-    -fx-border-color: rgba(159,134,192,0.3);
-    -fx-border-width: 1.5;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 20, 0.2, 0, 5);
+/* Card Gradients */
+.gradient-card-primary {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0a66c2 0%, #378fe9 100%);
 }
 
-.mission-card {
-    -fx-background-color: rgba(255,255,255,0.94);
-    -fx-background-radius: 16;
-    -fx-border-radius: 16;
-    -fx-border-color: rgba(0,0,0,0.08);
-    -fx-border-width: 1;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.16), 24, 0.2, 0, 8);
+.gradient-card-success {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #10b981 0%, #34d399 100%);
 }
 
-.mission-brand {
-    -fx-fill: white;
-    -fx-font-size: 30px;
-    -fx-font-weight: 900;
+.gradient-card-warning {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #f59e0b 0%, #fbbf24 100%);
 }
 
-.mission-h1 {
-    -fx-font-size: 28px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #333;  /* Changed from white to dark gray */
-    -fx-padding: 0 0 20px 0;
+/* Button Gradients */
+.btn-gradient-primary {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0a66c2 0%, #378fe9 100%);
 }
 
-.mission-h2 {
-    -fx-fill: #E0B1CB;
-    -fx-font-size: 20px;
-    -fx-font-weight: 900;
+.btn-gradient-success {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #10b981 0%, #34d399 100%);
 }
 
-.mission-muted {
-    -fx-fill: rgba(255,255,255,0.9);
-    -fx-text-fill: rgba(255,255,255,0.9);
+/* Table Header Gradient */
+.table-header-gradient {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #4CAF50 0%, #2E7D32 100%);
 }
 
-.mission-muted-dark {
-    -fx-fill: #BE95C4;
-    -fx-text-fill: #BE95C4;
+/* ========================================================================
+   MISSION ADD FORM BACKGROUND - CORRECTED
+   ======================================================================== */
+
+/* Main StackPane Background for Mission Form */
+StackPane.mission-form-background {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%,
+    #0a66c2 0%,     /* LinkedIn Blue */
+    #378fe9 35%,    /* Light LinkedIn Blue */
+    #6bb5ff 65%,    /* Sky Blue */
+    #8b5cf6 100%    /* Purple */
+    );
+    -fx-padding: 40px;
 }
 
-.mission-label {
-    -fx-text-fill: #E0B1CB;
-    -fx-font-weight: 800;
+/* Glass Morphism Form Container */
+.white-text-container {
+    -fx-background-color: rgba(255, 255, 255, 0.92);
+    -fx-background-radius: 24px;
+    -fx-border-radius: 24px;
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 30, 0, 0, 10);
+    -fx-padding: 50px;
+    -fx-max-width: 750px;
+    -fx-min-width: 750px;
 }
 
-.mission-input {
-    -fx-text-fill: black;
-    -fx-control-inner-background: white;
-    -fx-background-color: white;
-    -fx-border-color: #ccc;
-    -fx-border-radius: 5px;
-    -fx-padding: 10px;
-    -fx-font-family: 'Monaco', 'Consolas', monospace;
-    -fx-font-size: 14px;
+.white-text-container:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 40, 0, 0, 15);
+    -fx-background-color: rgba(255, 255, 255, 0.95);
 }
 
-.mission-input:focused {
-    -fx-border-color: #4CAF50;
-    -fx-border-width: 2px;
+/* Form Header Icon Gradient */
+.form-icon-gradient {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0a66c2 0%, #8b5cf6 100%);
+    -fx-background-radius: 50%;
+    -fx-padding: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(10, 102, 194, 0.3), 15, 0, 0, 5);
 }
 
-.mission-input .text {
-    -fx-fill: black;
-}
+/* ========================================================================
+   TABLE STYLES - CORRECTED
+   ======================================================================== */
 
-.mission-input:disabled {
-    -fx-opacity: 0.7;
-    -fx-background-color: rgba(255,255,255,0.05);
-}
-
-.mission-textarea {
-    -fx-background-color: rgba(255,255,255,0.07);
-    -fx-border-color: #5E548E;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-text-fill: black;  /* Changed from white to black */
-}
-
-.mission-btn {
-    -fx-background-color: #4CAF50;
-    -fx-text-fill: white;
-    -fx-font-weight: 900;
-    -fx-background-radius: 6;
-    -fx-padding: 12 24;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.4), 10, 0.2, 0, 3);
-}
-
-.mission-btn:hover {
-    -fx-background-color: #45a049;
-    -fx-scale-x: 1.02;
-    -fx-scale-y: 1.02;
-    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.6), 15, 0.3, 0, 5);
-}
-
-.mission-btn:pressed {
-    -fx-scale-x: 0.98;
-    -fx-scale-y: 0.98;
-}
-
-.mission-btn-ai {
-    -fx-background-color: linear-gradient(to right, #2E7D32, #1B5E20);
-    -fx-text-fill: white;
-    -fx-font-weight: 900;
-    -fx-background-radius: 6;
-    -fx-padding: 12 24;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(46,125,50,0.5), 15, 0.3, 0, 5);
-}
-
-.mission-btn-ai:hover {
-    -fx-background-color: linear-gradient(to right, #388E3C, #2E7D32);
-    -fx-scale-x: 1.02;
-    -fx-scale-y: 1.02;
-}
-
-.mission-btn-secondary {
-    -fx-background-color: #9F86C0;
-    -fx-text-fill: white;
-    -fx-font-weight: 900;
-    -fx-background-radius: 6;
-    -fx-padding: 10 20;
-    -fx-cursor: hand;
-}
-
-.mission-btn-secondary:hover {
-    -fx-background-color: #BE95C4;
-}
-
-.mission-btn-outline {
-    -fx-background-color: transparent;
-    -fx-border-color: #9F86C0;
-    -fx-border-width: 1.5;
-    -fx-border-radius: 6;
-    -fx-text-fill: #E0B1CB;
-    -fx-font-weight: 900;
-    -fx-padding: 10 20;
-    -fx-cursor: hand;
-}
-
-.mission-btn-outline:hover {
-    -fx-background-color: rgba(159,134,192,0.1);
-    -fx-border-color: #BE95C4;
-}
-
-.mission-pill {
-    -fx-background-color: rgba(255,255,255,0.16);
-    -fx-background-radius: 999;
-    -fx-padding: 6 12;
-}
-
-/* =========================
-   HEADER
-   ========================= */
-.mission-header {
-    -fx-background-color: rgba(35, 25, 66, 0.9);
-    -fx-padding: 20 25;
-    -fx-background-radius: 0 0 20 20;
-    -fx-border-color: rgba(159,134,192,0.3);
-    -fx-border-width: 0 0 1 0;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 20, 0.2, 0, 5);
-}
-
-.mission-status-bar {
-    -fx-background-color: linear-gradient(to right, #231942, #5E548E, #9F86C0);
-    -fx-padding: 8;
-    -fx-background-radius: 0 0 10 10;
-}
-
-.mission-logo {
-    -fx-fill: radial-gradient(center 50% 50%, radius 80%, #9F86C0, #5E548E);
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0.2, 0, 3);
-}
-
-.mission-logo-text {
-    -fx-text-fill: white;
-    -fx-font-size: 22px;
-    -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0.2, 0, 1);
-}
-
-.mission-title-main {
-    -fx-text-fill: white;
-    -fx-font-size: 28px;
-    -fx-font-weight: 900;
-    -fx-font-family: 'Segoe UI', Arial, sans-serif;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0.2, 0, 2);
-}
-
-.mission-title-sub {
-    -fx-text-fill: #E0B1CB;
-    -fx-font-size: 14px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 1, 0.2, 0, 1);
-}
-
-.mission-status-indicator {
-    -fx-fill: #00E676;
-    -fx-effect: dropshadow(gaussian, rgba(0,230,118,0.5), 4, 0.3, 0, 1);
-}
-
-/* =========================
-   TABLE - FIXED VERSION
-   ========================= */
+/* Mission List Table */
 .mission-table-container {
-    -fx-background-color: #f5f5f5;  /* Light gray background */
-    -fx-background-radius: 12;
+    -fx-background-color: #f5f5f5;
+    -fx-background-radius: 12px;
     -fx-border-color: #ddd;
-    -fx-border-width: 1.5;
-    -fx-border-radius: 12;
-    -fx-padding: 30px;  /* Fixed from 30 to 30px */
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 12px;
+    -fx-padding: 30px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0.2, 0, 5);
 }
 
@@ -243,7 +150,7 @@
 }
 
 .mission-table .column-header {
-    -fx-background-color: linear-gradient(to bottom, #4CAF50, #2E7D32);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #4CAF50 0%, #2E7D32 100%);
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-padding: 12px 15px;
@@ -276,45 +183,106 @@
 }
 
 .mission-table .table-cell {
-    -fx-text-fill: black !important;
+    -fx-text-fill: black;
     -fx-font-size: 14px;
     -fx-padding: 12px 15px;
     -fx-border-color: #f0f0f0;
     -fx-border-width: 0 0 1 0;
 }
 
-.mission-table .table-cell .text {
-    -fx-fill: black !important;
+/* ========================================================================
+   FORM CONTROLS
+   ======================================================================== */
+
+/* Form Labels */
+.mission-form-label {
+    -fx-text-fill: #666666;
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-padding: 8px 0;
 }
 
-/* Ensure table content is visible */
-.mission-table .virtual-flow .scroll-bar:vertical,
-.mission-table .virtual-flow .scroll-bar:horizontal {
-    -fx-background-color: transparent;
+/* Form Inputs */
+.mission-input {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cfcfcf;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 14px 16px;
+    -fx-font-size: 16px;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-text-fill: #333333;
+    -fx-prompt-text-fill: #999999;
+    -fx-min-height: 48px;
 }
 
-.mission-table .virtual-flow .scroll-bar:vertical .thumb,
-.mission-table .virtual-flow .scroll-bar:horizontal .thumb {
-    -fx-background-color: #c0c0c0;
-    -fx-background-radius: 5px;
+.mission-input:focused {
+    -fx-border-color: #0a66c2;
+    -fx-border-width: 2px;
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(10, 102, 194, 0.15), 8, 0, 0, 2);
 }
 
-/* Button styling */
-.mission-btn {
-    -fx-background-color: #4CAF50;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
+.mission-input:hover {
+    -fx-border-color: #999999;
+}
+
+/* Form Hints */
+.mission-form-hint {
+    -fx-text-fill: #666666;
     -fx-font-size: 14px;
-    -fx-padding: 10px 25px;
-    -fx-background-radius: 5px;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-style: normal;
+    -fx-padding: 8px 0 0 0;
+}
+
+/* ========================================================================
+   BUTTONS - WITH CORRECT GRADIENTS
+   ======================================================================== */
+
+/* Primary Button */
+.mission-btn {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0a66c2 0%, #378fe9 100%);
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-padding: 14px 32px;
+    -fx-background-radius: 28px;
+    -fx-border-radius: 28px;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 8, 0, 0, 2);
+    -fx-min-width: 200px;
+    -fx-min-height: 56px;
 }
 
 .mission-btn:hover {
-    -fx-background-color: #45a049;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #004182 0%, #0a66c2 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0, 65, 130, 0.2), 12, 0, 0, 4);
 }
 
+.mission-btn:pressed {
+    -fx-background-color: #002d5c;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0, 0, 1);
+}
+
+/* AI Button with Gradient */
+.mission-btn-ai {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #2E7D32 0%, #1B5E20 100%);
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+    -fx-background-radius: 28px;
+    -fx-padding: 14px 32px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(46,125,50,0.4), 8, 0, 0, 2);
+}
+
+.mission-btn-ai:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #388E3C 0%, #2E7D32 100%);
+}
+
+/* Outline Button */
 .mission-btn-outline {
     -fx-background-color: transparent;
     -fx-text-fill: #f44336;
@@ -332,199 +300,47 @@
     -fx-text-fill: white;
 }
 
-/* =========================
-   STATS CARDS
-   ========================= */
-.mission-stats-card {
-    -fx-background-color: rgba(35, 25, 66, 0.5);
-    -fx-background-radius: 8;
-    -fx-border-color: #5E548E;
-    -fx-border-width: 1;
-    -fx-padding: 10 15;
-}
-
-.mission-stats-value {
-    -fx-text-fill: #9F86C0;
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 2, 0.2, 0, 1);
-}
-
-.mission-stats-label {
-    -fx-text-fill: #BE95C4;
-    -fx-font-size: 11px;
-}
-
-.white-text {
-    -fx-text-fill: #333;  /* Changed from white to dark gray */
-}
-
-.mission-stats-card:hover {
-    -fx-background-color: rgba(35, 25, 66, 0.7);
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-    -fx-border-color: #9F86C0;
-}
-
-/* =========================
-   FORM
-   ========================= */
-.mission-form-container {
-    -fx-background-color: linear-gradient(to top, rgba(35,25,66,0.95), rgba(94,84,142,0.9));
-    -fx-padding: 30;
-    -fx-border-color: rgba(159,134,192,0.3);
-    -fx-border-width: 1 0 0 0;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0.2, 0, -5);
-}
-
-.mission-form-header {
-    -fx-padding: 0 0 20 0;
-}
-
-.mission-form-title {
+/* Secondary Button */
+.mission-btn-secondary {
+    -fx-background-color: #9F86C0;
     -fx-text-fill: white;
-    -fx-font-size: 22px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 6px;
+    -fx-padding: 10px 20px;
+    -fx-cursor: hand;
+}
+
+.mission-btn-secondary:hover {
+    -fx-background-color: #BE95C4;
+}
+
+/* ========================================================================
+   HEADER & NAVIGATION
+   ======================================================================== */
+
+.mission-header {
+    -fx-background-color: rgba(35, 25, 66, 0.9);
+    -fx-padding: 20px 25px;
+    -fx-background-radius: 0 0 20px 20px;
+    -fx-border-color: rgba(159,134,192,0.3);
+    -fx-border-width: 0 0 1px 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 20, 0.2, 0, 5);
+}
+
+.mission-h1 {
+    -fx-font-size: 28px;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 3, 0.2, 0, 1);
+    -fx-text-fill: #333;
+    -fx-padding: 0 0 20px 0;
 }
 
-.mission-form-subtitle {
-    -fx-text-fill: #E0B1CB;
-    -fx-font-size: 14px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 1, 0.2, 0, 1);
-}
+/* ========================================================================
+   RENDU LIST STYLES
+   ======================================================================== */
 
-.mission-form-label {
-    -fx-text-fill: #E0B1CB;
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 1, 0.2, 0, 1);
-}
-
-.mission-form-hint {
-    -fx-text-fill: #9F86C0;
-    -fx-font-size: 12px;
-    -fx-font-style: italic;
-}
-
-/* =========================
-   FOOTER
-   ========================= */
-.mission-footer {
-    -fx-padding: 15 0 0 0;
-    -fx-border-color: rgba(255,255,255,0.1);
-    -fx-border-width: 1 0 0 0;
-}
-
-.mission-footer-text {
-    -fx-text-fill: #9F86C0;
-    -fx-font-size: 12px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 1, 0.2, 0, 1);
-}
-
-.mission-footer-highlight {
-    -fx-text-fill: #BE95C4;
-    -fx-font-size: 13px;
-    -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 1, 0.2, 0, 1);
-}
-
-.mission-separator {
-    -fx-fill: linear-gradient(to bottom, #9F86C0, #5E548E);
-}
-
-/* =========================
-   ICONS & DECORATIONS
-   ========================= */
-.mission-icon {
-    -fx-font-size: 16px;
-}
-
-.mission-icon-large {
-    -fx-font-size: 20px;
-}
-
-.mission-avatar {
-    -fx-fill: radial-gradient(center 50% 50%, radius 70%, #BE95C4, #9F86C0);
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0.2, 0, 2);
-}
-
-.mission-avatar-text {
-    -fx-font-size: 16px;
-}
-
-/* =========================
-   ANIMATIONS & TRANSITIONS
-   ========================= */
-.mission-fade-in {
-    -fx-opacity: 0;
-}
-
-.mission-fade-in:hover {
-    -fx-opacity: 0.8;
-    -fx-transition: opacity 0.2s ease-in-out;
-}
-
-.mission-scale-hover:hover {
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-    -fx-transition: scale 0.2s ease-in-out;
-}
-
-.mission-glow-hover:hover {
-    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.6), 15, 0.3, 0, 5);
-}
-
-/* =========================
-   RESPONSIVE SPACING
-   ========================= */
-.mission-spacing-small {
-    -fx-spacing: 10;
-    -fx-padding: 10;
-}
-
-.mission-spacing-medium {
-    -fx-spacing: 20;
-    -fx-padding: 20;
-}
-
-.mission-spacing-large {
-    -fx-spacing: 30;
-    -fx-padding: 30;
-}
-
-/* =========================
-   UTILITY CLASSES
-   ========================= */
-.mission-grow {
-    -fx-hgrow: ALWAYS;
-    -fx-vgrow: ALWAYS;
-}
-
-.mission-center {
-    -fx-alignment: CENTER;
-}
-
-.mission-center-left {
-    -fx-alignment: CENTER_LEFT;
-}
-
-.mission-center-right {
-    -fx-alignment: CENTER_RIGHT;
-}
-
-.mission-fill-width {
-    -fx-max-width: Infinity;
-}
-
-.mission-text-ellipsis {
-    -fx-text-overrun: ELLIPSIS;
-}
-
-/* RENDU LIST SPECIFIC STYLES */
 .rendu-container {
-    -fx-background-color: linear-gradient(to bottom right, #f8fafc, #e2e8f0);
-    -fx-padding: 25;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #f8fafc 0%, #e2e8f0 100%);
+    -fx-padding: 25px;
 }
 
 .rendu-title {
@@ -533,28 +349,23 @@
     -fx-text-fill: #1e293b;
 }
 
-/* TableView Styling for Rendu List */
+/* Rendu Table */
 .table-view {
     -fx-background-color: white;
     -fx-border-color: #e2e8f0;
-    -fx-border-radius: 10;
-    -fx-background-radius: 10;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 4);
 }
 
 .table-view .column-header {
-    -fx-background-color: linear-gradient(to bottom, #3b82f6, #2563eb);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #3b82f6 0%, #2563eb 100%);
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
     -fx-border-color: #1d4ed8;
-    -fx-border-width: 0 0 2 0;
-    -fx-padding: 12 10;
-}
-
-.table-view .column-header-background {
-    -fx-background-color: transparent;
-    -fx-border-radius: 10 10 0 0;
+    -fx-border-width: 0 0 2px 0;
+    -fx-padding: 12px 10px;
 }
 
 .table-view .column-header .label {
@@ -565,8 +376,8 @@
 .table-view .table-row-cell {
     -fx-background-color: white;
     -fx-border-color: #f1f5f9;
-    -fx-border-width: 0 0 1 0;
-    -fx-padding: 10 0;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 10px 0;
 }
 
 .table-view .table-row-cell:odd {
@@ -574,7 +385,7 @@
 }
 
 .table-view .table-row-cell:selected {
-    -fx-background-color: linear-gradient(to right, #dbeafe, #bfdbfe);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #dbeafe 0%, #bfdbfe 100%);
     -fx-background-insets: 0;
     -fx-background-radius: 0;
 }
@@ -585,18 +396,61 @@
 }
 
 .table-view .table-cell {
-    -fx-text-fill: #334155 !important;  /* Force dark text */
+    -fx-text-fill: #334155;
     -fx-font-size: 13px;
-    -fx-padding: 12 10;
+    -fx-padding: 12px 10px;
     -fx-border-color: transparent;
 }
 
-/* Status badges */
+/* ========================================================================
+   STATS CARDS
+   ======================================================================== */
+
+.mission-stats-card {
+    -fx-background-color: rgba(35, 25, 66, 0.5);
+    -fx-background-radius: 8px;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 1px;
+    -fx-padding: 10px 15px;
+}
+
+.mission-stats-card:hover {
+    -fx-background-color: rgba(35, 25, 66, 0.7);
+    -fx-border-color: #9F86C0;
+}
+
+.mission-stats-value {
+    -fx-text-fill: #9F86C0;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.mission-stats-label {
+    -fx-text-fill: #BE95C4;
+    -fx-font-size: 11px;
+}
+
+/* ========================================================================
+   FORM CONTAINERS
+   ======================================================================== */
+
+.mission-form-container {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(35,25,66,0.95) 0%, rgba(94,84,142,0.9) 100%);
+    -fx-padding: 30px;
+    -fx-border-color: rgba(159,134,192,0.3);
+    -fx-border-width: 1px 0 0 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0.2, 0, -5);
+}
+
+/* ========================================================================
+   STATUS BADGES
+   ======================================================================== */
+
 .accepted-badge {
     -fx-background-color: #10b981;
     -fx-text-fill: white;
-    -fx-padding: 4 12;
-    -fx-background-radius: 20;
+    -fx-padding: 4px 12px;
+    -fx-background-radius: 20px;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
 }
@@ -604,28 +458,22 @@
 .rejected-badge {
     -fx-background-color: #ef4444;
     -fx-text-fill: white;
-    -fx-padding: 4 12;
-    -fx-background-radius: 20;
+    -fx-padding: 4px 12px;
+    -fx-background-radius: 20px;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
 }
 
-/* Score progress bars */
-.score-cell {
-    -fx-alignment: center;
-}
+/* ========================================================================
+   RENDU BUTTONS
+   ======================================================================== */
 
-.score-bar {
-    -fx-accent: #3b82f6;
-}
-
-/* Button Styling for Rendu List */
 .rendu-refresh-btn {
     -fx-background-color: #3b82f6;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-padding: 10 20;
-    -fx-background-radius: 8;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 8px;
     -fx-cursor: hand;
 }
 
@@ -638,8 +486,8 @@
     -fx-background-color: #10b981;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-padding: 10 20;
-    -fx-background-radius: 8;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 8px;
     -fx-cursor: hand;
 }
 
@@ -651,8 +499,8 @@
     -fx-background-color: #8b5cf6;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-padding: 10 20;
-    -fx-background-radius: 8;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 8px;
     -fx-cursor: hand;
 }
 
@@ -664,8 +512,8 @@
     -fx-background-color: #ef4444;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-padding: 10 20;
-    -fx-background-radius: 8;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 8px;
     -fx-cursor: hand;
 }
 
@@ -673,25 +521,134 @@
     -fx-background-color: #dc2626;
 }
 
-/* Filter buttons */
+/* ========================================================================
+   FILTER BUTTONS
+   ======================================================================== */
+
 .rendu-filter-btn, .rendu-stats-btn {
     -fx-background-color: #94a3b8;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-padding: 8 16;
-    -fx-background-radius: 6;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 6px;
 }
 
 .rendu-apply-btn {
     -fx-background-color: #3b82f6;
     -fx-text-fill: white;
-    -fx-padding: 6 12;
-    -fx-background-radius: 4;
+    -fx-padding: 6px 12px;
+    -fx-background-radius: 4px;
 }
 
 .rendu-clear-btn {
     -fx-background-color: #94a3b8;
     -fx-text-fill: white;
-    -fx-padding: 6 12;
-    -fx-background-radius: 4;
+    -fx-padding: 6px 12px;
+    -fx-background-radius: 4px;
+}
+
+/* ========================================================================
+   TEXT AREA
+   ======================================================================== */
+
+.mission-textarea {
+    -fx-background-color: rgba(255,255,255,0.07);
+    -fx-border-color: #5E548E;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-text-fill: black;
+}
+
+/* ========================================================================
+   UTILITY CLASSES
+   ======================================================================== */
+
+.white-text {
+    -fx-text-fill: white;
+}
+
+.text-muted {
+    -fx-text-fill: rgba(255,255,255,0.9);
+}
+
+/* ========================================================================
+   DARK MODE SUPPORT
+   ======================================================================== */
+
+.root.dark-mode {
+    -fx-primary-color: #378fe9;
+    -fx-primary-dark: #0a66c2;
+    -fx-primary-light: #6bb5ff;
+    -fx-primary-extra-light: rgba(55, 143, 233, 0.2);
+
+    -fx-neutral-white: #1f2937;
+    -fx-neutral-0: #111827;
+    -fx-neutral-50: #1f2937;
+    -fx-neutral-100: #374151;
+    -fx-neutral-200: #4b5563;
+    -fx-neutral-300: #6b7280;
+    -fx-neutral-400: #9ca3af;
+    -fx-neutral-500: #d1d5db;
+    -fx-neutral-600: #e5e7eb;
+    -fx-neutral-700: #f3f4f6;
+    -fx-neutral-800: #f9fafb;
+    -fx-neutral-900: #ffffff;
+}
+
+.root.dark-mode .white-text-container {
+    -fx-background-color: rgba(31, 41, 55, 0.92);
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+}
+
+.root.dark-mode .mission-input {
+    -fx-background-color: rgba(55, 65, 81, 0.9);
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.4);
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+}
+
+.root.dark-mode .mission-input:focused {
+    -fx-border-color: #378fe9;
+    -fx-background-color: rgba(55, 65, 81, 0.9);
+}
+
+.root.dark-mode .mission-form-label {
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+}
+
+.root.dark-mode .mission-form-hint {
+    -fx-text-fill: rgba(255, 255, 255, 0.6);
+}
+
+/* ========================================================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================================================== */
+
+@media (max-width: 768px) {
+    .white-text-container {
+        -fx-padding: 30px 20px;
+        -fx-max-width: 100%;
+        -fx-min-width: 100%;
+    }
+
+    .mission-table-container {
+        -fx-padding: 20px;
+    }
+
+    .mission-btn {
+        -fx-min-width: 180px;
+        -fx-padding: 12px 24px;
+    }
+}
+
+/* ========================================================================
+   ACCESSIBILITY
+   ======================================================================== */
+
+.mission-input:focused,
+.mission-btn:focused,
+.mission-btn-outline:focused {
+    -fx-effect: dropshadow(gaussian, rgba(10, 102, 194, 0.3), 12, 0, 0, 0);
+    -fx-border-color: #0a66c2;
+    -fx-border-width: 2px;
 }

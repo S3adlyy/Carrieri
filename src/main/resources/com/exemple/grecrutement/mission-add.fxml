@@ -2,89 +2,207 @@
 
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.shape.Circle?>
 
 <StackPane xmlns="http://javafx.com/javafx/17"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.exemple.grecrutement.MissionAddController"
-           stylesheets="@mission-styles.css">
+           stylesheets="@mission-styles.css"
+           style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0a66c2 0%, #378fe9 50%, #8b5cf6 100%);">
 
+    <!-- Background Circles -->
+    <Circle radius="60" fill="rgba(255,255,255,0.1)">
+        <translateY>50</translateY>
+        <translateX>-100</translateX>
+    </Circle>
+
+    <Circle radius="40" fill="rgba(255,255,255,0.08)">
+        <translateY>-100</translateY>
+        <translateX>150</translateX>
+    </Circle>
+
+    <Circle radius="80" fill="rgba(255,255,255,0.05)">
+        <translateY>100</translateY>
+        <translateX>200</translateX>
+    </Circle>
+
+    <!-- Glass Morphism Form Container -->
     <VBox spacing="30"
-          alignment="CENTER"
-          styleClass="mission-form-container ,white-text-container mission-table-container"
-          maxWidth="700">
+          alignment="TOP_CENTER"
+          styleClass="white-text-container"
+          maxWidth="750"
+          minWidth="750"
+          style="-fx-padding: 50;">
 
-        <!-- TITLE -->
-        <Label text="➕ Add New Mission" styleClass="mission-h1"/>
+        <!-- HEADER -->
+        <VBox spacing="20" alignment="CENTER" style="-fx-padding: 0 0 40 0;">
+            <HBox spacing="0" alignment="CENTER">
+                <!-- Icon with Gradient -->
+                <StackPane style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0a66c2 0%, #8b5cf6 100%);
+                                  -fx-background-radius: 50%;
+                                  -fx-padding: 20;
+                                  -fx-effect: dropshadow(gaussian, rgba(10,102,194,0.3), 15, 0, 0, 5);">
+                    <Label text="🚀" style="-fx-font-size: 36px; -fx-text-fill: white;"/>
+                </StackPane>
+            </HBox>
 
-        <!-- Form Grid -->
-        <GridPane hgap="20" vgap="18">
+            <!-- Title -->
+            <VBox spacing="8" alignment="CENTER">
+                <Label text="Create New Mission"
+                       style="-fx-text-fill: #0a66c2;
+                              -fx-font-size: 32px;
+                              -fx-font-weight: 800;
+                              -fx-font-family: 'Segoe UI', Arial, sans-serif;
+                              -fx-letter-spacing: -0.02em;"/>
+
+                <!-- Decorative Line -->
+                <HBox alignment="CENTER" style="-fx-padding: 10 0;">
+                    <HBox style="-fx-background-color: linear-gradient(to right, transparent, #0a66c2, transparent);
+                                 -fx-min-height: 2px;
+                                 -fx-pref-width: 200px;
+                                 -fx-opacity: 0.6;"/>
+                </HBox>
+
+                <Label text="Define mission requirements for candidate evaluation"
+                       style="-fx-text-fill: rgba(0,0,0,0.6);
+                              -fx-font-size: 16px;
+                              -fx-font-weight: 500;
+                              -fx-font-family: 'Segoe UI', Arial, sans-serif;"/>
+            </VBox>
+        </VBox>
+
+        <!-- FORM GRID -->
+        <GridPane hgap="20" vgap="25" style="-fx-padding: 0 0 30 0;">
             <columnConstraints>
                 <ColumnConstraints prefWidth="140" halignment="RIGHT"/>
                 <ColumnConstraints prefWidth="320"/>
                 <ColumnConstraints prefWidth="200"/>
             </columnConstraints>
 
-            <!-- Description -->
-            <Label text="Description:"
+            <!-- Description Field -->
+            <Label text="Mission Description"
                    GridPane.columnIndex="0"
                    GridPane.rowIndex="0"
-                   styleClass="mission-form-label"/>
+                   style="-fx-text-fill: rgba(0,0,0,0.7);
+                          -fx-font-size: 16px;
+                          -fx-font-weight: 600;
+                          -fx-font-family: 'Segoe UI', Arial, sans-serif;
+                          -fx-padding: 12 0;
+                          -fx-border-width: 0 0 0 4;
+                          -fx-border-color: #0a66c2;
+                          -fx-padding-left: 12;"/>
 
             <TextField fx:id="descriptionField"
+                       promptText="Enter detailed mission description"
                        GridPane.columnIndex="1"
                        GridPane.rowIndex="0"
-                       styleClass="mission-input"/>
+                       GridPane.columnSpan="1"
+                       styleClass="mission-input"
+                       style="-fx-pref-width: 320;"/>
 
-            <Label text="Enter detailed mission description"
+            <Label text="Describe what candidates need to accomplish in detail"
                    GridPane.columnIndex="2"
                    GridPane.rowIndex="0"
-                   styleClass="mission-form-hint"/>
+                   style="-fx-text-fill: rgba(0,0,0,0.5);
+                          -fx-font-size: 14px;
+                          -fx-font-style: italic;
+                          -fx-padding: 8 0 0 0;
+                          -fx-wrap-text: true;"/>
 
-            <!-- Minimum Score -->
-            <Label text="Minimum Score:"
+            <!-- Minimum Score Field -->
+            <Label text="Minimum Score"
                    GridPane.columnIndex="0"
                    GridPane.rowIndex="1"
-                   styleClass="mission-form-label"/>
+                   style="-fx-text-fill: rgba(0,0,0,0.7);
+                          -fx-font-size: 16px;
+                          -fx-font-weight: 600;
+                          -fx-font-family: 'Segoe UI', Arial, sans-serif;
+                          -fx-padding: 12 0;
+                          -fx-border-width: 0 0 0 4;
+                          -fx-border-color: #0a66c2;
+                          -fx-padding-left: 12;"/>
 
             <TextField fx:id="scoreField"
+                       promptText="Enter minimum score (0-100)"
                        GridPane.columnIndex="1"
                        GridPane.rowIndex="1"
-                       styleClass="mission-input"/>
+                       styleClass="mission-input"
+                       style="-fx-pref-width: 320;"/>
 
-            <Label text="Required score threshold (0–100)"
+            <Label text="Required passing score percentage for candidates"
                    GridPane.columnIndex="2"
                    GridPane.rowIndex="1"
-                   styleClass="mission-form-hint"/>
+                   style="-fx-text-fill: rgba(0,0,0,0.5);
+                          -fx-font-size: 14px;
+                          -fx-font-style: italic;
+                          -fx-padding: 8 0 0 0;"/>
 
-            <!-- Creator ID -->
-            <Label text="Creator ID:"
+            <!-- Creator ID Field -->
+            <Label text="Creator ID"
                    GridPane.columnIndex="0"
                    GridPane.rowIndex="2"
-                   styleClass="mission-form-label"/>
+                   style="-fx-text-fill: rgba(0,0,0,0.7);
+                          -fx-font-size: 16px;
+                          -fx-font-weight: 600;
+                          -fx-font-family: 'Segoe UI', Arial, sans-serif;
+                          -fx-padding: 12 0;
+                          -fx-border-width: 0 0 0 4;
+                          -fx-border-color: #0a66c2;
+                          -fx-padding-left: 12;"/>
 
             <TextField fx:id="createdByIdField"
+                       promptText="Enter your user ID"
                        GridPane.columnIndex="1"
                        GridPane.rowIndex="2"
-                       styleClass="mission-input"/>
+                       styleClass="mission-input"
+                       style="-fx-pref-width: 320;"/>
 
-            <Label text="User ID of mission creator"
+            <Label text="Your identification number in the system"
                    GridPane.columnIndex="2"
                    GridPane.rowIndex="2"
-                   styleClass="mission-form-hint"/>
+                   style="-fx-text-fill: rgba(0,0,0,0.5);
+                          -fx-font-size: 14px;
+                          -fx-font-style: italic;
+                          -fx-padding: 8 0 0 0;"/>
         </GridPane>
 
-        <!-- Action Buttons -->
-        <HBox spacing="20" alignment="CENTER">
-            <Button text="➕ Add Mission"
+        <!-- ACTION BUTTON -->
+        <VBox spacing="20" alignment="CENTER" style="-fx-padding: 30 0 0 0;">
+            <!-- Decorative Line -->
+            <HBox alignment="CENTER" style="-fx-padding: 10 0;">
+                <HBox style="-fx-background-color: linear-gradient(to right, transparent, rgba(10,102,194,0.3), transparent);
+                             -fx-min-height: 2px;
+                             -fx-pref-width: 300px;
+                             -fx-opacity: 0.4;"/>
+            </HBox>
+
+            <Button text="🚀 Create Mission"
                     onAction="#ajouterMission"
-                    styleClass="mission-btn"/>
-        </HBox>
+                    style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0a66c2 0%, #378fe9 100%);
+                           -fx-text-fill: white;
+                           -fx-font-size: 18px;
+                           -fx-font-weight: 700;
+                           -fx-font-family: 'Segoe UI', Arial, sans-serif;
+                           -fx-padding: 18 40;
+                           -fx-background-radius: 30;
+                           -fx-min-width: 240;
+                           -fx-min-height: 60;
+                           -fx-cursor: hand;
+                           -fx-effect: dropshadow(gaussian, rgba(10,102,194,0.4), 20, 0, 0, 8);"/>
+
+            <!-- Decorative Icons -->
+            <HBox spacing="30" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+                <Label text="⚡" style="-fx-font-size: 20px; -fx-text-fill: rgba(0,0,0,0.3);"/>
+                <Label text="✨" style="-fx-font-size: 20px; -fx-text-fill: rgba(0,0,0,0.3);"/>
+                <Label text="🎯" style="-fx-font-size: 20px; -fx-text-fill: rgba(0,0,0,0.3);"/>
+            </HBox>
+        </VBox>
 
     </VBox>
 </StackPane>
