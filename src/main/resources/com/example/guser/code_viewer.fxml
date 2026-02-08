@@ -6,31 +6,42 @@
 <SplitPane xmlns="http://javafx.com/javafx/17"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.example.guser.controllers.CodeViewerController"
-           stylesheets="@workspace.css"
-           dividerPositions="0.32"
            fx:id="codeSplitPane"
-           styleClass="wsp-split">
+           dividerPositions="0.33"
+           styleClass="cv-split"
+           stylesheets="@workspace.css">
 
-    <VBox>
+    <!-- LEFT: Repo panel -->
+    <VBox spacing="10" styleClass="cv-sideCard">
         <HBox alignment="CENTER_LEFT" spacing="10">
-            <Label text="Files" styleClass="wsp-panelTitle"/>
+            <Label fx:id="repoTitleLabel" text="Repository" styleClass="cv-title"/>
             <Region HBox.hgrow="ALWAYS"/>
             <Button fx:id="downloadZipBtn" text="Download ZIP" onAction="#onDownloadZip"
-                    styleClass="prf-outlineBtn"/>
+                    styleClass="wsp-downloadBtn cv-zipBtn"/>
         </HBox>
 
-        <TreeView fx:id="filesTreeView" styleClass="wsp-tree"/>
+        <TextField fx:id="searchField" promptText="Search file name…" styleClass="cv-search"/>
 
+        <TreeView fx:id="filesTreeView" styleClass="cv-tree" VBox.vgrow="ALWAYS"/>
     </VBox>
 
-    <VBox spacing="8">
+    <!-- RIGHT: Code panel -->
+    <VBox spacing="10" styleClass="cv-codeCard">
+
         <HBox alignment="CENTER_LEFT" spacing="10">
-            <Label fx:id="filePathLabel" text="—" styleClass="wsp-panelTitle"/>
+            <VBox spacing="2">
+                <Label text="Code" styleClass="cv-title"/>
+                <Label fx:id="filePathLabel" text="—" styleClass="cv-path"/>
+            </VBox>
+
             <Region HBox.hgrow="ALWAYS"/>
+
             <Button fx:id="downloadFileBtn" text="Download file" onAction="#onDownloadFile"
-                    styleClass="prf-outlineBtn"/>
+                    styleClass="wsp-downloadBtn cv-fileBtn"/>
         </HBox>
 
-        <StackPane fx:id="codeAreaHost" VBox.vgrow="ALWAYS" styleClass="wsp-codeHost"/>
+        <StackPane fx:id="codeAreaHost" styleClass="cv-codeHost" VBox.vgrow="ALWAYS"/>
+
     </VBox>
+
 </SplitPane>

@@ -7,23 +7,31 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.example.guser.controllers.WorkspaceController"
       stylesheets="@workspace.css"
-      spacing="10">
+      spacing="12"
+      styleClass="wsp-page">
 
-    <VBox styleClass="prf-card wsp-card" spacing="10">
+    <VBox styleClass="wsp-workspaceRoot" spacing="12">
 
-        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="prf-cardHeader">
-            <Label text="Workspace" styleClass="prf-cardTitle"/>
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="wsp-topBar">
+            <VBox spacing="2">
+                <Label text="Workspace" styleClass="wsp-pageTitle"/>
+                <Label text="Tracks timeline and artifacts" styleClass="wsp-subtitle"/>
+            </VBox>
+
             <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="newTrackBtn" text="New Track" onAction="#onNewTrack"
-                    styleClass="prf-outlineBtn"/>
+
+            <Button fx:id="newTrackBtn"
+                    text="+ New track"
+                    onAction="#onNewTrack"
+                    styleClass="prf-actBtn wsp-addTrackBtn"/>
         </HBox>
 
-        <!-- Track list (always present) -->
+        <!-- Track list -->
         <VBox fx:id="tracksListPane" spacing="10">
-            <ListView fx:id="tracksListView" styleClass="wsp-list"/>
+            <ListView fx:id="tracksListView" styleClass="wsp-list wsp-tracksList"/>
         </VBox>
 
-        <!-- Track detail include (hidden by controller until a track is opened) -->
+        <!-- Track detail include -->
         <fx:include fx:id="trackSection" source="track.fxml"/>
 
         <Label fx:id="workspaceErrorLabel" text="" styleClass="prf-error" visible="false" managed="false"/>

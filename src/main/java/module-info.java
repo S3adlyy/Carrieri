@@ -10,6 +10,7 @@ module com.example.guser {
     //requires com.example.guser;
     requires java.net.http;
     requires org.fxmisc.richtext;
+    requires org.fxmisc.flowless;
 
 
     opens com.example.guser to javafx.fxml;

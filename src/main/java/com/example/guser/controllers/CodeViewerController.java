@@ -1,7 +1,9 @@
 package com.example.guser.controllers;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.CodeArea;
@@ -90,29 +92,49 @@ public class CodeViewerController {
     );
     private static final Pattern NUMBER_P = Pattern.compile("\\b\\d+(\\.\\d+)?\\b");
     private static final Pattern TYPE_P = Pattern.compile("\\b[A-Z][A-Za-z0-9_]*\\b");
+    @FXML private TextField searchField;
+    @FXML private Label repoTitleLabel;
+
 
     @FXML
     private void initialize() {
-        // CodeArea setup
         codeArea = new CodeArea();
         codeArea.setEditable(false);
+
+        // Strong CSS hook
+        codeArea.setId("cvArea");
         codeArea.getStyleClass().add("wsp-codeArea");
 
         // Line numbers
-        codeArea.setParagraphGraphicFactory(line -> {
-            var n = LineNumberFactory.get(codeArea).apply(line);
-            n.getStyleClass().add("lineno");
-            return n;
-        }); // LineNumberFactory is the standard RichTextFX way. [web:833]
+        codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
 
+        // Make it fill the host
+        codeArea.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         codeAreaHost.getChildren().setAll(codeArea);
+        StackPane.setAlignment(codeArea, Pos.TOP_LEFT);
 
-        // Tree rendering
+        // Buttons pop
+        downloadZipBtn.getStyleClass().add("wsp-downloadBtn");
+        downloadFileBtn.getStyleClass().add("wsp-downloadBtn");
+
+        // Tree rendering with icons
         filesTreeView.setCellFactory(tv -> new TreeCell<>() {
             @Override protected void updateItem(ZipEntryVM v, boolean empty) {
                 super.updateItem(v, empty);
-                if (empty || v == null) { setText(null); return; }
-                setText(v.name());
+                if (empty || v == null) { setText(null); setGraphic(null); return; }
+
+                String icon = v.directory() ? "📁" : "📄";
+                Label ico = new Label(icon);
+                ico.getStyleClass().add("cv-treeIcon");
+
+                Label name = new Label(v.name());
+                name.getStyleClass().add("cv-treeName");
+
+                HBox row = new HBox(8, ico, name);
+                row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
+                setGraphic(row);
+                setText(null);
             }
         });
 
@@ -125,7 +147,47 @@ public class CodeViewerController {
 
         filePathLabel.setText("—");
         downloadFileBtn.setDisable(true);
+
+        if (searchField != null) {
+            searchField.textProperty().addListener((obs, o, q) -> applyTreeFilter(q));
+        }
     }
+    private void applyTreeFilter(String qRaw) {
+        if (filesTreeView.getRoot() == null) return;
+
+        String q = qRaw == null ? "" : qRaw.trim().toLowerCase();
+        if (q.isEmpty()) {
+            expandAll(filesTreeView.getRoot(), false);
+            return;
+        }
+
+        filterTree(filesTreeView.getRoot(), q);
+        expandAll(filesTreeView.getRoot(), true);
+    }
+
+    private boolean filterTree(TreeItem<ZipEntryVM> item, String q) {
+        boolean matchSelf = item.getValue() != null && item.getValue().name() != null
+                && item.getValue().name().toLowerCase().contains(q);
+
+        boolean anyChild = false;
+        for (TreeItem<ZipEntryVM> c : item.getChildren()) {
+            anyChild |= filterTree(c, q);
+        }
+
+        // show branch if it matches or any child matches
+        item.setExpanded(anyChild);
+
+        // Hiding TreeItems cleanly is non-trivial; simplest UX: just expand matches and rely on quick navigation.
+        // If you want real hide/show, we can rebuild a filtered root tree.
+        return matchSelf || anyChild;
+    }
+
+    private void expandAll(TreeItem<?> root, boolean expanded) {
+        root.setExpanded(expanded);
+        for (TreeItem<?> c : root.getChildren()) expandAll(c, expanded);
+    }
+
+
 
     public void init(CodeBrowseService codeBrowseService, FileObjectService fileObjectService, String storageKey) throws Exception {
         this.codeBrowseService = codeBrowseService;
@@ -151,6 +213,8 @@ public class CodeViewerController {
             return;
         }
         codeBrowseService.findFirstFile(rootNode).ifPresent(this::openFile);
+        if (repoTitleLabel != null) repoTitleLabel.setText("Repository");
+
     }
 
     private TreeItem<ZipEntryVM> toTreeItem(CodeBrowseService.ZipNode n) {
@@ -169,12 +233,17 @@ public class CodeViewerController {
 
             codeArea.replaceText(content);
             applyHighlighting(content, entryPath);
+            codeArea.moveTo(0);
+            codeArea.requestFollowCaret();
+
+
 
         } catch (Exception e) {
             filePathLabel.setText(entryPath);
             downloadFileBtn.setDisable(true);
             codeArea.replaceText("Failed to open file: " + e.getMessage());
         }
+
     }
 
     private void applyHighlighting(String text, String entryPath) {
@@ -205,7 +274,6 @@ public class CodeViewerController {
     }
 
     private StyleSpans<Collection<String>> computeSpans(String text, Set<String> kwSet) {
-        // Build dynamic keyword regex for this language
         String keywordPattern = kwSet.isEmpty()
                 ? "(?!)"
                 : "\\b(" + String.join("|", kwSet) + ")\\b";
@@ -214,7 +282,8 @@ public class CodeViewerController {
                 "(?<COM>" + COMMENT_P.pattern() + ")"
                         + "|(?<STR>" + STRING_P.pattern() + ")"
                         + "|(?<NUM>" + NUMBER_P.pattern() + ")"
-                        + "|(?<KW>" + keywordPattern + ")"
+                        + "|(?<KW>"  + keywordPattern + ")"
+                        + "|(?<TYP>" + TYPE_P.pattern() + ")"
         );
 
         Matcher matcher = pattern.matcher(text);
@@ -222,17 +291,20 @@ public class CodeViewerController {
         StyleSpansBuilder<Collection<String>> b = new StyleSpansBuilder<>();
 
         while (matcher.find()) {
-            String style =
+            String styleClass =
                     matcher.group("COM") != null ? "com" :
                             matcher.group("STR") != null ? "str" :
                                     matcher.group("NUM") != null ? "num" :
                                             matcher.group("KW")  != null ? "kw"  :
-                                                    null;
+                                                    matcher.group("TYP") != null ? "typ" :
+                                                            null;
 
             b.add(Collections.emptyList(), matcher.start() - last);
-            b.add(Collections.singleton(style), matcher.end() - matcher.start());
+            b.add(styleClass == null ? Collections.emptyList() : Collections.singleton(styleClass),
+                    matcher.end() - matcher.start());
             last = matcher.end();
         }
+
         b.add(Collections.emptyList(), text.length() - last);
         return b.create();
     }

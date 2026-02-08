@@ -1,172 +1,596 @@
-/* Root card */
-.wsp-card {
+/* =========================================================
+   Carrieri — Clean Pop UI v2 (Readable + cool)
+   ========================================================= */
+
+.root {
+    -fx-font-family: "Inter", "Segoe UI", "System";
+    -fx-background-color: linear-gradient(to bottom right,
+    #F6F6FB 0%,
+    #F2F1FA 45%,
+    #F7F7FC 100%
+    );
+}
+
+/* ---------- Workspace emphasis ---------- */
+.wsp-workspaceRoot {
+    -fx-background-color: linear-gradient(to bottom right,
+    rgba(255,255,255,0.98),
+    rgba(255,255,255,0.88)
+    );
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: rgba(94,84,142,0.16);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.14), 28, 0.25, 0, 14);
+    -fx-padding: 14;
+}
+
+.wsp-topBar {
+    -fx-padding: 2 2 8 2;
+}
+
+/* ---------- Typography ---------- */
+.label { -fx-text-fill: #231942; }
+
+.wsp-trackTitle {
+    -fx-font-size: 20px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+}
+
+.wsp-subtitle {
+    -fx-text-fill: rgba(35,25,66,0.60);
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+
+.wsp-sectionTitle {
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+    -fx-padding: 2 10 2 10;
+    -fx-text-fill: rgba(35,25,66,0.80);
+}
+
+.prf-muted { -fx-text-fill: rgba(35,25,66,0.55); -fx-font-weight: 800; }
+.prf-error { -fx-text-fill: #C81D5A; -fx-font-weight: 900; }
+
+/* Chip (track type) */
+.wsp-chip {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 10px;
+    -fx-background-color: rgba(190,149,196,0.22);
+    -fx-border-color: rgba(94,84,142,0.18);
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 2 10 2 10;
+}
+
+/* ---------- SplitPane ---------- */
+.wsp-split { -fx-background-color: transparent; }
+
+.split-pane > .split-pane-divider {
+    -fx-padding: 0 1 0 1;
+    -fx-background-color: rgba(35,25,66,0.10);
+}
+
+/* ---------- Buttons ---------- */
+.button {
+    -fx-font-weight: 900;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-cursor: hand;
+}
+
+.prf-linkBtn {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #5E548E;
+    -fx-padding: 6 10 6 10;
+}
+.prf-linkBtn:hover { -fx-text-fill: #231942; -fx-underline: true; }
+
+.prf-outlineBtn {
+    -fx-text-fill: #231942;
+    -fx-background-color: rgba(255,255,255,0.96);
+    -fx-border-color: rgba(35,25,66,0.14);
+}
+.prf-outlineBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.14);
+    -fx-border-color: rgba(94,84,142,0.22);
+}
+
+.prf-actBtn {
+    -fx-text-fill: white;
+    -fx-background-color: linear-gradient(to bottom right, #5E548E, #9F86C0, #BE95C4);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.20), 22, 0.25, 0, 10);
+}
+.prf-actBtn:hover {
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.28), 26, 0.30, 0, 12);
+}
+
+.wsp-iconBtn {
+    -fx-min-width: 34;
+    -fx-pref-width: 34;
+    -fx-max-width: 34;
+    -fx-min-height: 34;
+    -fx-pref-height: 34;
+    -fx-max-height: 34;
     -fx-padding: 0;
 }
 
-/* Titles */
-.wsp-panelTitle {
-    -fx-font-weight: 900;
-    -fx-text-fill: rgba(35,25,66,0.70);
-    -fx-padding: 2 0 6 0;
+.wsp-smallAct {
+    -fx-padding: 6 12 6 12;
 }
 
-.wsp-trackTitle {
-    -fx-font-size: 14px;
+/* Use this on download buttons to make them pop */
+.wsp-downloadBtn {
+    -fx-background-color: linear-gradient(to bottom right, #231942, #5E548E);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.18), 20, 0.22, 0, 10);
+    -fx-padding: 5 9 5 9;
+}
+
+.wsp-downloadBtn:hover {
+    -fx-background-color: linear-gradient(to bottom right, #1B1433, #6A5BB0);
+}
+
+/* ---------- Mode tabs ---------- */
+.wsp-modeTabs {
+    -fx-background-color: rgba(35,25,66,0.05);
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-padding: 2;
+}
+.wsp-modeTab {
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: rgba(35,25,66,0.72);
     -fx-font-weight: 900;
+    -fx-padding: 6 12 6 12;
+}
+.wsp-modeTab:hover { -fx-background-color: rgba(190,149,196,0.14); }
+.wsp-modeTab:selected {
+    -fx-text-fill: white;
+    -fx-background-color: linear-gradient(to bottom right, #5E548E, #9F86C0, #BE95C4);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.18), 18, 0.25, 0, 8);
+}
+
+/* ---------- Inputs ---------- */
+.text-field, .text-area, .combo-box, .date-picker {
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-background-color: rgba(255,255,255,0.98);
+    -fx-border-color: rgba(35,25,66,0.12);
+    -fx-prompt-text-fill: rgba(35,25,66,0.42);
+}
+.text-field:focused, .text-area:focused, .combo-box:focused, .date-picker:focused {
+    -fx-border-color: rgba(94,84,142,0.36);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.14), 18, 0.25, 0, 8);
+}
+
+/* ---------- Cards inside workspace ---------- */
+.wsp-progressCard {
+    -fx-background-color: rgba(255,255,255,0.90);
+    -fx-border-color: rgba(35,25,66,0.08);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-padding: 12;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.08), 18, 0.22, 0, 8);
+}
+
+/* ---------- Lists ---------- */
+.wsp-list {
+    -fx-background-color: rgba(255,255,255,0.94);
+    -fx-border-color: rgba(35,25,66,0.08);
+    -fx-border-radius: 18;
+    -fx-background-radius: 18;
+    -fx-padding: 6;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.07), 20, 0.22, 0, 10);
+}
+
+.wsp-list .list-cell {
+    -fx-padding: 12 12 12 12;
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(35,25,66,0.07);
+    -fx-border-width: 0 0 1 0;
     -fx-text-fill: #231942;
 }
-
-/* Split panes */
-.wsp-split {
-    -fx-background-color: transparent;
+.wsp-list .list-cell:hover {
+    -fx-background-color: rgba(190,149,196,0.16);
+    -fx-background-radius: 14;
+}
+.wsp-list .list-cell:selected {
+    -fx-background-color: linear-gradient(to right,
+    rgba(94,84,142,0.26),
+    rgba(190,149,196,0.18),
+    rgba(224,177,203,0.14)
+    );
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(94,84,142,0.18);
+    -fx-border-width: 1;
 }
 
-/* Viewer area */
+/* Artifact section headers (your header cells) */
+.wsp-headerCell {
+    -fx-font-weight: 900;
+    -fx-text-fill: rgba(35,25,66,0.78);
+    -fx-background-color: linear-gradient(to right,
+    rgba(35,25,66,0.05),
+    rgba(94,84,142,0.07),
+    rgba(190,149,196,0.08)
+    );
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(35,25,66,0.08);
+    -fx-border-radius: 14;
+}
+
+/* ---------- Viewer / Preview ---------- */
 .wsp-viewerHost {
     -fx-background-color: rgba(35,25,66,0.03);
-    -fx-background-radius: 12;
-    -fx-padding: 10;
-}
-
-/* Lists: flat GitHub-like */
-.wsp-list, .wsp-timeline {
-    -fx-background-color: transparent;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
     -fx-border-color: rgba(35,25,66,0.08);
-    -fx-border-radius: 12;
+    -fx-padding: 12;
+}
+
+/* Better text artifact look (apply style class to TextArea) */
+.wsp-textPreview {
+    -fx-background-color: rgba(255,255,255,0.96);
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-padding: 12;
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+
+}
+
+/* ---------- Timeline ---------- */
+.wsp-timelineScroll { -fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0; }
+.wsp-timelineScroll > .viewport { -fx-background-color: transparent; }
+.wsp-timelineSegments { -fx-padding: 10; -fx-alignment: center-left; }
+
+.wsp-seg {
+    -fx-min-width: 18; -fx-pref-width: 18; -fx-max-width: 18;
+    -fx-min-height: 12; -fx-pref-height: 12; -fx-max-height: 12;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-background-color: rgba(35,25,66,0.10);
+    -fx-border-color: rgba(35,25,66,0.12);
+}
+.wsp-seg:hover { -fx-background-color: rgba(190,149,196,0.28); -fx-border-color: rgba(94,84,142,0.22); }
+.wsp-seg:selected {
+    -fx-background-color: linear-gradient(to bottom right, #5E548E, #9F86C0, #E0B1CB);
+    -fx-border-color: rgba(94,84,142,0.22);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.18), 18, 0.25, 0, 6);
+}
+
+.wsp-snapMeta {
+    -fx-text-fill: rgba(35,25,66,0.60);
+    -fx-font-weight: 900;
+    -fx-font-size: 11px;
+}
+
+/* ---------- Tree view (make it pop more than code) ---------- */
+.tree-view {
+    -fx-background-color: rgba(255,255,255,0.96);
+    -fx-border-color: rgba(94,84,142,0.16);
+    -fx-border-radius: 18;
+    -fx-background-radius: 18;
+    -fx-padding: 6;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.10), 20, 0.25, 0, 10);
+}
+
+.tree-cell {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 800;
+    -fx-padding: 8 10 8 10;
+}
+.tree-cell:hover {
+    -fx-background-color: rgba(190,149,196,0.14);
+    -fx-background-radius: 12;
+}
+.tree-cell:selected {
+    -fx-background-color: linear-gradient(to right,
+    rgba(94,84,142,0.20),
+    rgba(190,149,196,0.16)
+    );
     -fx-background-radius: 12;
 }
 
-.wsp-list .list-cell,
-.wsp-timeline .list-cell {
-    -fx-padding: 10 12 10 12;
-    -fx-background-color: transparent;
+/* ---------- Scrollbars ---------- */
+.scroll-bar:horizontal, .scroll-bar:vertical { -fx-background-color: transparent; }
+.scroll-bar .track {
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-background-radius: 999;
+    -fx-border-color: rgba(35,25,66,0.07);
+    -fx-border-radius: 999;
+}
+.scroll-bar .thumb {
+    -fx-background-color: linear-gradient(to bottom right,
+    rgba(94,84,142,0.45),
+    rgba(190,149,196,0.35)
+    );
+    -fx-background-radius: 999;
+}
+.scroll-bar .increment-button, .scroll-bar .decrement-button { -fx-background-color: transparent; -fx-padding: 0; }
+
+/* ---------- Dialogs ---------- */
+.dialog-pane {
+    -fx-background-color: rgba(255,255,255,0.98);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.16), 30, 0.22, 0, 14);
+}
+.dialog-pane:header .header-panel {
+    -fx-background-color: linear-gradient(to right,
+    rgba(94,84,142,0.14),
+    rgba(190,149,196,0.10),
+    rgba(224,177,203,0.08)
+    );
+    -fx-background-radius: 18 18 0 0;
+    -fx-padding: 14;
     -fx-border-color: rgba(35,25,66,0.08);
     -fx-border-width: 0 0 1 0;
 }
-
-.wsp-list .list-cell:hover,
-.wsp-timeline .list-cell:hover {
-    -fx-background-color: rgba(190,149,196,0.18);
-}
-
-.wsp-list .list-cell:selected,
-.wsp-timeline .list-cell:selected {
-    -fx-background-color: rgba(94,84,142,0.25);
-}
-
-/* Optional: header rows in artifacts list (we disable the cell in code) */
-.wsp-headerCell {
-    -fx-opacity: 0.9;
-    -fx-font-weight: 900;
-}
-
-/* Tree + code area */
-.wsp-tree {
-    -fx-background-color: transparent;
-    -fx-border-color: rgba(35,25,66,0.08);
-    -fx-border-radius: 12;
-    -fx-background-radius: 12;
-}
-
-.wsp-codeArea {
-    -fx-font-family: "Consolas", "JetBrains Mono", "Monospaced";
-    -fx-font-size: 12px;
-}
-.dialog-pane {
-    -fx-font-family: "Inter", "Segoe UI", "System";
-}
-
-.dialog-pane .text-field,
-.dialog-pane .text-area,
-.dialog-pane .combo-box,
-.dialog-pane .date-picker {
-    -fx-background-radius: 10;
-    -fx-border-radius: 10;
-}
-
-.wsp-snapCell { -fx-padding: 10 12 10 12; }
-.wsp-snapTop { -fx-alignment: center-left; }
-
-.wsp-snapTitle {
+.dialog-pane:header .header-panel .label {
     -fx-text-fill: #231942;
     -fx-font-weight: 900;
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
+}
+.dialog-pane .content { -fx-padding: 14; }
+.dialog-pane .button-bar { -fx-padding: 10 14 14 14; }
+
+/* =========================
+   Workspace page emphasis
+   ========================= */
+.wsp-page {
+    -fx-padding: 14;
 }
 
-.wsp-snapMsg {
+/* Strong page title */
+.wsp-pageTitle {
+    -fx-font-size: 22px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+}
+
+/* Make the add track button look premium */
+.wsp-addTrackBtn {
+    -fx-padding: 10 14 10 14;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+}
+
+/* The tracks list should feel like "cards feed" */
+.wsp-tracksList {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-effect: null;
+}
+
+/* Remove default row separators for track feed */
+.wsp-tracksList .list-cell {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0 0 10 0; /* spacing between cards */
+}
+
+/* Card itself */
+.wsp-trackCard {
+    -fx-background-color: rgba(255,255,255,0.96);
+    -fx-border-color: rgba(94,84,142,0.14);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-padding: 14;
+
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.12), 24, 0.25, 0, 12);
+}
+
+.wsp-tracksList .list-cell:hover .wsp-trackCard {
+    -fx-border-color: rgba(94,84,142,0.22);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.18), 30, 0.28, 0, 14);
+}
+
+/* Selected track card pops */
+.wsp-tracksList .list-cell:filled:selected .wsp-trackCard {
+    -fx-background-color: linear-gradient(to bottom right,
+    rgba(94,84,142,0.16),
+    rgba(190,149,196,0.14),
+    rgba(255,255,255,0.96)
+    );
+    -fx-border-color: rgba(94,84,142,0.30);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.22), 34, 0.30, 0, 16);
+}
+
+/* Track title row */
+.wsp-trackVisIcon {
+    -fx-font-size: 14px;
+    -fx-min-width: 22;
+    -fx-alignment: center;
+    -fx-text-fill: rgba(35,25,66,0.80);
+}
+
+.wsp-trackCardTitle {
+    -fx-font-size: 15px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+}
+
+/* Category chip */
+.wsp-trackChip {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 10px;
+
+    -fx-background-color: rgba(190,149,196,0.22);
+    -fx-border-color: rgba(94,84,142,0.16);
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 3 10 3 10;
+}
+
+/* Dates */
+.wsp-trackDates {
     -fx-text-fill: rgba(35,25,66,0.62);
     -fx-font-weight: 800;
     -fx-font-size: 11px;
 }
 
-.wsp-snapDate {
-    -fx-text-fill: rgba(35,25,66,0.55);
+/* Description */
+.wsp-trackDesc {
+    -fx-text-fill: rgba(35,25,66,0.62);
     -fx-font-weight: 800;
-    -fx-font-size: 10px;
-}
-
-.wsp-badge {
-    -fx-text-fill: #231942;
-    -fx-font-weight: 900;
-    -fx-font-size: 10px;
-    -fx-background-color: rgba(159,134,192,0.22);
-    -fx-border-color: rgba(94,84,142,0.22);
-    -fx-border-radius: 999;
-    -fx-background-radius: 999;
-    -fx-padding: 2 8 2 8;
-}
-
-.wsp-badgeFinal {
-    -fx-text-fill: #231942;
-    -fx-font-weight: 900;
-    -fx-font-size: 10px;
-    -fx-background-color: rgba(224,177,203,0.28);
-    -fx-border-color: rgba(190,149,196,0.45);
-    -fx-border-radius: 999;
-    -fx-background-radius: 999;
-    -fx-padding: 2 8 2 8;
-}
-
-.wsp-viewBox {
-    -fx-background-color: rgba(255,255,255,0.72);
-    -fx-background-radius: 12;
-    -fx-border-color: rgba(35,25,66,0.10);
-    -fx-border-radius: 12;
-    -fx-padding: 12;
-}
-
-.wsp-viewTitle { -fx-text-fill: #231942; -fx-font-weight: 900; }
-.wsp-link {
-    -fx-font-weight: 900;
-    -fx-text-fill: #5E548E;
-}
-.wsp-link:hover { -fx-underline: true; }
-
-
-
-.wsp-codeHost {
-    -fx-background-color: white;
-    -fx-border-color: rgba(35,25,66,0.10);
-    -fx-border-radius: 12;
-    -fx-background-radius: 12;
-    -fx-padding: 8;
-}
-
-/* RichTextFX uses .text as the rendered text */
-.wsp-codeHost .text {
-    -fx-font-family: "Consolas", "JetBrains Mono", "Monospaced";
     -fx-font-size: 12px;
 }
 
-/* Basic token styles (you can refine later) */
-.kw { -fx-fill: #5E548E; -fx-font-weight: 900; }
-.str { -fx-fill: #BE95C4; }
-.com { -fx-fill: rgba(35,25,66,0.45); }
-.num { -fx-fill: #9F86C0; }
-.typ { -fx-fill: #231942; -fx-font-weight: 900; }
-
-/* Line numbers area */
-.lineno {
-    -fx-background-color: rgba(35,25,66,0.03);
-    -fx-padding: 0 8 0 8;
+/* Optional: make the ListView focus ring calmer */
+.wsp-tracksList:focused {
+    -fx-background-insets: 0;
+    -fx-background-color: transparent;
 }
+/* =========================================================
+   Code Viewer — Clean IDE look (fits your theme)
+   ========================================================= */
+
+.cv-split {
+    -fx-background-color: transparent;
+}
+
+.cv-sideCard, .cv-codeCard {
+    -fx-background-color: rgba(255,255,255,0.94);
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-padding: 12;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.08), 20, 0.22, 0, 10);
+}
+
+.cv-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+    -fx-text-fill: rgba(35,25,66,0.82);
+}
+
+.cv-search {
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-background-color: rgba(255,255,255,0.98);
+    -fx-border-color: rgba(35,25,66,0.12);
+    -fx-prompt-text-fill: rgba(35,25,66,0.42);
+}
+
+/* Tree feels like a file explorer */
+.cv-tree {
+    -fx-background-color: rgba(255,255,255,0.98);
+    -fx-border-color: rgba(94,84,142,0.14);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-padding: 6;
+}
+
+.cv-tree .tree-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 800;
+    -fx-padding: 8 10 8 10;
+}
+
+.cv-tree .tree-cell:hover {
+    -fx-background-color: rgba(190,149,196,0.14);
+    -fx-background-radius: 12;
+}
+
+.cv-tree .tree-cell:selected {
+    -fx-background-color: linear-gradient(to right,
+    rgba(94,84,142,0.20),
+    rgba(190,149,196,0.14)
+    );
+    -fx-background-radius: 12;
+}
+
+/* Icons + name */
+.cv-treeIcon { -fx-font-size: 13px; }
+.cv-treeName { -fx-text-fill: #231942; -fx-font-weight: 900; }
+
+/* Code host feels like an editor surface */
+.cv-codeHost {
+    -fx-background-color: rgba(255,255,255,0.98);
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-padding: 10;
+}
+
+/* File path chip */
+.cv-path {
+    -fx-text-fill: rgba(35,25,66,0.62);
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+
+/* Make download buttons consistent in code viewer */
+.cv-zipBtn, .cv-fileBtn {
+    -fx-padding: 8 12 8 12;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+}
+
+/* =========================================================
+   RichTextFX syntax highlighting (GitHub-ish light)
+   Targets CodeArea by id so it always wins.
+   ========================================================= */
+
+/* Default text color */
+#cvArea .virtual-flow .paragraph-box .paragraph-text .text {
+    -fx-fill: #24292f;
+}
+
+/* Tokens (style classes from setStyleSpans) */
+#cvArea .virtual-flow .paragraph-box .paragraph-text .text.kw  { -fx-fill: #8250df; -fx-font-weight: 900; }
+#cvArea .virtual-flow .paragraph-box .paragraph-text .text.str { -fx-fill: #116329; }
+#cvArea .virtual-flow .paragraph-box .paragraph-text .text.com { -fx-fill: #6e7781; -fx-font-style: italic; }
+#cvArea .virtual-flow .paragraph-box .paragraph-text .text.num { -fx-fill: #0550ae; }
+#cvArea .virtual-flow .paragraph-box .paragraph-text .text.typ { -fx-fill: #953800; -fx-font-weight: 900; }
+
+/* Line numbers (LineNumberFactory adds .lineno to the Labels) */
+#cvArea .lineno {
+    -fx-background-color: rgba(27,31,36,0.04);
+    -fx-text-fill: rgba(27,31,36,0.45);
+    -fx-padding: 0 10 0 10;
+    -fx-font-size: 11px;
+}
+
+
+
+
+.wsp-selectedSnapCard {
+    -fx-background-color: linear-gradient(to bottom right,
+    rgba(128, 115, 193, 0.18),
+    rgba(190,149,196,0.14),
+    rgba(255,255,255,0.90)
+    );
+    -fx-border-color: rgba(94,84,142,0.22);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-padding: 10 12 10 12;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.14), 18, 0.25, 0, 8);
+}
+
+.wsp-selectedSnapTitle {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 13px;
+}
+
+.wsp-selectedSnapMeta {
+    -fx-text-fill: rgba(35,25,66,0.62);
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+

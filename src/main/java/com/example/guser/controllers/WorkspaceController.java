@@ -15,7 +15,12 @@ import services.WorkspaceService;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import javafx.css.PseudoClass;
+import javafx.geometry.Pos;
+import javafx.scene.layout.HBox;
+
 
 public class WorkspaceController {
 
@@ -128,6 +133,14 @@ public class WorkspaceController {
             dialog.setTitle("New Track");
             dialog.setHeaderText(null);
             dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
+            dialog.getDialogPane().getStylesheets().add(
+                    Objects.requireNonNull(getClass().getResource("/com/example/guser/workspace.css")).toExternalForm()
+            );
+            Node ok = dialog.getDialogPane().lookupButton(ButtonType.OK);
+            Node cancel = dialog.getDialogPane().lookupButton(ButtonType.CANCEL);
+            if (ok != null) ok.getStyleClass().add("prf-actBtn");
+            if (cancel != null) cancel.getStyleClass().add("prf-outlineBtn");
+
 
             TextField titleField = new TextField();
             titleField.setPromptText("Title (e.g., Fitness App, Internship at Delice)");
@@ -212,16 +225,71 @@ public class WorkspaceController {
         tracksListView.setCellFactory(lv -> new ListCell<>() {
             @Override protected void updateItem(Track t, boolean empty) {
                 super.updateItem(t, empty);
-                if (empty || t == null) { setText(null); setGraphic(null); return; }
+
+                if (empty || t == null) {
+                    setText(null);
+                    setGraphic(null);
+                    getStyleClass().removeAll("wsp-trackCell", "wsp-trackCellSelected");
+                    return;
+                }
+
+                // Root card
+                VBox card = new VBox(8);
+                card.getStyleClass().add("wsp-trackCard");
+
+                // --- Top row: title + visibility icon ---
+                String vis = t.getVisibility() == null ? "" : t.getVisibility().trim().toUpperCase();
+                boolean isPrivate = "PRIVATE".equals(vis);
+
+                Label visIcon = new Label(isPrivate ? "🔒" : "🔓");
+                visIcon.getStyleClass().add("wsp-trackVisIcon");
+
+                Label title = new Label(t.getTitle() == null ? "Untitled" : t.getTitle());
+                title.getStyleClass().add("wsp-trackCardTitle");
+
+                HBox top = new HBox(10, visIcon, title);
+                top.setAlignment(Pos.CENTER_LEFT);
+
+                // --- Meta row: category chip + dates ---
+                String cat = t.getCategory() == null ? "UNCATEGORIZED" : t.getCategory().toUpperCase();
+                Label chip = new Label(cat);
+                chip.getStyleClass().add("wsp-trackChip");
 
                 String start = t.getStartDate() == null ? "—" : df.format(t.getStartDate());
                 String end = t.getEndDate() == null ? "Present" : df.format(t.getEndDate());
-                String line2 = t.getCategory() + " • " + t.getVisibility() + " • " + start + " → " + end;
 
-                setText(t.getTitle() + "\n" + line2);
+                Label dates = new Label(start + "  →  " + end);
+                dates.getStyleClass().add("wsp-trackDates");
+
+                HBox meta = new HBox(10, chip, dates);
+                meta.setAlignment(Pos.CENTER_LEFT);
+
+                // --- Description preview (optional) ---
+                String desc = t.getDescription() == null ? "" : t.getDescription().trim();
+                if (desc.length() > 120) desc = desc.substring(0, 120) + "…";
+
+                Label descLabel = new Label(desc.isEmpty() ? "No description" : desc);
+                descLabel.getStyleClass().add("wsp-trackDesc");
+                descLabel.setWrapText(true);
+
+                card.getChildren().setAll(top, meta, descLabel);
+
+                setGraphic(card);
+                setText(null);
+
+                // Cell classes for selection styling
+                getStyleClass().add("wsp-trackCell");
+                pseudoClassStateChanged(PseudoClass.getPseudoClass("track-selected"), isSelected());
+            }
+
+            @Override
+            public void updateSelected(boolean selected) {
+                super.updateSelected(selected);
+                pseudoClassStateChanged(PseudoClass.getPseudoClass("track-selected"), selected);
             }
         });
     }
+
 
     private void setError(String msg) {
         boolean show = msg != null && !msg.isBlank();

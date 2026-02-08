@@ -78,3 +78,24 @@
     -fx-background-color: rgba(35,25,66,0.03);
     -fx-padding: 0 8 0 8;
 }
+/* ---------- RichTextFX token coloring (GitHub-ish light) ---------- */
+
+/* Default text color (must include the same prefix as RichTextFX default styling) */
+.styled-text-area .paragraph-box .text {
+    -fx-fill: #24292f;
+}
+
+/* Token classes applied by setStyleSpans(...) */
+.styled-text-area .paragraph-box .text.kw  { -fx-fill: #8250df; -fx-font-weight: 900; } /* keywords */
+.styled-text-area .paragraph-box .text.str { -fx-fill: #116329; }                       /* strings */
+.styled-text-area .paragraph-box .text.com { -fx-fill: #6e7781; -fx-font-style: italic; }/* comments */
+.styled-text-area .paragraph-box .text.num { -fx-fill: #0550ae; }                       /* numbers */
+.styled-text-area .paragraph-box .text.typ { -fx-fill: #953800; -fx-font-weight: 900; } /* types (optional) */
+
+/* Line numbers (Label nodes from LineNumberFactory) */
+.styled-text-area .lineno {
+    -fx-background-color: rgba(27,31,36,0.04);
+    -fx-text-fill: rgba(27,31,36,0.45);
+    -fx-padding: 0 10 0 10;
+    -fx-font-size: 11px;
+}
