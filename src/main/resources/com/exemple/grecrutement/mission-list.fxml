@@ -3,35 +3,35 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.*?>
 
 <StackPane xmlns="http://javafx.com/javafx/17"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.exemple.grecrutement.MissionListController"
            stylesheets="@mission-list-styles.css"
-           style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0a66c2 0%, #378fe9 50%, #8b5cf6 100%);">
+           styleClass="prf-bg"
+           style="-fx-padding: 30;">
 
-    <!-- Background Circles -->
-    <Circle radius="60" styleClass="circle-large" fill="rgba(255,255,255,0.1)">
-        <translateY>50</translateY>
-        <translateX>-100</translateX>
-    </Circle>
-
-    <Circle radius="40" styleClass="circle-medium" fill="rgba(255,255,255,0.08)">
-        <translateY>-100</translateY>
-        <translateX>150</translateX>
-    </Circle>
-
-    <Circle radius="80" styleClass="circle-small" fill="rgba(255,255,255,0.05)">
-        <translateY>100</translateY>
-        <translateX>200</translateX>
-    </Circle>
+    <!-- Subtle Background Elements -->
+    <Circle radius="100" fill="rgba(159,134,192,0.03)" style="-fx-translate-y: -150; -fx-translate-x: -280;"/>
+    <Circle radius="70" fill="rgba(190,149,196,0.02)" style="-fx-translate-y: 120; -fx-translate-x: 250;"/>
 
     <!-- Main Container -->
-    <VBox styleClass="mission-list-container">
+    <VBox styleClass="mission-list-container" maxWidth="1200">
         <!-- Header -->
         <VBox styleClass="mission-list-header">
-            <Label text="📋 Mission List" styleClass="mission-list-title"/>
-            <Label text="Manage and review all available missions" styleClass="mission-list-subtitle"/>
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <StackPane style="-fx-background-color: linear-gradient(135deg, #231942 0%, #5E548E 100%);
+                                 -fx-background-radius: 14;
+                                 -fx-padding: 12;
+                                 -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.25), 20, 0.2, 0, 6);">
+                    <Label text="📋" style="-fx-font-size: 24px; -fx-text-fill: white;"/>
+                </StackPane>
+                <VBox spacing="4">
+                    <Label text="Mission List" styleClass="mission-list-title"/>
+                    <Label text="Manage and review all available missions" styleClass="mission-list-subtitle"/>
+                </VBox>
+            </HBox>
         </VBox>
 
         <!-- Stats Cards -->
@@ -55,20 +55,19 @@
             <!-- Table -->
             <TableView fx:id="missionTable"
                        styleClass="mission-table"
-                       prefHeight="400"
-                       style="-fx-text-fill: black; -fx-font-size: 14px; -fx-font-weight: normal;">
+                       prefHeight="450">
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
                 </columnResizePolicy>
 
                 <columns>
-                    <TableColumn fx:id="idColumn" text="ID" prefWidth="80">
+                    <TableColumn fx:id="idColumn" text="#" prefWidth="60">
                         <graphic>
                             <Label text="#️⃣"/>
                         </graphic>
                     </TableColumn>
 
-                    <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="450">
+                    <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="500">
                         <graphic>
                             <Label text="📄"/>
                         </graphic>
@@ -80,7 +79,7 @@
                         </graphic>
                     </TableColumn>
 
-                    <TableColumn fx:id="creatorColumn" text="Creator" prefWidth="120">
+                    <TableColumn fx:id="creatorColumn" text="Creator" prefWidth="150">
                         <graphic>
                             <Label text="👤"/>
                         </graphic>
@@ -104,8 +103,8 @@
             </TableView>
         </VBox>
 
-        <!-- Action Buttons - CENTERED -->
-        <HBox alignment="CENTER" style="-fx-spacing: 20px; -fx-padding: 20px 0 0 0;">
+        <!-- Action Buttons -->
+        <HBox alignment="CENTER" styleClass="action-buttons-container">
             <Button text="✏️ Edit Mission"
                     onAction="#editMission"
                     styleClass="edit-button"
@@ -118,9 +117,9 @@
         </HBox>
 
         <!-- Footer Note -->
-        <HBox alignment="CENTER" style="-fx-padding: 20px 0 0 0;">
+        <HBox alignment="CENTER" styleClass="footer-container">
             <Label text="💡 Double-click a mission to submit code • 🔍 Use filters to find specific missions"
-                   style="-fx-text-fill: #64748b; -fx-font-size: 13px;"/>
+                   styleClass="footer-text"/>
         </HBox>
     </VBox>
 </StackPane>
