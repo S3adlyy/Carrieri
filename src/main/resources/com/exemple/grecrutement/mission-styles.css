@@ -289,6 +289,16 @@
     -fx-font-size: 11px;
 }
 
+.white-text {
+    -fx-text-fill: white;
+}
+
+.mission-h1 {
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
 .mission-stats-card:hover {
     -fx-background-color: rgba(35, 25, 66, 0.7);
     -fx-scale-x: 1.05;

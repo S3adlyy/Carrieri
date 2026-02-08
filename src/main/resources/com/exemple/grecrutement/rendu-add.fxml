@@ -13,15 +13,15 @@
     <Label text="🤖 AI Code Submission" styleClass="mission-h1"/>
 
     <GridPane hgap="10" vgap="10">
-        <Label text="ID Candidat:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label text="ID Candidat:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="white-text"/>
         <TextField fx:id="txtCandidatId" GridPane.rowIndex="0" GridPane.columnIndex="1"
                    promptText="Entrez ID candidat"/>
 
-        <Label text="ID Mission:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <Label text="ID Mission:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="white-text"/>
         <TextField fx:id="txtMissionId" GridPane.rowIndex="1" GridPane.columnIndex="1"
                    promptText="Entrez ID mission"/>
 
-        <Label text="Type Mission:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <Label text="Type Mission:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="white-text"/>
         <ComboBox fx:id="comboMissionType" GridPane.rowIndex="2" GridPane.columnIndex="1"
                   prefWidth="150"/>
     </GridPane>

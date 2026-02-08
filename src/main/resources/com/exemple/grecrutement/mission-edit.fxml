@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.exemple.grecrutement.MissionEditController"
+
+           alignment="CENTER"
+           style="-fx-background-color: transparent;">
+
+    <VBox spacing="30"
+          alignment="CENTER"
+          prefWidth="600"
+          maxWidth="600"
+          styleClass="mission-form-container">
+
+        <Label text="✏️ Edit Mission" styleClass="mission-h1"/>
+
+        <GridPane hgap="25" vgap="20">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="35"/>
+                <ColumnConstraints percentWidth="65"/>
+            </columnConstraints>
+            <Label text="Description:"
+                   styleClass="white-text"
+                   GridPane.rowIndex="0"
+                   GridPane.columnIndex="0"/>
+            <TextField fx:id="descriptionField"
+                       prefWidth="350"
+                       GridPane.rowIndex="0"
+                       GridPane.columnIndex="1"/>
+
+            <Label text="Min Score:"
+                   styleClass="white-text"
+                   GridPane.rowIndex="1"
+                   GridPane.columnIndex="0"/>
+            <TextField fx:id="scoreField"
+                       prefWidth="350"
+                       GridPane.rowIndex="1"
+                       GridPane.columnIndex="1"/>
+
+            <Label text="Creator ID:"
+                   styleClass="white-text"
+                   GridPane.rowIndex="2"
+                   GridPane.columnIndex="0"/>
+            <TextField fx:id="creatorField"
+                       prefWidth="350"
+                       GridPane.rowIndex="2"
+                       GridPane.columnIndex="1"/>
+
+        </GridPane>
+
+        <HBox spacing="25" alignment="CENTER">
+            <Button text="💾 Save" onAction="#saveMission" styleClass="mission-btn"/>
+            <Button text="↩ Cancel" onAction="#cancel" styleClass="mission-btn-outline"/>
+        </HBox>
+
+    </VBox>
+</StackPane>

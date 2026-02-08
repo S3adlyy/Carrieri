@@ -86,10 +86,7 @@ public class MissionListController implements Initializable {
             return;
         }
 
-        // 🔜 NEXT STEP: open edit dialog
-        showAlert(Alert.AlertType.INFORMATION,
-                "Edit Mission",
-                "Edit feature will open for mission ID: " + selected.getId());
+        MissionShellController.getInstance().showEditMission(selected);
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
