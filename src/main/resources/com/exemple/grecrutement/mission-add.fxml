@@ -8,201 +8,245 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.geometry.Insets?>
 
 <StackPane xmlns="http://javafx.com/javafx/17"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.exemple.grecrutement.MissionAddController"
            stylesheets="@mission-styles.css"
-           style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0a66c2 0%, #378fe9 50%, #8b5cf6 100%);">
+           styleClass="prf-bg"
+           style="-fx-padding: 40;">
 
-    <!-- Background Circles -->
-    <Circle radius="60" fill="rgba(255,255,255,0.1)">
-        <translateY>50</translateY>
-        <translateX>-100</translateX>
-    </Circle>
+    <!-- Subtle Background Elements -->
+    <Circle radius="120" fill="rgba(159,134,192,0.03)" style="-fx-translate-y: -180; -fx-translate-x: -320;"/>
+    <Circle radius="90" fill="rgba(190,149,196,0.02)" style="-fx-translate-y: 120; -fx-translate-x: 280;"/>
 
-    <Circle radius="40" fill="rgba(255,255,255,0.08)">
-        <translateY>-100</translateY>
-        <translateX>150</translateX>
-    </Circle>
+    <!-- Main Container with Better Centering -->
+    <VBox alignment="TOP_CENTER" spacing="0" maxWidth="950">
 
-    <Circle radius="80" fill="rgba(255,255,255,0.05)">
-        <translateY>100</translateY>
-        <translateX>200</translateX>
-    </Circle>
+        <!-- Header Section - Clean and Prominent -->
+        <VBox spacing="20" alignment="CENTER" style="-fx-padding: 0 0 35 0;">
+            <!-- Icon Badge with Better Visual Hierarchy -->
+            <StackPane style="-fx-background-color: linear-gradient(135deg, #231942 0%, #5E548E 100%);
+                             -fx-background-radius: 20;
+                             -fx-padding: 20;
+                             -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.3), 25, 0.25, 0, 10);">
+                <Label text="📋" style="-fx-font-size: 34px; -fx-text-fill: white;"/>
+            </StackPane>
 
-    <!-- Glass Morphism Form Container -->
-    <VBox spacing="30"
-          alignment="TOP_CENTER"
-          styleClass="white-text-container"
-          maxWidth="750"
-          minWidth="750"
-          style="-fx-padding: 50;">
-
-        <!-- HEADER -->
-        <VBox spacing="20" alignment="CENTER" style="-fx-padding: 0 0 40 0;">
-            <HBox spacing="0" alignment="CENTER">
-                <!-- Icon with Gradient -->
-                <StackPane style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0a66c2 0%, #8b5cf6 100%);
-                                  -fx-background-radius: 50%;
-                                  -fx-padding: 20;
-                                  -fx-effect: dropshadow(gaussian, rgba(10,102,194,0.3), 15, 0, 0, 5);">
-                    <Label text="🚀" style="-fx-font-size: 36px; -fx-text-fill: white;"/>
-                </StackPane>
-            </HBox>
-
-            <!-- Title -->
-            <VBox spacing="8" alignment="CENTER">
+            <!-- Title Section with Better Typography -->
+            <VBox spacing="10" alignment="CENTER" maxWidth="700">
                 <Label text="Create New Mission"
-                       style="-fx-text-fill: #0a66c2;
-                              -fx-font-size: 32px;
-                              -fx-font-weight: 800;
-                              -fx-font-family: 'Segoe UI', Arial, sans-serif;
-                              -fx-letter-spacing: -0.02em;"/>
-
-                <!-- Decorative Line -->
-                <HBox alignment="CENTER" style="-fx-padding: 10 0;">
-                    <HBox style="-fx-background-color: linear-gradient(to right, transparent, #0a66c2, transparent);
-                                 -fx-min-height: 2px;
-                                 -fx-pref-width: 200px;
-                                 -fx-opacity: 0.6;"/>
-                </HBox>
+                       style="-fx-font-size: 36px;
+                              -fx-font-weight: 900;
+                              -fx-text-fill: #231942;
+                              -fx-letter-spacing: -0.8px;
+                              -fx-padding: 0 0 5 0;" />
 
                 <Label text="Define mission requirements for candidate evaluation"
-                       style="-fx-text-fill: rgba(0,0,0,0.6);
-                              -fx-font-size: 16px;
+                       style="-fx-font-size: 17px;
+                              -fx-text-fill: rgba(35,25,66,0.8);
                               -fx-font-weight: 500;
-                              -fx-font-family: 'Segoe UI', Arial, sans-serif;"/>
+                              -fx-text-alignment: center;
+                              -fx-wrap-text: true;
+                              -fx-line-spacing: 1.6;" />
+
+                <!-- Subtle Divider -->
+                <HBox alignment="CENTER" style="-fx-padding: 18 0 5 0;">
+                    <HBox style="-fx-background-color: linear-gradient(to right, transparent 0%, #BE95C4 50%, transparent 100%);
+                                -fx-min-height: 2px;
+                                -fx-pref-width: 200px;
+                                -fx-opacity: 0.4;"/>
+                </HBox>
             </VBox>
         </VBox>
 
-        <!-- FORM GRID -->
-        <GridPane hgap="20" vgap="25" style="-fx-padding: 0 0 30 0;">
-            <columnConstraints>
-                <ColumnConstraints prefWidth="140" halignment="RIGHT"/>
-                <ColumnConstraints prefWidth="320"/>
-                <ColumnConstraints prefWidth="200"/>
-            </columnConstraints>
+        <!-- Form Card - Improved Spacing and Layout -->
+        <VBox styleClass="prf-heroCard"
+              style="-fx-padding: 45 60 50 60;
+                     -fx-background-radius: 20;
+                     -fx-border-radius: 20;
+                     -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.14), 40, 0.25, 0, 18);"
+              maxWidth="950">
 
-            <!-- Description Field -->
-            <Label text="Mission Description"
-                   GridPane.columnIndex="0"
-                   GridPane.rowIndex="0"
-                   style="-fx-text-fill: rgba(0,0,0,0.7);
-                          -fx-font-size: 16px;
-                          -fx-font-weight: 600;
-                          -fx-font-family: 'Segoe UI', Arial, sans-serif;
-                          -fx-padding: 12 0;
-                          -fx-border-width: 0 0 0 4;
-                          -fx-border-color: #0a66c2;
-                          -fx-padding-left: 12;"/>
+            <!-- Form Grid with Better Column Structure -->
+            <GridPane hgap="30" vgap="35" style="-fx-padding: 10 0 0 0;">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="200" halignment="RIGHT"/>
+                    <ColumnConstraints prefWidth="420"/>
+                    <ColumnConstraints prefWidth="230" halignment="LEFT"/>
+                </columnConstraints>
 
-            <TextField fx:id="descriptionField"
-                       promptText="Enter detailed mission description"
-                       GridPane.columnIndex="1"
-                       GridPane.rowIndex="0"
-                       GridPane.columnSpan="1"
-                       styleClass="mission-input"
-                       style="-fx-pref-width: 320;"/>
+                <!-- =========== ROW 1: DESCRIPTION =========== -->
+                <VBox alignment="TOP_RIGHT" spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="Mission Description"
+                           style="-fx-font-size: 16.5px;
+                                  -fx-font-weight: 900;
+                                  -fx-text-fill: #231942;
+                                  -fx-padding: 10 0 5 0;" />
+                    <Label text="Required field"
+                           style="-fx-font-size: 12px;
+                                  -fx-text-fill: rgba(35,25,66,0.55);
+                                  -fx-font-weight: 700;
+                                  -fx-font-style: italic;" />
+                </VBox>
 
-            <Label text="Describe what candidates need to accomplish in detail"
-                   GridPane.columnIndex="2"
-                   GridPane.rowIndex="0"
-                   style="-fx-text-fill: rgba(0,0,0,0.5);
-                          -fx-font-size: 14px;
-                          -fx-font-style: italic;
-                          -fx-padding: 8 0 0 0;
-                          -fx-wrap-text: true;"/>
+                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <TextArea fx:id="descriptionField"
+                              promptText="Enter detailed mission description..."
+                              styleClass="prf-editorArea"
+                              style="-fx-pref-width: 420;
+                                     -fx-pref-height: 140;
+                                     -fx-wrap-text: true;
+                                     -fx-font-size: 14.5px;
+                                     -fx-padding: 14 16;" />
+                </VBox>
 
-            <!-- Minimum Score Field -->
-            <Label text="Minimum Score"
-                   GridPane.columnIndex="0"
-                   GridPane.rowIndex="1"
-                   style="-fx-text-fill: rgba(0,0,0,0.7);
-                          -fx-font-size: 16px;
-                          -fx-font-weight: 600;
-                          -fx-font-family: 'Segoe UI', Arial, sans-serif;
-                          -fx-padding: 12 0;
-                          -fx-border-width: 0 0 0 4;
-                          -fx-border-color: #0a66c2;
-                          -fx-padding-left: 12;"/>
+                <VBox spacing="8" GridPane.columnIndex="2" GridPane.rowIndex="0" alignment="TOP_LEFT">
+                    <Label text="Describe what candidates need to accomplish in detail"
+                           style="-fx-font-size: 14px;
+                                  -fx-text-fill: rgba(35,25,66,0.75);
+                                  -fx-line-spacing: 1.5;
+                                  -fx-wrap-text: true;
+                                  -fx-font-weight: 700;" />
+                    <Label text="• Include clear objectives
+• Specify required deliverables
+• Mention evaluation criteria
+• Add any constraints or deadlines"
+                           style="-fx-font-size: 13px;
+                                  -fx-text-fill: rgba(35,25,66,0.6);
+                                  -fx-line-spacing: 1.4;
+                                  -fx-wrap-text: true;
+                                  -fx-padding: 8 0 0 10;" />
+                </VBox>
 
-            <TextField fx:id="scoreField"
-                       promptText="Enter minimum score (0-100)"
-                       GridPane.columnIndex="1"
-                       GridPane.rowIndex="1"
-                       styleClass="mission-input"
-                       style="-fx-pref-width: 320;"/>
+                <!-- =========== ROW 2: MINIMUM SCORE =========== -->
+                <VBox alignment="TOP_RIGHT" spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label text="Minimum Score"
+                           style="-fx-font-size: 16.5px;
+                                  -fx-font-weight: 900;
+                                  -fx-text-fill: #231942;
+                                  -fx-padding: 10 0 5 0;" />
+                    <Label text="0-100 scale"
+                           style="-fx-font-size: 12px;
+                                  -fx-text-fill: rgba(35,25,66,0.55);
+                                  -fx-font-weight: 700;" />
+                </VBox>
 
-            <Label text="Required passing score percentage for candidates"
-                   GridPane.columnIndex="2"
-                   GridPane.rowIndex="1"
-                   style="-fx-text-fill: rgba(0,0,0,0.5);
-                          -fx-font-size: 14px;
-                          -fx-font-style: italic;
-                          -fx-padding: 8 0 0 0;"/>
+                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <TextField fx:id="scoreField"
+                               promptText="Enter minimum score (0-100)"
+                               styleClass="prf-editorField"
+                               style="-fx-pref-width: 420;
+                                      -fx-font-size: 14.5px;
+                                      -fx-padding: 14 16;" />
+                </VBox>
 
-            <!-- Creator ID Field -->
-            <Label text="Creator ID"
-                   GridPane.columnIndex="0"
-                   GridPane.rowIndex="2"
-                   style="-fx-text-fill: rgba(0,0,0,0.7);
-                          -fx-font-size: 16px;
-                          -fx-font-weight: 600;
-                          -fx-font-family: 'Segoe UI', Arial, sans-serif;
-                          -fx-padding: 12 0;
-                          -fx-border-width: 0 0 0 4;
-                          -fx-border-color: #0a66c2;
-                          -fx-padding-left: 12;"/>
+                <VBox spacing="8" GridPane.columnIndex="2" GridPane.rowIndex="1" alignment="TOP_LEFT">
+                    <Label text="Required passing score percentage for candidates"
+                           style="-fx-font-size: 14px;
+                                  -fx-text-fill: rgba(35,25,66,0.75);
+                                  -fx-line-spacing: 1.5;
+                                  -fx-wrap-text: true;
+                                  -fx-font-weight: 700;" />
+                    <Label text="This is the minimum percentage candidates must achieve to pass the mission evaluation."
+                           style="-fx-font-size: 13px;
+                                  -fx-text-fill: rgba(35,25,66,0.6);
+                                  -fx-line-spacing: 1.4;
+                                  -fx-wrap-text: true;
+                                  -fx-font-style: italic;" />
+                </VBox>
 
-            <TextField fx:id="createdByIdField"
-                       promptText="Enter your user ID"
-                       GridPane.columnIndex="1"
-                       GridPane.rowIndex="2"
-                       styleClass="mission-input"
-                       style="-fx-pref-width: 320;"/>
+                <!-- =========== ROW 3: CREATOR ID =========== -->
+                <VBox alignment="TOP_RIGHT" spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                    <Label text="Creator ID"
+                           style="-fx-font-size: 16.5px;
+                                  -fx-font-weight: 900;
+                                  -fx-text-fill: #231942;
+                                  -fx-padding: 10 0 5 0;" />
+                    <Label text="Auto-filled"
+                           style="-fx-font-size: 12px;
+                                  -fx-text-fill: rgba(35,25,66,0.55);
+                                  -fx-font-weight: 700;
+                                  -fx-font-style: italic;" />
+                </VBox>
 
-            <Label text="Your identification number in the system"
-                   GridPane.columnIndex="2"
-                   GridPane.rowIndex="2"
-                   style="-fx-text-fill: rgba(0,0,0,0.5);
-                          -fx-font-size: 14px;
-                          -fx-font-style: italic;
-                          -fx-padding: 8 0 0 0;"/>
-        </GridPane>
+                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <TextField fx:id="createdByIdField"
+                               promptText="Enter your user ID"
+                               styleClass="prf-editorField"
+                               style="-fx-pref-width: 420;
+                                      -fx-font-size: 14.5px;
+                                      -fx-padding: 14 16;" />
+                </VBox>
 
-        <!-- ACTION BUTTON -->
-        <VBox spacing="20" alignment="CENTER" style="-fx-padding: 30 0 0 0;">
-            <!-- Decorative Line -->
-            <HBox alignment="CENTER" style="-fx-padding: 10 0;">
-                <HBox style="-fx-background-color: linear-gradient(to right, transparent, rgba(10,102,194,0.3), transparent);
-                             -fx-min-height: 2px;
-                             -fx-pref-width: 300px;
-                             -fx-opacity: 0.4;"/>
-            </HBox>
+                <VBox spacing="8" GridPane.columnIndex="2" GridPane.rowIndex="2" alignment="TOP_LEFT">
+                    <Label text="Your identification number in the system"
+                           style="-fx-font-size: 14px;
+                                  -fx-text-fill: rgba(35,25,66,0.75);
+                                  -fx-line-spacing: 1.5;
+                                  -fx-wrap-text: true;
+                                  -fx-font-weight: 700;" />
+                    <Label text="This ID will be associated with the mission for tracking and reporting purposes."
+                           style="-fx-font-size: 13px;
+                                  -fx-text-fill: rgba(35,25,66,0.6);
+                                  -fx-line-spacing: 1.4;
+                                  -fx-wrap-text: true;
+                                  -fx-font-style: italic;" />
+                </VBox>
+            </GridPane>
 
-            <Button text="🚀 Create Mission"
-                    onAction="#ajouterMission"
-                    style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0a66c2 0%, #378fe9 100%);
-                           -fx-text-fill: white;
-                           -fx-font-size: 18px;
-                           -fx-font-weight: 700;
-                           -fx-font-family: 'Segoe UI', Arial, sans-serif;
-                           -fx-padding: 18 40;
-                           -fx-background-radius: 30;
-                           -fx-min-width: 240;
-                           -fx-min-height: 60;
-                           -fx-cursor: hand;
-                           -fx-effect: dropshadow(gaussian, rgba(10,102,194,0.4), 20, 0, 0, 8);"/>
+            <!-- Submit Section - Improved Visual Hierarchy -->
+            <VBox spacing="25" alignment="CENTER" style="-fx-padding: 40 0 10 0;">
+                <!-- Decorative Line -->
+                <HBox alignment="CENTER">
+                    <HBox style="-fx-background-color: linear-gradient(to right, transparent, rgba(159,134,192,0.3), transparent);
+                                -fx-min-height: 1.5px;
+                                -fx-pref-width: 350px;
+                                -fx-opacity: 0.5;" />
+                </HBox>
 
-            <!-- Decorative Icons -->
-            <HBox spacing="30" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
-                <Label text="⚡" style="-fx-font-size: 20px; -fx-text-fill: rgba(0,0,0,0.3);"/>
-                <Label text="✨" style="-fx-font-size: 20px; -fx-text-fill: rgba(0,0,0,0.3);"/>
-                <Label text="🎯" style="-fx-font-size: 20px; -fx-text-fill: rgba(0,0,0,0.3);"/>
-            </HBox>
+                <!-- Primary Action Button -->
+                <Button text="🚀 Create Mission"
+                        onAction="#ajouterMission"
+                        style="-fx-background-color: linear-gradient(135deg, #231942 0%, #5E548E 100%);
+                               -fx-text-fill: white;
+                               -fx-font-size: 17px;
+                               -fx-font-weight: 900;
+                               -fx-padding: 18 50;
+                               -fx-background-radius: 50;
+                               -fx-min-width: 250;
+                               -fx-min-height: 60;
+                               -fx-cursor: hand;
+                               -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.35), 25, 0.25, 0, 10);
+                               -fx-letter-spacing: 0.5px;" />
+
+                <!-- Hover effect for button -->
+                <style>
+                    .button:hover {
+                    -fx-background-color: linear-gradient(135deg, #5E548E 0%, #9F86C0 100%);
+                    -fx-scale-x: 1.02;
+                    -fx-scale-y: 1.02;
+                    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.4), 30, 0.3, 0, 12);
+                    }
+                    .button:pressed {
+                    -fx-scale-x: 0.98;
+                    -fx-scale-y: 0.98;
+                    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.25), 20, 0.2, 0, 8);
+                    }
+                </style>
+
+                <!-- Visual Indicators -->
+                <HBox spacing="25" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+                    <Label text="⚡ Fast processing" style="-fx-font-size: 12.5px; -fx-text-fill: rgba(94,84,142,0.7); -fx-font-weight: 700;" />
+                    <Label text="•" style="-fx-font-size: 14px; -fx-text-fill: rgba(159,134,192,0.5);" />
+                    <Label text="🔒 Secure submission" style="-fx-font-size: 12.5px; -fx-text-fill: rgba(94,84,142,0.7); -fx-font-weight: 700;" />
+                    <Label text="•" style="-fx-font-size: 14px; -fx-text-fill: rgba(159,134,192,0.5);" />
+                    <Label text="📊 Real-time updates" style="-fx-font-size: 12.5px; -fx-text-fill: rgba(94,84,142,0.7); -fx-font-weight: 700;" />
+                </HBox>
+            </VBox>
         </VBox>
-
     </VBox>
 </StackPane>

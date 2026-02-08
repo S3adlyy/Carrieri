@@ -1,142 +1,651 @@
-/* mission-styles.css - Modern Glass Navbar with Liquid Animation */
-
-/* Root background */
-.mission-bg {
-    -fx-background-color: linear-gradient(to bottom right, #0f0c29, #302b63, #24243e);
+/* =========================
+   GLOBALS
+   ========================= */
+.root {
+    -fx-font-family: "Segoe UI", "Inter", "Arial";
+    -fx-background-color: #F6F2FA;
 }
 
-/* Glass Effect Navbar */
-.mission-header {
-    -fx-background-color: rgba(255, 255, 255, 0.1);
-    -fx-backdrop-filter: blur(15px);
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 15, 0, 0, 4);
-    -fx-border-color: rgba(255, 255, 255, 0.2);
-    -fx-border-width: 0 0 1px 0;
-    -fx-padding: 15px 30px;
-    -fx-spacing: 20px;
+.bg {
+    -fx-background-color: linear-gradient(to bottom right, #231942, #5E548E, #9F86C0, #BE95C4, #E0B1CB);
 }
 
-/* Liquid Animation Base Button */
-.mission-btn {
-    -fx-background-color: linear-gradient(to right, #4a00e0, #8e2de2);
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
+.glass {
+    -fx-background-color: rgba(255,255,255,0.12);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(255,255,255,0.22);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.28), 26, 0.2, 0, 10);
+}
+
+.card {
+    -fx-background-color: rgba(255,255,255,0.94);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(0,0,0,0.08);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.16), 24, 0.2, 0, 8);
+}
+
+.brand {
+    -fx-fill: white;
+    -fx-font-size: 30px;
+    -fx-font-weight: 900;
+}
+
+.h1 {
+    -fx-fill: #111827;
+    -fx-font-size: 22px;
+    -fx-font-weight: 900;
+}
+
+.h2 {
+    -fx-fill: #231942;
     -fx-font-size: 14px;
-    -fx-padding: 12px 24px;
-    -fx-background-radius: 25px;
-    -fx-border-radius: 25px;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 3);
-    -fx-border-color: rgba(255, 255, 255, 0.3);
-    -fx-border-width: 1px;
+    -fx-font-weight: 900;
+}
 
-    /* Liquid animation properties */
+.muted {
+    -fx-fill: rgba(255,255,255,0.9);
+    -fx-text-fill: rgba(255,255,255,0.9);
+}
+
+.muted-dark {
+    -fx-fill: #6B7280;
+    -fx-text-fill: #6B7280;
+}
+
+.label {
+    -fx-text-fill: #374151;
+    -fx-font-weight: 800;
+}
+
+.input {
+    -fx-background-color: white;
+    -fx-border-color: rgba(0,0,0,0.16);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 10 12 10 12;
+}
+
+.textarea {
+    -fx-background-color: white;
+    -fx-border-color: rgba(0,0,0,0.16);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+.btn {
+    -fx-background-color: #231942;
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-background-radius: 999;
+    -fx-padding: 10 14 10 14;
+}
+
+.btn:hover { -fx-background-color: #5E548E; }
+
+.btn-soft {
+    -fx-background-color: rgba(35,25,66,0.10);
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-background-radius: 999;
+    -fx-padding: 8 12 8 12;
+}
+
+.pill {
+    -fx-background-color: rgba(255,255,255,0.16);
+    -fx-background-radius: 999;
+    -fx-padding: 6 10 6 10;
+}
+
+.error {
+    -fx-text-fill: #B91C1C;
+    -fx-font-weight: 900;
+}
+
+/* Inline validation (PseudoClass "error") */
+.text-field:error,
+.password-field:error,
+.text-area:error,
+.combo-box-base:error {
+    -fx-border-color: #EF4444;
+    -fx-border-width: 2;
     -fx-background-insets: 0;
-    -fx-transition: all 0.3s ease;
 }
 
-/* Outline Button Style */
-.mission-btn-outline {
+/* Chips */
+.chips-wrap {
+    -fx-padding: 6 0 0 0;
+}
+
+.chip {
+    -fx-background-color: rgba(35,25,66,0.10);
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-border-color: rgba(35,25,66,0.22);
+    -fx-padding: 6 10 6 10;
+    -fx-spacing: 8;
+    -fx-alignment: center-left;
+}
+
+.chip-label {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+}
+
+.chip-x {
     -fx-background-color: transparent;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-padding: 12px 24px;
-    -fx-background-radius: 25px;
-    -fx-border-radius: 25px;
-    -fx-border-color: rgba(255, 255, 255, 0.5);
-    -fx-border-width: 2px;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-padding: 0 6 0 6;
     -fx-cursor: hand;
-    -fx-transition: all 0.3s ease;
 }
 
-/* Liquid Animation Effects */
-.mission-btn:hover {
-    -fx-background-color: linear-gradient(to right, #8e2de2, #4a00e0);
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-    -fx-effect: dropshadow(gaussian, rgba(142, 45, 226, 0.5), 15, 0, 0, 5);
-    -fx-border-color: rgba(255, 255, 255, 0.6);
+.chip-x:hover {
+    -fx-text-fill: #5E548E;
 }
 
-.mission-btn-outline:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.1);
-    -fx-border-color: rgba(255, 255, 255, 0.8);
-    -fx-text-fill: #e0e0ff;
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
+/* Suggestions list */
+.suggest {
+    -fx-background-color: white;
+    -fx-border-color: rgba(0,0,0,0.12);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
 }
 
-/* Active/Pressed State */
-.mission-btn:pressed {
-    -fx-scale-x: 0.98;
-    -fx-scale-y: 0.98;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
+/* Preview */
+.preview-title {
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
 }
 
-.mission-btn-outline:pressed {
-    -fx-scale-x: 0.98;
-    -fx-scale-y: 0.98;
+.preview-card {
+    -fx-background-color: rgba(255,255,255,0.10);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: rgba(255,255,255,0.18);
+    -fx-padding: 14;
 }
 
-/* Ripple/Liquid Effect Animation */
-@keyframes liquidRipple {
-    0% {
-        -fx-scale-x: 0.9;
-        -fx-scale-y: 0.9;
-        -fx-opacity: 0.8;
-    }
-    50% {
-        -fx-scale-x: 1.1;
-        -fx-scale-y: 1.1;
-        -fx-opacity: 0.4;
-    }
-    100% {
-        -fx-scale-x: 1.3;
-        -fx-scale-y: 1.3;
-        -fx-opacity: 0;
-    }
+.preview-name {
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-font-size: 15px;
 }
 
-/* Glass Effect Enhancement */
-.mission-header {
-    -fx-background-color:
-            linear-gradient(to bottom,
-            rgba(255, 255, 255, 0.15),
-            rgba(255, 255, 255, 0.05));
-    -fx-backdrop-filter: blur(20px);
-    -fx-border-color:
-            linear-gradient(to right,
-            transparent,
-            rgba(255, 255, 255, 0.2),
-            transparent);
+.preview-role {
+    -fx-text-fill: rgba(255,255,255,0.92);
+    -fx-font-weight: 900;
+    -fx-background-color: rgba(255,255,255,0.14);
+    -fx-background-radius: 999;
+    -fx-padding: 4 10 4 10;
 }
 
-/* Content Pane Styling */
-#contentPane {
-    -fx-padding: 20px;
+.preview-primary {
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-font-size: 14px;
+}
+
+.preview-sub {
+    -fx-text-fill: rgba(255,255,255,0.88);
+    -fx-font-weight: 700;
+}
+
+.preview-small {
+    -fx-text-fill: rgba(255,255,255,0.82);
+}
+
+
+
+
+
+
+/* =========================
+   NAVBAR
+   ========================= */
+.navBar {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 10 14 10 14;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.08), 22, 0.18, 0, 10);
+}
+
+.navBrand {
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+}
+
+.navBrandDot {
+    -fx-min-width: 10; -fx-min-height: 10;
+    -fx-max-width: 10; -fx-max-height: 10;
+    -fx-background-radius: 999;
+    -fx-background-color: linear-gradient(to bottom right, #231942, #5E548E, #9F86C0, #BE95C4, #E0B1CB);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.22), 16, 0.22, 0, 0);
+}
+
+.navIconBtn {
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-border-color: rgba(35,25,66,0.14);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 6 10 6 10;
+    -fx-cursor: hand;
+}
+.navIconBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-border-color: rgba(94,84,142,0.22);
+}
+
+.navIco { -fx-fill: #231942; }
+
+.navSearch {
+    -fx-pref-width: 320;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-background-color: rgba(35,25,66,0.04);
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-padding: 9 14 9 14;
+    -fx-text-fill: #231942;
+    -fx-prompt-text-fill: rgba(35,25,66,0.50);
+}
+.navSearch:focused {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: rgba(159,134,192,0.75);
+    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.18), 18, 0.18, 0, 8);
+}
+
+.navLinkBtn {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgba(35,25,66,0.78);
+    -fx-font-weight: 900;
+    -fx-padding: 7 12 7 12;
+    -fx-background-radius: 999;
+    -fx-cursor: hand;
+}
+.navLinkBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-text-fill: #231942;
+}
+.navLinkBtnActive {
+    -fx-background-color: rgba(35,25,66,0.08);
+    -fx-border-color: rgba(35,25,66,0.14);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-text-fill: #231942;
+}
+
+.navAvatar { -fx-fill: rgba(35,25,66,0.10); }
+.navName { -fx-text-fill: #231942; -fx-font-weight: 900; }
+
+.navLogoutBtn {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(35,25,66,0.18);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-padding: 6 12 6 12;
+    -fx-cursor: hand;
+}
+.navLogoutBtn:hover {
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-border-color: rgba(94,84,142,0.26);
+}
+
+/* =========================
+   PROFILE LAYOUT
+   ========================= */
+.prf-bg { -fx-background-color: #F6F2FA; }
+
+/* ScrollPane viewport must be transparent. [web:238] */
+.prf-scroll { -fx-background-color: transparent; }
+.prf-scroll > .viewport { -fx-background-color: transparent; }
+
+.prf-centerWrap { -fx-background-color: transparent; }
+
+.prf-page {
+    -fx-max-width: 1120;
+    -fx-min-width: 920;
     -fx-background-color: transparent;
 }
 
-/* Button Icon Styling */
-.mission-btn .text,
-.mission-btn-outline .text {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 1, 0, 1, 1);
+/* =========================
+   HERO
+   ========================= */
+.prf-heroCard {
+    -fx-background-color: #FFFFFF;
+    -fx-background-insets: 0;
+    -fx-background-radius: 16;
+    -fx-border-color: rgba(35,25,66,0.12);
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.12), 30, 0.20, 0, 12);
 }
 
-/* Pulsing Animation for Interactive Feedback */
-@keyframes pulse {
-    0% {
-        -fx-effect: dropshadow(gaussian, rgba(142, 45, 226, 0.3), 10, 0, 0, 3);
-    }
-    50% {
-        -fx-effect: dropshadow(gaussian, rgba(142, 45, 226, 0.6), 15, 0, 0, 5);
-    }
-    100% {
-        -fx-effect: dropshadow(gaussian, rgba(142, 45, 226, 0.3), 10, 0, 0, 3);
-    }
+.prf-cover {
+    -fx-background-insets: 0;
+    -fx-background-radius: 16 16 0 0;
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E, #9F86C0, #BE95C4);
 }
 
-.mission-btn{
-    -fx-animation: pulse 2s infinite;
+.prf-heroBody { -fx-padding: 12 14 14 14; }
+
+.prf-avatarWrap { -fx-translate-y: -22; }
+.prf-avatarHalo {
+    -fx-fill: rgba(255,255,255,0.92);
+    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.28), 22, 0.18, 0, 0);
+}
+
+.prf-name {
+    -fx-font-size: 20px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+}
+
+.prf-headlineBadge {
+    -fx-font-size: 12px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+    -fx-background-color: rgba(159,134,192,0.22);
+    -fx-border-color: rgba(94,84,142,0.18);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 4 10 4 10;
+}
+
+.prf-meta {
+    -fx-font-size: 12px;
+    -fx-text-fill: rgba(35,25,66,0.62);
+}
+
+.prf-bioPreview {
+    -fx-font-size: 13px;
+    -fx-text-fill: rgba(17,24,39,0.88);
+    -fx-line-spacing: 2px;
+}
+
+/* Stats */
+.prf-statsRow { -fx-padding: 2 0 0 0; }
+
+.prf-statPill {
+    -fx-background-color: #F4F1FB;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 7 12 7 12;
+}
+.prf-statKey {
+    -fx-text-fill: rgba(35,25,66,0.70);
+    -fx-font-weight: 900;
+    -fx-font-size: 11px;
+}
+.prf-statVal {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 11px;
+}
+
+/* Open to work value badge */
+.prf-openToPill {
+    -fx-background-color: linear-gradient(to right, rgba(94,84,142,0.18), rgba(224,177,203,0.22));
+    -fx-border-color: rgba(94,84,142,0.22);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 7 12 7 12;
+    -fx-alignment: center-left;
+}
+.prf-openToText {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 11px;
+}
+
+.prf-ico { -fx-fill: #231942; }
+.prf-icoOnDark { -fx-fill: #FFFFFF; }
+.prf-icoBriefcase { -fx-fill: #5E548E; }
+
+/* =========================
+   CARDS (solid)
+   ========================= */
+.prf-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 16;
+    -fx-border-color: rgba(35,25,66,0.12);
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-padding: 14;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.08), 22, 0.18, 0, 10);
+}
+
+.prf-sideCard { -fx-padding: 12; }
+
+.prf-cardHeader { -fx-padding: 0 0 6 0; }
+
+.prf-cardTitle {
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+}
+
+.prf-label { -fx-font-size: 12px; -fx-font-weight: 900; -fx-text-fill: rgba(35,25,66,0.58); }
+.prf-value { -fx-font-size: 13px; -fx-text-fill: rgba(17,24,39,0.92); }
+.prf-paragraph { -fx-font-size: 13px; -fx-text-fill: rgba(17,24,39,0.90); -fx-line-spacing: 2px; }
+.prf-muted { -fx-text-fill: rgba(35,25,66,0.55); }
+
+.prf-linkBtn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: 900;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+.prf-linkBtn:hover { -fx-underline: true; }
+
+.prf-sideFooterBtn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: 900;
+    -fx-padding: 6 0 0 0;
+    -fx-cursor: hand;
+}
+.prf-sideFooterBtn:hover { -fx-underline: true; }
+
+/* Action icon buttons */
+.prf-actBtn {
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-border-color: rgba(35,25,66,0.14);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 6 10 6 10;
+    -fx-cursor: hand;
+}
+.prf-actBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-border-color: rgba(94,84,142,0.22);
+}
+
+.prf-actSave {
+    -fx-background-color: #231942;
+    -fx-border-color: #231942;
+}
+.prf-actSave:hover { -fx-background-color: #5E548E; -fx-border-color: #5E548E; }
+
+.prf-actCancel {
+    -fx-background-color: rgba(35,25,66,0.08);
+    -fx-border-color: rgba(35,25,66,0.18);
+}
+
+/* People suggestion rows (LinkedIn-like) */
+.prf-personRow {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-radius: 12;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+}
+.prf-personRow:hover {
+    -fx-background-color: #F4F1FB;
+}
+
+.prf-personName {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 13px;
+}
+
+.prf-personSub {
+    -fx-text-fill: rgba(35,25,66,0.65);
+    -fx-font-weight: 800;
+    -fx-font-size: 12px;
+}
+
+.prf-personMeta {
+    -fx-text-fill: rgba(35,25,66,0.55);
+    -fx-font-size: 11px;
+}
+
+/* Connect / Follow button */
+.prf-connectBtn {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(35,25,66,0.22);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-padding: 6 12 6 12;
+    -fx-cursor: hand;
+}
+.prf-connectBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-border-color: rgba(94,84,142,0.30);
+}
+
+/* Editors */
+.prf-editorField {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: rgba(35,25,66,0.16);
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-padding: 10 12 10 12;
+    -fx-text-fill: #231942;
+    -fx-prompt-text-fill: rgba(35,25,66,0.45);
+}
+.prf-editorField:focused {
+    -fx-border-color: rgba(159,134,192,0.75);
+    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.18), 18, 0.18, 0, 8);
+}
+
+/* TextArea inner background fix. [web:242] */
+.prf-editorArea {
+    -fx-border-color: rgba(35,25,66,0.16);
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-padding: 10 12 10 12;
+    -fx-text-fill: #231942;
+    -fx-prompt-text-fill: rgba(35,25,66,0.45);
+    -fx-control-inner-background: #FFFFFF;
+}
+.prf-editorArea .content {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12;
+    -fx-padding: 8;
+}
+.prf-editorArea:focused {
+    -fx-border-color: rgba(159,134,192,0.75);
+    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.18), 18, 0.18, 0, 8);
+}
+
+.prf-error { -fx-text-fill: #B91C1C; -fx-font-weight: 900; }
+/* Bigger + stronger hero than other cards */
+.prf-heroPop {
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.18), 38, 0.22, 0, 14);
+}
+
+.prf-coverLarge {
+    -fx-background-insets: 0;
+
+    -fx-background-radius: 16 16 0 0;
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E, #9F86C0, #BE95C4);
+}
+
+/* Headline editor inside hero */
+.prf-headlineEditor {
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 4 10 4 10;
+    -fx-pref-width: 370;
+}
+
+/* Remove emoji later if you replace with ImageView */
+.prf-eduRow { -fx-padding: 6 0 0 0; }
+
+.prf-eduLogo {
+    -fx-min-width: 46; -fx-min-height: 46;
+    -fx-max-width: 46; -fx-max-height: 46;
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-radius: 12;
+}
+.prf-eduLogoText {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+}
+
+.prf-eduTitle {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 13px;
+}
+.prf-eduSub {
+    -fx-text-fill: rgba(35,25,66,0.60);
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+}
+
+.prf-plusBtn {
+    -fx-font-size: 16px;
+    -fx-padding: 2 10 2 10;
+}
+
+/* Skills “Add skills” button */
+.prf-outlineBtn {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(35,25,66,0.26);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-padding: 6 14 6 14;
+    -fx-cursor: hand;
+}
+.prf-outlineBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-border-color: rgba(94,84,142,0.30);
+}
+
+/* Dashed edit panel like screenshot */
+.prf-editPanel {
+    -fx-border-color: rgba(35,25,66,0.25);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 12;
+}
+
+.prf-eduSubStrong {
+    -fx-text-fill: rgba(35,25,66,0.72);
+    -fx-font-weight: 900;
+    -fx-font-size: 12px;
+}
+
+.prf-eduLogoImg {
+    -fx-opacity: 0.98;
 }

@@ -3,13 +3,14 @@ package com.exemple.grecrutement;
 import entities.Mission;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;  // Change from TextField to TextArea
 import javafx.scene.control.TextField;
 import services.MissionService;
 
 public class MissionAddController {
 
     @FXML
-    private TextField descriptionField;
+    private TextArea descriptionField;  // Change from TextField to TextArea
 
     @FXML
     private TextField scoreField;
@@ -37,6 +38,8 @@ public class MissionAddController {
             showAlert(Alert.AlertType.INFORMATION, "Success", "Mission added successfully!");
             clearFields();
 
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.ERROR, "Invalid input", "Please enter valid numbers for score and creator ID.");
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Error", e.getMessage());
         }

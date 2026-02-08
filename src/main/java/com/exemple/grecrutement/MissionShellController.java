@@ -53,8 +53,8 @@ public class MissionShellController {
     public void initialize() {
         setupLiquidAnimations();
         setupButtonHoverEffects();
-        showMissionList();
-        setActiveButton(btnMissionList);
+        showAddMission();
+        setActiveButton(btnAddMission);
     }
 
     // =========================
