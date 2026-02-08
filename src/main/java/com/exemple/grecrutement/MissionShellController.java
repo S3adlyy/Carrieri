@@ -83,4 +83,8 @@ public class MissionShellController {
             e.printStackTrace();
         }
     }
+
+    public void loadViewWithNode(Node view) {
+        contentPane.getChildren().setAll(view);
+    }
 }

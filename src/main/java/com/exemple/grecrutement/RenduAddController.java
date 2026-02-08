@@ -28,6 +28,18 @@ public class RenduAddController implements Initializable {
                 "ADDITION", "FACTORIAL", "FIBONACCI", "PRIME_CHECK"
         );
         comboMissionType.setValue("ADDITION");
+
+        // Clear any preset mission ID on initialization
+        txtMissionId.clear();
+    }
+
+    // Add this method to set mission ID
+    public void setMissionId(int missionId) {
+        Platform.runLater(() -> {
+            txtMissionId.setText(String.valueOf(missionId));
+            // Optional: you can disable the field if you want
+            // txtMissionId.setDisable(true);
+        });
     }
 
     @FXML

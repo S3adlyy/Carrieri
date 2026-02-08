@@ -16,6 +16,8 @@ public class MissionService implements IMissionService<Mission> {
         System.out.println("Connection to Carrieri Database is established without any probleme");
     }
 
+
+
     @Override
     public void ajouter(Mission mission) throws SQLException {
         String sql = "INSERT INTO mission (description, score_min, created_at, created_by_id) VALUES (?, ?, ?, ?)";

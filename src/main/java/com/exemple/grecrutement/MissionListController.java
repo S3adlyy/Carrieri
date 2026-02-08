@@ -3,7 +3,9 @@ package com.exemple.grecrutement;
 import entities.Mission;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import services.MissionService;
@@ -34,6 +36,7 @@ public class MissionListController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         configureColumns();
         loadMissions();
+        setupDoubleClickHandler();
     }
 
     private void configureColumns() {
@@ -50,6 +53,41 @@ public class MissionListController implements Initializable {
             );
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Load Error", e.getMessage());
+        }
+    }
+
+    private void setupDoubleClickHandler() {
+        missionTable.setRowFactory(tv -> {
+            TableRow<Mission> row = new TableRow<>();
+
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    Mission selectedMission = row.getItem();
+                    navigateToRenduAdd(selectedMission);
+                }
+            });
+
+            return row;
+        });
+    }
+
+    private void navigateToRenduAdd(Mission mission) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("rendu-add.fxml")
+            );
+            Node view = loader.load();
+
+            RenduAddController controller = loader.getController();
+            // Set the mission ID in the RenduAddController
+            controller.setMissionId(mission.getId());
+
+            // Get the shell controller and set the view
+            MissionShellController.getInstance().loadViewWithNode(view);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error",
+                    "Could not load submission form: " + e.getMessage());
         }
     }
 
