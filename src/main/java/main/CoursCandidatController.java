@@ -1,12 +1,20 @@
 package main;
 
+import entities.Certification;
 import entities.Cours;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import services.CertificationPDFService;
+import services.CertificationService;
 import services.CoursServices;
+import services.ProgressionCoursService;
+import services.IProgressionCoursService;
+
+
+import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -23,6 +31,7 @@ public class CoursCandidatController {
 
     private CoursServices coursServices;
     private List<Cours> tousLesCours;
+
 
     @FXML
     public void initialize() {
@@ -147,8 +156,17 @@ public class CoursCandidatController {
         btn.setMaxWidth(Double.MAX_VALUE);
         btn.setPrefHeight(40);
 
+
+        // Nouveau bouton "Générer PDF" pour ce cours
+        Button btnPDF = new Button("Générer PDF");
+        btnPDF.getStyleClass().add("course-button-pdf");
+        btnPDF.setMaxWidth(Double.MAX_VALUE);
+        btnPDF.setPrefHeight(35);
+
+        // On passe le cours correspondant à l'événement
+        btnPDF.setOnAction(event -> genererCertifTest(cours));
         // Assemblage
-        card.getChildren().addAll(header, lblTitre, lblDesc, metaBox, btn);
+        card.getChildren().addAll(header, lblTitre, lblDesc, metaBox, btn, btnPDF);
         return card;
     }
 
@@ -178,9 +196,78 @@ public class CoursCandidatController {
         displayCours(filtered);
         lblTotalCours.setText(filtered.size() + " cours disponibles");
     }
+    private void genererCertifTest(Cours cours) {
+
+        if (cours == null) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Cours invalide !");
+            return;
+        }
+
+        int candidatId = 1; // utilisateur fixe (pas de session)
+
+        IProgressionCoursService progressionService = new ProgressionCoursService();
+
+        try {
+
+            // Vérifier si le cours est complété à 100%
+            boolean estComplete = progressionService.estCoursComplete(candidatId, cours.getId());
+
+            if (!estComplete) {
+                showAlert(Alert.AlertType.ERROR,
+                        "Cours non terminé",
+                        "Vous devez compléter ce cours à 100% pour générer le certificat.");
+                return;
+            }
+
+            // Si complet → générer certificat
+            String candidatName = "Bilal Eter";
+
+            String cheminFichier =
+                    "C:/Users/MSI/Desktop/certif/certif_" + cours.getTitre() + ".pdf";
+
+            CertificationPDFService pdfService = new CertificationPDFService();
+            pdfService.genererCertification(candidatName, cours.getTitre(), cheminFichier);
+
+            showAlert(Alert.AlertType.INFORMATION,
+                    "✅ Succès",
+                    "Certificat généré : " + cheminFichier);
+
+            // Enregistrer en base
+            CertificationService certService = new CertificationService();
+            Certification certif = new Certification(
+                    candidatId,
+                    cours.getId(),
+                    java.time.LocalDateTime.now()
+            );
+            certService.ajouter(certif);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la génération du certificat");
+        }
+    }
+
+
+
 
     @FXML
     private void rechercherCours() {
         filtrerCours();
+    }
+    private void showAlert(Alert.AlertType type, String title, String msg) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+
+        // Style personnalisé selon le type
+        DialogPane dialogPane = alert.getDialogPane();
+        try {
+            dialogPane.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
+        } catch (Exception e) {
+            // Si le CSS n'existe pas, on continue sans
+        }
+
+        alert.showAndWait();
     }
 }

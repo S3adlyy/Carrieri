@@ -13,7 +13,7 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         // --- TEST ROLE ---
         // 1 = admin, 2 = candidat
-        int roleChoice = 2; // change this to 1 to simulate admin
+        int roleChoice = 1; // change this to 1 to simulate admin
 
         if (roleChoice == 1) {
             currentRole = "admin";
