@@ -17,141 +17,144 @@
     <Circle radius="70" fill="rgba(190,149,196,0.02)" style="-fx-translate-y: 120; -fx-translate-x: 280;"/>
     <Circle radius="50" fill="rgba(224,177,203,0.01)" style="-fx-translate-y: -80; -fx-translate-x: 350;"/>
 
-    <!-- Main Container -->
-    <VBox styleClass="main-container" maxWidth="1200">
-        <!-- Header Section -->
-        <VBox styleClass="header-section" spacing="10">
-            <HBox spacing="15" alignment="CENTER_LEFT">
-                <StackPane style="-fx-background-color: linear-gradient(135deg, #231942 0%, #5E548E 100%);
-                                 -fx-background-radius: 14;
-                                 -fx-padding: 12;
-                                 -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.25), 20, 0.2, 0, 6);">
-                    <Label text="🤖" style="-fx-font-size: 24px; -fx-text-fill: white;"/>
-                </StackPane>
-                <VBox spacing="4">
-                    <Label text="AI Code Submission" styleClass="main-title"/>
-                    <Label text="Submit Python code for AI evaluation" styleClass="sub-title"/>
+    <!-- Scrollable Container -->
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-padding: 0;">
+        <!-- Main Container - Centered -->
+        <VBox styleClass="main-container" maxWidth="1200" alignment="TOP_CENTER">
+            <!-- Header Section -->
+            <VBox styleClass="header-section" spacing="10" alignment="TOP_CENTER">
+                <HBox spacing="15" alignment="CENTER">
+                    <StackPane style="-fx-background-color: linear-gradient(135deg, #231942 0%, #5E548E 100%);
+                                     -fx-background-radius: 14;
+                                     -fx-padding: 12;
+                                     -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.25), 20, 0.2, 0, 6);">
+                        <Label text="🤖" style="-fx-font-size: 24px; -fx-text-fill: white;"/>
+                    </StackPane>
+                    <VBox spacing="4" alignment="CENTER_LEFT">
+                        <Label text="AI Code Submission" styleClass="main-title"/>
+                        <Label text="Submit Python code for AI evaluation" styleClass="sub-title"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Centered Split Layout Container -->
+            <HBox styleClass="split-container" spacing="30" alignment="CENTER">
+                <!-- LEFT: Form Section -->
+                <VBox styleClass="form-section" spacing="25" prefWidth="450" alignment="TOP_LEFT">
+                    <!-- Form Title -->
+                    <Label text="📝 Submission Form" styleClass="section-title"/>
+
+                    <!-- Form Fields -->
+                    <VBox spacing="20">
+                        <!-- Candidate ID -->
+                        <VBox spacing="6">
+                            <Label text="👤 Candidate ID" styleClass="field-label"/>
+                            <TextField fx:id="txtCandidatId"
+                                       promptText="Enter candidate ID"
+                                       styleClass="form-field"/>
+                        </VBox>
+
+                        <!-- Mission ID -->
+                        <VBox spacing="6">
+                            <Label text="🎯 Mission ID" styleClass="field-label"/>
+                            <TextField fx:id="txtMissionId"
+                                       promptText="Will be auto-filled when you select a mission"
+                                       styleClass="form-field"
+                                       editable="true"/>
+                        </VBox>
+
+                        <!-- Mission Type -->
+                        <VBox spacing="6">
+                            <Label text="📋 Mission Type" styleClass="field-label"/>
+                            <ComboBox fx:id="comboMissionType"
+                                      promptText="Select mission type"
+                                      styleClass="form-combo"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Mission Description Display -->
+                    <VBox spacing="12" style="-fx-padding: 20px 0;">
+                        <Label text="📄 Mission Details" styleClass="section-title"/>
+
+                        <TextArea fx:id="lblMissionDescription"
+                                  editable="false"
+                                  wrapText="true"
+                                  prefHeight="160"
+                                  styleClass="mission-description-area"/>
+                    </VBox>
+
+                    <!-- Evaluate Button -->
+                    <VBox spacing="15" style="-fx-padding: 15px 0;">
+                        <Button text="🚀 Evaluate with AI"
+                                onAction="#evaluer"
+                                styleClass="evaluate-button"
+                                prefWidth="220"/>
+
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <ProgressIndicator fx:id="progress"
+                                               styleClass="progress-indicator"
+                                               visible="false"/>
+                            <Label fx:id="lblProcessing"
+                                   text="⏳ Processing..."
+                                   styleClass="processing-label"
+                                   visible="false"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Result -->
+                    <Label fx:id="lblResultat"
+                           text="👉 Waiting for code submission..."
+                           styleClass="result-label"
+                           wrapText="true"/>
+                </VBox>
+
+                <!-- RIGHT: Code Editor Section -->
+                <VBox styleClass="editor-section" spacing="20" prefWidth="650" alignment="TOP_LEFT">
+                    <!-- Editor Title -->
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <StackPane style="-fx-background-color: linear-gradient(135deg, #5E548E 0%, #9F86C0 100%);
+                                         -fx-background-radius: 12;
+                                         -fx-padding: 10;
+                                         -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.25), 15, 0.2, 0, 5);">
+                            <Label text="💻" style="-fx-font-size: 20px; -fx-text-fill: white;"/>
+                        </StackPane>
+                        <VBox spacing="2">
+                            <Label text="Python Code Editor" styleClass="section-title"/>
+                            <Label text="Write your solution in Python 3" styleClass="editor-subtitle"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Code Editor Container -->
+                    <VBox styleClass="code-editor-container">
+                        <!-- Editor Header -->
+                        <HBox styleClass="editor-header">
+                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                <Label text="📁" style="-fx-font-size: 16px; -fx-text-fill: #E0B1CB;"/>
+                                <Label text="solution.py" styleClass="file-name"/>
+                            </HBox>
+                            <HBox HBox.hgrow="ALWAYS"/>
+                            <Label text="Python 3" styleClass="language-tag"/>
+                        </HBox>
+
+                        <!-- Code Editor -->
+                        <TextArea fx:id="txtCode"
+                                  promptText="# Write your Python solution here&#10;# Example: Add two numbers&#10;&#10;def add(a, b):&#10;    return a + b&#10;&#10;# Read input and call function&#10;if __name__ == '__main__':&#10;    num1 = int(input())&#10;    num2 = int(input())&#10;    print(add(num1, num2))"
+                                  styleClass="code-editor"/>
+                    </VBox>
+
+                    <!-- Editor Tips -->
+                    <HBox styleClass="editor-tips">
+                        <Label text="💡 Tips: • Press Ctrl+Space for autocomplete • Use Tab for indentation • Test your code before submitting"
+                               styleClass="tip-text"/>
+                    </HBox>
                 </VBox>
             </HBox>
+
+            <!-- Footer -->
+            <HBox alignment="CENTER" styleClass="footer-container">
+                <Label text="🔍 Tip: Double-click a mission in Mission List to auto-fill mission details"
+                       styleClass="footer-text"/>
+            </HBox>
         </VBox>
-
-        <!-- Split Layout Container -->
-        <HBox styleClass="split-container" spacing="30">
-            <!-- LEFT: Form Section -->
-            <VBox styleClass="form-section" spacing="25" prefWidth="450">
-                <!-- Form Title -->
-                <Label text="📝 Submission Form" styleClass="section-title"/>
-
-                <!-- Form Fields -->
-                <VBox spacing="20">
-                    <!-- Candidate ID -->
-                    <VBox spacing="6">
-                        <Label text="👤 Candidate ID" styleClass="field-label"/>
-                        <TextField fx:id="txtCandidatId"
-                                   promptText="Enter candidate ID"
-                                   styleClass="form-field"/>
-                    </VBox>
-
-                    <!-- Mission ID -->
-                    <VBox spacing="6">
-                        <Label text="🎯 Mission ID" styleClass="field-label"/>
-                        <TextField fx:id="txtMissionId"
-                                   promptText="Will be auto-filled when you select a mission"
-                                   styleClass="form-field"
-                                   editable="true"/>
-                    </VBox>
-
-                    <!-- Mission Type -->
-                    <VBox spacing="6">
-                        <Label text="📋 Mission Type" styleClass="field-label"/>
-                        <ComboBox fx:id="comboMissionType"
-                                  promptText="Select mission type"
-                                  styleClass="form-combo"/>
-                    </VBox>
-                </VBox>
-
-                <!-- Mission Description Display -->
-                <VBox spacing="12" style="-fx-padding: 20px 0;">
-                    <Label text="📄 Mission Details" styleClass="section-title"/>
-
-                    <TextArea fx:id="lblMissionDescription"
-                              editable="false"
-                              wrapText="true"
-                              prefHeight="160"
-                              styleClass="mission-description-area"/>
-                </VBox>
-
-                <!-- Evaluate Button -->
-                <VBox spacing="15" style="-fx-padding: 15px 0;">
-                    <Button text="🚀 Evaluate with AI"
-                            onAction="#evaluer"
-                            styleClass="evaluate-button"
-                            prefWidth="220"/>
-
-                    <HBox spacing="12" alignment="CENTER_LEFT">
-                        <ProgressIndicator fx:id="progress"
-                                           styleClass="progress-indicator"
-                                           visible="false"/>
-                        <Label fx:id="lblProcessing"
-                               text="⏳ Processing..."
-                               styleClass="processing-label"
-                               visible="false"/>
-                    </HBox>
-                </VBox>
-
-                <!-- Result -->
-                <Label fx:id="lblResultat"
-                       text="👉 Waiting for code submission..."
-                       styleClass="result-label"
-                       wrapText="true"/>
-            </VBox>
-
-            <!-- RIGHT: Code Editor Section -->
-            <VBox styleClass="editor-section" spacing="20" prefWidth="650">
-                <!-- Editor Title -->
-                <HBox spacing="15" alignment="CENTER_LEFT">
-                    <StackPane style="-fx-background-color: linear-gradient(135deg, #5E548E 0%, #9F86C0 100%);
-                                     -fx-background-radius: 12;
-                                     -fx-padding: 10;
-                                     -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.25), 15, 0.2, 0, 5);">
-                        <Label text="💻" style="-fx-font-size: 20px; -fx-text-fill: white;"/>
-                    </StackPane>
-                    <VBox spacing="2">
-                        <Label text="Python Code Editor" styleClass="section-title"/>
-                        <Label text="Write your solution in Python 3" styleClass="editor-subtitle"/>
-                    </VBox>
-                </HBox>
-
-                <!-- Code Editor Container -->
-                <VBox styleClass="code-editor-container">
-                    <!-- Editor Header -->
-                    <HBox styleClass="editor-header">
-                        <HBox spacing="8" alignment="CENTER_LEFT">
-                            <Label text="📁" style="-fx-font-size: 16px; -fx-text-fill: #E0B1CB;"/>
-                            <Label text="solution.py" styleClass="file-name"/>
-                        </HBox>
-                        <HBox HBox.hgrow="ALWAYS"/>
-                        <Label text="Python 3" styleClass="language-tag"/>
-                    </HBox>
-
-                    <!-- Code Editor -->
-                    <TextArea fx:id="txtCode"
-                              promptText="# Write your Python solution here&#10;# Example: Add two numbers&#10;&#10;def add(a, b):&#10;    return a + b&#10;&#10;# Read input and call function&#10;if __name__ == '__main__':&#10;    num1 = int(input())&#10;    num2 = int(input())&#10;    print(add(num1, num2))"
-                              styleClass="code-editor"/>
-                </VBox>
-
-                <!-- Editor Tips -->
-                <HBox styleClass="editor-tips">
-                    <Label text="💡 Tips: • Press Ctrl+Space for autocomplete • Use Tab for indentation • Test your code before submitting"
-                           styleClass="tip-text"/>
-                </HBox>
-            </VBox>
-        </HBox>
-
-        <!-- Footer -->
-        <HBox alignment="CENTER" styleClass="footer-container">
-            <Label text="🔍 Tip: Double-click a mission in Mission List to auto-fill mission details"
-                   styleClass="footer-text"/>
-        </HBox>
-    </VBox>
+    </ScrollPane>
 </StackPane>

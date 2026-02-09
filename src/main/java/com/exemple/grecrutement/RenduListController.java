@@ -52,6 +52,7 @@ public class RenduListController implements Initializable {
         configureTable();
         load();
         setupFilters();
+        setupDoubleClickHandler();
     }
 
     private void configureTable() {
@@ -595,6 +596,56 @@ public class RenduListController implements Initializable {
                 "• Status: Filter by submission status\n" +
                 "• Mission: Filter by mission ID\n" +
                 "• Search: Search in candidate IDs and results");
+    }
+
+    private void setupDoubleClickHandler() {
+        table.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                RenduMission selected = table.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    scheduleInterviewWithCandidate(selected);
+                }
+            }
+        });
+
+        // Also add row factory for visual feedback
+        table.setRowFactory(tv -> {
+            TableRow<RenduMission> row = new TableRow<RenduMission>() {
+                @Override
+                protected void updateItem(RenduMission item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setStyle("");
+                    } else {
+                        if (getIndex() % 2 == 0) {
+                            setStyle("-fx-background-color: white;");
+                        } else {
+                            setStyle("-fx-background-color: #f8f9fa;");
+                        }
+                    }
+                }
+            };
+
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    RenduMission selectedRendu = row.getItem();
+                    scheduleInterviewWithCandidate(selectedRendu);
+                }
+            });
+
+            return row;
+        });
+    }
+
+    private void scheduleInterviewWithCandidate(RenduMission rendu) {
+        try {
+            System.out.println("🎯 Scheduling interview for Rendu #" + rendu.getId());
+            MissionShellController.getInstance().showScheduleInterview(rendu);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Navigation Error",
+                    "Could not load interview scheduling form: " + e.getMessage());
+        }
     }
 
     private void showAlert(String title, String message) {

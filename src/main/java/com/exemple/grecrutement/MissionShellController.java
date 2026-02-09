@@ -1,6 +1,7 @@
 package com.exemple.grecrutement;
 
 import entities.Mission;
+import entities.RenduMission;
 import javafx.animation.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -233,8 +234,6 @@ public class MissionShellController {
     @FXML
     public void showStatistics() {
         loadView("rendu-stats.fxml");
-        // Note: You don't have a stats button in navbar, so we won't set active button
-        // Or you can create one if needed
     }
 
     public void showRenduAddWithMissionId(Integer missionId) {
@@ -252,6 +251,28 @@ public class MissionShellController {
             contentPane.getChildren().setAll(view);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Show interview scheduling screen for a selected rendu/candidate
+     */
+    public void showScheduleInterview(RenduMission rendu) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("entretien-create.fxml")
+            );
+            Node view = loader.load();
+
+            EntretienCreateController controller = loader.getController();
+            controller.setRenduMission(rendu);
+
+            contentPane.getChildren().setAll(view);
+
+            System.out.println("✅ Interview scheduling screen loaded for Rendu #" + rendu.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("❌ Error loading interview scheduling screen: " + e.getMessage());
         }
     }
 

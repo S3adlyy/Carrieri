@@ -6,7 +6,9 @@ module com.exemple.grecrutement {
     requires org.apache.httpcomponents.httpclient;
     requires org.apache.httpcomponents.httpcore;
     requires com.fasterxml.jackson.core;
-    requires java.desktop; // Required for ImageIO and BufferedImage
+    requires java.desktop;
+    requires mysql.connector.j;
+    requires java.mail; // Required for ImageIO and BufferedImage
 
     // Open ALL packages to Jackson and JavaFX
     opens com.exemple.grecrutement to javafx.fxml;
