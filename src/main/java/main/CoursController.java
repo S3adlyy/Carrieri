@@ -14,18 +14,16 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
-import services.CoursServices;
+import services.CoursService;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 
 import java.io.*;
 
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.List;
@@ -73,7 +71,7 @@ public class CoursController {
     @FXML
     private TableColumn<Cours, byte[]> colImage;
 
-    private CoursServices coursServices;
+    private CoursService coursServices;
     private ObservableList<Cours> coursList;
     private FilteredList<Cours> filteredList;
 
@@ -81,7 +79,7 @@ public class CoursController {
 
     @FXML
     public void initialize() {
-        coursServices = new CoursServices();
+        coursServices = new CoursService();
         coursList = FXCollections.observableArrayList();
         filteredList = new FilteredList<>(coursList, p -> true);
 

@@ -2,6 +2,7 @@ package main;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -11,7 +12,7 @@ public class Main extends Application {
     private static String currentRole; // "admin" or "candidat"
     @Override
     public void start(Stage stage) throws Exception {
-        // --- TEST ROLE ---
+        /*// --- TEST ROLE ---
         // 1 = admin, 2 = candidat
         int roleChoice = 2; // change this to 1 to simulate admin
 
@@ -49,7 +50,13 @@ public class Main extends Application {
         }
 
         // Afficher la fenêtre
+        stage.show();*/
+        Parent root = FXMLLoader.load(getClass().getResource("/cours.fxml"));
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle("E-learning");
         stage.show();
+
     }
 
     public static void main(String[] args) {

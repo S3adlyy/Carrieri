@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" alignment="CENTER" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="main.ModuleController">
+
+    <Label text="Gestion des Modules" style="-fx-font-size:18px;"/>
+
+    <TextField fx:id="txtTitre" promptText="Titre du module"/>
+    <TextArea fx:id="txtDescription" promptText="Description" prefRowCount="3"/>
+    <TextField fx:id="txtOrdre" promptText="Ordre"/>
+    <TextField fx:id="txtCoursId" promptText="Cours ID"/>
+
+    <HBox spacing="10">
+        <Button text="Ajouter" onAction="#ajouterModule"/>
+        <Button text="Modifier" onAction="#modifierModule"/>
+        <Button text="Supprimer" onAction="#supprimerModule"/>
+    </HBox>
+
+    <TableView fx:id="tableModules" prefHeight="300">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+            <TableColumn fx:id="colTitre" text="Titre" prefWidth="150"/>
+            <TableColumn fx:id="colDescription" text="Description" prefWidth="200"/>
+            <TableColumn fx:id="colOrdre" text="Ordre" prefWidth="80"/>
+            <TableColumn fx:id="colCoursId" text="Cours ID" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+</VBox>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" alignment="CENTER"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="main.LeconController">
+
+    <Label text="Gestion des Leçons" style="-fx-font-size:18px;"/>
+
+    <TextField fx:id="txtTitre" promptText="Titre"/>
+    <TextField fx:id="txtModuleId" promptText="Module ID"/>
+    <TextField fx:id="txtOrdre" promptText="Ordre de la leçon"/>
+    <TextArea fx:id="txtContenu" prefRowCount="5" promptText="Contenu de la leçon"/>
+    <TextField fx:id="txtVideoUrl" promptText="URL Vidéo"/>
+    <TextField fx:id="txtCoursId" promptText="Cours ID"/>
+
+    <Button text="Ajouter" onAction="#ajouterLecon"/>
+
+    <TableView fx:id="tableLecon" prefHeight="300">
+        <columns>
+            <TableColumn fx:id="colId" text="ID"/>
+            <TableColumn fx:id="colOrdre" text="Ordre"/>
+            <TableColumn fx:id="colTitre" text="Titre"/>
+            <TableColumn fx:id="colCoursId" text="Cours ID"/>
+        </columns>
+    </TableView>
+
+</VBox>

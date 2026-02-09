@@ -12,7 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import services.CertificationPDFService;
 import services.CertificationService;
-import services.CoursServices;
+import services.CoursService;
 import services.ProgressionCoursService;
 import services.IProgressionCoursService;
 import javafx.scene.image.Image;
@@ -38,13 +38,13 @@ public class CoursCandidatController {
     @FXML private ComboBox<String> comboDomaine;
     @FXML private ComboBox<String> comboNiveau;
 
-    private CoursServices coursServices;
+    private CoursService coursServices;
     private List<Cours> tousLesCours;
 
 
     @FXML
     public void initialize() {
-        coursServices = new CoursServices();
+        coursServices = new CoursService();
 
         // Initialiser les ComboBox
         comboDomaine.getItems().addAll("Tous", "Développement Web", "Design", "Data Science", "Marketing");
