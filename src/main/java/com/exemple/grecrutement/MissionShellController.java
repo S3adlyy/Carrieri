@@ -230,6 +230,13 @@ public class MissionShellController {
         setActiveButton(btnSubmitRendu);
     }
 
+    @FXML
+    public void showStatistics() {
+        loadView("rendu-stats.fxml");
+        // Note: You don't have a stats button in navbar, so we won't set active button
+        // Or you can create one if needed
+    }
+
     public void showRenduAddWithMissionId(Integer missionId) {
         try {
             FXMLLoader loader = new FXMLLoader(

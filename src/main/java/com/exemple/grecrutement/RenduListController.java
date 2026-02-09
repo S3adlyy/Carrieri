@@ -6,7 +6,10 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
@@ -14,9 +17,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import services.RenduMissionService;
 
+import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -581,50 +586,8 @@ public class RenduListController implements Initializable {
 
     @FXML
     private void showStatistics() {
-        if (renduList == null || renduList.isEmpty()) {
-            showAlert("Statistics", "No submissions available for statistics.");
-            return;
-        }
-
-        // Calculate statistics
-        double avgScore = renduList.stream()
-                .mapToInt(RenduMission::getScore)
-                .average()
-                .orElse(0);
-
-        int maxScore = renduList.stream()
-                .mapToInt(RenduMission::getScore)
-                .max()
-                .orElse(0);
-
-        int minScore = renduList.stream()
-                .mapToInt(RenduMission::getScore)
-                .min()
-                .orElse(0);
-
-        long acceptedCount = renduList.stream()
-                .filter(r -> r.getResultat().toLowerCase().contains("accepted") ||
-                        r.getResultat().toLowerCase().contains("success"))
-                .count();
-
-        double successRate = (double) acceptedCount / renduList.size() * 100;
-
-        // Show statistics dialog
-        Alert statsAlert = new Alert(Alert.AlertType.INFORMATION);
-        statsAlert.setTitle("Submission Statistics");
-        statsAlert.setHeaderText("📊 Statistics Overview");
-        statsAlert.setContentText(
-                "Total Submissions: " + renduList.size() + "\n" +
-                        "Success Rate: " + String.format("%.1f", successRate) + "%\n" +
-                        "Average Score: " + String.format("%.1f", avgScore) + "%\n" +
-                        "Highest Score: " + maxScore + "%\n" +
-                        "Lowest Score: " + minScore + "%\n" +
-                        "Accepted Submissions: " + acceptedCount + "\n" +
-                        "Rejected/Pending: " + (renduList.size() - acceptedCount)
-        );
-        statsAlert.showAndWait();
+        MissionShellController.getInstance().showStatistics();
     }
-
     @FXML
     private void showFilter() {
         // This can be expanded to show a more advanced filter dialog
