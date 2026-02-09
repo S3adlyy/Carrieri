@@ -6,10 +6,27 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
 import services.CoursServices;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+
+import java.io.*;
+
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -44,6 +61,17 @@ public class CoursController {
     @FXML private Button btnModifier;
     @FXML private Button btnSupprimer;
     @FXML private Button btnRefresh;
+    @FXML private Button btnChoisirImage;
+    @FXML private Label lblImageNom;
+    private byte[] imageBytes;
+    @FXML
+    private VBox card;
+    @FXML
+    private ImageView imageViewForm;
+    private byte[] imageBytesSelected;
+
+    @FXML
+    private TableColumn<Cours, byte[]> colImage;
 
     private CoursServices coursServices;
     private ObservableList<Cours> coursList;
@@ -62,6 +90,27 @@ public class CoursController {
         setupSearchListener();
         setupCheckBoxListener();
         refresh();
+        btnChoisirImage.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg")
+            );
+            File file = fileChooser.showOpenDialog(btnChoisirImage.getScene().getWindow());
+            if (file != null) {
+                try {
+                    imageBytesSelected = Files.readAllBytes(file.toPath()); // ← ici
+                    Image image = new Image(new FileInputStream(file));
+                    imageViewForm.setImage(image); // Affiche l'image dans le formulaire
+                    lblImageNom.setText(file.getName()); // Affiche le nom du fichier
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+
+
+
     }
 
     private void setupNiveauComboBox() {
@@ -110,7 +159,7 @@ public class CoursController {
         colNiveau.setCellValueFactory(new PropertyValueFactory<>("niveau"));
         colCompetences.setCellValueFactory(new PropertyValueFactory<>("competences_visees"));
         colObligatoire.setCellValueFactory(new PropertyValueFactory<>("est_obligatoire"));
-
+        colImage.setCellValueFactory(new PropertyValueFactory<>("imageCouverture"));
         // Style personnalisé pour la colonne Niveau
         colNiveau.setCellFactory(column -> new TableCell<Cours, String>() {
             @Override
@@ -179,15 +228,50 @@ public class CoursController {
             }
         });
 
-        // Écouteur de sélection dans la table
-        tableCours.getSelectionModel().selectedItemProperty().addListener(
-                (obs, oldSelection, newSelection) -> {
-                    if (newSelection != null) {
-                        loadCoursToForm(newSelection);
-                        updateStatus("Cours sélectionné: " + newSelection.getTitre());
-                    }
+        colImage.setCellFactory(column -> new TableCell<Cours, byte[]>() {
+            private final ImageView imageView = new ImageView();
+
+            {
+                imageView.setFitWidth(80);    // largeur de la miniature
+                imageView.setFitHeight(60);   // hauteur de la miniature
+                imageView.setPreserveRatio(true);
+            }
+
+            @Override
+            protected void updateItem(byte[] imageBytes, boolean empty) {
+                super.updateItem(imageBytes, empty);
+                if (empty || imageBytes == null) {
+                    setGraphic(null);
+                } else {
+                    Image image = new Image(new ByteArrayInputStream(imageBytes));
+                    imageView.setImage(image);
+                    setGraphic(imageView);
                 }
-        );
+            }
+        });
+
+
+        // Écouteur de sélection dans la table
+        tableCours.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                // Remplir les champs texte, combo, etc.
+                txtTitre.setText(newSelection.getTitre());
+                txtDuree.setText(String.valueOf(newSelection.getDuree()));
+                txtCompetences.setText(newSelection.getCompetences_visees());
+                txtDescription.setText(newSelection.getDescription());
+                comboNiveau.setValue(newSelection.getNiveau());
+                chkObligatoire.setSelected(newSelection.isEst_obligatoire());
+
+                // Afficher l'image dans un ImageView du formulaire
+                if (newSelection.getImageCouverture() != null) {
+                    Image image = new Image(new ByteArrayInputStream(newSelection.getImageCouverture()));
+                    imageViewForm.setImage(image); // imageViewForm : un ImageView que tu ajoutes dans ton formulaire
+                } else {
+                    imageViewForm.setImage(null);
+                }
+            }
+        });
+
 
         tableCours.setItems(filteredList);
     }
@@ -239,14 +323,21 @@ public class CoursController {
                     comboNiveau.getValue(),
                     txtCompetences.getText(),
                     chkObligatoire.isSelected(),
-                    currentUserId
+                    currentUserId,
+                    imageBytesSelected  // ajouter l'image ici
             );
+
 
             coursServices.ajouter(cours);
             showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Cours ajouté avec succès !");
             refresh();
             clearForm();
             updateStatus("Nouveau cours ajouté: " + cours.getTitre());
+
+            // Réinitialiser pour le formulaire
+            imageBytesSelected = null;
+            imageViewForm.setImage(null);
+            lblImageNom.setText("");
 
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur base de données: " + e.getMessage());
@@ -280,9 +371,18 @@ public class CoursController {
             selected.setCompetences_visees(txtCompetences.getText());
             selected.setEst_obligatoire(chkObligatoire.isSelected());
 
+            // Si une nouvelle image a été choisie, on la met à jour
+            if (imageBytesSelected != null) {
+                selected.setImageCouverture(imageBytesSelected);
+                imageBytesSelected = null; // Réinitialiser pour éviter de réutiliser l'ancienne image
+            }
+
             coursServices.update(selected);
+
+            // Mettre à jour directement la TableView
+            tableCours.refresh();
+
             showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Cours modifié avec succès !");
-            refresh();
             clearForm();
             updateStatus("Cours modifié: " + selected.getTitre());
 
@@ -292,6 +392,7 @@ public class CoursController {
             showAlert(Alert.AlertType.ERROR, "❌ Erreur", "La durée doit être un nombre valide !");
         }
     }
+
 
     @FXML
     private void supprimer() {
@@ -363,6 +464,11 @@ public class CoursController {
             } catch (NumberFormatException e) {
                 errors.append("• La durée doit être un nombre\n");
             }
+        }
+
+        // **Vérification obligatoire de l'image**
+        if (imageBytesSelected == null) {
+            errors.append("• L'image du cours est obligatoire\n");
         }
 
         if (errors.length() > 0) {

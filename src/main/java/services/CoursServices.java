@@ -32,18 +32,24 @@ public class CoursServices implements ICoursService<Cours> {
             throw new IllegalArgumentException("Les compétences visées ne peuvent pas être vides");
         }
 
-        String sql = "INSERT INTO cours (titre, description, duree, niveau, competences_visees, est_obligatoire, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO cours (titre, description, duree, niveau, competences_visees, est_obligatoire, created_by, image_couverture) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, cours.getTitre().trim());
-            preparedStatement.setString(2, cours.getDescription().trim());
-            preparedStatement.setInt(3, cours.getDuree());
-            preparedStatement.setString(4, cours.getNiveau().trim());
-            preparedStatement.setString(5, cours.getCompetences_visees().trim());
-            preparedStatement.setBoolean(6, cours.isEst_obligatoire());
-            preparedStatement.setInt(7, cours.getCreatedBy());
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, cours.getTitre().trim());
+            ps.setString(2, cours.getDescription().trim());
+            ps.setInt(3, cours.getDuree());
+            ps.setString(4, cours.getNiveau().trim());
+            ps.setString(5, cours.getCompetences_visees().trim());
+            ps.setBoolean(6, cours.isEst_obligatoire());
+            ps.setInt(7, cours.getCreatedBy());
 
-            int rowsInserted = preparedStatement.executeUpdate();
+            if (cours.getImageCouverture() != null) {
+                ps.setBytes(8, cours.getImageCouverture());
+            } else {
+                ps.setNull(8, Types.BLOB);
+            }
+
+            int rowsInserted = ps.executeUpdate();
             System.out.println("Rows inserted: " + rowsInserted);
         } catch (SQLException e) {
             System.err.println("Erreur lors de l'insertion : " + e.getMessage());
@@ -64,7 +70,7 @@ public class CoursServices implements ICoursService<Cours> {
 
     @Override
     public void update(Cours cours) throws SQLException {
-        String sql = "UPDATE cours SET titre = ?, description = ?, duree = ?, niveau = ?, competences_visees = ?, est_obligatoire = ? WHERE id = ?";
+        String sql = "UPDATE cours SET titre = ?, description = ?, duree = ?, niveau = ?, competences_visees = ?, est_obligatoire = ?, image_couverture=? WHERE id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, cours.getTitre());
             preparedStatement.setString(2, cours.getDescription());
@@ -72,7 +78,8 @@ public class CoursServices implements ICoursService<Cours> {
             preparedStatement.setString(4, cours.getNiveau());
             preparedStatement.setString(5, cours.getCompetences_visees());
             preparedStatement.setBoolean(6, cours.isEst_obligatoire());
-            preparedStatement.setInt(7, cours.getId());
+            preparedStatement.setBytes(7, cours.getImageCouverture());
+            preparedStatement.setInt(8, cours.getId());
 
             preparedStatement.executeUpdate();
             System.out.println("Cours mis à jour avec succès");
@@ -87,6 +94,7 @@ public class CoursServices implements ICoursService<Cours> {
              ResultSet resultSet = statement.executeQuery(sql)) {
 
             while (resultSet.next()) {
+                byte[] image = resultSet.getBytes("image_couverture");
                 Cours cours = new Cours(
                         resultSet.getInt("id"),
                         resultSet.getString("titre"),
@@ -95,7 +103,8 @@ public class CoursServices implements ICoursService<Cours> {
                         resultSet.getString("niveau"),
                         resultSet.getString("competences_visees"),
                         resultSet.getBoolean("est_obligatoire"),
-                        resultSet.getInt("created_by")
+                        resultSet.getInt("created_by"),
+                        image // ajouter ici
                 );
                 coursList.add(cours);
             }
@@ -110,6 +119,7 @@ public class CoursServices implements ICoursService<Cours> {
             ResultSet resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
+                byte[] image = resultSet.getBytes("image_couverture");
                 Cours cours = new Cours(
                         resultSet.getInt("id"),
                         resultSet.getString("titre"),
@@ -118,7 +128,8 @@ public class CoursServices implements ICoursService<Cours> {
                         resultSet.getString("niveau"),
                         resultSet.getString("competences_visees"),
                         resultSet.getBoolean("est_obligatoire"),
-                        resultSet.getInt("created_by")
+                        resultSet.getInt("created_by"),
+                        image // ajouter ici
                 );
                 coursList.add(cours);
             }

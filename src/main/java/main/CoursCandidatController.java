@@ -6,15 +6,24 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import services.CertificationPDFService;
 import services.CertificationService;
 import services.CoursServices;
 import services.ProgressionCoursService;
 import services.IProgressionCoursService;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
+import javafx.scene.shape.Rectangle;
+import java.io.ByteArrayInputStream;
 
 
-import java.awt.event.ActionEvent;
+
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -82,120 +91,116 @@ public class CoursCandidatController {
         card.setPrefWidth(340);
         card.setMaxWidth(340);
 
-        // Header avec niveau
+        // --- IMAGE DE COUVERTURE ---
+        ImageView imageView;
+        if (cours.getImageCouverture() != null && cours.getImageCouverture().length > 0) {
+            imageView = new ImageView(new Image(new ByteArrayInputStream(cours.getImageCouverture())));
+        } else {
+            imageView = new ImageView(new Image(getClass().getResourceAsStream("/images/placeholder.png")));
+        }
+        imageView.setFitWidth(340); // largeur = largeur du card
+        imageView.setFitHeight(160); // hauteur max souhaitée
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+        imageView.setCache(true);
+
+        // coins arrondis
+        Rectangle clip = new Rectangle(340, 160);
+        clip.setArcWidth(20);
+        clip.setArcHeight(20);
+        imageView.setClip(clip);
+
+        card.getChildren().add(imageView);
+
+
+
+        // --- HEADER ---
         HBox header = new HBox();
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(0, 0, 10, 0));
 
-        // Badge de niveau avec TOUS les niveaux
         Label lblNiveau = new Label(cours.getNiveau());
         lblNiveau.getStyleClass().add("level-badge");
 
-        String niveau = cours.getNiveau().toLowerCase();
-        if (niveau.contains("débutant") || niveau.contains("debutant")) {
-            lblNiveau.getStyleClass().add("level-debutant");
-        } else if (niveau.contains("intermédiaire") || niveau.contains("intermediaire")) {
-            lblNiveau.getStyleClass().add("level-intermediaire");
-        } else if (niveau.contains("avancé") || niveau.contains("avance")) {
-            lblNiveau.getStyleClass().add("level-avance");
-        } else if (niveau.contains("expert")) {
-            lblNiveau.getStyleClass().add("level-expert");
-        } else if (niveau.contains("master")) {
-            lblNiveau.getStyleClass().add("level-master");
-        } else {
-            lblNiveau.getStyleClass().add("level-debutant");
-        }
-
-        // Domaine
         Label lblDomaine = new Label(cours.getCompetences_visees() != null ?
                 cours.getCompetences_visees().split(",")[0] : "Général");
         lblDomaine.getStyleClass().add("course-domain");
-
-        header.getChildren().addAll(lblNiveau, lblDomaine);
         HBox.setMargin(lblDomaine, new Insets(0, 0, 0, 10));
 
-        // Titre
+        header.getChildren().addAll(lblNiveau, lblDomaine);
+
+        // --- TITRE ET DESCRIPTION ---
         Label lblTitre = new Label(cours.getTitre());
         lblTitre.getStyleClass().add("course-title");
         lblTitre.setWrapText(true);
         lblTitre.setMaxWidth(300);
 
-        // Description
         Label lblDesc = new Label(cours.getDescription());
         lblDesc.getStyleClass().add("course-description");
         lblDesc.setWrapText(true);
         lblDesc.setMaxWidth(300);
         lblDesc.setMaxHeight(60);
 
-        // Métadonnées
+        // --- MÉTADONNÉES ---
         HBox metaBox = new HBox(15);
         metaBox.setAlignment(Pos.CENTER_LEFT);
 
-        // Durée
-        HBox durationBox = new HBox(5);
-        durationBox.setAlignment(Pos.CENTER_LEFT);
         Label lblDuration = new Label("⏱️ " + cours.getDuree() + "h");
         lblDuration.getStyleClass().add("course-meta");
-        durationBox.getChildren().add(lblDuration);
+        metaBox.getChildren().add(lblDuration);
 
-        // Obligatoire
         if (cours.isEst_obligatoire()) {
-            HBox obligBox = new HBox(5);
-            obligBox.setAlignment(Pos.CENTER_LEFT);
             Label lblOblig = new Label("📌 Obligatoire");
             lblOblig.getStyleClass().add("course-obligatoire");
-            obligBox.getChildren().add(lblOblig);
-            metaBox.getChildren().add(obligBox);
+            metaBox.getChildren().add(lblOblig);
         }
 
-        metaBox.getChildren().add(durationBox);
-
-        // Bouton
+        // --- BOUTONS ---
         Button btn = new Button("Commencer le cours");
         btn.getStyleClass().add("course-button");
         btn.setMaxWidth(Double.MAX_VALUE);
         btn.setPrefHeight(40);
 
-
-        // Nouveau bouton "Générer PDF" pour ce cours
         Button btnPDF = new Button("Générer PDF");
         btnPDF.getStyleClass().add("course-button-pdf");
         btnPDF.setMaxWidth(Double.MAX_VALUE);
         btnPDF.setPrefHeight(35);
-
-        // On passe le cours correspondant à l'événement
         btnPDF.setOnAction(event -> genererCertifTest(cours));
-        // Assemblage
+
+        // --- ASSEMBLER LES NŒUDS ---
         card.getChildren().addAll(header, lblTitre, lblDesc, metaBox, btn, btnPDF);
+
         return card;
     }
 
+
     private void filtrerCours() {
-        String recherche = txtRecherche.getText().toLowerCase();
+        String recherche = txtRecherche.getText() != null ? txtRecherche.getText().toLowerCase() : "";
         String domaine = comboDomaine.getValue();
         String niveau = comboNiveau.getValue();
 
-        if ((recherche == null || recherche.isEmpty()) &&
-                "Tous".equals(domaine) && "Tous".equals(niveau)) {
-            displayCours(tousLesCours);
-            lblTotalCours.setText(tousLesCours.size() + " cours disponibles");
-            return;
-        }
-
         List<Cours> filtered = tousLesCours.stream()
-                .filter(c -> (recherche.isEmpty() ||
-                        c.getTitre().toLowerCase().contains(recherche) ||
-                        c.getDescription().toLowerCase().contains(recherche)))
-                .filter(c -> "Tous".equals(domaine) ||
-                        (c.getCompetences_visees() != null &&
-                                c.getCompetences_visees().toLowerCase().contains(domaine.toLowerCase())))
-                .filter(c -> "Tous".equals(niveau) ||
-                        c.getNiveau().equalsIgnoreCase(niveau))
+                .filter(c -> {
+                    boolean matchesSearch = recherche.isEmpty() ||
+                            (c.getTitre() != null && c.getTitre().toLowerCase().contains(recherche)) ||
+                            (c.getDescription() != null && c.getDescription().toLowerCase().contains(recherche));
+                    boolean matchesDomaine = "Tous".equals(domaine) ||
+                            (c.getCompetences_visees() != null &&
+                                    c.getCompetences_visees().toLowerCase().contains(domaine.toLowerCase()));
+                    boolean matchesNiveau = "Tous".equals(niveau) ||
+                            (c.getNiveau() != null &&
+                                    c.getNiveau().toLowerCase().contains(niveau.toLowerCase()));
+
+                    return matchesSearch && matchesDomaine && matchesNiveau;
+                })
+                .distinct() // évite doublons au cas où
                 .toList();
 
         displayCours(filtered);
         lblTotalCours.setText(filtered.size() + " cours disponibles");
     }
+
+
     private void genererCertifTest(Cours cours) {
 
         if (cours == null) {

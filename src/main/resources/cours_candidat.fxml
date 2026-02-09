@@ -48,36 +48,16 @@
                             <!-- Domaine -->
                             <VBox spacing="4" alignment="CENTER_LEFT">
                                 <Label text="Domaine" styleClass="filter-label"/>
-                                <ComboBox fx:id="comboDomaine" styleClass="filter-combo" prefWidth="200">
-                                    <items>
-                                        <FXCollections fx:factory="observableArrayList">
-                                            <String fx:value="Tous"/>
-                                            <String fx:value="Développement Web"/>
-                                            <String fx:value="Design"/>
-                                            <String fx:value="Data Science"/>
-                                            <String fx:value="Marketing"/>
-                                        </FXCollections>
-                                    </items>
-                                    <value><String fx:value="Tous"/></value>
-                                </ComboBox>
+                                <ComboBox fx:id="comboDomaine" styleClass="filter-combo" prefWidth="200"/>
+
                             </VBox>
 
                             <!-- Niveau -->
                             <VBox spacing="4" alignment="CENTER_LEFT">
                                 <Label text="Niveau" styleClass="filter-label"/>
-                                <ComboBox fx:id="comboNiveau" styleClass="filter-combo" prefWidth="200">
-                                    <items>
-                                        <FXCollections fx:factory="observableArrayList">
-                                            <String fx:value="Tous"/>
-                                            <String fx:value="Débutant"/>
-                                            <String fx:value="Intermédiaire"/>
-                                            <String fx:value="Avancé"/>
-                                            <String fx:value="Expert"/>
-                                            <String fx:value="Master"/>
-                                        </FXCollections>
-                                    </items>
-                                    <value><String fx:value="Tous"/></value>
-                                </ComboBox>
+                                <ComboBox fx:id="comboNiveau" styleClass="filter-combo" prefWidth="200"/>
+
+
                             </VBox>
                         </HBox>
                     </VBox>

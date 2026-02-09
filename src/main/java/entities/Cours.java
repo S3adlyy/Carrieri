@@ -8,9 +8,16 @@ public class Cours {
     private String niveau;
     private String competences_visees;
     private boolean est_obligatoire;
-
+    private byte[] imageCouverture;
     private int createdBy;
 
+    public byte[] getImageCouverture() {
+        return imageCouverture;
+    }
+
+    public void setImageCouverture(byte[] imageCouverture) {
+        this.imageCouverture = imageCouverture;
+    }
     public int getCreatedBy() {
         return createdBy;
     }
@@ -20,7 +27,7 @@ public class Cours {
     }
 
     public Cours(){}
-    public Cours(String titre, String description, int duree, String niveau, String competences_visees, boolean est_obligatoire,int createdBy) {
+    public Cours(String titre, String description, int duree, String niveau, String competences_visees, boolean est_obligatoire,int createdBy,byte[] imageCouverture) {
         this.titre = titre;
         this.description = description;
         this.duree = duree;
@@ -28,9 +35,11 @@ public class Cours {
         this.competences_visees = competences_visees;
         this.est_obligatoire = est_obligatoire;
         this.createdBy = createdBy;
+        this.imageCouverture = imageCouverture;
     }
 
-    public Cours(int id, String titre, String description, int duree, String niveau, String competences_visees, boolean est_obligatoire,int createdBy) {
+    public Cours(int id, String titre, String description, int duree, String niveau,
+                 String competences_visees, boolean est_obligatoire, int createdBy, byte[] imageCouverture) {
         this.id = id;
         this.titre = titre;
         this.description = description;
@@ -39,6 +48,7 @@ public class Cours {
         this.competences_visees = competences_visees;
         this.est_obligatoire = est_obligatoire;
         this.createdBy = createdBy;
+        this.imageCouverture = imageCouverture;
     }
 
     public int getId() {

@@ -5,6 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.image.ImageView?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="main.CoursController"
             stylesheets="@styles.css"
@@ -42,7 +43,9 @@
             </columnConstraints>
 
             <!-- LEFT PANEL - FORMULAIRE -->
-            <VBox GridPane.columnIndex="0" spacing="20">
+            <ScrollPane GridPane.columnIndex="0" fitToWidth="true" fitToHeight="true">
+            <content>
+            <VBox spacing="20">
                 <padding>
                     <Insets top="25" right="25" bottom="25" left="25"/>
                 </padding>
@@ -56,6 +59,16 @@
                        style="-fx-text-fill: #5E548E; -fx-font-size: 20px; -fx-font-weight: bold;"/>
 
                 <VBox spacing="12">
+                    <Button fx:id="btnChoisirImage" text="Choisir une image" />
+                    <ImageView fx:id="imageViewForm" fitWidth="300" fitHeight="150" preserveRatio="true" />
+
+
+                    <Label fx:id="lblImageNom" text="Aucune image sélectionnée"
+                           style="-fx-text-fill: #718096; -fx-font-size: 12px;"/>
+                    <VBox fx:id="card" spacing="10">
+                        <!-- Ici l'imageView sera ajouté dynamiquement -->
+                    </VBox>
+
                     <!-- TITRE -->
                     <Label text="Titre *"/>
                     <TextField fx:id="txtTitre" promptText="Ex: Mathématiques Avancées"/>
@@ -127,7 +140,8 @@
                     </HBox>
                 </VBox>
             </VBox>
-
+            </content>
+            </ScrollPane>
             <!-- RIGHT PANEL - TABLEAU -->
             <VBox GridPane.columnIndex="1" spacing="15">
                 <padding>
@@ -169,6 +183,9 @@
                         <TableColumn fx:id="colDescription" text="DESCRIPTION" prefWidth="200"/>
                         <TableColumn fx:id="colCompetences" text="COMPÉTENCES" prefWidth="150"/>
                         <TableColumn fx:id="colObligatoire" text="STATUT" prefWidth="100"/>
+                        <TableColumn fx:id="colImage" text="IMAGE" prefWidth="100"/>
+
+
                     </columns>
                 </TableView>
             </VBox>
