@@ -1,5 +1,7 @@
 package entities;
 
+import java.util.List;
+
 public class Cours {
     private int id;
     private String titre;
@@ -10,6 +12,15 @@ public class Cours {
     private boolean est_obligatoire;
     private byte[] imageCouverture;
     private int createdBy;
+    private List<Module> modules;
+
+    public List<Module> getModules() {
+        return modules;
+    }
+
+    public void setModules(List<Module> modules) {
+        this.modules = modules;
+    }
 
     public byte[] getImageCouverture() {
         return imageCouverture;

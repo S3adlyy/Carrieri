@@ -1,12 +1,22 @@
 package entities;
 
+import java.util.List;
+
 public class Module {
     private int id;
     private String titre;
     private String description;
     private int ordre;
     private int coursId;
+    private List<Lecon> lecons;
 
+    public List<Lecon> getLecons() {
+        return lecons;
+    }
+
+    public void setLecons(List<Lecon> lecons) {
+        this.lecons = lecons;
+    }
 
     public Module(int id, String titre, String description, int ordre, int coursId) {
         this.id = id;

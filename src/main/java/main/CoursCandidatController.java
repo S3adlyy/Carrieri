@@ -3,13 +3,17 @@ package main;
 import entities.Certification;
 import entities.Cours;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import services.CertificationPDFService;
 import services.CertificationService;
 import services.CoursService;
@@ -157,6 +161,7 @@ public class CoursCandidatController {
 
         // --- BOUTONS ---
         Button btn = new Button("Commencer le cours");
+        btn.setOnAction(e -> ouvrirCours(cours));
         btn.getStyleClass().add("course-button");
         btn.setMaxWidth(Double.MAX_VALUE);
         btn.setPrefHeight(40);
@@ -171,6 +176,24 @@ public class CoursCandidatController {
         card.getChildren().addAll(header, lblTitre, lblDesc, metaBox, btn, btnPDF);
 
         return card;
+    }
+
+    private void ouvrirCours(Cours cours) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/CoursDetail.fxml"));
+            Parent root = loader.load();
+
+            CoursDetailController controller = loader.getController();
+            controller.setCours(cours);
+
+            Stage stage = new Stage();
+            stage.setTitle(cours.getTitre());
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

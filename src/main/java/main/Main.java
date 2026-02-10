@@ -51,7 +51,7 @@ public class Main extends Application {
 
         // Afficher la fenêtre
         stage.show();*/
-        Parent root = FXMLLoader.load(getClass().getResource("/cours.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/cours_candidat.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("E-learning");

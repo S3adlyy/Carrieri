@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="15" style="-fx-padding: 20;"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="main.LeconViewController">
+
+    <Label text="Leçons" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+    <Separator/>
+
+    <ScrollPane fitToWidth="true" style="-fx-border-color: #ecf0f1; -fx-border-radius: 5;">
+        <VBox fx:id="boxLecons" spacing="10" style="-fx-padding: 10;">
+            <padding>
+                <Insets top="5" right="5" bottom="5" left="5"/>
+            </padding>
+        </VBox>
+    </ScrollPane>
+
+</VBox>
