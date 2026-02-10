@@ -30,6 +30,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static com.example.guser.controllers.TrackController.humanSize;
+
 public class CodeViewerController {
 
     @FXML private SplitPane codeSplitPane;
@@ -129,6 +131,7 @@ public class CodeViewerController {
 
                 Label name = new Label(v.name());
                 name.getStyleClass().add("cv-treeName");
+
 
                 HBox row = new HBox(8, ico, name);
                 row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);

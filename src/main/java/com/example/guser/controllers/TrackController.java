@@ -8,11 +8,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.stage.Window;
 import services.*;
 
 import java.nio.file.Path;
@@ -22,7 +23,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
@@ -33,7 +33,6 @@ import java.util.zip.ZipOutputStream;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.FileChooser;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -44,6 +43,21 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.text.Text;
+
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+import javafx.stage.Stage;
+
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseButton;
+
+
 
 
 
@@ -125,6 +139,10 @@ private enum ViewMode { CURRENT, PROGRESS }
     @FXML private VBox artifactsPane;
     @FXML private Button closePreviewBtn;
     @FXML private SplitPane artifactSplitPane;
+
+    //video and audio preview
+    private MediaPlayer currentPlayer;
+
 
 
 
@@ -232,6 +250,16 @@ private enum ViewMode { CURRENT, PROGRESS }
     }
 
     private void closePreview() {
+        // Stop/dispose video audio player if any
+        try {
+            if (currentPlayer != null) {
+                currentPlayer.stop();
+                currentPlayer.dispose();
+                currentPlayer = null;
+            }
+        } catch (Exception ignored) {}
+
+        //dispose of zip files
         try {
             Node n = artifactViewerHost.getChildren().isEmpty() ? null : artifactViewerHost.getChildren().get(0);
             if (n != null && n.getUserData() instanceof CodeViewerController c) c.dispose();
@@ -388,7 +416,7 @@ private enum ViewMode { CURRENT, PROGRESS }
         descArea.setPrefRowCount(3);
 
         ComboBox<String> typeBox = new ComboBox<>(FXCollections.observableArrayList(
-                "CODE", "DOCUMENT", "IMAGE", "VIDEO", "TEXT", "LINK"
+                "CODE", "DOCUMENT", "IMAGE", "VIDEO","AUDIO", "TEXT", "LINK"
         ));
         typeBox.getSelectionModel().select("CODE");
 
@@ -399,7 +427,7 @@ private enum ViewMode { CURRENT, PROGRESS }
         textArea.setPromptText("Text / URL (for TEXT/LINK)");
         textArea.setPrefRowCount(4);
 
-        Label uploadHint = new Label("For CODE/DOCUMENT/IMAGE/VIDEO you will upload a file (or folder→zip for CODE) after creating.");
+        Label uploadHint = new Label("For CODE/DOCUMENT/IMAGE/VIDEO/AUDIO you will upload a file (or folder→zip for CODE) after creating.");
         uploadHint.getStyleClass().add("prf-muted");
 
         GridPane grid = new GridPane();
@@ -480,7 +508,7 @@ private enum ViewMode { CURRENT, PROGRESS }
             // Upload immediately for file-based artifacts
             if (d.type.equals("CODE")) {
                 promptUploadForCode(created);
-            } else if (d.type.equals("DOCUMENT") || d.type.equals("IMAGE") || d.type.equals("VIDEO")) {
+            } else if (d.type.equals("DOCUMENT") || d.type.equals("IMAGE") || d.type.equals("VIDEO")|| d.type.equals("AUDIO")) {
                 promptUploadSingleFile(created, d.type);
             }
 
@@ -515,21 +543,7 @@ private enum ViewMode { CURRENT, PROGRESS }
         String language;
         String textContent;
     }
-    private void refreshArtifactsUI() {
-        try {
-            if (selectedSnapshot != null) {
-                refreshArtifactsForSnapshot(selectedSnapshot);
-            } else {
-                // Show artifacts without snapshot mapping (fileObjectId unknown)
-                List<Artifact> artifacts = artifactService.listActiveByTrack(track.getId());
-                artifactRows.setAll(buildGroupedRows(artifacts));
-                showPlaceholder("Create a snapshot to freeze versions.");
-            }
-            setError(null);
-        } catch (Exception e) {
-            setError(e.getMessage());
-        }
-    }
+
 
 
     private static String emptyToNull(String s) {
@@ -788,11 +802,8 @@ private enum ViewMode { CURRENT, PROGRESS }
                     artifact.getArtifactName()
             );
 
-            case "VIDEO" -> showDownloadPanel(
-                    artifact.getArtifactName() + " (Video)",
-                    fileObjectId,
-                    artifact.getArtifactName()
-            );
+            case "VIDEO" -> openVideoArtifact(artifact, fileObjectId);
+            case "AUDIO" -> openVideoArtifact(artifact, fileObjectId); //media player works with mp3 wav
 
             case "LINK" -> openLinkPreviewOnly(artifact);
 
@@ -850,6 +861,111 @@ private enum ViewMode { CURRENT, PROGRESS }
         box.getStyleClass().add("wsp-viewBox");
         artifactViewerHost.getChildren().setAll(box);
     }
+
+    private void openVideoArtifact(Artifact artifact, int fileObjectId) {
+        closePreview();
+
+        try {
+            FileObject fo = fileObjectService.findById(fileObjectId);
+            if (fo == null) { showPlaceholder("Missing file record."); return; }
+
+            String url = fileObjectService.presignedDownloadUrl(fo.getStorageKey(), Duration.ofMinutes(10));
+
+            Media media = new Media(url);
+            MediaPlayer player = new MediaPlayer(media);
+            currentPlayer = player;
+
+            MediaView mv = new MediaView(player);
+            if(artifact.getArtifactType()=="VIDEO"){
+                mv.setSmooth(true);
+                // Fill width, but cap height
+                mv.fitWidthProperty().bind(artifactViewerHost.widthProperty().subtract(24));
+                mv.fitHeightProperty().bind(artifactViewerHost.heightProperty().multiply(0.70)); // only ~55% of preview
+                //mv.setFitHeight(420); // hard cap for big windows
+            }
+            mv.setPreserveRatio(true);
+
+
+            StackPane videoStage = new StackPane(mv);
+            videoStage.getStyleClass().add("wsp-videoStage");
+
+            Button play = new Button("Play");
+            play.getStyleClass().add("prf-actBtn");
+            play.setOnAction(e -> player.play());
+
+            Button pause = new Button("Pause");
+            pause.getStyleClass().add("prf-outlineBtn");
+            pause.setOnAction(e -> player.pause());
+
+            Button fs = new Button("Fullscreen");
+            fs.getStyleClass().add("prf-outlineBtn");
+            fs.setOnAction(e -> {
+                Window scene = mv.getScene().getWindow();
+                mv.fitWidthProperty().bind(scene.widthProperty());
+                mv.fitHeightProperty().bind(scene.heightProperty());
+                mv.setPreserveRatio(true);
+            });
+
+
+            Button download = new Button("Download");
+            download.getStyleClass().add("wsp-downloadBtn");
+            download.setOnAction(e -> {
+                try { downloadToDisk(fileObjectId, artifact.getArtifactName()); }
+                catch (Exception ex) { setError(ex.getMessage()); }
+            });
+
+            HBox controls = new HBox(10, play, pause, fs, download);
+            controls.setAlignment(Pos.CENTER_LEFT);
+            controls.getStyleClass().add("wsp-videoControls");
+
+            VBox box = new VBox(10);
+            box.getChildren().addAll(videoStage, controls);
+            box.getStyleClass().addAll("wsp-viewBox", "wsp-videoBox");
+
+            artifactViewerHost.getChildren().setAll(box);
+
+            player.play();
+
+        } catch (MediaException mx) {
+            showVideoFallback(artifact, fileObjectId, mx.getMessage());
+        } catch (Exception e) {
+            showVideoFallback(artifact, fileObjectId, e.getMessage());
+        }
+    }
+
+    private void showVideoFallback(Artifact artifact, int fileObjectId, String err) {
+        try {
+            FileObject fo = fileObjectService.findById(fileObjectId);
+            String url = (fo == null) ? null : fileObjectService.presignedDownloadUrl(fo.getStorageKey(), Duration.ofMinutes(10));
+
+            Label title = new Label("Video preview not supported on this machine");
+            title.getStyleClass().add("wsp-viewTitle");
+
+            Label msg = new Label(err == null ? "" : err);
+            msg.getStyleClass().add("prf-muted");
+            msg.setWrapText(true);
+
+            Button openExternal = new Button("Open externally");
+            openExternal.getStyleClass().add("prf-actBtn");
+            openExternal.setDisable(url == null || url.isBlank());
+            openExternal.setOnAction(e -> com.example.guser.AppHostServices.get().showDocument(url));
+
+            Button download = new Button("Download");
+            download.getStyleClass().add("wsp-downloadBtn");
+            download.setOnAction(e -> {
+                try { downloadToDisk(fileObjectId, artifact.getArtifactName()); }
+                catch (Exception ex) { setError(ex.getMessage()); }
+            });
+
+            VBox box = new VBox(10, title, msg, new HBox(10, openExternal, download));
+            box.getStyleClass().add("wsp-viewBox");
+
+            artifactViewerHost.getChildren().setAll(box);
+        } catch (Exception e) {
+            showPlaceholder("Video preview failed.");
+        }
+    }
+
 
 
     private static String safeFileName(String base, String extNoDot) {
@@ -1000,6 +1116,7 @@ private enum ViewMode { CURRENT, PROGRESS }
             case "DOCUMENT" -> "📄";
             case "IMAGE" -> "🖼";
             case "VIDEO" -> "🎬";
+            case "AUDIO" -> "🎬";
             case "LINK" -> "🔗";
             case "TEXT" -> "📝";
             default -> "•";
@@ -1010,9 +1127,12 @@ private enum ViewMode { CURRENT, PROGRESS }
         artifactsListView.setCellFactory(lv -> new ListCell<>() {
             @Override protected void updateItem(ArtifactRow row, boolean empty) {
                 super.updateItem(row, empty);
+
                 setText(null);
                 setGraphic(null);
                 setDisable(false);
+                setContextMenu(null);
+
                 getStyleClass().remove("wsp-headerCell");
 
                 if (empty || row == null) return;
@@ -1027,6 +1147,7 @@ private enum ViewMode { CURRENT, PROGRESS }
                     return;
                 }
 
+                // ITEM ROW
                 Artifact a = row.artifact;
                 String type = safeUpper(a.getArtifactType());
 
@@ -1036,27 +1157,69 @@ private enum ViewMode { CURRENT, PROGRESS }
                 Label name = new Label(nullToEmpty(a.getArtifactName()));
                 name.getStyleClass().add("wsp-artName");
 
-                String metaTxt = type + ((a.getLanguage() == null || a.getLanguage().isBlank()) ? "" : (" • " + a.getLanguage()));
+                String metaTxt = type
+                        + ((a.getLanguage() == null || a.getLanguage().isBlank()) ? "" : (" • " + a.getLanguage()));
+
+                // If snapshot mode and no file: show hint
+                boolean missingInSnapshot = (viewMode == ViewMode.PROGRESS && selectedSnapshot != null && row.fileObjectId == null);
+                if (missingInSnapshot) metaTxt += " • No version in snapshot";
+
                 Label meta = new Label(metaTxt);
                 meta.getStyleClass().add("wsp-artMeta");
 
                 VBox texts = new VBox(2, name, meta);
 
-                HBox root = new HBox(10, icon, texts);
+                // 3-dots menu button
+                Button moreBtn = new Button("⋯");
+                moreBtn.getStyleClass().add("wsp-moreBtn");
+                moreBtn.setFocusTraversable(false);
+                moreBtn.setMinWidth(34);
+                moreBtn.setPrefWidth(34);
+
+                ContextMenu cm = buildArtifactMenu(row);
+
+                moreBtn.setOnAction(e -> {
+                    if (cm == null) return;
+                    cm.show(moreBtn, Side.BOTTOM, 0, 0);
+                });
+
+                Region spacer = new Region();
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+
+                HBox root = new HBox(10.0, (Node) icon, (Node) texts, (Node) spacer, moreBtn);
                 root.setAlignment(Pos.CENTER_LEFT);
                 root.setPadding(new Insets(2, 6, 2, 6));
 
-                if (viewMode == ViewMode.PROGRESS && selectedSnapshot != null && row.fileObjectId == null) {
-                    Label miss = new Label("No file in this snapshot");
-                    miss.getStyleClass().add("wsp-artWarn");
-                    root.getChildren().add(miss);
-                }
-
                 setGraphic(root);
+
+                // Right-click context menu
+                setContextMenu(cm);
+
+                // Also allow right-click anywhere on row graphic (some OS don’t show contextMenu reliably)
+                root.setOnMousePressed(me -> {
+                    if (me.getButton() == MouseButton.SECONDARY) {
+                        if (cm != null) cm.show(root, me.getScreenX(), me.getScreenY());
+                        me.consume();
+                    }
+                });
             }
         });
     }
 
+
+    public static String humanSize(long bytes) {
+        if (bytes < 0) return "—";
+        final long KiB = 1024L;
+        final long MiB = KiB * 1024L;
+        final long GiB = MiB * 1024L;
+        final long TiB = GiB * 1024L;
+
+        if (bytes >= TiB) return String.format(Locale.US, "%.1f TiB", (double) bytes / TiB);
+        if (bytes >= GiB) return String.format(Locale.US, "%.1f GiB", (double) bytes / GiB);
+        if (bytes >= MiB) return String.format(Locale.US, "%.1f MiB", (double) bytes / MiB);
+        if (bytes >= KiB) return String.format(Locale.US, "%.1f KiB", (double) bytes / KiB);
+        return bytes + " B";
+    }
 
 
 
@@ -1073,6 +1236,7 @@ private enum ViewMode { CURRENT, PROGRESS }
             case "DOCUMENT" -> "Documents";
             case "IMAGE" -> "Images";
             case "VIDEO" -> "Videos";
+            case "AUDIO" -> "Audios";
             case "LINK" -> "Links";
             case "TEXT" -> "Text";
             default -> t;
@@ -1081,6 +1245,69 @@ private enum ViewMode { CURRENT, PROGRESS }
 
     private static String safeUpper(String s) { return s == null ? "" : s.trim().toUpperCase(); }
     private static String nullToEmpty(String s) { return s == null ? "" : s; }
+    private ContextMenu buildArtifactMenu(ArtifactRow row) {
+        String type = safeUpper(row.artifact.getArtifactType());
+
+        MenuItem upload = new MenuItem("Upload new version…");
+        upload.setOnAction(e -> {
+            if (!ownerMode) return;
+            try {
+                if ("CODE".equals(type)) {
+                    promptUploadForCode(row.artifact);
+                } else if ("DOCUMENT".equals(type) || "IMAGE".equals(type) || "VIDEO".equals(type)) {
+                    promptUploadSingleFile(row.artifact, type);
+                } else {
+                    showInfo("This artifact type has no file upload.");
+                }
+                setError(null);
+                refreshCurrentArtifacts();
+            } catch (Exception ex) {
+                setError(ex.getMessage());
+            }
+        });
+
+        // Only allow upload in CURRENT mode (snapshot mode is frozen)
+        upload.setDisable(!(ownerMode && viewMode == ViewMode.CURRENT));
+
+        MenuItem download = new MenuItem(viewMode == ViewMode.PROGRESS ? "Download snapshot version" : "Download latest");
+        download.setOnAction(e -> {
+            try {
+                Integer fid = row.fileObjectId;
+                if (fid == null) {
+                    showInfo(viewMode == ViewMode.PROGRESS
+                            ? "No file in this snapshot for this artifact."
+                            : "No file uploaded yet for this artifact.");
+                    return;
+                }
+                downloadToDisk(fid, row.artifact.getArtifactName());
+                setError(null);
+            } catch (Exception ex) {
+                setError(ex.getMessage());
+            }
+        });
+
+        MenuItem openLink = new MenuItem("Open link");
+        openLink.setOnAction(e -> {
+            try {
+                String url = row.artifact.getTextContent() == null ? "" : row.artifact.getTextContent().trim();
+                if (!url.isBlank()) com.example.guser.AppHostServices.get().showDocument(url);
+            } catch (Exception ex) {
+                setError(ex.getMessage());
+            }
+        });
+
+        ContextMenu cm = new ContextMenu();
+
+        // Items based on type
+        cm.getItems().add(download);
+        if ("LINK".equals(type)) cm.getItems().add(openLink);
+
+        // Put upload at top when allowed (nice UX)
+        if (ownerMode) cm.getItems().add(0, upload);
+
+        return cm;
+    }
+
 
     // --- UI row type: no new VM files needed ---
     private enum ArtifactRowKind { HEADER, ITEM }
@@ -1090,6 +1317,7 @@ private enum ViewMode { CURRENT, PROGRESS }
         final String headerTitle;
         final Artifact artifact;
         Integer fileObjectId;
+        Long fileSize;
 
         private ArtifactRow(ArtifactRowKind kind, String headerTitle, Artifact artifact) {
             this.kind = kind;
@@ -1170,6 +1398,12 @@ private enum ViewMode { CURRENT, PROGRESS }
         } else if ("VIDEO".equals(type)) {
             fc.getExtensionFilters().addAll(
                     new FileChooser.ExtensionFilter("Videos", "*.mp4", "*.mov"),
+                    new FileChooser.ExtensionFilter("All files", "*.*")
+            );
+        }
+        else if ("AUDIO".equals(type)) {
+            fc.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Audios", "*.mp3", "*.wav"),
                     new FileChooser.ExtensionFilter("All files", "*.*")
             );
         }

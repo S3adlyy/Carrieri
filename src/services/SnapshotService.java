@@ -58,11 +58,12 @@ public class SnapshotService {
 
             try (PreparedStatement ins = connection.prepareStatement(insSql)) {
                 for (Artifact a : artifacts) {
-                    int fileObjectId = resolveSnapshotFileObjectId(candidateId, trackId, snapshotId, a);
+                    Integer fileObjectId = resolveSnapshotFileObjectId(candidateId, trackId, snapshotId, a);
 
                     ins.setInt(1, snapshotId);
                     ins.setInt(2, a.getId());
-                    ins.setInt(3, fileObjectId);
+                    if (fileObjectId == null) ins.setNull(3, Types.INTEGER);
+                    else ins.setInt(3, fileObjectId);
                     ins.addBatch();
                 }
                 ins.executeBatch();
@@ -101,7 +102,7 @@ public class SnapshotService {
     /**
      * Ensures snapshot_item always points to a file_object, including TEXT/LINK.
      */
-    private int resolveSnapshotFileObjectId(int candidateId, int trackId, int snapshotId, Artifact a) throws Exception {
+    private Integer resolveSnapshotFileObjectId(int candidateId, int trackId, int snapshotId, Artifact a) throws Exception {
         String type = a.getArtifactType() == null ? "" : a.getArtifactType().toUpperCase();
 
         if (type.equals("TEXT") || type.equals("LINK")) {
@@ -137,13 +138,17 @@ public class SnapshotService {
             } finally {
                 try { tmp.delete(); } catch (Exception ignored) {}
             }
+
+
         }
 
         FileObject latest = fileObjectService.findLatestByArtifact(a.getId());
-        if (latest == null) {
+        //naheha khater ken l artifact fihech files tnajamch taamel snapshot ken nkhaliwha
+        /*if (latest == null) {
             throw new IllegalStateException("No uploaded file version for artifactId=" + a.getId());
         }
-        return latest.getId();
+        return latest.getId(); */
+        return (latest == null) ? null : latest.getId();
     }
 
     private Snapshot map(ResultSet rs) throws SQLException {

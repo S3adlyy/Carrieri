@@ -594,3 +594,68 @@
     -fx-font-size: 11px;
 }
 
+
+/* ===== Video preview panel ===== */
+.wsp-videoBox {
+    -fx-background-color: rgba(255,255,255,0.96);
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-padding: 12;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.10), 24, 0.24, 0, 12);
+}
+
+.wsp-videoStage {
+    -fx-background-color: linear-gradient(to bottom right, #0d1117, #161b22);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: rgba(255,255,255,0.08);
+    -fx-padding: 10;
+}
+
+/* Give control row a “player bar” look */
+.wsp-videoControls {
+    -fx-background-color: rgba(13,17,23,0.06);
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-padding: 10;
+}
+
+/* Optional: make slider look cleaner if you add one later */
+.wsp-videoControls .slider .track {
+    -fx-background-color: rgba(35,25,66,0.10);
+    -fx-background-radius: 999;
+}
+.wsp-videoControls .slider .thumb {
+    -fx-background-color: rgba(130,80,223,0.70);
+    -fx-background-radius: 999;
+}
+
+
+
+/* 3-dots menu button on artifact rows */
+.wsp-moreBtn {
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-text-fill: rgba(35,25,66,0.75);
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+    -fx-padding: 6 8 6 8;
+}
+
+.wsp-moreBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.18);
+    -fx-border-color: rgba(94,84,142,0.18);
+}
+.context-menu {
+    -fx-background-color: rgba(255,255,255,0.98);
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: rgba(35,25,66,0.10);
+}
+.context-menu .menu-item:focused {
+    -fx-background-color: rgba(190,149,196,0.16);
+}
