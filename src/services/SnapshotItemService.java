@@ -41,7 +41,6 @@ public class SnapshotItemService {
                         "FROM snapshot_item si " +
                         "JOIN artifact a ON a.id = si.artifact_id " +
                         "WHERE si.snapshot_id = ? " +
-                        "AND a.deleted_at IS NULL " +
                         "ORDER BY a.created_at ASC";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {

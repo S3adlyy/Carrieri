@@ -61,6 +61,16 @@ public class ArtifactService {
             ps.executeUpdate();
         }
     }
+    public void rename(int artifactId, String newName) throws SQLException {
+        String sql = "UPDATE artifact SET artifact_name=? WHERE id=? AND deleted_at IS NULL";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, newName);
+            ps.setInt(2, artifactId);
+            int updated = ps.executeUpdate();
+            if (updated == 0) throw new SQLException("Artifact not found or deleted.");
+        }
+    }
+
 
 
     public List<Artifact> listActiveByTrack(int trackId) throws SQLException {
@@ -77,10 +87,11 @@ public class ArtifactService {
     }
 
     public void softDelete(int artifactId) throws SQLException {
-        String sql = "UPDATE artifact SET deleted_at = NOW() WHERE id = ?";
+        String sql = "UPDATE artifact SET deleted_at=NOW() WHERE id=? AND deleted_at IS NULL";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, artifactId);
-            ps.executeUpdate();
+            int updated = ps.executeUpdate();
+            if (updated == 0) throw new SQLException("Artifact not found or already deleted.");
         }
     }
 

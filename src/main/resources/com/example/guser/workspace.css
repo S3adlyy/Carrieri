@@ -659,3 +659,122 @@
 .context-menu .menu-item:focused {
     -fx-background-color: rgba(190,149,196,0.16);
 }
+
+
+
+
+/* ===== Dialog base (reused by rename/delete/add) ===== */
+.wsp-dialog {
+    -fx-background-color: rgba(255,255,255,0.98);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(35,25,66,0.12);
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.18), 28, 0.22, 0, 14);
+}
+
+/* Header */
+.wsp-dialog:header .header-panel {
+    -fx-background-color: transparent;
+    -fx-padding: 14 16 8 16;
+}
+.wsp-dialog:header .header-panel .label {
+    -fx-text-fill: rgba(35,25,66,0.92);
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+}
+
+/* Content area padding */
+.wsp-dialog > .content {
+    -fx-padding: 10 16 6 16;
+}
+
+/* Button bar */
+.wsp-dialog > .button-bar > .container {
+    -fx-padding: 10 16 14 16;
+}
+.wsp-dialog .button {
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-padding: 9 14 9 14;
+    -fx-font-weight: 900;
+}
+.wsp-dialog .button:default {
+    -fx-background-color: rgba(130,80,223,0.92);
+    -fx-text-fill: white;
+}
+.wsp-dialog .button:cancel {
+    -fx-background-color: rgba(35,25,66,0.08);
+    -fx-text-fill: rgba(35,25,66,0.85);
+}
+.wsp-dialog .button:default:hover {
+    -fx-background-color: rgba(130,80,223,1.0);
+}
+.wsp-dialog .button:cancel:hover {
+    -fx-background-color: rgba(35,25,66,0.12);
+}
+
+/* Danger button (for delete confirm) */
+.wsp-dialog .button.wsp-dangerBtn {
+    -fx-background-color: rgba(214, 61, 86, 0.92);
+    -fx-text-fill: white;
+}
+.wsp-dialog .button.wsp-dangerBtn:hover {
+    -fx-background-color: rgba(214, 61, 86, 1.0);
+}
+
+/* ===== Add Artifact specific ===== */
+.wsp-addArtifactDialog .content {
+    -fx-padding: 8 16 0 16;
+}
+
+/* Form grid looks like a card */
+.wsp-formGrid {
+    -fx-background-color: rgba(13,17,23,0.03);
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-padding: 14;
+    -fx-hgap: 12;
+    -fx-vgap: 10;
+}
+
+/* Left labels */
+.wsp-formGrid .label {
+    -fx-text-fill: rgba(35,25,66,0.82);
+    -fx-font-weight: 900;
+}
+
+/* Inputs */
+.wsp-input {
+    -fx-background-color: rgba(255,255,255,0.96);
+    -fx-border-color: rgba(35,25,66,0.14);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-padding: 10 12 10 12;
+    -fx-font-weight: 800;
+}
+.wsp-input:focused {
+    -fx-border-color: rgba(130,80,223,0.55);
+    -fx-effect: dropshadow(gaussian, rgba(130,80,223,0.18), 14, 0.20, 0, 6);
+}
+
+/* TextAreas need their inner region styled too */
+.text-area.wsp-input .content {
+    -fx-background-color: transparent;
+}
+.text-area.wsp-input {
+    -fx-wrap-text: true;
+}
+
+/* ComboBox: keep it consistent */
+.combo-box.wsp-input,
+.combo-box-base.wsp-input {
+    -fx-padding: 4 10 4 10;
+}
+
+/* Hint text */
+.wsp-hint {
+    -fx-text-fill: rgba(35,25,66,0.60);
+    -fx-font-size: 11px;
+    -fx-font-weight: 800;
+}

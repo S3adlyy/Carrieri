@@ -404,6 +404,11 @@ private enum ViewMode { CURRENT, PROGRESS }
         if (!ownerMode || track == null) return;
 
         Dialog<ArtifactDraft> dialog = new Dialog<>();
+        dialog.getDialogPane().getStylesheets().add(
+                getClass().getResource("/com/example/guser/workspace.css").toExternalForm()
+        );
+        dialog.getDialogPane().getStyleClass().addAll("wsp-dialog", "wsp-addArtifactDialog");
+
         dialog.setTitle("Add Artifact");
         dialog.setHeaderText(null);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
@@ -433,6 +438,31 @@ private enum ViewMode { CURRENT, PROGRESS }
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
+        grid.getStyleClass().add("wsp-formGrid");
+        ColumnConstraints c1 = new ColumnConstraints();
+        c1.setMinWidth(120);
+        c1.setPrefWidth(140);
+        c1.setMaxWidth(180);
+        ColumnConstraints c2 = new ColumnConstraints();
+        c2.setHgrow(Priority.ALWAYS);
+        c2.setFillWidth(true);
+        grid.getColumnConstraints().setAll(c1, c2);
+        GridPane.setHgrow(nameField, Priority.ALWAYS);
+        GridPane.setHgrow(typeBox, Priority.ALWAYS);
+        GridPane.setHgrow(languageField, Priority.ALWAYS);
+        GridPane.setHgrow(textArea, Priority.ALWAYS);
+        GridPane.setHgrow(descArea, Priority.ALWAYS);
+
+
+        grid.getStyleClass().add("wsp-formGrid");
+        nameField.getStyleClass().add("wsp-input");
+        descArea.getStyleClass().add("wsp-input");
+        typeBox.getStyleClass().add("wsp-input");
+        languageField.getStyleClass().add("wsp-input");
+        textArea.getStyleClass().add("wsp-input");
+        uploadHint.getStyleClass().add("wsp-hint");
+        dialog.getDialogPane().setPrefWidth(520);
+
 
         int r = 0;
         grid.addRow(r++, new Label("Name"), nameField);
@@ -876,7 +906,7 @@ private enum ViewMode { CURRENT, PROGRESS }
             currentPlayer = player;
 
             MediaView mv = new MediaView(player);
-            if(artifact.getArtifactType()=="VIDEO"){
+            if("VIDEO".equals(artifact.getArtifactType())){
                 mv.setSmooth(true);
                 // Fill width, but cap height
                 mv.fitWidthProperty().bind(artifactViewerHost.widthProperty().subtract(24));
@@ -1122,6 +1152,81 @@ private enum ViewMode { CURRENT, PROGRESS }
             default -> "•";
         };
     }
+    private void renameArtifact(Artifact a) {
+        if (!ownerMode) return;
+
+        TextInputDialog d = new TextInputDialog(a.getArtifactName());
+        d.setTitle("Rename artifact");
+        d.setHeaderText("Rename artifact");
+        d.setContentText("New name:");
+
+        // Attach your app stylesheet to this dialog
+        d.getDialogPane().getStylesheets().add(
+                getClass().getResource("/com/example/guser/workspace.css").toExternalForm()
+        );
+        d.getDialogPane().getStyleClass().add("wsp-dialog"); // optional, if you added CSS rules
+
+        Optional<String> res = d.showAndWait();
+        if (res.isEmpty()) return;
+
+        String newName = res.get() == null ? "" : res.get().trim();
+        if (newName.isBlank()) {
+            showInfo("Name cannot be empty.");
+            return;
+        }
+
+        try {
+            artifactService.rename(a.getId(), newName); // you added rename(...) in ArtifactService
+            closePreview();
+
+            if (viewMode == ViewMode.CURRENT) refreshCurrentArtifacts();
+            else if (selectedSnapshot != null) refreshSnapshotArtifacts(selectedSnapshot);
+
+            setError(null);
+        } catch (Exception e) {
+            setError(e.getMessage());
+        }
+    }
+
+    private void deleteArtifact(Artifact a) {
+        if (!ownerMode) return;
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Delete artifact");
+        confirm.setHeaderText("Delete \"" + nullToEmpty(a.getArtifactName()) + "\"?");
+        confirm.setContentText("This removes it from the current track.");
+
+        // Custom buttons so we can style “Delete”
+        ButtonType deleteBt = new ButtonType("Delete", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelBt = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        confirm.getButtonTypes().setAll(deleteBt, cancelBt);
+
+        // Attach your app stylesheet to this dialog
+        confirm.getDialogPane().getStylesheets().add(
+                getClass().getResource("/com/example/guser/workspace.css").toExternalForm()
+        );
+        confirm.getDialogPane().getStyleClass().add("wsp-dialog"); // optional
+
+        // Optional: make Delete red (requires .wsp-dangerBtn CSS rule)
+        Node deleteBtn = confirm.getDialogPane().lookupButton(deleteBt);
+        if (deleteBtn != null) deleteBtn.getStyleClass().add("wsp-dangerBtn");
+
+        Optional<ButtonType> res = confirm.showAndWait();
+        if (res.isEmpty() || res.get() != deleteBt) return;
+
+        try {
+            artifactService.softDelete(a.getId());
+            closePreview();
+
+            if (viewMode == ViewMode.CURRENT) refreshCurrentArtifacts();
+            else if (selectedSnapshot != null) refreshSnapshotArtifacts(selectedSnapshot);
+
+            setError(null);
+        } catch (Exception e) {
+            setError(e.getMessage());
+        }
+    }
+
 
     private void installArtifactCells() {
         artifactsListView.setCellFactory(lv -> new ListCell<>() {
@@ -1247,14 +1352,15 @@ private enum ViewMode { CURRENT, PROGRESS }
     private static String nullToEmpty(String s) { return s == null ? "" : s; }
     private ContextMenu buildArtifactMenu(ArtifactRow row) {
         String type = safeUpper(row.artifact.getArtifactType());
+        boolean canEdit = ownerMode && viewMode == ViewMode.CURRENT; // editing only in CURRENT
 
         MenuItem upload = new MenuItem("Upload new version…");
+        upload.setDisable(!canEdit);
         upload.setOnAction(e -> {
-            if (!ownerMode) return;
             try {
                 if ("CODE".equals(type)) {
                     promptUploadForCode(row.artifact);
-                } else if ("DOCUMENT".equals(type) || "IMAGE".equals(type) || "VIDEO".equals(type)) {
+                } else if ("DOCUMENT".equals(type) || "IMAGE".equals(type) || "VIDEO".equals(type)|| "AUDIO".equals(type)) {
                     promptUploadSingleFile(row.artifact, type);
                 } else {
                     showInfo("This artifact type has no file upload.");
@@ -1265,9 +1371,6 @@ private enum ViewMode { CURRENT, PROGRESS }
                 setError(ex.getMessage());
             }
         });
-
-        // Only allow upload in CURRENT mode (snapshot mode is frozen)
-        upload.setDisable(!(ownerMode && viewMode == ViewMode.CURRENT));
 
         MenuItem download = new MenuItem(viewMode == ViewMode.PROGRESS ? "Download snapshot version" : "Download latest");
         download.setOnAction(e -> {
@@ -1287,6 +1390,7 @@ private enum ViewMode { CURRENT, PROGRESS }
         });
 
         MenuItem openLink = new MenuItem("Open link");
+        openLink.setVisible("LINK".equals(type));
         openLink.setOnAction(e -> {
             try {
                 String url = row.artifact.getTextContent() == null ? "" : row.artifact.getTextContent().trim();
@@ -1296,17 +1400,25 @@ private enum ViewMode { CURRENT, PROGRESS }
             }
         });
 
+        MenuItem rename = new MenuItem("Rename…");
+        rename.setDisable(!canEdit);
+        rename.setOnAction(e -> renameArtifact(row.artifact));
+
+        MenuItem delete = new MenuItem("Delete…");
+        delete.setDisable(!canEdit);
+        delete.setOnAction(e -> deleteArtifact(row.artifact));
+
         ContextMenu cm = new ContextMenu();
 
-        // Items based on type
+        // Order feels good
+        if (ownerMode) cm.getItems().addAll(upload, rename);
         cm.getItems().add(download);
         if ("LINK".equals(type)) cm.getItems().add(openLink);
-
-        // Put upload at top when allowed (nice UX)
-        if (ownerMode) cm.getItems().add(0, upload);
+        if (ownerMode) cm.getItems().add(delete);
 
         return cm;
     }
+
 
 
     // --- UI row type: no new VM files needed ---
@@ -1340,14 +1452,25 @@ private enum ViewMode { CURRENT, PROGRESS }
         Alert choice = new Alert(Alert.AlertType.CONFIRMATION);
         choice.setTitle("Upload code");
         choice.setHeaderText("Choose upload method");
+
         ButtonType folderBtn = new ButtonType("Choose folder (zip)");
         ButtonType zipBtn = new ButtonType("Choose ZIP");
+        ButtonType fileBtn = new ButtonType("Choose single file");
         ButtonType cancel = ButtonType.CANCEL;
-        choice.getButtonTypes().setAll(folderBtn, zipBtn, cancel);
+
+        // Put cancel last (more natural)
+        choice.getButtonTypes().setAll(folderBtn, zipBtn, fileBtn, cancel);
+
+        // Optional: apply your dialog stylesheet (same pattern you use elsewhere)
+        choice.getDialogPane().getStylesheets().add(
+                getClass().getResource("/workspace.css").toExternalForm()
+        );
+        choice.getDialogPane().getStyleClass().add("wsp-dialog");
 
         Optional<ButtonType> res = choice.showAndWait();
         if (res.isEmpty() || res.get() == cancel) return;
 
+        // 1) Folder -> zip
         if (res.get() == folderBtn) {
             DirectoryChooser dc = new DirectoryChooser();
             dc.setTitle("Select project folder");
@@ -1355,30 +1478,62 @@ private enum ViewMode { CURRENT, PROGRESS }
             if (dir == null) return;
 
             File zipped = zipDirectoryToTemp(dir.toPath());
-            if (overLimit(zipped)) {
-                zipped.delete();
-                throw new IllegalArgumentException("ZIP is larger than 50MB.");
+            try {
+                if (overLimit(zipped)) throw new IllegalArgumentException("ZIP is larger than 50MB.");
+                fileObjectService.uploadNewVersion(candidateId, track.getId(), artifact.getId(), zipped);
+            } finally {
+                try { zipped.delete(); } catch (Exception ignored) {}
             }
-
-            fileObjectService.uploadNewVersion(candidateId, track.getId(), artifact.getId(), zipped);
-            zipped.delete();
 
             showInfo("Code uploaded. Now create a snapshot to freeze this version.");
             return;
         }
 
-        // ZIP upload
-        FileChooser fc = new FileChooser();
-        fc.setTitle("Select ZIP");
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("ZIP", "*.zip"));
-        File zip = fc.showOpenDialog(trackDetailPane.getScene().getWindow());
-        if (zip == null) return;
+        // 2) ZIP upload
+        if (res.get() == zipBtn) {
+            FileChooser fc = new FileChooser();
+            fc.setTitle("Select ZIP");
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("ZIP files", "*.zip"));
 
-        if (overLimit(zip)) throw new IllegalArgumentException("File is larger than 50MB.");
+            File zip = fc.showOpenDialog(trackDetailPane.getScene().getWindow());
+            if (zip == null) return;
 
-        fileObjectService.uploadNewVersion(candidateId, track.getId(), artifact.getId(), zip);
-        showInfo("ZIP uploaded. Now create a snapshot to freeze this version.");
+            if (overLimit(zip)) throw new IllegalArgumentException("File is larger than 50MB.");
+
+            fileObjectService.uploadNewVersion(candidateId, track.getId(), artifact.getId(), zip);
+            showInfo("ZIP uploaded. Now create a snapshot to freeze this version.");
+            return;
+        }
+
+        // 3) Single file upload
+        if (res.get() == fileBtn) {
+            FileChooser fc = new FileChooser();
+            fc.setTitle("Select code file");
+
+            // Keep it flexible: show common code extensions, but allow any file.
+            fc.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Code files",
+                            "*.java", "*.kt", "*.py", "*.js", "*.ts", "*.tsx", "*.jsx",
+                            "*.html", "*.css", "*.scss",
+                            "*.json", "*.xml", "*.yml", "*.yaml",
+                            "*.md", "*.txt",
+                            "*.sql",
+                            "*.c", "*.cpp", "*.h", "*.hpp",
+                            "*.cs", "*.go", "*.php", "*.rb", "*.rs"
+                    ),
+                    new FileChooser.ExtensionFilter("All files", "*.*")
+            );
+
+            File f = fc.showOpenDialog(trackDetailPane.getScene().getWindow());
+            if (f == null) return;
+
+            if (overLimit(f)) throw new IllegalArgumentException("File is larger than 50MB.");
+
+            fileObjectService.uploadNewVersion(candidateId, track.getId(), artifact.getId(), f);
+            showInfo("File uploaded. Now create a snapshot to freeze this version.");
+        }
     }
+
 
     private void promptUploadSingleFile(Artifact artifact, String type) throws Exception {
         FileChooser fc = new FileChooser();
