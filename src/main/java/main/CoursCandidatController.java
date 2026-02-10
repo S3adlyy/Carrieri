@@ -180,21 +180,22 @@ public class CoursCandidatController {
 
     private void ouvrirCours(Cours cours) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/CoursDetail.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/CoursPlayer.fxml"));
             Parent root = loader.load();
 
-            CoursDetailController controller = loader.getController();
+            CoursPlayerController controller = loader.getController();
             controller.setCours(cours);
 
             Stage stage = new Stage();
-            stage.setTitle(cours.getTitre());
             stage.setScene(new Scene(root));
+            stage.setTitle(cours.getTitre());
             stage.show();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
 
     private void filtrerCours() {

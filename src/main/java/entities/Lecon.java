@@ -7,6 +7,12 @@ public class Lecon {
     private String videoUrl;
     private int ordre;
     private int moduleId;
+    private String type; // LECON, QUIZ, EXAM
+
+    public String getType() {
+        return type;
+    }
+
 
     public Lecon(String titre, String contenu, String videoUrl, int ordre, int moduleId) {
         this.titre = titre;

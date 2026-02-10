@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="main.CoursPlayerController">
+
+    <top>
+        <Label fx:id="lblCoursTitre"
+               style="-fx-font-size:20px; -fx-font-weight:bold; -fx-padding:10;"/>
+    </top>
+
+    <left>
+        <ScrollPane fitToWidth="true" prefWidth="250">
+            <VBox fx:id="boxModules" spacing="5" style="-fx-padding:10;"/>
+        </ScrollPane>
+    </left>
+
+    <center>
+        <VBox spacing="10" style="-fx-padding:20;">
+            <Label fx:id="lblLeconTitre"
+                   style="-fx-font-size:18px; -fx-font-weight:bold;"/>
+
+            <ScrollPane fx:id="scrollPaneContenu"
+                        fitToWidth="true"
+                        prefHeight="400"
+                        hbarPolicy="NEVER">
+                <TextArea fx:id="txtContenu"
+                          wrapText="true"
+                          editable="false"/>
+            </ScrollPane>
+
+            <Button fx:id="btnTerminer"
+                    text="Terminer la leçon"
+                    onAction="#terminerLecon"
+                    visible="false"/>
+            <Label fx:id="lblStatus"/>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" style="-fx-padding:10;">
+            <Label text="Progression :"/>
+            <ProgressBar fx:id="progressBar" prefWidth="400"/>
+            <Label fx:id="lblProgression"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
