@@ -4,23 +4,28 @@ import entities.Cours;
 import entities.Lecon;
 import entities.Module;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import services.LeconService;
 import services.ModuleService;
 import services.ProgressionCoursService;
 import services.ProgressionLeconService;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CoursPlayerController {
 
     @FXML private Label lblCoursTitre;
     @FXML private VBox boxModules;
     @FXML private Label lblLeconTitre;
-    @FXML private ScrollPane scrollPaneContenu;
-    @FXML private TextArea txtContenu;
+    @FXML private WebView webViewContenu;
     @FXML private ProgressBar progressBar;
     @FXML private Label lblProgression;
     @FXML private Button btnTerminer;
@@ -35,18 +40,71 @@ public class CoursPlayerController {
     private Lecon leconCourante;
     private int candidatId = 1;
     private boolean dejaValidee = false;
+    private Timer scrollCheckTimer;
+    private WebEngine webEngine;
 
     @FXML
     private void initialize() {
         System.out.println("DEBUG: CoursPlayerController initialisé");
         btnTerminer.setOnAction(e -> terminerLecon());
 
-        // Configurer le TextArea
-        txtContenu.setWrapText(true);
-        txtContenu.setEditable(false);
+        // Configurer le WebView
+        configurerWebView();
+    }
 
-        // Solution: Détecter le scroll du TextArea LUI-MÊME
-        setupTextAreaScrollDetection();
+    private void configurerWebView() {
+        webEngine = webViewContenu.getEngine();
+
+        // Activer JavaScript
+        webEngine.setJavaScriptEnabled(true);
+
+        // Redimensionner dynamiquement le WebView
+        setupDynamicWebViewHeight();
+
+        // Démarrer la vérification du scroll
+        demarrerVerificationScroll();
+    }
+
+    private void setupDynamicWebViewHeight() {
+        // Quand le contenu est chargé, ajuster la hauteur
+        webEngine.getLoadWorker().stateProperty().addListener(
+                (ChangeListener<Worker.State>) (observable, oldValue, newValue) -> {
+                    if (newValue == Worker.State.SUCCEEDED) {
+                        ajusterHauteurWebView();
+                        injecterDetectionScroll();
+                    }
+                }
+        );
+    }
+
+    private void ajusterHauteurWebView() {
+        Platform.runLater(() -> {
+            try {
+                // Obtenir la hauteur réelle du contenu
+                Object result = webEngine.executeScript(
+                        "(function() {" +
+                                "    var body = document.body;" +
+                                "    var html = document.documentElement;" +
+                                "    return Math.max(" +
+                                "        body.scrollHeight, body.offsetHeight," +
+                                "        html.clientHeight, html.scrollHeight, html.offsetHeight" +
+                                "    );" +
+                                "})()"
+                );
+
+                if (result instanceof Number) {
+                    int hauteur = ((Number) result).intValue();
+                    System.out.println("Hauteur contenu: " + hauteur + "px");
+
+                    // Ajuster la hauteur du WebView (limiter à 1500px max)
+                    int hauteurFinale = Math.min(1500, Math.max(400, hauteur + 50));
+                    webViewContenu.setPrefHeight(hauteurFinale);
+                    System.out.println("Hauteur WebView ajustée: " + hauteurFinale + "px");
+                }
+            } catch (Exception e) {
+                System.out.println("Erreur ajustement hauteur: " + e.getMessage());
+            }
+        });
     }
 
     public void setCours(Cours cours) {
@@ -91,20 +149,19 @@ public class CoursPlayerController {
     }
 
     private void afficherLecon(Lecon lecon) {
+        // Arrêter le timer précédent
+        arreterVerificationScroll();
+
         this.leconCourante = lecon;
         this.dejaValidee = false;
 
         System.out.println("DEBUG: Affichage leçon ID=" + lecon.getId() + ", Titre=" + lecon.getTitre());
 
         lblLeconTitre.setText(lecon.getTitre());
-        txtContenu.setText(lecon.getContenu());
-        lblStatus.setText("");
 
-        // Positionner le scroll en haut
-        Platform.runLater(() -> {
-            txtContenu.positionCaret(0);
-            txtContenu.deselect();
-        });
+        // Afficher le contenu dans le WebView avec hauteur adaptative
+        afficherContenuWebViewAdaptatif(lecon.getContenu());
+        lblStatus.setText("");
 
         // Vérifier si déjà terminée
         if (progressionLeconService.isLeconTerminee(candidatId, lecon.getId())) {
@@ -121,130 +178,226 @@ public class CoursPlayerController {
             btnTerminer.setText(type.equalsIgnoreCase("QUIZ") ? "Passer le Quiz" : "Passer l'Examen");
         } else {
             btnTerminer.setVisible(false);
+            // Redémarrer la vérification pour cette leçon
+            demarrerVerificationScroll();
         }
     }
 
-    // =============================
-    // SOLUTION: Détection de scroll sur TextArea
-    // =============================
-    private void setupTextAreaScrollDetection() {
-        // 1. Écouter la position du curseur (caret) - quand l'utilisateur scroll, le curseur bouge
-        txtContenu.caretPositionProperty().addListener((obs, oldPos, newPos) -> {
-            checkIfReachedBottom();
-        });
+    private void afficherContenuWebViewAdaptatif(String contenu) {
+        // Analyser la longueur du contenu
+        int nombreMots = contenu.split("\\s+").length;
+        int nombreLignes = contenu.split("\n").length;
 
-        // 2. Écouter les événements de molette de souris sur le TextArea
-        txtContenu.setOnScroll(event -> {
-            System.out.println("SCROLL EVENT on TextArea");
-            checkIfReachedBottom();
-        });
+        // Calculer une hauteur estimée (20px par ligne, min 400px, max 2000px)
+        int hauteurEstimee = Math.min(2000, Math.max(400, nombreLignes * 25 + 100));
 
-        // 3. Vérifier périodiquement (toutes les 500ms) via un thread
-        Thread scrollCheckThread = new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(500);
-                    Platform.runLater(this::checkIfReachedBottom);
-                } catch (InterruptedException e) {
-                    break;
-                }
-            }
-        });
-        scrollCheckThread.setDaemon(true);
-        scrollCheckThread.start();
+        System.out.println("Contenu: " + nombreMots + " mots, " + nombreLignes + " lignes → " + hauteurEstimee + "px");
+
+        // Formater le contenu avec une hauteur flexible
+        String htmlContent = "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "<meta charset=\"UTF-8\">" +
+                "<style>" +
+                "* {" +
+                "    margin: 0;" +
+                "    padding: 0;" +
+                "    box-sizing: border-box;" +
+                "}" +
+                "body {" +
+                "    font-family: 'Segoe UI', Arial, sans-serif;" +
+                "    font-size: 16px;" +
+                "    line-height: 1.8;" +
+                "    color: #333;" +
+                "    background-color: #f9f9f9;" +
+                "    min-height: " + hauteurEstimee + "px;" +
+                "    padding: 30px;" +
+                "}" +
+                ".content-container {" +
+                "    max-width: 900px;" +
+                "    margin: 0 auto;" +
+                "    background-color: white;" +
+                "    padding: 40px;" +
+                "    border-radius: 10px;" +
+                "    box-shadow: 0 2px 10px rgba(0,0,0,0.1);" +
+                "    min-height: " + (hauteurEstimee - 100) + "px;" +
+                "}" +
+                "h1 {" +
+                "    color: #2c3e50;" +
+                "    margin-bottom: 30px;" +
+                "    padding-bottom: 15px;" +
+                "    border-bottom: 2px solid #3498db;" +
+                "}" +
+                "p {" +
+                "    margin-bottom: 20px;" +
+                "    text-align: justify;" +
+                "}" +
+                ".chapter {" +
+                "    margin-top: 40px;" +
+                "    padding-top: 20px;" +
+                "    border-top: 1px dashed #ddd;" +
+                "}" +
+                ".chapter-title {" +
+                "    color: #3498db;" +
+                "    font-size: 1.3em;" +
+                "    margin-bottom: 15px;" +
+                "}" +
+                ".end-marker {" +
+                "    text-align: center;" +
+                "    color: #7f8c8d;" +
+                "    font-style: italic;" +
+                "    margin-top: 50px;" +
+                "    padding-top: 20px;" +
+                "    border-top: 3px solid #3498db;" +
+                "}" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div class=\"content-container\">" +
+                "<h1>" + lblLeconTitre.getText() + "</h1>" +
+                formatContenuPourHTMLAdaptatif(contenu) +
+                "<div class=\"end-marker\">" +
+                "★ Fin du contenu ★<br>" +
+                "<small>Vous avez atteint la fin de cette leçon</small>" +
+                "</div>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
+
+        webEngine.loadContent(htmlContent);
     }
 
-    private void checkIfReachedBottom() {
-        if (dejaValidee || leconCourante == null || txtContenu.getText().isEmpty()) {
+    private String formatContenuPourHTMLAdaptatif(String contenu) {
+        if (contenu == null || contenu.isEmpty()) {
+            return "<p>Aucun contenu disponible pour cette leçon.</p>";
+        }
+
+        StringBuilder html = new StringBuilder();
+        String[] paragraphes = contenu.split("\n\n");
+
+        int chapitreNum = 1;
+        for (String paragraphe : paragraphes) {
+            if (!paragraphe.trim().isEmpty()) {
+                // Si le paragraphe commence par un titre de chapitre
+                if (paragraphe.startsWith("Chapitre") || paragraphe.startsWith("CHAPITRE") ||
+                        paragraphe.startsWith("Partie") || paragraphe.startsWith("SECTION")) {
+                    html.append("<div class=\"chapter\">")
+                            .append("<div class=\"chapter-title\">")
+                            .append(paragraphe.replace("\n", "<br>"))
+                            .append("</div>")
+                            .append("</div>");
+                } else {
+                    html.append("<p>")
+                            .append(paragraphe.replace("\n", "<br>"))
+                            .append("</p>");
+                }
+            }
+        }
+
+        return html.toString();
+    }
+
+    // =============================
+    // DÉTECTION DE SCROLL PRÉCISE
+    // =============================
+    private void injecterDetectionScroll() {
+        webEngine.executeScript(
+                "// Marqueur de fin de contenu\n" +
+                        "var endMarker = document.querySelector('.end-marker');\n" +
+                        "if (endMarker) {\n" +
+                        "    endMarker.id = 'end-of-content';\n" +
+                        "}\n" +
+                        "\n" +
+                        "// Fonction pour vérifier si la fin est visible\n" +
+                        "function isEndVisible() {\n" +
+                        "    var endElement = document.getElementById('end-of-content') || document.body;\n" +
+                        "    var rect = endElement.getBoundingClientRect();\n" +
+                        "    var windowHeight = window.innerHeight || document.documentElement.clientHeight;\n" +
+                        "    \n" +
+                        "    // L'élément est visible si sa partie supérieure est dans la fenêtre\n" +
+                        "    return rect.top >= 0 && rect.top <= windowHeight;\n" +
+                        "}\n" +
+                        "\n" +
+                        "// Détecter le scroll\n" +
+                        "var scrollTimeout;\n" +
+                        "window.addEventListener('scroll', function() {\n" +
+                        "    clearTimeout(scrollTimeout);\n" +
+                        "    scrollTimeout = setTimeout(function() {\n" +
+                        "        if (isEndVisible()) {\n" +
+                        "            document.title = 'END_VISIBLE';\n" +
+                        "        }\n" +
+                        "    }, 300); // Délai pour éviter les déclenchements multiples\n" +
+                        "});\n" +
+                        "\n" +
+                        "console.log('Scroll detection injected');"
+        );
+
+        // Écouter les changements de titre
+        webEngine.titleProperty().addListener((obs, oldTitle, newTitle) -> {
+            if ("END_VISIBLE".equals(newTitle) && !dejaValidee && leconCourante != null) {
+                dejaValidee = true;
+                System.out.println("WEBVIEW: Fin du contenu visible - validation");
+                arreterVerificationScroll();
+                marquerCommeTerminee();
+            }
+        });
+    }
+
+    private void demarrerVerificationScroll() {
+        scrollCheckTimer = new Timer(true);
+        scrollCheckTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    verifierPositionScrollPrecise();
+                });
+            }
+        }, 2000, 1000); // Commencer après 2s, vérifier chaque seconde
+    }
+
+    private void arreterVerificationScroll() {
+        if (scrollCheckTimer != null) {
+            scrollCheckTimer.cancel();
+            scrollCheckTimer = null;
+        }
+    }
+
+    private void verifierPositionScrollPrecise() {
+        if (dejaValidee || leconCourante == null) {
             return;
         }
 
         try {
-            // Méthode 1: Basée sur la position du curseur
-            String text = txtContenu.getText();
-            int caretPosition = txtContenu.getCaretPosition();
-            int textLength = text.length();
+            // Vérifier si la fin du contenu est visible
+            Object result = webEngine.executeScript(
+                    "(function() {\n" +
+                            "    var body = document.body;\n" +
+                            "    var html = document.documentElement;\n" +
+                            "    \n" +
+                            "    var windowHeight = window.innerHeight || html.clientHeight;\n" +
+                            "    var scrollTop = window.pageYOffset || html.scrollTop;\n" +
+                            "    var scrollHeight = Math.max(body.scrollHeight, html.scrollHeight);\n" +
+                            "    \n" +
+                            "    // Distance du bas\n" +
+                            "    var distanceFromBottom = scrollHeight - (scrollTop + windowHeight);\n" +
+                            "    \n" +
+                            "    // Si on est à moins de 50px du bas\n" +
+                            "    return distanceFromBottom <= 50;\n" +
+                            "})()"
+            );
 
-            // Calculer le pourcentage
-            double percentage = (double) caretPosition / textLength;
+            if (result instanceof Boolean) {
+                boolean atBottom = (Boolean) result;
 
-            // Si le texte est court, valider immédiatement
-            if (textLength < 500) {
-                if (!dejaValidee) {
+                if (atBottom && !dejaValidee) {
                     dejaValidee = true;
-                    Platform.runLater(this::marquerCommeTerminee);
+                    System.out.println("VERIFICATION: Bas du contenu atteint");
+                    arreterVerificationScroll();
+                    marquerCommeTerminee();
                 }
-                return;
-            }
-
-            // Log pour déboguer (toutes les 10%)
-            int percent = (int)(percentage * 100);
-            if (percent % 10 == 0 && percent > 0) {
-                System.out.println("SCROLL DETECTION: " + percent + "% lu (caret=" + caretPosition + "/" + textLength + ")");
-            }
-
-            // Si on a atteint 95% du texte
-            if (percentage >= 0.95 && !dejaValidee) {
-                dejaValidee = true;
-                System.out.println("SCROLL: Atteint " + percent + "% - validation");
-                Platform.runLater(this::marquerCommeTerminee);
-            }
-
-        } catch (Exception e) {
-            System.out.println("Erreur lors de la détection du scroll: " + e.getMessage());
-        }
-    }
-
-    // =============================
-    // Solution ALTERNATIVE: Détection par longueur de texte visible
-    // =============================
-    private void setupAlternativeScrollDetection() {
-        // Cette méthode vérifie si l'utilisateur a scrollé en bas
-        // en comparant la hauteur du contenu avec la position du scroll
-
-        // Attendre que le TextArea soit rendu
-        Platform.runLater(() -> {
-            // Vérifier périodiquement
-            new Thread(() -> {
-                while (true) {
-                    try {
-                        Thread.sleep(300);
-                        Platform.runLater(() -> {
-                            if (!dejaValidee && leconCourante != null) {
-                                checkVisibleTextAreaContent();
-                            }
-                        });
-                    } catch (InterruptedException e) {
-                        break;
-                    }
-                }
-            }).start();
-        });
-    }
-
-    private void checkVisibleTextAreaContent() {
-        try {
-            // Obtenir la position du curseur
-            int caretPos = txtContenu.getCaretPosition();
-            String text = txtContenu.getText();
-
-            if (text == null || text.isEmpty()) return;
-
-            // Vérifier si le curseur est proche de la fin
-            double percentage = (double) caretPos / text.length();
-
-            // Log occasionnel
-            if (Math.random() < 0.1) { // 10% du temps
-                System.out.println("ALT SCROLL CHECK: " + (int)(percentage * 100) + "%");
-            }
-
-            if (percentage >= 0.90 && !dejaValidee) { // 90%
-                dejaValidee = true;
-                System.out.println("ALT SCROLL: Validation à " + (int)(percentage * 100) + "%");
-                marquerCommeTerminee();
             }
         } catch (Exception e) {
-            // Ignorer les erreurs
+            // JavaScript pas encore prêt
         }
     }
 

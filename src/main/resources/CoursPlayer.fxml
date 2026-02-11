@@ -2,6 +2,7 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.web.WebView?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="main.CoursPlayerController">
@@ -22,14 +23,8 @@
             <Label fx:id="lblLeconTitre"
                    style="-fx-font-size:18px; -fx-font-weight:bold;"/>
 
-            <ScrollPane fx:id="scrollPaneContenu"
-                        fitToWidth="true"
-                        prefHeight="400"
-                        hbarPolicy="NEVER">
-                <TextArea fx:id="txtContenu"
-                          wrapText="true"
-                          editable="false"/>
-            </ScrollPane>
+            <!-- WebView pour afficher le contenu -->
+            <WebView fx:id="webViewContenu" prefHeight="400"/>
 
             <Button fx:id="btnTerminer"
                     text="Terminer la leçon"
