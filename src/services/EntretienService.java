@@ -90,6 +90,55 @@ public class EntretienService {
         ResultSet rs = null;
 
         try {
+            // Try to get candidate info with email from candidat table
+            String sql = "SELECT rm.candidat_id, rm.mission_id, c.email, c.nom, c.prenom " +
+                    "FROM rendu_mission rm " +
+                    "LEFT JOIN candidat c ON rm.candidat_id = c.id " +
+                    "WHERE rm.id = ?";
+
+            pst = connection.prepareStatement(sql);
+            pst.setInt(1, renduId);
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                CandidateInfo info = new CandidateInfo();
+                info.candidatId = rs.getInt("candidat_id");
+                info.missionId = rs.getInt("mission_id");
+
+                // Try to get real email from candidat table
+                String email = rs.getString("email");
+                String nom = rs.getString("nom");
+                String prenom = rs.getString("prenom");
+
+                if (email != null && !email.isEmpty()) {
+                    info.email = email;
+                } else {
+                    // Fallback to generated email
+                    info.email = "candidate" + info.candidatId + "@email.com";
+                }
+
+                // Construct name from first/last name if available
+                if (nom != null && prenom != null) {
+                    info.name = prenom + " " + nom;
+                } else if (nom != null) {
+                    info.name = nom;
+                } else {
+                    info.name = "Candidate #" + info.candidatId;
+                }
+
+                System.out.println("✅ Found candidate: " + info.name + " - " + info.email);
+                return info;
+            }
+        } catch (SQLException e) {
+            // If column doesn't exist, fall back to basic query
+            System.out.println("ℹ️ Candidat table or columns not found, using basic query");
+        } finally {
+            if (rs != null) rs.close();
+            if (pst != null) pst.close();
+        }
+
+        // FALLBACK: Basic query without joining candidat table
+        try {
             String sql = "SELECT candidat_id, mission_id FROM rendu_mission WHERE id = ?";
             pst = connection.prepareStatement(sql);
             pst.setInt(1, renduId);
@@ -104,7 +153,6 @@ public class EntretienService {
                 return info;
             }
         } finally {
-            // ONLY close the ResultSet and PreparedStatement, NOT the connection
             if (rs != null) rs.close();
             if (pst != null) pst.close();
         }

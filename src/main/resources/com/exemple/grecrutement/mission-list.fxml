@@ -103,22 +103,11 @@
             </TableView>
         </VBox>
 
-        <!-- Action Buttons -->
-        <HBox alignment="CENTER" styleClass="action-buttons-container">
-            <Button text="✏️ Edit Mission"
-                    onAction="#editMission"
-                    styleClass="edit-button"
-                    graphicTextGap="8"/>
-
-            <Button text="🗑️ Delete Mission"
-                    onAction="#deleteMission"
-                    styleClass="delete-button"
-                    graphicTextGap="8"/>
-        </HBox>
+        <!-- REMOVED: Action Buttons Container - Now using Actions column in table -->
 
         <!-- Footer Note -->
         <HBox alignment="CENTER" styleClass="footer-container">
-            <Label text="💡 Double-click a mission to submit code • 🔍 Use filters to find specific missions"
+            <Label text="💡 Double-click a mission to submit code • ✏️ Edit / 🗑️ Delete via Actions column"
                    styleClass="footer-text"/>
         </HBox>
     </VBox>

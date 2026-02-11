@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import services.MissionService;
 
 import java.net.URL;
@@ -21,6 +22,7 @@ public class MissionListController implements Initializable {
     @FXML private TableColumn<Mission, Integer> scoreColumn;
     @FXML private TableColumn<Mission, String> creatorColumn;
     @FXML private TableColumn<Mission, String> dateColumn;
+    // No need to declare actionsCol in FXML since we'll add it programmatically
 
     @FXML private Label lblTotalMissions;
     @FXML private Label lblAvgScore;
@@ -36,6 +38,7 @@ public class MissionListController implements Initializable {
         missionTable.setStyle("");
 
         configureTable();
+        addActionsColumn(); // Add this method call
         loadMissions();
         setupDoubleClickHandler();
 
@@ -106,6 +109,61 @@ public class MissionListController implements Initializable {
         scoreColumn.setStyle(headerStyle);
         creatorColumn.setStyle(headerStyle);
         dateColumn.setStyle(headerStyle);
+    }
+
+    /**
+     * Add Actions column with Edit and Delete buttons
+     */
+    private void addActionsColumn() {
+        TableColumn<Mission, Void> actionsCol = new TableColumn<>("Actions");
+        actionsCol.setPrefWidth(120);
+        actionsCol.setStyle("-fx-alignment: CENTER;");
+
+        // Add graphic to header
+        Label headerIcon = new Label("⚙️");
+        headerIcon.setStyle("-fx-font-size: 14px;");
+        actionsCol.setGraphic(headerIcon);
+
+        actionsCol.setCellFactory(col -> new TableCell<Mission, Void>() {
+            private final Button editBtn = new Button("✏️");
+            private final Button deleteBtn = new Button("🗑️");
+            private final HBox buttons = new HBox(5, editBtn, deleteBtn);
+
+            {
+                buttons.setAlignment(javafx.geometry.Pos.CENTER);
+
+                // Style buttons
+                editBtn.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 4 8; -fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 12px;");
+                deleteBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-padding: 4 8; -fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 12px;");
+
+                // Tooltips
+                editBtn.setTooltip(new Tooltip("Edit Mission"));
+                deleteBtn.setTooltip(new Tooltip("Delete Mission"));
+
+                // Button actions
+                editBtn.setOnAction(e -> {
+                    Mission mission = getTableView().getItems().get(getIndex());
+                    editMission(mission);
+                });
+
+                deleteBtn.setOnAction(e -> {
+                    Mission mission = getTableView().getItems().get(getIndex());
+                    deleteMission(mission);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(buttons);
+                }
+            }
+        });
+
+        missionTable.getColumns().add(actionsCol);
     }
 
     private void setSimpleCellFactories() {
@@ -304,15 +362,10 @@ public class MissionListController implements Initializable {
         }
     }
 
-    @FXML
-    private void deleteMission() {
-        Mission selected = missionTable.getSelectionModel().getSelectedItem();
-
-        if (selected == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a mission.");
-            return;
-        }
-
+    /**
+     * Delete mission (called from Actions column)
+     */
+    private void deleteMission(Mission selected) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirm Deletion");
         confirm.setHeaderText("Delete Mission #" + selected.getId());
@@ -331,15 +384,10 @@ public class MissionListController implements Initializable {
         }
     }
 
-    @FXML
-    private void editMission() {
-        Mission selected = missionTable.getSelectionModel().getSelectedItem();
-
-        if (selected == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a mission.");
-            return;
-        }
-
+    /**
+     * Edit mission (called from Actions column)
+     */
+    private void editMission(Mission selected) {
         MissionShellController.getInstance().showEditMission(selected);
     }
 
