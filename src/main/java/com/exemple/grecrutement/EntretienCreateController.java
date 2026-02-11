@@ -6,12 +6,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import services.EntretienService;
-import services.EntretienService.CandidateInfo;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 public class EntretienCreateController implements Initializable {
@@ -68,7 +68,7 @@ public class EntretienCreateController implements Initializable {
 
         try {
             // Get candidate information from the rendu
-            CandidateInfo candidateInfo = entretienService.getCandidateInfoFromRendu(rendu.getId());
+            EntretienService.CandidateInfo candidateInfo = entretienService.getCandidateInfoFromRendu(rendu.getId());
 
             if (candidateInfo != null) {
                 txtCandidatId.setText(String.valueOf(candidateInfo.candidatId));
@@ -87,14 +87,40 @@ public class EntretienCreateController implements Initializable {
                         ? "-fx-text-fill: #10b981; -fx-font-weight: bold;"
                         : "-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
             } else {
+                // FALLBACK: Use data from the RenduMission object itself
+                txtCandidatId.setText(String.valueOf(rendu.getCandidatId()));
+                txtCandidatEmail.setText("candidate" + rendu.getCandidatId() + "@email.com");
+                txtCandidatName.setText("Candidate #" + rendu.getCandidatId());
+
+                lblCandidatInfo.setText(String.format(
+                        "📊 Rendu #%d | Score: %d%% | Résultat: %s (Informations générées automatiquement)",
+                        rendu.getId(),
+                        rendu.getScore(),
+                        rendu.getResultat()
+                ));
+
                 showAlert(Alert.AlertType.WARNING, "Attention",
-                        "Impossible de récupérer les informations du candidat. Veuillez les saisir manuellement.");
+                        "Informations du candidat générées automatiquement. Veuillez vérifier et modifier si nécessaire.");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+
+            // FALLBACK: Use data from the RenduMission object
+            txtCandidatId.setText(String.valueOf(rendu.getCandidatId()));
+            txtCandidatEmail.setText("candidate" + rendu.getCandidatId() + "@email.com");
+            txtCandidatName.setText("Candidate #" + rendu.getCandidatId());
+
+            lblCandidatInfo.setText(String.format(
+                    "📊 Rendu #%d | Score: %d%% | Résultat: %s",
+                    rendu.getId(),
+                    rendu.getScore(),
+                    rendu.getResultat()
+            ));
+
             showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Erreur lors de la récupération des informations: " + e.getMessage());
+                    "Erreur lors de la récupération des informations: " + e.getMessage() +
+                            "\n\nDes informations par défaut ont été générées.");
         }
     }
 
@@ -142,7 +168,7 @@ public class EntretienCreateController implements Initializable {
             entretien.setDateEntretien(dateTime);
             entretien.setType(comboType.getValue());
             entretien.setStatus("SCHEDULED");
-            entretien.setPostulationId(renduMissionId); // Using rendu_mission id as reference
+            entretien.setPostulationId(renduMissionId); // This will be converted in createEntretien
 
             // Get candidate info
             String candidatEmail = txtCandidatEmail.getText().trim();
@@ -163,7 +189,7 @@ public class EntretienCreateController implements Initializable {
             showAlert(Alert.AlertType.INFORMATION, "Succès",
                     String.format("L'entretien a été programmé pour le %s à %02d:%02d\n\n" +
                                     "Un email de confirmation a été envoyé à: %s",
-                            selectedDate.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                            selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                             hour, minute, candidatEmail));
 
             // Clear form after short delay
