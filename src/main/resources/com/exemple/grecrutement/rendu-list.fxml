@@ -71,13 +71,7 @@
                prefHeight="400">
         <columns>
             <!-- ID Column -->
-            <TableColumn fx:id="colId" text="ID"
-                         prefWidth="80"
-                         style="-fx-alignment: CENTER;">
-                <graphic>
-                    <Label text="#️⃣" style="-fx-font-size: 14px;"/>
-                </graphic>
-            </TableColumn>
+
 
             <!-- Score Column with visual indicator -->
             <TableColumn fx:id="colScore" text="Score"

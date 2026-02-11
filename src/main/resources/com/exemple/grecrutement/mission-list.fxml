@@ -61,12 +61,6 @@
                 </columnResizePolicy>
 
                 <columns>
-                    <TableColumn fx:id="idColumn" text="#" prefWidth="60">
-                        <graphic>
-                            <Label text="#️⃣"/>
-                        </graphic>
-                    </TableColumn>
-
                     <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="500">
                         <graphic>
                             <Label text="📄"/>
@@ -84,7 +78,6 @@
                             <Label text="👤"/>
                         </graphic>
                     </TableColumn>
-
                     <TableColumn fx:id="dateColumn" text="Created" prefWidth="150">
                         <graphic>
                             <Label text="📅"/>

@@ -6,22 +6,15 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import services.RenduMissionService;
 
-import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -30,7 +23,7 @@ import java.util.stream.Collectors;
 public class RenduListController implements Initializable {
 
     @FXML private TableView<RenduMission> table;
-    @FXML private TableColumn<RenduMission, Integer> colId;
+    // REMOVED: colId FXML binding
     @FXML private TableColumn<RenduMission, Integer> colScore;
     @FXML private TableColumn<RenduMission, String> colResultat;
     @FXML private TableColumn<RenduMission, Integer> colMission;
@@ -56,8 +49,9 @@ public class RenduListController implements Initializable {
     }
 
     private void configureTable() {
+        // REMOVED: colId configuration
+
         // Configure columns with correct property names from your RenduMission entity
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colScore.setCellValueFactory(new PropertyValueFactory<>("score"));
         colResultat.setCellValueFactory(new PropertyValueFactory<>("resultat"));
         colMission.setCellValueFactory(new PropertyValueFactory<>("missionId"));
@@ -155,7 +149,7 @@ public class RenduListController implements Initializable {
             }
         });
 
-        // Custom cell factory for Mission ID
+        // Custom cell factory for Mission
         colMission.setCellFactory(new Callback<TableColumn<RenduMission, Integer>, TableCell<RenduMission, Integer>>() {
             @Override
             public TableCell<RenduMission, Integer> call(TableColumn<RenduMission, Integer> param) {
@@ -182,7 +176,7 @@ public class RenduListController implements Initializable {
             }
         });
 
-        // Custom cell factory for Candidate ID
+        // Custom cell factory for Candidate
         colCandidat.setCellFactory(new Callback<TableColumn<RenduMission, Integer>, TableCell<RenduMission, Integer>>() {
             @Override
             public TableCell<RenduMission, Integer> call(TableColumn<RenduMission, Integer> param) {
@@ -410,7 +404,7 @@ public class RenduListController implements Initializable {
             // Search filter
             String searchText = searchField.getText().toLowerCase();
             if (searchText != null && !searchText.isEmpty()) {
-                // Search in candidate ID
+                // Search in candidate ID and mission ID
                 boolean matchesSearch = String.valueOf(rendu.getCandidatId()).contains(searchText) ||
                         String.valueOf(rendu.getMissionId()).contains(searchText) ||
                         rendu.getResultat().toLowerCase().contains(searchText) ||
@@ -448,13 +442,12 @@ public class RenduListController implements Initializable {
             }
 
             StringBuilder csv = new StringBuilder();
-            // Header
-            csv.append("ID,Score,Result,Mission ID,Candidate ID,Feedback\n");
+            // Header - REMOVED ID
+            csv.append("Score,Result,Mission ID,Candidate ID,Feedback\n");
 
             // Data
             for (RenduMission rendu : itemsToExport) {
-                csv.append(rendu.getId()).append(",")
-                        .append(rendu.getScore()).append(",")
+                csv.append(rendu.getScore()).append(",")
                         .append("\"").append(rendu.getResultat().replace("\"", "\"\"")).append("\",")
                         .append(rendu.getMissionId()).append(",")
                         .append(rendu.getCandidatId()).append(",")
@@ -494,7 +487,7 @@ public class RenduListController implements Initializable {
     private void viewDetails(RenduMission rendu) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Submission Details");
-        alert.setHeaderText("Submission #" + rendu.getId());
+        alert.setHeaderText("Submission Details");
         alert.setContentText(
                 "📊 Score: " + rendu.getScore() + "%\n" +
                         "🏷️ Status: " + rendu.getResultat() + "\n" +
@@ -519,7 +512,7 @@ public class RenduListController implements Initializable {
         VBox container = new VBox();
         container.setSpacing(10);
 
-        Label header = new Label("Submitted Code - Submission #" + rendu.getId());
+        Label header = new Label("Submitted Code");
         header.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
 
         container.getChildren().addAll(header, codeArea);
@@ -535,14 +528,14 @@ public class RenduListController implements Initializable {
     private void deleteRendu(RenduMission rendu) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirm Deletion");
-        confirm.setHeaderText("Delete Submission #" + rendu.getId());
+        confirm.setHeaderText("Delete Submission");
         confirm.setContentText("Are you sure you want to delete this submission?\nThis action cannot be undone.");
 
         if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
             try {
                 service.supprimerRenduMission(rendu.getId());
                 load(); // Reload the table
-                showAlert("Success", "Submission #" + rendu.getId() + " deleted successfully.");
+                showAlert("Success", "Submission deleted successfully.");
             } catch (Exception e) {
                 showAlert("Error", "Failed to delete submission: " + e.getMessage());
             }
@@ -572,7 +565,7 @@ public class RenduListController implements Initializable {
                     successCount++;
                 } catch (Exception e) {
                     failCount++;
-                    System.err.println("Failed to delete submission #" + rendu.getId() + ": " + e.getMessage());
+                    System.err.println("Failed to delete submission: " + e.getMessage());
                 }
             }
 
@@ -589,6 +582,7 @@ public class RenduListController implements Initializable {
     private void showStatistics() {
         MissionShellController.getInstance().showStatistics();
     }
+
     @FXML
     private void showFilter() {
         // This can be expanded to show a more advanced filter dialog
@@ -639,7 +633,7 @@ public class RenduListController implements Initializable {
 
     private void scheduleInterviewWithCandidate(RenduMission rendu) {
         try {
-            System.out.println("🎯 Scheduling interview for Rendu #" + rendu.getId());
+            System.out.println("🎯 Scheduling interview for submission");
             MissionShellController.getInstance().showScheduleInterview(rendu);
         } catch (Exception e) {
             e.printStackTrace();

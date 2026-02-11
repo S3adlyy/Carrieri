@@ -17,12 +17,11 @@ import java.util.ResourceBundle;
 public class MissionListController implements Initializable {
 
     @FXML private TableView<Mission> missionTable;
-    @FXML private TableColumn<Mission, Integer> idColumn;
+    // Remove idColumn FXML binding
     @FXML private TableColumn<Mission, String> descriptionColumn;
     @FXML private TableColumn<Mission, Integer> scoreColumn;
     @FXML private TableColumn<Mission, String> creatorColumn;
     @FXML private TableColumn<Mission, String> dateColumn;
-    // No need to declare actionsCol in FXML since we'll add it programmatically
 
     @FXML private Label lblTotalMissions;
     @FXML private Label lblAvgScore;
@@ -38,7 +37,7 @@ public class MissionListController implements Initializable {
         missionTable.setStyle("");
 
         configureTable();
-        addActionsColumn(); // Add this method call
+        addActionsColumn();
         loadMissions();
         setupDoubleClickHandler();
 
@@ -48,14 +47,13 @@ public class MissionListController implements Initializable {
 
     private void configureTable() {
         // Remove any existing styles
-        idColumn.setStyle("");
         descriptionColumn.setStyle("");
         scoreColumn.setStyle("");
         creatorColumn.setStyle("");
         dateColumn.setStyle("");
 
         // Configure columns with proper property names
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        // idColumn is removed - no longer needed
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
         scoreColumn.setCellValueFactory(new PropertyValueFactory<>("score_min"));
 
@@ -104,7 +102,7 @@ public class MissionListController implements Initializable {
                         "-fx-padding: 12 15;" +
                         "-fx-alignment: CENTER;";
 
-        idColumn.setStyle(headerStyle);
+        // idColumn is removed - don't style it
         descriptionColumn.setStyle(headerStyle);
         scoreColumn.setStyle(headerStyle);
         creatorColumn.setStyle(headerStyle);
@@ -167,20 +165,7 @@ public class MissionListController implements Initializable {
     }
 
     private void setSimpleCellFactories() {
-        // ID Column
-        idColumn.setCellFactory(col -> new TableCell<Mission, Integer>() {
-            @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(String.valueOf(item));
-                    setStyle("-fx-text-fill: #0a66c2; -fx-alignment: CENTER; -fx-font-weight: bold;");
-                }
-            }
-        });
+        // ID Column is removed - no longer needed
 
         // Description Column
         descriptionColumn.setCellFactory(col -> new TableCell<Mission, String>() {
@@ -368,7 +353,7 @@ public class MissionListController implements Initializable {
     private void deleteMission(Mission selected) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirm Deletion");
-        confirm.setHeaderText("Delete Mission #" + selected.getId());
+        confirm.setHeaderText("Delete Mission");
         confirm.setContentText("Are you sure you want to delete this mission?\n\nDescription: " +
                 selected.getDescription() + "\nThis action cannot be undone.");
 
@@ -377,7 +362,7 @@ public class MissionListController implements Initializable {
                 missionService.supprimer(selected.getId());
                 loadMissions();
                 showAlert(Alert.AlertType.INFORMATION, "Success",
-                        "Mission #" + selected.getId() + " deleted successfully!");
+                        "Mission deleted successfully!");
             } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Delete Error", e.getMessage());
             }

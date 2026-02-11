@@ -240,11 +240,6 @@
 }
 
 /* Specific column alignments */
-#colId .table-cell {
-    -fx-alignment: center !important;
-    -fx-text-fill: #5E548E !important;
-    -fx-font-weight: 900 !important;
-}
 
 #colScore .table-cell {
     -fx-alignment: center !important;
