@@ -5,14 +5,15 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.animation.Timeline;
 import javafx.animation.KeyFrame;
 import javafx.util.Duration;
 import javafx.event.ActionEvent;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import services.RenduMissionService;
 import services.MissionService;
 import entities.Mission;
@@ -41,6 +42,14 @@ public class RenduAddController implements Initializable {
     @FXML private VBox securityWarningContainer;
     @FXML private Label lblSecurityWarning;
 
+    // Full Screen components
+    @FXML private VBox fullScreenEditorOverlay;
+    @FXML private TextArea fullScreenCodeEditor;
+    @FXML private Label fullScreenTimer;
+    @FXML private Button btnFullScreen;
+    @FXML private VBox codeEditorContainer;
+    @FXML private ScrollPane mainScrollPane;
+
     private RenduMissionService service;
     private MissionService missionService;
 
@@ -52,6 +61,7 @@ public class RenduAddController implements Initializable {
     private static final int CRITICAL_THRESHOLD_SECONDS = 60; // 1 minute
     private boolean isAutoSubmitEnabled = true;
     private boolean isTimerFinished = false;
+    private boolean isFullScreenMode = false;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -74,6 +84,9 @@ public class RenduAddController implements Initializable {
         // Setup code editor security features
         setupCodeEditorSecurity();
 
+        // Setup keyboard shortcuts for full screen
+        setupKeyboardShortcuts();
+
         // Timer is not started until mission is selected
         if (timerContainer != null) {
             timerContainer.setVisible(false);
@@ -83,6 +96,159 @@ public class RenduAddController implements Initializable {
         if (securityWarningContainer != null) {
             securityWarningContainer.setVisible(false);
             securityWarningContainer.setManaged(false);
+        }
+
+        // Initialize full screen overlay
+        if (fullScreenEditorOverlay != null) {
+            fullScreenEditorOverlay.setVisible(false);
+            fullScreenEditorOverlay.setManaged(false);
+        }
+    }
+
+    /**
+     * Setup keyboard shortcuts for full screen mode
+     */
+    private void setupKeyboardShortcuts() {
+        if (txtCode != null) {
+            // F11 to toggle full screen
+            txtCode.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                if (event.getCode() == KeyCode.F11) {
+                    event.consume();
+                    toggleFullScreen();
+                }
+
+                // ESC to exit full screen
+                if (event.getCode() == KeyCode.ESCAPE && isFullScreenMode) {
+                    event.consume();
+                    exitFullScreen();
+                }
+            });
+        }
+
+        // Also add to the full screen editor
+        if (fullScreenCodeEditor != null) {
+            fullScreenCodeEditor.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                if (event.getCode() == KeyCode.ESCAPE) {
+                    event.consume();
+                    exitFullScreen();
+                }
+            });
+        }
+    }
+
+    /**
+     * Toggle full screen mode for code editor
+     */
+    @FXML
+    private void toggleFullScreen() {
+        if (isFullScreenMode) {
+            exitFullScreen();
+        } else {
+            enterFullScreen();
+        }
+    }
+
+    /**
+     * Enter full screen mode
+     */
+    private void enterFullScreen() {
+        if (fullScreenEditorOverlay == null || fullScreenCodeEditor == null || txtCode == null) return;
+
+        // Copy the current code to full screen editor
+        fullScreenCodeEditor.setText(txtCode.getText());
+        fullScreenCodeEditor.setPromptText(txtCode.getPromptText());
+
+        // Copy security settings
+        fullScreenCodeEditor.setEditable(txtCode.isEditable());
+        fullScreenCodeEditor.setDisable(txtCode.isDisabled());
+
+        // Update timer in full screen
+        if (fullScreenTimer != null && lblTimer != null) {
+            fullScreenTimer.setText(lblTimer.getText());
+            fullScreenTimer.setStyle(lblTimer.getStyle());
+        }
+
+        // Show full screen overlay (direct child of StackPane)
+        fullScreenEditorOverlay.setVisible(true);
+        fullScreenEditorOverlay.setManaged(true);
+        fullScreenEditorOverlay.toFront(); // Bring to front
+
+        // Focus on full screen editor
+        Platform.runLater(() -> {
+            fullScreenCodeEditor.requestFocus();
+            fullScreenCodeEditor.positionCaret(fullScreenCodeEditor.getText().length());
+        });
+
+        isFullScreenMode = true;
+
+        // Setup security for full screen editor
+        setupFullScreenSecurity();
+    }
+
+    /**
+     * Exit full screen mode
+     */
+    @FXML
+    private void exitFullScreen() {
+        if (fullScreenEditorOverlay == null || txtCode == null) return;
+
+        // Copy code back from full screen editor
+        txtCode.setText(fullScreenCodeEditor.getText());
+
+        // Hide full screen overlay
+        fullScreenEditorOverlay.setVisible(false);
+        fullScreenEditorOverlay.setManaged(false);
+
+        isFullScreenMode = false;
+    }
+
+    /**
+     * Setup security for full screen editor
+     */
+    private void setupFullScreenSecurity() {
+        if (fullScreenCodeEditor == null) return;
+
+        // Disable copy/paste shortcuts
+        fullScreenCodeEditor.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isShortcutDown()) {
+                if (event.getCode() == KeyCode.C ||
+                        event.getCode() == KeyCode.V ||
+                        event.getCode() == KeyCode.X ||
+                        event.getCode() == KeyCode.A) {
+                    event.consume();
+                    showSecurityWarning("Copy, paste, and cut are disabled during the mission!");
+                }
+            }
+        });
+
+        // Disable context menu
+        fullScreenCodeEditor.setContextMenu(null);
+
+        // Disable drag and drop
+        fullScreenCodeEditor.setOnDragOver(event -> {
+            event.consume();
+            showSecurityWarning("Drag and drop is disabled!");
+        });
+
+        fullScreenCodeEditor.setOnDragDropped(event -> {
+            event.consume();
+        });
+    }
+
+    /**
+     * Evaluate code from full screen mode
+     */
+    @FXML
+    private void evaluateFromFullScreen() {
+        if (fullScreenCodeEditor != null && txtCode != null) {
+            // Copy code from full screen editor to main editor
+            txtCode.setText(fullScreenCodeEditor.getText());
+
+            // Exit full screen
+            exitFullScreen();
+
+            // Evaluate
+            evaluer();
         }
     }
 
@@ -172,6 +338,11 @@ public class RenduAddController implements Initializable {
             updateTimerProgress();
             checkTimerWarning();
         }
+
+        // Update full screen timer if visible
+        if (isFullScreenMode && fullScreenTimer != null && lblTimer != null) {
+            fullScreenTimer.setText(lblTimer.getText());
+        }
     }
 
     private void updateTimerDisplay() {
@@ -246,6 +417,11 @@ public class RenduAddController implements Initializable {
             lblTimer.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 32px;");
         }
 
+        if (fullScreenTimer != null) {
+            fullScreenTimer.setText("00:00");
+            fullScreenTimer.setStyle("-fx-text-fill: #ef4444;");
+        }
+
         if (timerProgressBar != null) {
             timerProgressBar.setProgress(0);
             timerProgressBar.setStyle("-fx-accent: #ef4444;");
@@ -259,6 +435,11 @@ public class RenduAddController implements Initializable {
         if (txtCode != null) {
             txtCode.setEditable(false);
             txtCode.setDisable(true);
+        }
+
+        if (fullScreenCodeEditor != null) {
+            fullScreenCodeEditor.setEditable(false);
+            fullScreenCodeEditor.setDisable(true);
         }
 
         // Show timeout message
@@ -389,6 +570,10 @@ public class RenduAddController implements Initializable {
         }
         txtCode.setEditable(false);
 
+        if (fullScreenCodeEditor != null) {
+            fullScreenCodeEditor.setEditable(false);
+        }
+
         new Thread(() -> {
             try {
                 RenduMission r = service.evaluerCodePython(
@@ -402,6 +587,9 @@ public class RenduAddController implements Initializable {
                         evalButton.setDisable(false);
                     }
                     txtCode.setEditable(true);
+                    if (fullScreenCodeEditor != null) {
+                        fullScreenCodeEditor.setEditable(true);
+                    }
 
                     String resultText = "🎯 Score: " + r.getScore() + "% - " + r.getResultat();
 
@@ -424,6 +612,9 @@ public class RenduAddController implements Initializable {
                         evalButton.setDisable(false);
                     }
                     txtCode.setEditable(true);
+                    if (fullScreenCodeEditor != null) {
+                        fullScreenCodeEditor.setEditable(true);
+                    }
 
                     // Restart timer if evaluation failed
                     if (!isTimerFinished) {
@@ -462,6 +653,10 @@ public class RenduAddController implements Initializable {
         if (txtCode != null) {
             txtCode.setEditable(true);
             txtCode.setDisable(false);
+        }
+        if (fullScreenCodeEditor != null) {
+            fullScreenCodeEditor.setEditable(true);
+            fullScreenCodeEditor.setDisable(false);
         }
         isTimerFinished = false;
     }

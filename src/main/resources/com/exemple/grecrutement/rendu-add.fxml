@@ -12,273 +12,290 @@
            fx:controller="com.exemple.grecrutement.RenduAddController"
            stylesheets="@rendu-styles.css"
            styleClass="prf-bg"
-           style="-fx-padding: 40;">
+           fx:id="rootStackPane"
+           style="-fx-padding: 0;">
 
     <!-- Subtle Background Elements -->
-    <Circle radius="100" fill="rgba(159,134,192,0.03)" style="-fx-translate-y: -150; -fx-translate-x: -300;"/>
-    <Circle radius="70" fill="rgba(190,149,196,0.02)" style="-fx-translate-y: 120; -fx-translate-x: 280;"/>
-    <Circle radius="50" fill="rgba(224,177,203,0.01)" style="-fx-translate-y: -80; -fx-translate-x: 350;"/>
+    <Circle radius="150" fill="rgba(159,134,192,0.03)" style="-fx-translate-y: -150; -fx-translate-x: -400;"/>
+    <Circle radius="100" fill="rgba(190,149,196,0.02)" style="-fx-translate-y: 200; -fx-translate-x: 800;"/>
+    <Circle radius="80" fill="rgba(224,177,203,0.01)" style="-fx-translate-y: -100; -fx-translate-x: 1200;"/>
 
-    <!-- Scrollable Container -->
-    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-padding: 0;">
-        <!-- Main Container - Centered -->
-        <VBox styleClass="main-container" maxWidth="1200" alignment="TOP_CENTER">
-            <!-- Header Section -->
-            <VBox styleClass="header-section" spacing="10" alignment="TOP_CENTER">
-                <HBox spacing="15" alignment="CENTER">
-                    <StackPane style="-fx-background-color: linear-gradient(135deg, #231942 0%, #5E548E 100%);
-                                     -fx-background-radius: 14;
-                                     -fx-padding: 12;
-                                     -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.25), 20, 0.2, 0, 6);">
-                        <Label text="🤖" style="-fx-font-size: 24px; -fx-text-fill: white;"/>
+    <!-- Scrollable Container - FULL WIDTH -->
+    <ScrollPane fx:id="mainScrollPane" fitToWidth="true" fitToHeight="true"
+                style="-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;">
+
+        <!-- Main Container - EXTRA WIDE HORIZONTAL -->
+        <VBox styleClass="main-container-ultra-wide" maxWidth="1800" alignment="TOP_CENTER">
+
+            <!-- Header Section - ULTRA WIDE -->
+            <HBox styleClass="header-section-ultra-wide" spacing="30" alignment="CENTER_LEFT">
+                <StackPane style="-fx-background-color: linear-gradient(135deg, #231942 0%, #5E548E 100%);
+                                 -fx-background-radius: 16;
+                                 -fx-padding: 15;
+                                 -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.3), 20, 0.2, 0, 6);">
+                    <Label text="🤖" style="-fx-font-size: 36px; -fx-text-fill: white;"/>
+                </StackPane>
+                <VBox spacing="4">
+                    <Label text="AI Code Submission" styleClass="main-title-ultra-wide"/>
+                    <Label text="Submit Python code for AI evaluation" styleClass="sub-title-ultra-wide"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <!-- Timer Display in Header - LARGER -->
+                <HBox spacing="20" alignment="CENTER_RIGHT" styleClass="header-timer-ultra-wide">
+                    <StackPane style="-fx-background-color: rgba(94,84,142,0.12); -fx-background-radius: 12; -fx-padding: 12 25;">
+                        <HBox spacing="15" alignment="CENTER">
+                            <Label text="⏱️" style="-fx-font-size: 24px;"/>
+                            <Label fx:id="lblTimer" text="20:00" styleClass="timer-display-ultra-wide"/>
+                            <Label text="remaining" style="-fx-text-fill: #64748b; -fx-font-size: 15px; -fx-font-weight: 600;"/>
+                        </HBox>
                     </StackPane>
-                    <VBox spacing="4" alignment="CENTER_LEFT">
-                        <Label text="AI Code Submission" styleClass="main-title"/>
-                        <Label text="Submit Python code for AI evaluation" styleClass="sub-title"/>
-                    </VBox>
                 </HBox>
-            </VBox>
+            </HBox>
 
-            <!-- Centered Split Layout Container -->
-            <HBox styleClass="split-container" spacing="30" alignment="CENTER">
-                <!-- LEFT: Form Section -->
-                <VBox styleClass="form-section" spacing="25" prefWidth="450" alignment="TOP_LEFT">
+            <!-- MAIN CONTENT - 2 COLUMNS EXTRA WIDE -->
+            <HBox styleClass="content-grid-ultra-wide" spacing="35" alignment="TOP_CENTER">
+
+                <!-- ========== LEFT COLUMN - FORM SECTION (WIDER) ========== -->
+                <VBox styleClass="form-section-ultra-wide" spacing="25" prefWidth="550" alignment="TOP_LEFT">
+
                     <!-- Form Title -->
-                    <Label text="📝 Submission Form" styleClass="section-title"/>
+                    <Label text="📝 Submission Form" styleClass="section-title-ultra-wide"/>
 
-                    <!-- Form Fields -->
-                    <VBox spacing="20">
-                        <!-- Candidate ID -->
-                        <VBox spacing="6">
-                            <Label text="👤 Candidate ID" styleClass="field-label"/>
-                            <TextField fx:id="txtCandidatId"
-                                       promptText="Enter candidate ID"
-                                       styleClass="form-field"/>
-                        </VBox>
+                    <!-- Form Fields in 2x2 Grid - LARGER -->
+                    <GridPane hgap="20" vgap="15" styleClass="form-grid-ultra-wide">
+                        <!-- Row 0: Labels -->
+                        <Label text="👤 Candidate ID" styleClass="field-label-ultra-wide"
+                               GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <Label text="🎯 Mission ID" styleClass="field-label-ultra-wide"
+                               GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-                        <!-- Mission ID -->
-                        <VBox spacing="6">
-                            <Label text="🎯 Mission ID" styleClass="field-label"/>
-                            <TextField fx:id="txtMissionId"
-                                       promptText="Will be auto-filled when you select a mission"
-                                       styleClass="form-field"
-                                       editable="true"/>
-                        </VBox>
+                        <!-- Row 1: Input Fields -->
+                        <TextField fx:id="txtCandidatId"
+                                   promptText="Enter ID"
+                                   styleClass="form-field-ultra-wide"
+                                   GridPane.rowIndex="1" GridPane.columnIndex="0"
+                                   GridPane.hgrow="ALWAYS"/>
+                        <TextField fx:id="txtMissionId"
+                                   promptText="Auto-filled"
+                                   styleClass="form-field-ultra-wide"
+                                   GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                   GridPane.hgrow="ALWAYS"/>
 
-                        <!-- Mission Type -->
-                        <VBox spacing="6">
-                            <Label text="📋 Mission Type" styleClass="field-label"/>
-                            <ComboBox fx:id="comboMissionType"
-                                      promptText="Select mission type"
-                                      styleClass="form-combo"/>
-                        </VBox>
-                    </VBox>
+                        <!-- Row 2: Mission Type Label -->
+                        <Label text="📋 Mission Type" styleClass="field-label-ultra-wide"
+                               GridPane.rowIndex="2" GridPane.columnIndex="0"/>
 
-                    <!-- Mission Description Display -->
-                    <VBox spacing="12" style="-fx-padding: 20px 0;">
-                        <Label text="📄 Mission Details" styleClass="section-title"/>
+                        <!-- Row 3: Mission Type Combo -->
+                        <ComboBox fx:id="comboMissionType"
+                                  promptText="Select mission type"
+                                  styleClass="form-combo-ultra-wide"
+                                  GridPane.rowIndex="3" GridPane.columnIndex="0"
+                                  GridPane.hgrow="ALWAYS"/>
+                    </GridPane>
+
+                    <!-- Mission Details - LARGER CARD -->
+                    <VBox spacing="12" styleClass="mission-details-card-ultra-wide">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <Label text="📄" style="-fx-font-size: 20px;"/>
+                            <Label text="Mission Details" styleClass="section-title-ultra-wide"/>
+                        </HBox>
                         <TextArea fx:id="lblMissionDescription"
                                   editable="false"
                                   wrapText="true"
-                                  prefHeight="160"
-                                  styleClass="mission-description-area"/>
+                                  prefHeight="140"
+                                  styleClass="mission-description-ultra-wide"/>
                     </VBox>
 
-                    <!-- ================ TIMER SECTION ================ -->
-                    <VBox spacing="15" style="-fx-padding: 10px 0 20px 0;"
-                          fx:id="timerContainer">
-                        <!-- Note: visible and managed are controlled by controller,
-                             removed from FXML to avoid parsing error -->
-
-                        <!-- Timer Header -->
-                        <HBox spacing="10" alignment="CENTER_LEFT">
-                            <StackPane style="-fx-background-color: linear-gradient(135deg, #231942 0%, #5E548E 100%);
-                                             -fx-background-radius: 8;
-                                             -fx-padding: 8;">
-                                <Label text="⏱️" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
-                            </StackPane>
-                            <Label text="Time Remaining" styleClass="field-label"/>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <Label text="20:00" style="-fx-text-fill: #64748b; -fx-font-size: 12px;">
-                                <graphic>
-                                    <Label text="⏳" style="-fx-font-size: 12px;"/>
-                                </graphic>
-                            </Label>
+                    <!-- Timer Progress - LARGER -->
+                    <VBox spacing="12" styleClass="timer-ultra-wide" fx:id="timerContainer">
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <ProgressBar fx:id="timerProgressBar"
+                                         prefWidth="300"
+                                         prefHeight="10"
+                                         progress="1.0"
+                                         styleClass="timer-progress-ultra-wide"/>
+                            <Label fx:id="lblTimerProgress" text="100%"
+                                   style="-fx-text-fill: #10b981; -fx-font-size: 14px; -fx-font-weight: 700;"/>
                         </HBox>
-
-                        <!-- Timer Display Card -->
-                        <VBox spacing="15" styleClass="timer-card">
-                            <!-- Timer Circle and Display -->
-                            <HBox spacing="20" alignment="CENTER">
-                                <StackPane>
-                                    <Circle radius="40" fill="rgba(94,84,142,0.08)" stroke="#5E548E" strokeWidth="2.5"/>
-                                    <Circle radius="35" fill="white" stroke="transparent"/>
-                                    <Label fx:id="lblTimer" text="20:00"
-                                           styleClass="timer-display"/>
-                                </StackPane>
-
-                                <VBox spacing="5" alignment="CENTER_LEFT">
-                                    <Label text="Mission Time" style="-fx-text-fill: #231942; -fx-font-size: 14px; -fx-font-weight: 700;"/>
-                                    <Label text="20 minutes" style="-fx-text-fill: #5E548E; -fx-font-size: 13px;"/>
-                                    <HBox spacing="5" alignment="CENTER_LEFT">
-                                        <Circle radius="4" fill="#10b981"/>
-                                        <Label text="Active" style="-fx-text-fill: #10b981; -fx-font-size: 12px; -fx-font-weight: 600;"/>
-                                    </HBox>
-                                </VBox>
-                            </HBox>
-
-                            <!-- Timer Progress Bar -->
-                            <VBox spacing="8">
-                                <HBox spacing="5" alignment="CENTER_LEFT">
-                                    <Label text="Progress" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-                                    <Region HBox.hgrow="ALWAYS"/>
-                                    <Label fx:id="lblTimerProgress" text="100%"
-                                           style="-fx-text-fill: #10b981; -fx-font-size: 12px; -fx-font-weight: 600;"/>
-                                </HBox>
-                                <ProgressBar fx:id="timerProgressBar"
-                                             prefWidth="400"
-                                             prefHeight="10"
-                                             progress="1.0"
-                                             styleClass="timer-progress-bar"/>
-                            </VBox>
-
-                            <!-- Timer Warning Label -->
-                            <Label fx:id="lblTimerWarning"
-                                   text="⏳ Take your time, but stay aware of the deadline"
-                                   styleClass="timer-warning-label"
-                                   wrapText="true"/>
-                        </VBox>
+                        <Label fx:id="lblTimerWarning"
+                               text="⏳ Take your time, but stay aware of the deadline"
+                               styleClass="timer-warning-ultra-wide"
+                               wrapText="true"/>
                     </VBox>
-                    <!-- ============== END TIMER SECTION ============== -->
 
-                    <!-- ============== SECURITY WARNING SECTION ============== -->
+                    <!-- Security Warning - LARGER -->
                     <VBox fx:id="securityWarningContainer"
                           spacing="10"
-                          styleClass="security-warning-card">
-                        <!-- Note: visible and managed are controlled by controller,
-                             removed from FXML to avoid parsing error -->
-                        <HBox spacing="12" alignment="CENTER_LEFT">
+                          styleClass="security-warning-ultra-wide"
+                          visible="false" managed="false">
+                        <HBox spacing="15" alignment="CENTER_LEFT">
                             <StackPane style="-fx-background-color: #F59E0B; -fx-background-radius: 6; -fx-padding: 6;">
-                                <Label text="⚠️" style="-fx-font-size: 14px; -fx-text-fill: white;"/>
+                                <Label text="⚠️" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
                             </StackPane>
-                            <VBox spacing="2">
-                                <Label text="Security Alert"
-                                       style="-fx-text-fill: #92400E; -fx-font-weight: 900; -fx-font-size: 13px;"/>
-                                <Label fx:id="lblSecurityWarning"
-                                       text="Copy/paste is disabled during missions"
-                                       style="-fx-text-fill: #92400E; -fx-font-size: 12px;"/>
-                            </VBox>
+                            <Label fx:id="lblSecurityWarning"
+                                   text="Copy, paste, and right-click are disabled during missions"
+                                   style="-fx-text-fill: #92400E; -fx-font-size: 14px; -fx-font-weight: 600;"/>
                             <Region HBox.hgrow="ALWAYS"/>
                             <Button text="✕"
-                                    style="-fx-background-color: transparent; -fx-text-fill: #92400E; -fx-font-size: 14px; -fx-cursor: hand;"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #92400E; -fx-font-size: 16px; -fx-cursor: hand;"
                                     onAction="#hideSecurityWarning"/>
                         </HBox>
                     </VBox>
-                    <!-- ============== END SECURITY WARNING SECTION ============== -->
 
-                    <!-- Evaluate Button -->
-                    <VBox spacing="15" style="-fx-padding: 15px 0;">
+                    <!-- Submit Button - LARGER -->
+                    <HBox spacing="20" alignment="CENTER_LEFT">
                         <Button id="btnEvaluer"
-                                text="🚀 Evaluate with AI"
+                                text="🚀 Submit Code"
                                 onAction="#evaluer"
-                                styleClass="evaluate-button"
-                                prefWidth="220"/>
+                                styleClass="submit-button-ultra-wide"/>
+                        <ProgressIndicator fx:id="progress"
+                                           styleClass="progress-indicator-ultra-wide"
+                                           visible="false"
+                                           prefWidth="28" prefHeight="28"/>
+                        <Label fx:id="lblProcessing"
+                               text="⏳ Processing..."
+                               styleClass="processing-label-ultra-wide"
+                               visible="false"/>
+                    </HBox>
 
-                        <HBox spacing="12" alignment="CENTER_LEFT">
-                            <ProgressIndicator fx:id="progress"
-                                               styleClass="progress-indicator"
-                                               visible="false"/>
-                            <Label fx:id="lblProcessing"
-                                   text="⏳ Processing..."
-                                   styleClass="processing-label"
-                                   visible="false"/>
-                        </HBox>
+                    <!-- Output Console -->
+                    <VBox spacing="10" styleClass="console-container">
+                        <Label text="📟 Output Console" styleClass="console-title"/>
+                        <Label fx:id="lblResultat"
+                               text="👉 Waiting for code submission..."
+                               styleClass="console-output"
+                               wrapText="true"/>
                     </VBox>
-
-                    <!-- Result -->
-                    <Label fx:id="lblResultat"
-                           text="👉 Waiting for code submission..."
-                           styleClass="result-label"
-                           wrapText="true"/>
                 </VBox>
 
-                <!-- RIGHT: Code Editor Section -->
-                <VBox styleClass="editor-section" spacing="20" prefWidth="650" alignment="TOP_LEFT">
-                    <!-- Editor Title -->
-                    <HBox spacing="15" alignment="CENTER_LEFT">
+                <!-- ========== RIGHT COLUMN - CODE EDITOR (ULTRA WIDE) ========== -->
+                <VBox styleClass="editor-section-ultra-wide" spacing="20" prefWidth="950" alignment="TOP_LEFT">
+
+                    <!-- Editor Header with Full Screen Button -->
+                    <HBox spacing="20" alignment="CENTER_LEFT">
                         <StackPane style="-fx-background-color: linear-gradient(135deg, #5E548E 0%, #9F86C0 100%);
-                                         -fx-background-radius: 12;
-                                         -fx-padding: 10;
-                                         -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.25), 15, 0.2, 0, 5);">
-                            <Label text="💻" style="-fx-font-size: 20px; -fx-text-fill: white;"/>
+                                         -fx-background-radius: 14;
+                                         -fx-padding: 12;
+                                         -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.3), 15, 0.2, 0, 5);">
+                            <Label text="💻" style="-fx-font-size: 28px; -fx-text-fill: white;"/>
                         </StackPane>
-                        <VBox spacing="2">
-                            <Label text="Python Code Editor" styleClass="section-title"/>
-                            <Label text="Write your solution in Python 3" styleClass="editor-subtitle"/>
+                        <VBox spacing="4">
+                            <Label text="Python Editor" styleClass="section-title-ultra-wide"/>
+                            <Label text="Write your solution in Python 3" styleClass="editor-subtitle-ultra-wide"/>
                         </VBox>
                         <Region HBox.hgrow="ALWAYS"/>
+                        <!-- Full Screen Button - LARGER -->
+                        <Button fx:id="btnFullScreen"
+                                text="⛶"
+                                styleClass="fullscreen-editor-button-ultra-wide"
+                                onAction="#toggleFullScreen"/>
                         <!-- Security Badge -->
-                        <HBox spacing="5" styleClass="security-badge">
-                            <Label text="🔒" style="-fx-font-size: 12px;"/>
-                            <Label text="Secure Mode" style="-fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: 700;"/>
+                        <HBox spacing="8" styleClass="security-badge-ultra-wide">
+                            <Label text="🔒" style="-fx-font-size: 14px;"/>
+                            <Label text="Secure Mode" style="-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: 700;"/>
                         </HBox>
                     </HBox>
 
-                    <!-- Code Editor Container -->
-                    <VBox styleClass="code-editor-container">
+                    <!-- Code Editor Container - VS CODE DARK THEME - EXTRA WIDE -->
+                    <VBox fx:id="codeEditorContainer" styleClass="code-editor-container-ultra-wide">
                         <!-- Editor Header -->
-                        <HBox styleClass="editor-header">
-                            <HBox spacing="8" alignment="CENTER_LEFT">
-                                <Label text="📁" style="-fx-font-size: 16px; -fx-text-fill: #E0B1CB;"/>
-                                <Label text="solution.py" styleClass="file-name"/>
+                        <HBox styleClass="editor-header-ultra-wide">
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label text="📁" style="-fx-font-size: 18px; -fx-text-fill: #E0B1CB;"/>
+                                <Label text="solution.py" styleClass="file-name-ultra-wide"/>
                             </HBox>
                             <Region HBox.hgrow="ALWAYS"/>
-                            <Label text="Python 3" styleClass="language-tag"/>
-                            <Line startX="0" startY="0" endX="0" endY="20"
-                                  style="-fx-stroke: #334155; -fx-stroke-width: 1;"
-                                  HBox.hgrow="NEVER">
-                                <HBox.margin>
-                                    <Insets left="10" right="10"/>
-                                </HBox.margin>
-                            </Line>
-                            <Label text="No Copy/Paste" styleClass="restriction-tag"/>
+                            <Label text="Python 3" styleClass="language-tag-ultra-wide"/>
+                            <Label text="No Copy/Paste" styleClass="restriction-tag-ultra-wide"/>
                         </HBox>
 
-                        <!-- Code Editor -->
+                        <!-- Code Editor - VS CODE STYLE - EXTRA TALL -->
                         <TextArea fx:id="txtCode"
                                   promptText="# Write your Python solution here&#10;# Example: Add two numbers&#10;&#10;def add(a, b):&#10;    return a + b&#10;&#10;# Read input and call function&#10;if __name__ == '__main__':&#10;    num1 = int(input())&#10;    num2 = int(input())&#10;    print(add(num1, num2))"
-                                  styleClass="code-editor"/>
+                                  styleClass="code-editor-ultra-wide"
+                                  prefHeight="450"/>
                     </VBox>
 
-                    <!-- Editor Security Tips -->
-                    <VBox spacing="8" styleClass="editor-tips-container">
-                        <HBox styleClass="editor-tips">
-                            <Label text="🔒" style="-fx-font-size: 14px;"/>
-                            <Label text="Security: " style="-fx-text-fill: #5E548E; -fx-font-weight: 700; -fx-font-size: 12px;"/>
-                            <Label text="Copy, paste, and right-click are disabled"
-                                   styleClass="tip-text"/>
+                    <!-- Status Bar - HORIZONTAL ROW -->
+                    <HBox spacing="30" alignment="CENTER_LEFT" styleClass="status-bar-ultra-wide">
+                        <HBox spacing="10" alignment="CENTER">
+                            <Label text="🐍" style="-fx-font-size: 16px;"/>
+                            <Label text="Python 3" styleClass="status-tag"/>
                         </HBox>
-                        <HBox styleClass="editor-tips">
-                            <Label text="⏱️" style="-fx-font-size: 14px;"/>
-                            <Label text="Timer: " style="-fx-text-fill: #5E548E; -fx-font-weight: 700; -fx-font-size: 12px;"/>
-                            <Label text="Your code will auto-submit when time expires"
-                                   styleClass="tip-text"/>
+                        <HBox spacing="10" alignment="CENTER">
+                            <Label text="🔒" style="-fx-font-size: 16px;"/>
+                            <Label text="No Copy/Paste" styleClass="status-tag"/>
                         </HBox>
-                        <HBox styleClass="editor-tips">
-                            <Label text="💡" style="-fx-font-size: 14px;"/>
-                            <Label text="Tip: " style="-fx-text-fill: #5E548E; -fx-font-weight: 700; -fx-font-size: 12px;"/>
-                            <Label text="Test your code with sample inputs before submitting"
-                                   styleClass="tip-text"/>
+                        <HBox spacing="10" alignment="CENTER">
+                            <Label text="⏱️" style="-fx-font-size: 16px;"/>
+                            <Label text="Auto-submit on timeout" styleClass="status-tag"/>
                         </HBox>
-                    </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <HBox spacing="10" alignment="CENTER">
+                            <Label text="💡" style="-fx-font-size: 16px; -fx-text-fill: #5E548E;"/>
+                            <Label text="F11 / ⛶" styleClass="shortcut-tag"/>
+                        </HBox>
+                    </HBox>
                 </VBox>
             </HBox>
 
-            <!-- Footer -->
-            <HBox alignment="CENTER" styleClass="footer-container">
-                <Label text="🔍 Double-click a mission in Mission List to auto-fill details • Timer starts automatically • 20:00 minutes allocated"
-                       styleClass="footer-text"/>
+            <!-- Footer - EXTRA WIDE -->
+            <HBox alignment="CENTER" styleClass="footer-ultra-wide">
+                <Label text="🔍 Double-click a mission in Mission List to auto-fill details • Timer: 20:00 • Secure Environment • Real-time Evaluation"
+                       styleClass="footer-text-ultra-wide"/>
             </HBox>
         </VBox>
     </ScrollPane>
+
+    <!-- ========== FULL SCREEN CODE EDITOR OVERLAY ========== -->
+    <VBox fx:id="fullScreenEditorOverlay"
+          styleClass="fullscreen-editor-overlay"
+          visible="false"
+          managed="false"
+          StackPane.alignment="CENTER">
+        <HBox styleClass="fullscreen-header">
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <StackPane style="-fx-background-color: linear-gradient(135deg, #5E548E 0%, #9F86C0 100%);
+                                 -fx-background-radius: 16;
+                                 -fx-padding: 15;">
+                    <Label text="💻" style="-fx-font-size: 32px; -fx-text-fill: white;"/>
+                </StackPane>
+                <VBox spacing="6">
+                    <Label text="Full Screen Code Editor" styleClass="fullscreen-title"/>
+                    <Label text="Write your Python solution" styleClass="fullscreen-subtitle"/>
+                </VBox>
+            </HBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox spacing="20" alignment="CENTER_RIGHT">
+                <VBox alignment="CENTER_RIGHT" spacing="4">
+                    <Label text="Time Remaining" style="-fx-text-fill: #94a3b8; -fx-font-size: 14px;"/>
+                    <Label fx:id="fullScreenTimer" text="20:00" styleClass="fullscreen-timer"/>
+                </VBox>
+                <Button text="✕"
+                        styleClass="fullscreen-close-button"
+                        onAction="#exitFullScreen"/>
+            </HBox>
+        </HBox>
+        <TextArea fx:id="fullScreenCodeEditor"
+                  styleClass="fullscreen-code-editor"
+                  wrapText="false"
+                  prefHeight="1000"/>
+        <HBox styleClass="fullscreen-footer">
+            <HBox spacing="25" alignment="CENTER_LEFT">
+                <Label text="🔒 Secure Mode" style="-fx-text-fill: #94a3b8; -fx-font-size: 15px; -fx-font-weight: 600;"/>
+                <Label text="•" style="-fx-text-fill: #475569; -fx-font-size: 18px;"/>
+                <Label text="No Copy/Paste" style="-fx-text-fill: #f87171; -fx-font-size: 15px; -fx-font-weight: 600;"/>
+                <Label text="•" style="-fx-text-fill: #475569; -fx-font-size: 18px;"/>
+                <Label text="Python 3" style="-fx-text-fill: #10b981; -fx-font-size: 15px; -fx-font-weight: 600;"/>
+            </HBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="🚀 Submit Code"
+                    styleClass="fullscreen-evaluate-button"
+                    onAction="#evaluateFromFullScreen"/>
+            <Button text="Exit (ESC)"
+                    styleClass="fullscreen-exit-button"
+                    onAction="#exitFullScreen"/>
+        </HBox>
+    </VBox>
+
 </StackPane>
