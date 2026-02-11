@@ -48,6 +48,12 @@
             <artifactId>javafx-graphics</artifactId>
             <version>21.0.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.9</version>
+        </dependency>
         <!-- iText 7 Kernel -->
         <dependency>
             <groupId>com.itextpdf</groupId>
