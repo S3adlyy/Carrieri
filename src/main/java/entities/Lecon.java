@@ -13,6 +13,29 @@ public class Lecon {
         return type;
     }
 
+    public void setTitre(String titre) {
+        this.titre = titre;
+    }
+
+    public void setContenu(String contenu) {
+        this.contenu = contenu;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+
+    public void setOrdre(int ordre) {
+        this.ordre = ordre;
+    }
+
+    public void setModuleId(int moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public Lecon(String titre, String contenu, String videoUrl, int ordre, int moduleId) {
         this.titre = titre;

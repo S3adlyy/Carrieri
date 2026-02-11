@@ -138,6 +138,12 @@
                             </style>
                         </Button>
                     </HBox>
+                    <HBox spacing="10">
+                        <Button text="📚 Gérer les modules" onAction="#gererModules"
+                                style="-fx-background-color: #5E548E; -fx-text-fill: white;"/>
+                        <Button text="📖 Gérer les leçons" onAction="#gererLecons"
+                                style="-fx-background-color: #9F86C0; -fx-text-fill: white;"/>
+                    </HBox>
                 </VBox>
             </VBox>
             </content>

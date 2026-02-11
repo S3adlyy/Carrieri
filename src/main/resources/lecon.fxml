@@ -2,29 +2,76 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox spacing="10" alignment="CENTER"
+<VBox spacing="15" alignment="TOP_CENTER"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="main.LeconController">
+      fx:controller="main.LeconController"
+      style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10;">
 
-    <Label text="Gestion des Leçons" style="-fx-font-size:18px;"/>
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
 
-    <TextField fx:id="txtTitre" promptText="Titre"/>
-    <TextField fx:id="txtModuleId" promptText="Module ID"/>
-    <TextField fx:id="txtOrdre" promptText="Ordre de la leçon"/>
-    <TextArea fx:id="txtContenu" prefRowCount="5" promptText="Contenu de la leçon"/>
-    <TextField fx:id="txtVideoUrl" promptText="URL Vidéo"/>
-    <TextField fx:id="txtCoursId" promptText="Cours ID"/>
+    <Label text="📖 Gestion des Leçons"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #9F86C0;"/>
 
-    <Button text="Ajouter" onAction="#ajouterLecon"/>
+    <Label fx:id="lblInfo"
+           text="Sélectionnez un module"
+           style="-fx-font-size: 14px; -fx-text-fill: #718096;"/>
 
-    <TableView fx:id="tableLecon" prefHeight="300">
+    <Separator/>
+
+    <!-- Formulaire -->
+    <VBox spacing="10">
+        <Label text="Leçon" style="-fx-font-weight: bold;"/>
+
+        <ComboBox fx:id="comboModules" promptText="Sélectionner un module"/>
+
+        <TextField fx:id="txtTitre" promptText="Titre de la leçon"/>
+        <TextArea fx:id="txtContenu" promptText="Contenu" prefRowCount="3"/>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <TextField fx:id="txtOrdre" promptText="Ordre" prefWidth="80"/>
+            <ComboBox fx:id="comboType" prefWidth="120"/>
+        </HBox>
+
+        <HBox spacing="10" alignment="CENTER">
+            <Button fx:id="btnAjouter" text="➕ AJOUTER"
+                    onAction="#ajouterLecon"
+                    style="-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
+            <Button fx:id="btnModifier" text="✏️ MODIFIER"
+                    onAction="#modifierLecon"
+                    style="-fx-background-color: #E0B1CB; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
+            <Button fx:id="btnSupprimer" text="🗑️ SUPPRIMER"
+                    onAction="#supprimerLecon"
+                    style="-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
+            <Button fx:id="btnAnnuler" text="❌ ANNULER"
+                    onAction="#annuler"
+                    style="-fx-background-color: #718096; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
+        </HBox>
+    </VBox>
+
+    <Separator/>
+
+    <!-- Liste des leçons -->
+    <Label text="Leçons existantes" style="-fx-font-weight: bold;"/>
+
+    <TableView fx:id="tableLecons" prefHeight="250">
         <columns>
-            <TableColumn fx:id="colId" text="ID"/>
-            <TableColumn fx:id="colOrdre" text="Ordre"/>
-            <TableColumn fx:id="colTitre" text="Titre"/>
-            <TableColumn fx:id="colCoursId" text="Cours ID"/>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colTitre" text="Titre" prefWidth="150"/>
+            <TableColumn fx:id="colContenu" text="Contenu" prefWidth="200"/>
+            <TableColumn fx:id="colOrdre" text="Ordre" prefWidth="80"/>
+            <TableColumn fx:id="colType" text="Type" prefWidth="100"/>
+            <TableColumn fx:id="colActions" text="Actions" prefWidth="180"/>
         </columns>
     </TableView>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="❌ Fermer"
+                onAction="#fermer"
+                style="-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
+    </HBox>
 
 </VBox>

@@ -14,7 +14,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import services.CertificationPDFService;
 import services.CertificationService;
 import services.CoursService;
 import services.ProgressionCoursService;
@@ -69,7 +68,7 @@ public class CoursCandidatController {
 
     private void loadCoursFromDatabase() {
         try {
-            tousLesCours = coursServices.read();
+            tousLesCours = coursServices.readAll();
             lblTotalCours.setText(tousLesCours.size() + " cours disponibles");
             lblTotalCoursStat.setText(String.valueOf(tousLesCours.size()));
             displayCours(tousLesCours);
@@ -254,7 +253,7 @@ public class CoursCandidatController {
             String cheminFichier =
                     "C:/Users/MSI/Desktop/certif/certif_" + cours.getTitre() + ".pdf";
 
-            CertificationPDFService pdfService = new CertificationPDFService();
+            CertificationService pdfService = new CertificationService();
             pdfService.genererCertification(candidatName, cours.getTitre(), cheminFichier);
 
             showAlert(Alert.AlertType.INFORMATION,
