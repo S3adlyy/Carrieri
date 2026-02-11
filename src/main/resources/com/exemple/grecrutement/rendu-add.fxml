@@ -4,6 +4,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Line?>
 
 <StackPane xmlns="http://javafx.com/javafx/17"
            xmlns:fx="http://javafx.com/fxml/1"
@@ -75,7 +77,6 @@
                     <!-- Mission Description Display -->
                     <VBox spacing="12" style="-fx-padding: 20px 0;">
                         <Label text="📄 Mission Details" styleClass="section-title"/>
-
                         <TextArea fx:id="lblMissionDescription"
                                   editable="false"
                                   wrapText="true"
@@ -83,9 +84,102 @@
                                   styleClass="mission-description-area"/>
                     </VBox>
 
+                    <!-- ================ TIMER SECTION ================ -->
+                    <VBox spacing="15" style="-fx-padding: 10px 0 20px 0;"
+                          fx:id="timerContainer">
+                        <!-- Note: visible and managed are controlled by controller,
+                             removed from FXML to avoid parsing error -->
+
+                        <!-- Timer Header -->
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <StackPane style="-fx-background-color: linear-gradient(135deg, #231942 0%, #5E548E 100%);
+                                             -fx-background-radius: 8;
+                                             -fx-padding: 8;">
+                                <Label text="⏱️" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
+                            </StackPane>
+                            <Label text="Time Remaining" styleClass="field-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="20:00" style="-fx-text-fill: #64748b; -fx-font-size: 12px;">
+                                <graphic>
+                                    <Label text="⏳" style="-fx-font-size: 12px;"/>
+                                </graphic>
+                            </Label>
+                        </HBox>
+
+                        <!-- Timer Display Card -->
+                        <VBox spacing="15" styleClass="timer-card">
+                            <!-- Timer Circle and Display -->
+                            <HBox spacing="20" alignment="CENTER">
+                                <StackPane>
+                                    <Circle radius="40" fill="rgba(94,84,142,0.08)" stroke="#5E548E" strokeWidth="2.5"/>
+                                    <Circle radius="35" fill="white" stroke="transparent"/>
+                                    <Label fx:id="lblTimer" text="20:00"
+                                           styleClass="timer-display"/>
+                                </StackPane>
+
+                                <VBox spacing="5" alignment="CENTER_LEFT">
+                                    <Label text="Mission Time" style="-fx-text-fill: #231942; -fx-font-size: 14px; -fx-font-weight: 700;"/>
+                                    <Label text="20 minutes" style="-fx-text-fill: #5E548E; -fx-font-size: 13px;"/>
+                                    <HBox spacing="5" alignment="CENTER_LEFT">
+                                        <Circle radius="4" fill="#10b981"/>
+                                        <Label text="Active" style="-fx-text-fill: #10b981; -fx-font-size: 12px; -fx-font-weight: 600;"/>
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+
+                            <!-- Timer Progress Bar -->
+                            <VBox spacing="8">
+                                <HBox spacing="5" alignment="CENTER_LEFT">
+                                    <Label text="Progress" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Label fx:id="lblTimerProgress" text="100%"
+                                           style="-fx-text-fill: #10b981; -fx-font-size: 12px; -fx-font-weight: 600;"/>
+                                </HBox>
+                                <ProgressBar fx:id="timerProgressBar"
+                                             prefWidth="400"
+                                             prefHeight="10"
+                                             progress="1.0"
+                                             styleClass="timer-progress-bar"/>
+                            </VBox>
+
+                            <!-- Timer Warning Label -->
+                            <Label fx:id="lblTimerWarning"
+                                   text="⏳ Take your time, but stay aware of the deadline"
+                                   styleClass="timer-warning-label"
+                                   wrapText="true"/>
+                        </VBox>
+                    </VBox>
+                    <!-- ============== END TIMER SECTION ============== -->
+
+                    <!-- ============== SECURITY WARNING SECTION ============== -->
+                    <VBox fx:id="securityWarningContainer"
+                          spacing="10"
+                          styleClass="security-warning-card">
+                        <!-- Note: visible and managed are controlled by controller,
+                             removed from FXML to avoid parsing error -->
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <StackPane style="-fx-background-color: #F59E0B; -fx-background-radius: 6; -fx-padding: 6;">
+                                <Label text="⚠️" style="-fx-font-size: 14px; -fx-text-fill: white;"/>
+                            </StackPane>
+                            <VBox spacing="2">
+                                <Label text="Security Alert"
+                                       style="-fx-text-fill: #92400E; -fx-font-weight: 900; -fx-font-size: 13px;"/>
+                                <Label fx:id="lblSecurityWarning"
+                                       text="Copy/paste is disabled during missions"
+                                       style="-fx-text-fill: #92400E; -fx-font-size: 12px;"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="✕"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #92400E; -fx-font-size: 14px; -fx-cursor: hand;"
+                                    onAction="#hideSecurityWarning"/>
+                        </HBox>
+                    </VBox>
+                    <!-- ============== END SECURITY WARNING SECTION ============== -->
+
                     <!-- Evaluate Button -->
                     <VBox spacing="15" style="-fx-padding: 15px 0;">
-                        <Button text="🚀 Evaluate with AI"
+                        <Button id="btnEvaluer"
+                                text="🚀 Evaluate with AI"
                                 onAction="#evaluer"
                                 styleClass="evaluate-button"
                                 prefWidth="220"/>
@@ -122,6 +216,12 @@
                             <Label text="Python Code Editor" styleClass="section-title"/>
                             <Label text="Write your solution in Python 3" styleClass="editor-subtitle"/>
                         </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <!-- Security Badge -->
+                        <HBox spacing="5" styleClass="security-badge">
+                            <Label text="🔒" style="-fx-font-size: 12px;"/>
+                            <Label text="Secure Mode" style="-fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: 700;"/>
+                        </HBox>
                     </HBox>
 
                     <!-- Code Editor Container -->
@@ -132,8 +232,16 @@
                                 <Label text="📁" style="-fx-font-size: 16px; -fx-text-fill: #E0B1CB;"/>
                                 <Label text="solution.py" styleClass="file-name"/>
                             </HBox>
-                            <HBox HBox.hgrow="ALWAYS"/>
+                            <Region HBox.hgrow="ALWAYS"/>
                             <Label text="Python 3" styleClass="language-tag"/>
+                            <Line startX="0" startY="0" endX="0" endY="20"
+                                  style="-fx-stroke: #334155; -fx-stroke-width: 1;"
+                                  HBox.hgrow="NEVER">
+                                <HBox.margin>
+                                    <Insets left="10" right="10"/>
+                                </HBox.margin>
+                            </Line>
+                            <Label text="No Copy/Paste" styleClass="restriction-tag"/>
                         </HBox>
 
                         <!-- Code Editor -->
@@ -142,17 +250,33 @@
                                   styleClass="code-editor"/>
                     </VBox>
 
-                    <!-- Editor Tips -->
-                    <HBox styleClass="editor-tips">
-                        <Label text="💡 Tips: • Press Ctrl+Space for autocomplete • Use Tab for indentation • Test your code before submitting"
-                               styleClass="tip-text"/>
-                    </HBox>
+                    <!-- Editor Security Tips -->
+                    <VBox spacing="8" styleClass="editor-tips-container">
+                        <HBox styleClass="editor-tips">
+                            <Label text="🔒" style="-fx-font-size: 14px;"/>
+                            <Label text="Security: " style="-fx-text-fill: #5E548E; -fx-font-weight: 700; -fx-font-size: 12px;"/>
+                            <Label text="Copy, paste, and right-click are disabled"
+                                   styleClass="tip-text"/>
+                        </HBox>
+                        <HBox styleClass="editor-tips">
+                            <Label text="⏱️" style="-fx-font-size: 14px;"/>
+                            <Label text="Timer: " style="-fx-text-fill: #5E548E; -fx-font-weight: 700; -fx-font-size: 12px;"/>
+                            <Label text="Your code will auto-submit when time expires"
+                                   styleClass="tip-text"/>
+                        </HBox>
+                        <HBox styleClass="editor-tips">
+                            <Label text="💡" style="-fx-font-size: 14px;"/>
+                            <Label text="Tip: " style="-fx-text-fill: #5E548E; -fx-font-weight: 700; -fx-font-size: 12px;"/>
+                            <Label text="Test your code with sample inputs before submitting"
+                                   styleClass="tip-text"/>
+                        </HBox>
+                    </VBox>
                 </VBox>
             </HBox>
 
             <!-- Footer -->
             <HBox alignment="CENTER" styleClass="footer-container">
-                <Label text="🔍 Tip: Double-click a mission in Mission List to auto-fill mission details"
+                <Label text="🔍 Double-click a mission in Mission List to auto-fill details • Timer starts automatically • 20:00 minutes allocated"
                        styleClass="footer-text"/>
             </HBox>
         </VBox>
