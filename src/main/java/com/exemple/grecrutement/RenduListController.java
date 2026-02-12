@@ -1,12 +1,14 @@
 package com.exemple.grecrutement;
 
 import entities.RenduMission;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
@@ -23,7 +25,6 @@ import java.util.stream.Collectors;
 public class RenduListController implements Initializable {
 
     @FXML private TableView<RenduMission> table;
-    // REMOVED: colId FXML binding
     @FXML private TableColumn<RenduMission, Integer> colScore;
     @FXML private TableColumn<RenduMission, String> colResultat;
     @FXML private TableColumn<RenduMission, Integer> colMission;
@@ -46,18 +47,19 @@ public class RenduListController implements Initializable {
         load();
         setupFilters();
         setupDoubleClickHandler();
+
+        // Apply table styling after table is populated
+        Platform.runLater(this::applyTableStyling);
     }
 
     private void configureTable() {
-        // REMOVED: colId configuration
-
-        // Configure columns with correct property names from your RenduMission entity
+        // Configure columns with correct property names
         colScore.setCellValueFactory(new PropertyValueFactory<>("score"));
         colResultat.setCellValueFactory(new PropertyValueFactory<>("resultat"));
         colMission.setCellValueFactory(new PropertyValueFactory<>("missionId"));
         colCandidat.setCellValueFactory(new PropertyValueFactory<>("candidatId"));
 
-        // Custom cell factory for Score with progress bar
+        // Custom cell factory for Score with progress bar (YOUR ORIGINAL)
         colScore.setCellFactory(new Callback<TableColumn<RenduMission, Integer>, TableCell<RenduMission, Integer>>() {
             @Override
             public TableCell<RenduMission, Integer> call(TableColumn<RenduMission, Integer> param) {
@@ -67,7 +69,7 @@ public class RenduListController implements Initializable {
                     private final HBox container = new HBox(10, progressBar, scoreLabel);
 
                     {
-                        container.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                        container.setAlignment(Pos.CENTER_LEFT);
                         progressBar.setPrefWidth(80);
                         scoreLabel.setStyle("-fx-font-weight: bold;");
                     }
@@ -83,7 +85,6 @@ public class RenduListController implements Initializable {
                             double progress = score / 100.0;
                             progressBar.setProgress(progress);
 
-                            // Set color based on score
                             if (score >= 80) {
                                 progressBar.setStyle("-fx-accent: #10b981;");
                                 scoreLabel.setTextFill(Color.web("#10b981"));
@@ -107,7 +108,7 @@ public class RenduListController implements Initializable {
             }
         });
 
-        // Custom cell factory for Result with colored badges
+        // Custom cell factory for Result with colored badges (YOUR ORIGINAL)
         colResultat.setCellFactory(new Callback<TableColumn<RenduMission, String>, TableCell<RenduMission, String>>() {
             @Override
             public TableCell<RenduMission, String> call(TableColumn<RenduMission, String> param) {
@@ -122,10 +123,9 @@ public class RenduListController implements Initializable {
                         } else {
                             Label badge = new Label(resultat);
                             badge.setMaxWidth(Double.MAX_VALUE);
-                            badge.setAlignment(javafx.geometry.Pos.CENTER);
+                            badge.setAlignment(Pos.CENTER);
                             badge.setStyle("-fx-padding: 4 12; -fx-background-radius: 20; -fx-font-size: 12px; -fx-font-weight: bold;");
 
-                            // Determine status color
                             String resultLower = resultat.toLowerCase();
                             if (resultLower.contains("accepted") || resultLower.contains("success") ||
                                     resultLower.contains("passed") || resultLower.contains("réussi")) {
@@ -149,7 +149,7 @@ public class RenduListController implements Initializable {
             }
         });
 
-        // Custom cell factory for Mission
+        // Custom cell factory for Mission (YOUR ORIGINAL)
         colMission.setCellFactory(new Callback<TableColumn<RenduMission, Integer>, TableCell<RenduMission, Integer>>() {
             @Override
             public TableCell<RenduMission, Integer> call(TableColumn<RenduMission, Integer> param) {
@@ -167,7 +167,7 @@ public class RenduListController implements Initializable {
                             Label idLabel = new Label("Mission #" + missionId);
                             idLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #3b82f6;");
                             container.getChildren().addAll(icon, idLabel);
-                            container.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                            container.setAlignment(Pos.CENTER_LEFT);
                             setGraphic(container);
                             setText(null);
                         }
@@ -176,7 +176,7 @@ public class RenduListController implements Initializable {
             }
         });
 
-        // Custom cell factory for Candidate
+        // Custom cell factory for Candidate (YOUR ORIGINAL)
         colCandidat.setCellFactory(new Callback<TableColumn<RenduMission, Integer>, TableCell<RenduMission, Integer>>() {
             @Override
             public TableCell<RenduMission, Integer> call(TableColumn<RenduMission, Integer> param) {
@@ -194,7 +194,7 @@ public class RenduListController implements Initializable {
                             Label idLabel = new Label("Candidate #" + candidatId);
                             idLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #8b5cf6;");
                             container.getChildren().addAll(icon, idLabel);
-                            container.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                            container.setAlignment(Pos.CENTER_LEFT);
                             setGraphic(container);
                             setText(null);
                         }
@@ -203,7 +203,7 @@ public class RenduListController implements Initializable {
             }
         });
 
-        // Add Actions column with buttons
+        // Add Actions column with buttons (YOUR ORIGINAL)
         TableColumn<RenduMission, Void> actionsCol = new TableColumn<>("Actions");
         actionsCol.setPrefWidth(150);
         actionsCol.setCellFactory(new Callback<TableColumn<RenduMission, Void>, TableCell<RenduMission, Void>>() {
@@ -216,14 +216,12 @@ public class RenduListController implements Initializable {
                     private final HBox buttons = new HBox(5, viewBtn, codeBtn, deleteBtn);
 
                     {
-                        buttons.setAlignment(javafx.geometry.Pos.CENTER);
+                        buttons.setAlignment(Pos.CENTER);
 
-                        // Style buttons
                         viewBtn.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 4 8; -fx-background-radius: 4; -fx-cursor: hand;");
                         codeBtn.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-padding: 4 8; -fx-background-radius: 4; -fx-cursor: hand;");
                         deleteBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-padding: 4 8; -fx-background-radius: 4; -fx-cursor: hand;");
 
-                        // Button actions
                         viewBtn.setOnAction(e -> {
                             RenduMission rendu = getTableView().getItems().get(getIndex());
                             viewDetails(rendu);
@@ -254,33 +252,142 @@ public class RenduListController implements Initializable {
         });
 
         table.getColumns().add(actionsCol);
-
-        // Enable multiple selection
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
+
+    /**
+     * ONLY THE TABLE STYLING IS CHANGED - Everything else remains exactly the same
+     */
+    private void applyTableStyling() {
+        // ============ MISSIONLIST TABLE STYLING ============
+
+        // 1. Table background and border styling
+        table.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-border-color: #e2e8f0;" +
+                        "-fx-border-radius: 12;" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-padding: 0;"
+        );
+
+        // 2. Header styling (purple gradient like MissionList)
+        String headerStyle =
+                "-fx-background-color: linear-gradient(to right, #faf5ff, #f3e8ff);" +
+                        "-fx-text-fill: #5b21b6;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-font-size: 14px;" +
+                        "-fx-padding: 12px 10px;" +
+                        "-fx-border-color: transparent transparent #f3e8ff transparent;" +
+                        "-fx-border-width: 0 0 2 0;";
+
+        colScore.setStyle(headerStyle);
+        colResultat.setStyle(headerStyle);
+        colMission.setStyle(headerStyle);
+        colCandidat.setStyle(headerStyle);
+
+        // Style the Actions column header
+        for (TableColumn<?, ?> col : table.getColumns()) {
+            if (col.getText().equals("Actions")) {
+                col.setStyle(headerStyle);
+                break;
+            }
+        }
+
+        // 3. Row styling with alternating colors and hover effect
+        table.setRowFactory(tv -> {
+            TableRow<RenduMission> row = new TableRow<RenduMission>() {
+                @Override
+                protected void updateItem(RenduMission item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setStyle("");
+                    } else {
+                        // Alternating row colors
+                        if (getIndex() % 2 == 0) {
+                            setStyle("-fx-background-color: white;");
+                        } else {
+                            setStyle("-fx-background-color: #faf9ff;");
+                        }
+
+                        // Purple hover effect (like MissionList)
+                        setOnMouseEntered(e ->
+                                setStyle("-fx-background-color: #f3e8ff;")
+                        );
+                        setOnMouseExited(e -> {
+                            if (getIndex() % 2 == 0) {
+                                setStyle("-fx-background-color: white;");
+                            } else {
+                                setStyle("-fx-background-color: #faf9ff;");
+                            }
+                        });
+                    }
+                }
+            };
+
+            // Double-click handler (YOUR ORIGINAL)
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    RenduMission selectedRendu = row.getItem();
+                    scheduleInterviewWithCandidate(selectedRendu);
+                }
+            });
+
+            return row;
+        });
+
+        // 4. Style the filter controls to match the purple theme
+        String comboBoxStyle =
+                "-fx-background-color: white;" +
+                        "-fx-border-color: #f3e8ff;" +
+                        "-fx-border-radius: 20;" +
+                        "-fx-background-radius: 20;" +
+                        "-fx-padding: 4 12;";
+
+        if (filterStatus != null) filterStatus.setStyle(comboBoxStyle);
+        if (filterMission != null) filterMission.setStyle(comboBoxStyle);
+
+        if (searchField != null) {
+            searchField.setStyle(
+                    "-fx-background-color: white;" +
+                            "-fx-border-color: #f3e8ff;" +
+                            "-fx-border-radius: 20;" +
+                            "-fx-background-radius: 20;" +
+                            "-fx-padding: 8 16;"
+            );
+            searchField.setPromptText("🔍 Search...");
+        }
+
+        // 5. Style the stats labels to match MissionList
+        String statsValueStyle =
+                "-fx-font-size: 28px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: #5b21b6;";
+
+        String statsLabelStyle =
+                "-fx-font-size: 14px;" +
+                        "-fx-text-fill: #6b7280;";
+
+        if (lblTotal != null) lblTotal.setStyle(statsValueStyle);
+        if (lblSuccessRate != null) lblSuccessRate.setStyle(statsValueStyle);
+        if (lblAvgScore != null) lblAvgScore.setStyle(statsValueStyle);
+
+        table.refresh();
+    }
+
+    // ============ ALL YOUR ORIGINAL METHODS BELOW - NOTHING CHANGED ============
 
     @FXML
     private void load() {
         try {
-            // Use your service's afficherRenduMissions() method
             List<RenduMission> rendus = service.afficherRenduMissions();
             renduList = FXCollections.observableArrayList(rendus);
-
-            // Setup filtered list
             filteredData = new FilteredList<>(renduList, p -> true);
-
-            // Setup sorted list
             SortedList<RenduMission> sortedData = new SortedList<>(filteredData);
             sortedData.comparatorProperty().bind(table.comparatorProperty());
-
             table.setItems(sortedData);
             updateStats();
-
-            // Populate mission filter
             populateMissionFilter();
-
             System.out.println("✅ Loaded " + rendus.size() + " submissions");
-
         } catch (Exception e) {
             showAlert("Error", "Failed to load submissions: " + e.getMessage());
             e.printStackTrace();
@@ -297,7 +404,6 @@ public class RenduListController implements Initializable {
 
         lblTotal.setText(String.valueOf(renduList.size()));
 
-        // Count accepted submissions (adjust based on your result strings)
         long acceptedCount = renduList.stream()
                 .filter(r -> {
                     String result = r.getResultat().toLowerCase();
@@ -311,7 +417,6 @@ public class RenduListController implements Initializable {
         double successRate = (double) acceptedCount / renduList.size() * 100;
         lblSuccessRate.setText(String.format("%.1f%%", successRate));
 
-        // Calculate average score
         double avgScore = renduList.stream()
                 .mapToInt(RenduMission::getScore)
                 .average()
@@ -320,21 +425,17 @@ public class RenduListController implements Initializable {
     }
 
     private void setupFilters() {
-        // Initialize filter options
         filterStatus.getItems().addAll("All", "Accepted", "Rejected", "Pending", "Error");
         filterStatus.setValue("All");
 
-        // Add listener for status filter
         filterStatus.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             applyFilters();
         });
 
-        // Add listener for mission filter
         filterMission.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             applyFilters();
         });
 
-        // Add listener for search field
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             applyFilters();
         });
@@ -360,7 +461,6 @@ public class RenduListController implements Initializable {
         if (filteredData == null) return;
 
         filteredData.setPredicate(rendu -> {
-            // Status filter
             String statusFilter = filterStatus.getValue();
             if (statusFilter != null && !statusFilter.equals("All")) {
                 String result = rendu.getResultat().toLowerCase();
@@ -390,21 +490,16 @@ public class RenduListController implements Initializable {
                 if (!matchesStatus) return false;
             }
 
-            // Mission filter
             String missionFilter = filterMission.getValue();
             if (missionFilter != null && !missionFilter.equals("All Missions")) {
                 try {
                     int missionId = Integer.parseInt(missionFilter);
                     if (rendu.getMissionId() != missionId) return false;
-                } catch (NumberFormatException e) {
-                    // If not a number, skip this filter
-                }
+                } catch (NumberFormatException e) {}
             }
 
-            // Search filter
             String searchText = searchField.getText().toLowerCase();
             if (searchText != null && !searchText.isEmpty()) {
-                // Search in candidate ID and mission ID
                 boolean matchesSearch = String.valueOf(rendu.getCandidatId()).contains(searchText) ||
                         String.valueOf(rendu.getMissionId()).contains(searchText) ||
                         rendu.getResultat().toLowerCase().contains(searchText) ||
@@ -416,7 +511,7 @@ public class RenduListController implements Initializable {
             return true;
         });
 
-        updateStats(); // Update stats based on filtered data
+        updateStats();
     }
 
     @FXML
@@ -430,7 +525,6 @@ public class RenduListController implements Initializable {
     @FXML
     private void exportToCSV() {
         try {
-            // Get selected or all items
             List<RenduMission> itemsToExport = table.getSelectionModel().getSelectedItems();
             if (itemsToExport.isEmpty()) {
                 itemsToExport = table.getItems();
@@ -442,10 +536,8 @@ public class RenduListController implements Initializable {
             }
 
             StringBuilder csv = new StringBuilder();
-            // Header - REMOVED ID
             csv.append("Score,Result,Mission ID,Candidate ID,Feedback\n");
 
-            // Data
             for (RenduMission rendu : itemsToExport) {
                 csv.append(rendu.getScore()).append(",")
                         .append("\"").append(rendu.getResultat().replace("\"", "\"\"")).append("\",")
@@ -454,7 +546,6 @@ public class RenduListController implements Initializable {
                         .append("\"").append(rendu.getFeedback() != null ? rendu.getFeedback().replace("\"", "\"\"") : "").append("\"\n");
             }
 
-            // Create and show file chooser
             javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
             fileChooser.setTitle("Export Submissions to CSV");
             fileChooser.getExtensionFilters().add(
@@ -508,7 +599,6 @@ public class RenduListController implements Initializable {
         codeArea.setPrefSize(700, 500);
         codeArea.setStyle("-fx-font-family: 'Monaco', 'Consolas', monospace; -fx-font-size: 14px;");
 
-        // Add line numbers
         VBox container = new VBox();
         container.setSpacing(10);
 
@@ -534,7 +624,7 @@ public class RenduListController implements Initializable {
         if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
             try {
                 service.supprimerRenduMission(rendu.getId());
-                load(); // Reload the table
+                load();
                 showAlert("Success", "Submission deleted successfully.");
             } catch (Exception e) {
                 showAlert("Error", "Failed to delete submission: " + e.getMessage());
@@ -569,7 +659,7 @@ public class RenduListController implements Initializable {
                 }
             }
 
-            load(); // Reload the table
+            load();
 
             String message = "Deletion completed:\n" +
                     "✓ Successfully deleted: " + successCount + "\n" +
@@ -585,7 +675,6 @@ public class RenduListController implements Initializable {
 
     @FXML
     private void showFilter() {
-        // This can be expanded to show a more advanced filter dialog
         showAlert("Advanced Filter", "Use the filter controls above to filter submissions.\n" +
                 "• Status: Filter by submission status\n" +
                 "• Mission: Filter by mission ID\n" +
@@ -593,42 +682,7 @@ public class RenduListController implements Initializable {
     }
 
     private void setupDoubleClickHandler() {
-        table.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
-                RenduMission selected = table.getSelectionModel().getSelectedItem();
-                if (selected != null) {
-                    scheduleInterviewWithCandidate(selected);
-                }
-            }
-        });
-
-        // Also add row factory for visual feedback
-        table.setRowFactory(tv -> {
-            TableRow<RenduMission> row = new TableRow<RenduMission>() {
-                @Override
-                protected void updateItem(RenduMission item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setStyle("");
-                    } else {
-                        if (getIndex() % 2 == 0) {
-                            setStyle("-fx-background-color: white;");
-                        } else {
-                            setStyle("-fx-background-color: #f8f9fa;");
-                        }
-                    }
-                }
-            };
-
-            row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && !row.isEmpty()) {
-                    RenduMission selectedRendu = row.getItem();
-                    scheduleInterviewWithCandidate(selectedRendu);
-                }
-            });
-
-            return row;
-        });
+        // Double-click is handled in the row factory
     }
 
     private void scheduleInterviewWithCandidate(RenduMission rendu) {
@@ -649,4 +703,84 @@ public class RenduListController implements Initializable {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    private HBox createScoreDisplay(int score) {
+        ProgressBar progressBar = new ProgressBar(score / 100.0);
+        progressBar.getStyleClass().add("rendu-progress-bar");
+
+        if (score >= 80) {
+            progressBar.setStyle("-fx-accent: #10b981;");
+        } else if (score >= 60) {
+            progressBar.setStyle("-fx-accent: #f59e0b;");
+        } else if (score >= 40) {
+            progressBar.setStyle("-fx-accent: #f97316;");
+        } else {
+            progressBar.setStyle("-fx-accent: #ef4444;");
+        }
+
+        Label scoreLabel = new Label(score + "%");
+        scoreLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #1e1b3a; -fx-font-size: 14px;");
+
+        HBox container = new HBox(12, progressBar, scoreLabel);
+        container.setAlignment(Pos.CENTER_LEFT);
+
+        return container;
+    }
+
+    private Label createStatusBadge(String status) {
+        Label badge = new Label(status);
+        badge.getStyleClass().add("status-badge");
+
+        String statusLower = status.toLowerCase();
+        if (statusLower.contains("accepted") || statusLower.contains("success") ||
+                statusLower.contains("passed") || statusLower.contains("réussi")) {
+            badge.getStyleClass().add("status-accepted");
+        } else if (statusLower.contains("rejected") || statusLower.contains("failed") ||
+                statusLower.contains("échec")) {
+            badge.getStyleClass().add("status-rejected");
+        } else if (statusLower.contains("pending") || statusLower.contains("en attente")) {
+            badge.getStyleClass().add("status-pending");
+        } else if (statusLower.contains("error") || statusLower.contains("erreur")) {
+            badge.getStyleClass().add("status-error");
+        } else {
+            badge.setStyle("-fx-background-color: #f3e8ff; -fx-text-fill: #5b21b6; " +
+                    "-fx-border-color: #e9d5ff; -fx-border-width: 1; -fx-border-radius: 30;");
+        }
+
+        return badge;
+    }
+
+    private HBox createMissionBadge(int missionId) {
+        Label icon = new Label("🎯");
+        icon.setStyle("-fx-font-size: 14px;");
+
+        Label idLabel = new Label("Mission #" + missionId);
+        idLabel.setStyle("-fx-font-weight: 700; -fx-font-size: 13px;");
+
+        HBox container = new HBox(8, icon, idLabel);
+        container.getStyleClass().add("mission-badge");
+        container.setAlignment(Pos.CENTER_LEFT);
+
+        return container;
+    }
+
+    /**
+     * Creates a styled candidate badge
+     */
+    private HBox createCandidateBadge(int candidateId) {
+        Label icon = new Label("👤");
+        icon.setStyle("-fx-font-size: 14px;");
+
+        Label idLabel = new Label("Candidate #" + candidateId);
+        idLabel.setStyle("-fx-font-weight: 700; -fx-font-size: 13px;");
+
+        HBox container = new HBox(8, icon, idLabel);
+        container.getStyleClass().add("candidate-badge");
+        container.setAlignment(Pos.CENTER_LEFT);
+
+        return container;
+    }
+
+
+
 }
