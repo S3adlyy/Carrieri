@@ -541,3 +541,51 @@
 .timer-critical {
     -fx-text-fill: #ef4444;
 }
+
+stats-header-btn {
+    -fx-background-color: white;
+    -fx-border-color: #6a5acd;
+    -fx-border-width: 2;
+    -fx-text-fill: #6a5acd;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-font-family: 'Inter', 'Segoe UI', 'Arial';
+    -fx-padding: 12 24;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(106, 90, 205, 0.1), 8, 0, 0, 2);
+    -fx-graphic-text-gap: 10;
+}
+
+.stats-header-btn:hover {
+    -fx-background-color: #6a5acd;
+    -fx-text-fill: white;
+    -fx-border-color: #6a5acd;
+    -fx-effect: dropshadow(gaussian, rgba(106, 90, 205, 0.3), 12, 0.1, 0, 4);
+    -fx-translate-y: -2;
+}
+
+#btnEvaluer {
+    -fx-background-color: white;
+    -fx-border-color: #6a5acd;
+    -fx-border-width: 2;
+    -fx-text-fill: #6a5acd;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-font-family: 'Inter', 'Segoe UI', 'Arial';
+    -fx-padding: 12 24;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(106, 90, 205, 0.1), 8, 0, 0, 2);
+    -fx-graphic-text-gap: 10;
+}
+
+#btnEvaluer:hover {
+    -fx-background-color: #6a5acd;
+    -fx-text-fill: white;
+    -fx-border-color: #6a5acd;
+    -fx-effect: dropshadow(gaussian, rgba(106, 90, 205, 0.3), 12, 0.1, 0, 4);
+    -fx-translate-y: -2;
+}

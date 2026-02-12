@@ -87,7 +87,7 @@
                 <!-- Action Buttons -->
                 <HBox spacing="10" alignment="CENTER_RIGHT">
                     <Button text="Apply Filters"
-                            styleClass="filter-btn-apply"
+                            styleClass="rendu-header-btn, stats-header-btn"
                             onAction="#applyFilters"/>
                     <Button text="Clear"
                             styleClass="filter-btn-clear"
@@ -208,16 +208,9 @@
                     onAction="#load"/>
 
             <Button text="📥 Export to CSV"
-                    styleClass="footer-btn, btn-export"
+                    styleClass="rendu-header-btn, stats-header-btn"
                     onAction="#exportToCSV"/>
 
-            <Button text="📋 View Details"
-                    styleClass="footer-btn, btn-details"
-                    onAction="#viewDetails"/>
-
-            <Button text="🗑️ Delete Selected"
-                    styleClass="footer-btn, btn-delete-bulk"
-                    onAction="#deleteSelected"/>
         </HBox>
 
         <!-- PAGINATION - ELEGANT -->

@@ -125,11 +125,27 @@
 }
 
 .stats-header-btn {
-    -fx-background-color: linear-gradient(135deg, #2d2a4e, #524b78);
-    -fx-border-color: transparent;
-    -fx-text-fill: white;
+    -fx-background-color: white;
+    -fx-border-color: #6a5acd;
+    -fx-border-width: 2;
+    -fx-text-fill: #6a5acd;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-font-family: 'Inter', 'Segoe UI', 'Arial';
+    -fx-padding: 12 24;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(106, 90, 205, 0.1), 8, 0, 0, 2);
     -fx-graphic-text-gap: 10;
-    -fx-effect: dropshadow(gaussian, rgba(45, 42, 78, 0.25), 15, 0.2, 0, 5);
+}
+
+.stats-header-btn:hover {
+    -fx-background-color: #6a5acd;
+    -fx-text-fill: white;
+    -fx-border-color: #6a5acd;
+    -fx-effect: dropshadow(gaussian, rgba(106, 90, 205, 0.3), 12, 0.1, 0, 4);
+    -fx-translate-y: -2;
 }
 
 .stats-header-btn:hover {
@@ -725,4 +741,53 @@
     -fx-font-weight: 500;
     -fx-padding: 10 16;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 4);
+}
+
+.stats-header-btn-purple {
+    -fx-background-color: white;
+    -fx-border-color: #6a5acd;
+    -fx-border-width: 2;
+    -fx-text-fill: #6a5acd;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-font-family: 'Inter', 'Segoe UI', 'Arial';
+    -fx-padding: 12 24;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(106, 90, 205, 0.1), 8, 0, 0, 2);
+    -fx-graphic-text-gap: 10;
+}
+
+.stats-header-btn-purple:hover {
+    -fx-background-color: #6a5acd;
+    -fx-text-fill: white;
+    -fx-border-color: #6a5acd;
+    -fx-effect: dropshadow(gaussian, rgba(106, 90, 205, 0.3), 12, 0.1, 0, 4);
+    -fx-translate-y: -2;
+}
+
+/* ===== PURPLE & WHITE APPLY FILTERS BUTTON ===== */
+.filter-btn-apply-purple {
+    -fx-background-color: white;
+    -fx-border-color: #6a5acd;
+    -fx-border-width: 2;
+    -fx-text-fill: #6a5acd;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-font-family: 'Inter', 'Segoe UI', 'Arial';
+    -fx-padding: 10 28;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(106, 90, 205, 0.1), 8, 0, 0, 2);
+    -fx-graphic-text-gap: 10;
+}
+
+.filter-btn-apply-purple:hover {
+    -fx-background-color: #6a5acd;
+    -fx-text-fill: white;
+    -fx-border-color: #6a5acd;
+    -fx-effect: dropshadow(gaussian, rgba(106, 90, 205, 0.3), 12, 0.1, 0, 4);
+    -fx-translate-y: -2;
 }

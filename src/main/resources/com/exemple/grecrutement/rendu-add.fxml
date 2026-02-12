@@ -147,7 +147,7 @@
                         <Button id="btnEvaluer"
                                 text="🚀 Submit Code"
                                 onAction="#evaluer"
-                                styleClass="submit-button-ultra-wide"/>
+                                styleClass="submit-button-ultra-wide "/>
                         <ProgressIndicator fx:id="progress"
                                            styleClass="progress-indicator-ultra-wide"
                                            visible="false"
