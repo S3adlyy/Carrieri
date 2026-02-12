@@ -7,17 +7,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.util.converter.IntegerStringConverter;
 import services.MissionService;
 
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 public class MissionListController implements Initializable {
 
     @FXML private TableView<Mission> missionTable;
-    // Remove idColumn FXML binding
     @FXML private TableColumn<Mission, String> descriptionColumn;
     @FXML private TableColumn<Mission, Integer> scoreColumn;
     @FXML private TableColumn<Mission, String> creatorColumn;
@@ -27,42 +30,43 @@ public class MissionListController implements Initializable {
     @FXML private Label lblAvgScore;
     @FXML private Label lblActiveMissions;
 
+    @FXML private VBox statsCard1;
+    @FXML private VBox statsCard2;
+    @FXML private VBox statsCard3;
+
     private final MissionService missionService = new MissionService();
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Remove ALL CSS from the table first
-        missionTable.getStyleClass().clear();
-        missionTable.setStyle("");
+        // Make table editable
+        missionTable.setEditable(true);
 
         configureTable();
         addActionsColumn();
         loadMissions();
-        setupDoubleClickHandler();
+        styleStatsCards();
 
         // Force apply styling after table is populated
-        Platform.runLater(this::forceBlackText);
+        Platform.runLater(this::applyModernStyling);
     }
 
     private void configureTable() {
-        // Remove any existing styles
-        descriptionColumn.setStyle("");
-        scoreColumn.setStyle("");
-        creatorColumn.setStyle("");
-        dateColumn.setStyle("");
+        // Clear existing columns
+        missionTable.getColumns().clear();
 
-        // Configure columns with proper property names
-        // idColumn is removed - no longer needed
+        // Re-add columns in correct order
+        missionTable.getColumns().addAll(descriptionColumn, scoreColumn, creatorColumn, dateColumn);
+
+        // Configure column properties
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
         scoreColumn.setCellValueFactory(new PropertyValueFactory<>("score_min"));
 
-        // Creator column
+        // Creator column with proper display
         creatorColumn.setCellValueFactory(cellData -> {
             Integer creatorId = cellData.getValue().getCreated_by_id();
-            return new javafx.beans.property.SimpleStringProperty(
-                    creatorId != null ? "User #" + creatorId : "Unknown"
-            );
+            String displayText = creatorId != null ? "User #" + creatorId : "Unknown";
+            return new javafx.beans.property.SimpleStringProperty(displayText);
         });
 
         // Date column
@@ -78,71 +82,191 @@ public class MissionListController implements Initializable {
             }
         });
 
-        // Set simple cell factories that force black text
-        setSimpleCellFactories();
+        // Make columns editable
+        missionTable.setEditable(true);
 
-        // Apply table styling
-        missionTable.setStyle(
-                "-fx-background-color: white;" +
-                        "-fx-border-color: #ddd;" +
-                        "-fx-border-radius: 8;" +
-                        "-fx-background-radius: 8;" +
-                        "-fx-padding: 0;" +
-                        "-fx-control-inner-background: white;" +
-                        "-fx-text-fill: black;" +
-                        "-fx-font-size: 14px;"
-        );
+        // === DESCRIPTION COLUMN - EDITABLE (FIXED) ===
+        descriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        descriptionColumn.setOnEditCommit(event -> {
+            Mission mission = event.getRowValue();
+            String newDescription = event.getNewValue();
+            mission.setDescription(newDescription);
+            updateMission(mission);
+        });
 
-        // Style column headers
-        String headerStyle =
-                "-fx-background-color: #0a66c2;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-font-size: 14px;" +
-                        "-fx-padding: 12 15;" +
-                        "-fx-alignment: CENTER;";
+        // === SCORE COLUMN - EDITABLE WITH BADGE ===
+        scoreColumn.setCellFactory(column -> {
+            return new TextFieldTableCell<Mission, Integer>(new IntegerStringConverter()) {
+                @Override
+                public void updateItem(Integer item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        Label scoreBadge = new Label(item + "%");
+                        scoreBadge.setStyle(getScoreStyle(item));
+                        scoreBadge.setPrefWidth(60);
+                        scoreBadge.setAlignment(javafx.geometry.Pos.CENTER);
+                        setGraphic(scoreBadge);
+                        setText(null);
+                    }
+                }
+            };
+        });
+        scoreColumn.setOnEditCommit(event -> {
+            Mission mission = event.getRowValue();
+            Integer newScore = event.getNewValue();
+            if (newScore >= 0 && newScore <= 100) {
+                mission.setScore_min(newScore);
+                updateMission(mission);
+            }
+        });
 
-        // idColumn is removed - don't style it
-        descriptionColumn.setStyle(headerStyle);
-        scoreColumn.setStyle(headerStyle);
-        creatorColumn.setStyle(headerStyle);
-        dateColumn.setStyle(headerStyle);
+        // === CREATOR COLUMN - EDITABLE WITH BADGE ===
+        creatorColumn.setCellFactory(column -> {
+            return new TextFieldTableCell<Mission, String>() {
+                @Override
+                public void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        Mission mission = getTableView().getItems().get(getIndex());
+                        if (mission != null) {
+                            Label creatorBadge = new Label("👤 " + item);
+                            creatorBadge.setStyle(
+                                    "-fx-background-color: #f3e8ff;" +
+                                            "-fx-text-fill: #6d28d9;" +
+                                            "-fx-padding: 4 10;" +
+                                            "-fx-background-radius: 20;" +
+                                            "-fx-font-size: 12px;" +
+                                            "-fx-font-weight: bold;"
+                            );
+                            setGraphic(creatorBadge);
+                            setText(null);
+                        }
+                    }
+                }
+            };
+        });
+        creatorColumn.setOnEditCommit(event -> {
+            Mission mission = event.getRowValue();
+            String newValue = event.getNewValue();
+            try {
+                int creatorId;
+                if (newValue.startsWith("User #")) {
+                    creatorId = Integer.parseInt(newValue.substring(6));
+                } else if (newValue.startsWith("👤 User #")) {
+                    creatorId = Integer.parseInt(newValue.substring(9));
+                } else {
+                    creatorId = Integer.parseInt(newValue);
+                }
+                mission.setCreated_by_id(creatorId);
+                updateMission(mission);
+            } catch (NumberFormatException e) {
+                showAlert(Alert.AlertType.ERROR, "Invalid ID", "Please enter a valid number");
+                loadMissions();
+            }
+        });
+
+        // === DATE COLUMN - DISPLAY ONLY (NON-EDITABLE) ===
+        dateColumn.setCellFactory(column -> new TableCell<Mission, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setStyle("-fx-text-fill: #6b7280; -fx-alignment: CENTER; -fx-font-size: 13px;");
+                }
+            }
+        });
+    }
+
+    private String getScoreStyle(int score) {
+        String color;
+        String bgColor;
+        if (score >= 80) {
+            color = "#0a5e3c"; // Dark green
+            bgColor = "#e6f7ed"; // Light green
+        } else if (score >= 60) {
+            color = "#92400e"; // Dark orange
+            bgColor = "#fef3c7"; // Light orange
+        } else {
+            color = "#991b1b"; // Dark red
+            bgColor = "#fee2e2"; // Light red
+        }
+
+        return "-fx-background-color: " + bgColor + ";" +
+                "-fx-text-fill: " + color + ";" +
+                "-fx-font-weight: bold;" +
+                "-fx-padding: 4 12;" +
+                "-fx-background-radius: 20;" +
+                "-fx-border-radius: 20;" +
+                "-fx-border-color: transparent;" +
+                "-fx-font-size: 12px;";
     }
 
     /**
-     * Add Actions column with Edit and Delete buttons
+     * Add Actions column with modern styling
      */
     private void addActionsColumn() {
         TableColumn<Mission, Void> actionsCol = new TableColumn<>("Actions");
-        actionsCol.setPrefWidth(120);
+        actionsCol.setPrefWidth(100);
         actionsCol.setStyle("-fx-alignment: CENTER;");
 
-        // Add graphic to header
-        Label headerIcon = new Label("⚙️");
-        headerIcon.setStyle("-fx-font-size: 14px;");
-        actionsCol.setGraphic(headerIcon);
-
         actionsCol.setCellFactory(col -> new TableCell<Mission, Void>() {
-            private final Button editBtn = new Button("✏️");
             private final Button deleteBtn = new Button("🗑️");
-            private final HBox buttons = new HBox(5, editBtn, deleteBtn);
 
             {
-                buttons.setAlignment(javafx.geometry.Pos.CENTER);
+                deleteBtn.setStyle(
+                        "-fx-background-color: white;" +
+                                "-fx-text-fill: #dc2626;" +
+                                "-fx-padding: 6 10;" +
+                                "-fx-background-radius: 8;" +
+                                "-fx-border-radius: 8;" +
+                                "-fx-border-color: #fee2e2;" +
+                                "-fx-border-width: 1.5;" +
+                                "-fx-cursor: hand;" +
+                                "-fx-font-size: 13px;" +
+                                "-fx-font-weight: bold;"
+                );
 
-                // Style buttons
-                editBtn.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 4 8; -fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 12px;");
-                deleteBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-padding: 4 8; -fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 12px;");
+                // Hover effect
+                deleteBtn.setOnMouseEntered(e ->
+                        deleteBtn.setStyle(
+                                "-fx-background-color: #fee2e2;" +
+                                        "-fx-text-fill: #dc2626;" +
+                                        "-fx-padding: 6 10;" +
+                                        "-fx-background-radius: 8;" +
+                                        "-fx-border-radius: 8;" +
+                                        "-fx-border-color: #dc2626;" +
+                                        "-fx-border-width: 1.5;" +
+                                        "-fx-cursor: hand;" +
+                                        "-fx-font-size: 13px;" +
+                                        "-fx-font-weight: bold;"
+                        )
+                );
 
-                // Tooltips
-                editBtn.setTooltip(new Tooltip("Edit Mission"));
+                deleteBtn.setOnMouseExited(e ->
+                        deleteBtn.setStyle(
+                                "-fx-background-color: white;" +
+                                        "-fx-text-fill: #dc2626;" +
+                                        "-fx-padding: 6 10;" +
+                                        "-fx-background-radius: 8;" +
+                                        "-fx-border-radius: 8;" +
+                                        "-fx-border-color: #fee2e2;" +
+                                        "-fx-border-width: 1.5;" +
+                                        "-fx-cursor: hand;" +
+                                        "-fx-font-size: 13px;" +
+                                        "-fx-font-weight: bold;"
+                        )
+                );
+
                 deleteBtn.setTooltip(new Tooltip("Delete Mission"));
-
-                // Button actions
-                editBtn.setOnAction(e -> {
-                    Mission mission = getTableView().getItems().get(getIndex());
-                    editMission(mission);
-                });
 
                 deleteBtn.setOnAction(e -> {
                     Mission mission = getTableView().getItems().get(getIndex());
@@ -156,7 +280,7 @@ public class MissionListController implements Initializable {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(buttons);
+                    setGraphic(deleteBtn);
                 }
             }
         });
@@ -164,96 +288,87 @@ public class MissionListController implements Initializable {
         missionTable.getColumns().add(actionsCol);
     }
 
-    private void setSimpleCellFactories() {
-        // ID Column is removed - no longer needed
+    private void styleStatsCards() {
+        // Style for stats values
+        String statsValueStyle =
+                "-fx-font-size: 32px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: #5b21b6;"; // Deep purple
 
-        // Description Column
-        descriptionColumn.setCellFactory(col -> new TableCell<Mission, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    // Show first 100 characters
-                    String displayText = item.length() > 100 ? item.substring(0, 100) + "..." : item;
-                    setText(displayText);
+        // Style for stats labels
+        String statsLabelStyle =
+                "-fx-font-size: 14px;" +
+                        "-fx-text-fill: #6b7280;";
 
-                    // Tooltip with full description
-                    if (item.length() > 100) {
-                        Tooltip tooltip = new Tooltip(item);
-                        tooltip.setStyle("-fx-font-size: 12px;");
-                        setTooltip(tooltip);
-                    }
+        lblTotalMissions.setStyle(statsValueStyle);
+        lblAvgScore.setStyle(statsValueStyle);
+        lblActiveMissions.setStyle(statsValueStyle);
 
-                    setStyle("-fx-text-fill: black; -fx-alignment: CENTER_LEFT;");
-                }
+        // Style stats cards
+        Platform.runLater(() -> {
+            if (statsCard1 != null) {
+                statsCard1.setStyle(
+                        "-fx-background-color: white;" +
+                                "-fx-background-radius: 16;" +
+                                "-fx-padding: 20;" +
+                                "-fx-effect: dropshadow(gaussian, rgba(91, 33, 182, 0.08), 20, 0, 0, 4);" +
+                                "-fx-border-color: #f3e8ff;" +
+                                "-fx-border-radius: 16;" +
+                                "-fx-border-width: 1;"
+                );
             }
-        });
-
-        // Score Column
-        scoreColumn.setCellFactory(col -> new TableCell<Mission, Integer>() {
-            @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(item + "%");
-
-                    // Color based on score
-                    String color;
-                    if (item >= 80) {
-                        color = "#10b981";
-                    } else if (item >= 60) {
-                        color = "#f59e0b";
-                    } else {
-                        color = "#ef4444";
-                    }
-
-                    setStyle("-fx-text-fill: " + color + "; -fx-alignment: CENTER; -fx-font-weight: bold;");
-                }
+            if (statsCard2 != null) {
+                statsCard2.setStyle(
+                        "-fx-background-color: white;" +
+                                "-fx-background-radius: 16;" +
+                                "-fx-padding: 20;" +
+                                "-fx-effect: dropshadow(gaussian, rgba(91, 33, 182, 0.08), 20, 0, 0, 4);" +
+                                "-fx-border-color: #f3e8ff;" +
+                                "-fx-border-radius: 16;" +
+                                "-fx-border-width: 1;"
+                );
             }
-        });
-
-        // Creator Column
-        creatorColumn.setCellFactory(col -> new TableCell<Mission, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(item);
-                    setStyle("-fx-text-fill: #3b82f6; -fx-alignment: CENTER; -fx-font-weight: bold;");
-                }
-            }
-        });
-
-        // Date Column
-        dateColumn.setCellFactory(col -> new TableCell<Mission, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(item);
-                    setStyle("-fx-text-fill: #6b7280; -fx-alignment: CENTER; -fx-font-weight: bold;");
-                }
+            if (statsCard3 != null) {
+                statsCard3.setStyle(
+                        "-fx-background-color: white;" +
+                                "-fx-background-radius: 16;" +
+                                "-fx-padding: 20;" +
+                                "-fx-effect: dropshadow(gaussian, rgba(91, 33, 182, 0.08), 20, 0, 0, 4);" +
+                                "-fx-border-color: #f3e8ff;" +
+                                "-fx-border-radius: 16;" +
+                                "-fx-border-width: 1;"
+                );
             }
         });
     }
 
-    private void forceBlackText() {
-        // Force black text on all existing cells
-        missionTable.refresh();
+    private void applyModernStyling() {
+        // Modern table styling with purple theme
+        missionTable.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-border-color: #f3e8ff;" +
+                        "-fx-border-radius: 16;" +
+                        "-fx-background-radius: 16;" +
+                        "-fx-padding: 0;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(91, 33, 182, 0.05), 20, 0, 0, 4);"
+        );
 
-        // Also style the table rows
+        // Style headers with purple gradient
+        String headerStyle =
+                "-fx-background-color: linear-gradient(to right, #faf5ff, #f3e8ff);" +
+                        "-fx-text-fill: #5b21b6;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-font-size: 14px;" +
+                        "-fx-padding: 15px 10px;" +
+                        "-fx-border-color: transparent transparent #f3e8ff transparent;" +
+                        "-fx-border-width: 0 0 2 0;";
+
+        descriptionColumn.setStyle(headerStyle);
+        scoreColumn.setStyle(headerStyle);
+        creatorColumn.setStyle(headerStyle);
+        dateColumn.setStyle(headerStyle);
+
+        // Style the table rows
         missionTable.setRowFactory(tv -> {
             TableRow<Mission> row = new TableRow<Mission>() {
                 @Override
@@ -261,18 +376,44 @@ public class MissionListController implements Initializable {
                     super.updateItem(item, empty);
                     if (empty || item == null) {
                         setStyle("");
+                        setTooltip(null);
                     } else {
-                        // Alternate row colors for better readability
-                        if (getIndex() % 2 == 0) {
-                            setStyle("-fx-background-color: white;");
-                        } else {
-                            setStyle("-fx-background-color: #f8f9fa;");
-                        }
+                        // Clean white background with subtle hover effect
+                        String baseStyle = "-fx-background-color: white; -fx-border-color: transparent;";
+                        String hoverStyle = "-fx-background-color: #faf5ff; -fx-border-color: #f3e8ff; -fx-border-width: 0 0 1 0;";
+
+                        setStyle(baseStyle);
+
+                        // Add hover effect
+                        setOnMouseEntered(e -> setStyle(hoverStyle));
+                        setOnMouseExited(e -> setStyle(baseStyle));
+
+                        // Tooltip with mission summary AND full description
+                        String description = item.getDescription();
+
+                        Tooltip tip = new Tooltip(
+                                "🎯 Mission #" + item.getId() + "\n\n" +
+                                        "📝 Description:\n" + description + "\n\n" +
+                                        "📊 Min Score: " + item.getScore_min() + "%\n" +
+                                        "👤 Created by: User #" + item.getCreated_by_id() + "\n" +
+                                        "📅 Created: " + (item.getCreated_at() != null ?
+                                        item.getCreated_at().format(dateFormatter) : "N/A")
+                        );
+                        tip.setStyle(
+                                "-fx-background-color: #5b21b6;" +
+                                        "-fx-text-fill: white;" +
+                                        "-fx-font-size: 12px;" +
+                                        "-fx-padding: 12;" +
+                                        "-fx-background-radius: 8;" +
+                                        "-fx-wrap-text: true;" +
+                                        "-fx-max-width: 500px;"
+                        );
+                        setTooltip(tip);
                     }
                 }
             };
 
-            // Double click handler
+            // Double click for submission
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Mission selectedMission = row.getItem();
@@ -282,6 +423,54 @@ public class MissionListController implements Initializable {
 
             return row;
         });
+
+        missionTable.refresh();
+    }
+
+    private void updateMission(Mission mission) {
+        try {
+            missionService.update(mission);
+            showQuickSuccess();
+            calculateStats();
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Update Error",
+                    "Failed to update mission: " + e.getMessage());
+            loadMissions();
+        }
+    }
+
+    private void showQuickSuccess() {
+        Platform.runLater(() -> {
+            Label successLabel = new Label("✓ Saved");
+            successLabel.setStyle(
+                    "-fx-text-fill: #5b21b6;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-font-size: 12px;" +
+                            "-fx-padding: 4 12;" +
+                            "-fx-background-color: #f3e8ff;" +
+                            "-fx-background-radius: 20;"
+            );
+
+            int selectedIndex = missionTable.getSelectionModel().getSelectedIndex();
+            if (selectedIndex >= 0) {
+                TableRow<?> row = (TableRow<?>) missionTable.lookup(".table-row-cell:selected");
+                if (row != null) {
+                    HBox container = new HBox(successLabel);
+                    container.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+                    container.setPadding(new javafx.geometry.Insets(0, 15, 0, 0));
+                    row.setGraphic(container);
+
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(2000);
+                            Platform.runLater(() -> row.setGraphic(null));
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    }).start();
+                }
+            }
+        });
     }
 
     private void loadMissions() {
@@ -289,10 +478,7 @@ public class MissionListController implements Initializable {
             missionTable.setItems(
                     FXCollections.observableArrayList(missionService.read())
             );
-
-            // Calculate stats
             calculateStats();
-
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Load Error", e.getMessage());
             e.printStackTrace();
@@ -304,7 +490,6 @@ public class MissionListController implements Initializable {
             int total = missionTable.getItems().size();
             lblTotalMissions.setText(String.valueOf(total));
 
-            // Calculate average score
             if (total > 0) {
                 double avgScore = missionTable.getItems().stream()
                         .mapToInt(Mission::getScore_min)
@@ -315,7 +500,6 @@ public class MissionListController implements Initializable {
                 lblAvgScore.setText("0%");
             }
 
-            // Count active missions (score > 0)
             long active = missionTable.getItems().stream()
                     .filter(m -> m.getScore_min() > 0)
                     .count();
@@ -324,17 +508,6 @@ public class MissionListController implements Initializable {
         } catch (Exception e) {
             System.err.println("Error calculating stats: " + e.getMessage());
         }
-    }
-
-    private void setupDoubleClickHandler() {
-        missionTable.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
-                Mission selected = missionTable.getSelectionModel().getSelectedItem();
-                if (selected != null) {
-                    navigateToRenduAdd(selected);
-                }
-            }
-        });
     }
 
     private void navigateToRenduAdd(Mission mission) {
@@ -347,15 +520,26 @@ public class MissionListController implements Initializable {
         }
     }
 
-    /**
-     * Delete mission (called from Actions column)
-     */
     private void deleteMission(Mission selected) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirm Deletion");
         confirm.setHeaderText("Delete Mission");
         confirm.setContentText("Are you sure you want to delete this mission?\n\nDescription: " +
                 selected.getDescription() + "\nThis action cannot be undone.");
+
+        // Style the confirmation dialog
+        DialogPane dialogPane = confirm.getDialogPane();
+        dialogPane.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-background-radius: 16;" +
+                        "-fx-border-color: #f3e8ff;" +
+                        "-fx-border-radius: 16;"
+        );
+
+        ButtonBar buttonBar = (ButtonBar) dialogPane.lookup(".button-bar");
+        if (buttonBar != null) {
+            buttonBar.setStyle("-fx-padding: 15;");
+        }
 
         if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
             try {
@@ -369,18 +553,21 @@ public class MissionListController implements Initializable {
         }
     }
 
-    /**
-     * Edit mission (called from Actions column)
-     */
-    private void editMission(Mission selected) {
-        MissionShellController.getInstance().showEditMission(selected);
-    }
-
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-        alert.show();
+
+        // Style the alert
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-background-radius: 16;" +
+                        "-fx-border-color: #f3e8ff;" +
+                        "-fx-border-radius: 16;"
+        );
+
+        alert.showAndWait();
     }
 }
