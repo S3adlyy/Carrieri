@@ -10,11 +10,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.util.converter.IntegerStringConverter;
 import services.MissionService;
 
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
@@ -48,7 +50,10 @@ public class MissionListController implements Initializable {
         styleStatsCards();
 
         // Force apply styling after table is populated
-        Platform.runLater(this::applyModernStyling);
+        Platform.runLater(() -> {
+            applyModernStyling();
+            setupKeyboardShortcuts();
+        });
     }
 
     private void configureTable() {
@@ -85,7 +90,7 @@ public class MissionListController implements Initializable {
         // Make columns editable
         missionTable.setEditable(true);
 
-        // === DESCRIPTION COLUMN - EDITABLE (FIXED) ===
+        // === DESCRIPTION COLUMN - EDITABLE ===
         descriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         descriptionColumn.setOnEditCommit(event -> {
             Mission mission = event.getRowValue();
@@ -107,7 +112,7 @@ public class MissionListController implements Initializable {
                         Label scoreBadge = new Label(item + "%");
                         scoreBadge.setStyle(getScoreStyle(item));
                         scoreBadge.setPrefWidth(60);
-                        scoreBadge.setAlignment(javafx.geometry.Pos.CENTER);
+                        scoreBadge.setAlignment(Pos.CENTER);
                         setGraphic(scoreBadge);
                         setText(null);
                     }
@@ -171,7 +176,7 @@ public class MissionListController implements Initializable {
             }
         });
 
-        // === DATE COLUMN - DISPLAY ONLY (NON-EDITABLE) ===
+        // === DATE COLUMN - DISPLAY ONLY ===
         dateColumn.setCellFactory(column -> new TableCell<Mission, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -211,13 +216,77 @@ public class MissionListController implements Initializable {
     }
 
     /**
-     * Add Actions column with modern styling
+     * Add Actions column with modern styling and refresh button in header
      */
     private void addActionsColumn() {
         TableColumn<Mission, Void> actionsCol = new TableColumn<>("Actions");
-        actionsCol.setPrefWidth(100);
+        actionsCol.setPrefWidth(140);
         actionsCol.setStyle("-fx-alignment: CENTER;");
 
+        // Create header with refresh button
+        HBox headerBox = new HBox(8);
+        headerBox.setAlignment(Pos.CENTER);
+
+        Label headerIcon = new Label("⚙️");
+        headerIcon.setStyle("-fx-font-size: 14px;");
+
+        Button refreshBtn = new Button("🔄");
+        refreshBtn.setStyle(
+                "-fx-background-color: transparent;" +
+                        "-fx-text-fill: #5b21b6;" +
+                        "-fx-font-size: 14px;" +
+                        "-fx-padding: 2 6;" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        // Tooltip for refresh button
+        Tooltip refreshTooltip = new Tooltip("Refresh table (Ctrl+R)");
+        refreshTooltip.setStyle(
+                "-fx-background-color: #5b21b6;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-size: 11px;" +
+                        "-fx-padding: 6;" +
+                        "-fx-background-radius: 6;"
+        );
+        refreshBtn.setTooltip(refreshTooltip);
+
+        // Hover effect for refresh button
+        refreshBtn.setOnMouseEntered(e ->
+                refreshBtn.setStyle(
+                        "-fx-background-color: #f3e8ff;" +
+                                "-fx-text-fill: #5b21b6;" +
+                                "-fx-font-size: 14px;" +
+                                "-fx-padding: 2 6;" +
+                                "-fx-background-radius: 12;" +
+                                "-fx-cursor: hand;" +
+                                "-fx-font-weight: bold;"
+                )
+        );
+
+        refreshBtn.setOnMouseExited(e ->
+                refreshBtn.setStyle(
+                        "-fx-background-color: transparent;" +
+                                "-fx-text-fill: #5b21b6;" +
+                                "-fx-font-size: 14px;" +
+                                "-fx-padding: 2 6;" +
+                                "-fx-background-radius: 12;" +
+                                "-fx-cursor: hand;" +
+                                "-fx-font-weight: bold;"
+                )
+        );
+
+        // Refresh action
+        refreshBtn.setOnAction(e -> {
+            loadMissions();
+            showRefreshSuccess();
+        });
+
+        headerBox.getChildren().addAll(headerIcon, refreshBtn);
+        actionsCol.setGraphic(headerBox);
+
+        // Cell factory for delete button
         actionsCol.setCellFactory(col -> new TableCell<Mission, Void>() {
             private final Button deleteBtn = new Button("🗑️");
 
@@ -286,6 +355,63 @@ public class MissionListController implements Initializable {
         });
 
         missionTable.getColumns().add(actionsCol);
+    }
+
+    /**
+     * Show refresh success indicator
+     */
+    private void showRefreshSuccess() {
+        Platform.runLater(() -> {
+            Label refreshLabel = new Label("✓ Refreshed");
+            refreshLabel.setStyle(
+                    "-fx-text-fill: #5b21b6;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-font-size: 12px;" +
+                            "-fx-padding: 4 12;" +
+                            "-fx-background-color: #f3e8ff;" +
+                            "-fx-background-radius: 20;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(91, 33, 182, 0.1), 8, 0, 0, 2);"
+            );
+
+            // Show at the top of the table
+            HBox container = new HBox(refreshLabel);
+            container.setAlignment(Pos.CENTER);
+            container.setPadding(new Insets(10, 0, 0, 0));
+
+            // Add to table header area
+            StackPane header = (StackPane) missionTable.lookup(".column-header-background");
+            if (header != null) {
+                header.getChildren().add(container);
+
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(2000);
+                        Platform.runLater(() -> {
+                            if (header.getChildren().contains(container)) {
+                                header.getChildren().remove(container);
+                            }
+                        });
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }).start();
+            }
+        });
+    }
+
+    /**
+     * Setup keyboard shortcuts
+     */
+    private void setupKeyboardShortcuts() {
+        if (missionTable.getScene() != null) {
+            missionTable.getScene().setOnKeyPressed(event -> {
+                if (event.isControlDown() && event.getCode().toString().equals("R")) {
+                    loadMissions();
+                    showRefreshSuccess();
+                    event.consume();
+                }
+            });
+        }
     }
 
     private void styleStatsCards() {
@@ -456,8 +582,8 @@ public class MissionListController implements Initializable {
                 TableRow<?> row = (TableRow<?>) missionTable.lookup(".table-row-cell:selected");
                 if (row != null) {
                     HBox container = new HBox(successLabel);
-                    container.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
-                    container.setPadding(new javafx.geometry.Insets(0, 15, 0, 0));
+                    container.setAlignment(Pos.CENTER_RIGHT);
+                    container.setPadding(new Insets(0, 15, 0, 0));
                     row.setGraphic(container);
 
                     new Thread(() -> {
