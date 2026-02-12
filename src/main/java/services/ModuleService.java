@@ -144,4 +144,27 @@ public class ModuleService implements IModuleService {  // ← AJOUTER implement
         }
         return list;
     }
+    // Dans ModuleService.java, ajoutez cette méthode :
+
+    public Module getModuleById(int id) {
+        String sql = "SELECT * FROM module WHERE id = ?";
+        try {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Module(
+                        rs.getInt("id"),
+                        rs.getString("titre"),
+                        rs.getString("description"),
+                        rs.getInt("ordre"),
+                        rs.getInt("cours_id")
+                );
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur getModuleById: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

@@ -28,7 +28,6 @@
 
             <Button fx:id="btnTerminer"
                     text="Terminer la leçon"
-                    onAction="#terminerLecon"
                     visible="false"/>
             <Label fx:id="lblStatus"/>
         </VBox>

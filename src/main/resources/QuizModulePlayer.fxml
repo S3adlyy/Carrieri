@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" alignment="TOP_CENTER"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="main.QuizModulePlayerController"
+      style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 10;">
+
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <Label fx:id="lblTitre" text="QUIZ DU MODULE"
+           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #5E548E;"/>
+
+    <Separator/>
+
+    <!-- Zone de question -->
+    <VBox spacing="15">
+        <Label fx:id="lblQuestion"
+               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"
+               wrapText="true"/>
+
+        <Label fx:id="lblPoints" text="Points: 1"
+               style="-fx-text-fill: #27ae60; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+    </VBox>
+
+    <!-- Zone des réponses (RadioButtons) -->
+    <VBox fx:id="boxReponses" spacing="12">
+        <!-- Les RadioButtons seront ajoutés dynamiquement -->
+    </VBox>
+
+    <!-- Boutons de navigation -->
+    <HBox spacing="15" alignment="CENTER">
+        <Button fx:id="btnPrecedent" text="◀ Précédent"
+                onAction="#questionPrecedente"
+                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 5;"/>
+
+        <Button fx:id="btnSuivant" text="Suivant ▶"
+                onAction="#questionSuivante"
+                style="-fx-background-color: #5E548E; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 5;"/>
+
+        <Button fx:id="btnTerminer" text="✅ TERMINER LE QUIZ"
+                onAction="#terminerQuiz"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 5;"
+                visible="false"/>
+    </HBox>
+
+    <!-- Barre de progression -->
+    <HBox spacing="10" alignment="CENTER">
+        <Label fx:id="lblProgression" text="Question 1/10"
+               style="-fx-text-fill: #34495e; -fx-font-size: 14px;"/>
+        <ProgressBar fx:id="progressBar" prefWidth="300"/>
+    </HBox>
+
+    <!-- Zone de résultat (cachée au début) -->
+    <VBox fx:id="boxResultat" spacing="15" visible="false"
+          style="-fx-background-color: #f8f9fa; -fx-padding: 25; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #e0e0e0;">
+
+        <Label fx:id="lblScore"
+               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+        <Label fx:id="lblMessage"
+               style="-fx-font-size: 16px; -fx-text-alignment: center;"
+               wrapText="true"/>
+
+        <Button text="✅ FERMER" onAction="#fermer"
+                style="-fx-background-color: #5E548E; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 30; -fx-background-radius: 5;"/>
+    </VBox>
+
+</VBox>

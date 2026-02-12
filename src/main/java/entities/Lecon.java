@@ -4,61 +4,49 @@ public class Lecon {
     private int id;
     private String titre;
     private String contenu;
-    private String videoUrl;
+    private byte[] video;        // ✅ LONGBLOB - pas de changement !
     private int ordre;
     private int moduleId;
-    private String type; // LECON, QUIZ, EXAM
+    private String type;
 
-    public String getType() {
-        return type;
-    }
-
-    public void setTitre(String titre) {
-        this.titre = titre;
-    }
-
-    public void setContenu(String contenu) {
-        this.contenu = contenu;
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
-    }
-
-    public void setOrdre(int ordre) {
-        this.ordre = ordre;
-    }
-
-    public void setModuleId(int moduleId) {
-        this.moduleId = moduleId;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Lecon(String titre, String contenu, String videoUrl, int ordre, int moduleId) {
+    // Constructeur sans ID (pour ajout)
+    public Lecon(String titre, String contenu, byte[] video, int ordre, int moduleId) {
         this.titre = titre;
         this.contenu = contenu;
-        this.videoUrl = videoUrl;
+        this.video = video;
         this.ordre = ordre;
         this.moduleId = moduleId;
     }
 
-    public Lecon(int id, String titre, String contenu, String videoUrl, int ordre, int moduleId) {
+    // Constructeur avec ID (pour lecture)
+    public Lecon(int id, String titre, String contenu, byte[] video, int ordre, int moduleId) {
         this.id = id;
         this.titre = titre;
         this.contenu = contenu;
-        this.videoUrl = videoUrl;
+        this.video = video;
         this.ordre = ordre;
         this.moduleId = moduleId;
     }
 
+    // Getters et Setters
     public int getId() { return id; }
-    public String getTitre() { return titre; }
-    public String getContenu() { return contenu; }
-    public String getVideoUrl() { return videoUrl; }
-    public int getOrdre() { return ordre; }
-    public int getModuleId() { return moduleId; }
-}
+    public void setId(int id) { this.id = id; }
 
+    public String getTitre() { return titre; }
+    public void setTitre(String titre) { this.titre = titre; }
+
+    public String getContenu() { return contenu; }
+    public void setContenu(String contenu) { this.contenu = contenu; }
+
+    public byte[] getVideo() { return video; }
+    public void setVideo(byte[] video) { this.video = video; }
+
+    public int getOrdre() { return ordre; }
+    public void setOrdre(int ordre) { this.ordre = ordre; }
+
+    public int getModuleId() { return moduleId; }
+    public void setModuleId(int moduleId) { this.moduleId = moduleId; }
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+}

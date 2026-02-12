@@ -1,24 +1,29 @@
 package main;
 
-import entities.Cours;
-import entities.Lecon;
+import entities.*;
 import entities.Module;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import services.LeconService;
-import services.ModuleService;
-import services.ProgressionCoursService;
-import services.ProgressionLeconService;
+import javafx.stage.Stage;
+import services.*;
 
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 public class CoursPlayerController {
 
@@ -31,10 +36,14 @@ public class CoursPlayerController {
     @FXML private Button btnTerminer;
     @FXML private Label lblStatus;
 
+    // SERVICES
     private ModuleService moduleService = new ModuleService();
     private LeconService leconService = new LeconService();
     private ProgressionLeconService progressionLeconService = new ProgressionLeconService();
     private ProgressionCoursService progressionCoursService = new ProgressionCoursService();
+    private QuizModuleService quizModuleService = new QuizModuleService();
+    private TestCoursService testCoursService = new TestCoursService();
+    private CertificationService certificationService = new CertificationService();
 
     private Cours coursActuel;
     private Lecon leconCourante;
@@ -43,30 +52,24 @@ public class CoursPlayerController {
     private Timer scrollCheckTimer;
     private WebEngine webEngine;
 
+    // ============================================
+    // INITIALISATION
+    // ============================================
+
     @FXML
     private void initialize() {
         System.out.println("DEBUG: CoursPlayerController initialisé");
         btnTerminer.setOnAction(e -> terminerLecon());
-
-        // Configurer le WebView
         configurerWebView();
     }
 
     private void configurerWebView() {
         webEngine = webViewContenu.getEngine();
-
-        // Activer JavaScript
         webEngine.setJavaScriptEnabled(true);
-
-        // Redimensionner dynamiquement le WebView
         setupDynamicWebViewHeight();
-
-        // Démarrer la vérification du scroll
-        demarrerVerificationScroll();
     }
 
     private void setupDynamicWebViewHeight() {
-        // Quand le contenu est chargé, ajuster la hauteur
         webEngine.getLoadWorker().stateProperty().addListener(
                 (ChangeListener<Worker.State>) (observable, oldValue, newValue) -> {
                     if (newValue == Worker.State.SUCCEEDED) {
@@ -80,7 +83,6 @@ public class CoursPlayerController {
     private void ajusterHauteurWebView() {
         Platform.runLater(() -> {
             try {
-                // Obtenir la hauteur réelle du contenu
                 Object result = webEngine.executeScript(
                         "(function() {" +
                                 "    var body = document.body;" +
@@ -94,12 +96,8 @@ public class CoursPlayerController {
 
                 if (result instanceof Number) {
                     int hauteur = ((Number) result).intValue();
-                    System.out.println("Hauteur contenu: " + hauteur + "px");
-
-                    // Ajuster la hauteur du WebView (limiter à 1500px max)
                     int hauteurFinale = Math.min(1500, Math.max(400, hauteur + 50));
                     webViewContenu.setPrefHeight(hauteurFinale);
-                    System.out.println("Hauteur WebView ajustée: " + hauteurFinale + "px");
                 }
             } catch (Exception e) {
                 System.out.println("Erreur ajustement hauteur: " + e.getMessage());
@@ -109,16 +107,18 @@ public class CoursPlayerController {
 
     public void setCours(Cours cours) {
         this.coursActuel = cours;
-        System.out.println("DEBUG: Cours défini - ID=" + cours.getId() + ", Titre=" + cours.getTitre());
         lblCoursTitre.setText(cours.getTitre());
         chargerModules();
         mettreAJourProgression();
     }
 
+    // ============================================
+    // CHARGEMENT DES MODULES ET LEÇONS
+    // ============================================
+
     private void chargerModules() {
         boxModules.getChildren().clear();
         List<Module> modules = moduleService.getModulesByCours(coursActuel.getId());
-        System.out.println("DEBUG: " + modules.size() + " modules chargés");
 
         for (Module module : modules) {
             Label moduleLabel = new Label("Module " + module.getOrdre() + " : " + module.getTitre());
@@ -126,11 +126,8 @@ public class CoursPlayerController {
             boxModules.getChildren().add(moduleLabel);
 
             List<Lecon> lecons = leconService.getLeconsByModule(module.getId());
-            System.out.println("DEBUG: Module " + module.getId() + " a " + lecons.size() + " leçons");
-
             for (Lecon lecon : lecons) {
                 String texteBouton = "   " + module.getOrdre() + "." + lecon.getOrdre() + " " + lecon.getTitre();
-
                 if (progressionLeconService.isLeconTerminee(candidatId, lecon.getId())) {
                     texteBouton += " ✓";
                 }
@@ -142,28 +139,271 @@ public class CoursPlayerController {
                     Lecon l = (Lecon) btnLecon.getUserData();
                     afficherLecon(l);
                 });
-
                 boxModules.getChildren().add(btnLecon);
+            }
+
+            verifierQuizModule(module);
+        }
+
+        verifierEtatCours();
+    }
+
+    // ============================================
+    // GESTION DES QUIZ DE MODULE
+    // ============================================
+
+    private void verifierQuizModule(Module module) {
+        boolean toutesLeconsTerminees = isAllLeconsTerminees(module.getId());
+
+        if (toutesLeconsTerminees) {
+            boolean quizReussi = quizModuleService.isModuleReussi(candidatId, module.getId());
+
+            if (!quizReussi) {
+                Button btnQuiz = new Button("   📝 PASSER LE QUIZ DU MODULE");
+                btnQuiz.setMaxWidth(Double.MAX_VALUE);
+                btnQuiz.setStyle("-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-weight: bold;");
+                btnQuiz.setUserData(module);
+                btnQuiz.setOnAction(e -> {
+                    Module m = (Module) btnQuiz.getUserData();
+                    lancerQuizModule(m.getId(), m.getTitre());
+                });
+                boxModules.getChildren().add(btnQuiz);
+            } else {
+                Label lblQuizReussi = new Label("   ✅ Quiz du module réussi");
+                lblQuizReussi.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
+                boxModules.getChildren().add(lblQuizReussi);
             }
         }
     }
 
-    private void afficherLecon(Lecon lecon) {
-        // Arrêter le timer précédent
-        arreterVerificationScroll();
+    private boolean isAllLeconsTerminees(int moduleId) {
+        List<Lecon> lecons = leconService.getLeconsByModule(moduleId);
+        for (Lecon l : lecons) {
+            if (!progressionLeconService.isLeconTerminee(candidatId, l.getId())) {
+                return false;
+            }
+        }
+        return true;
+    }
 
+    private void lancerQuizModule(int moduleId, String titreModule) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/QuizModulePlayer.fxml"));
+            Parent root = loader.load();
+            QuizModulePlayerController controller = loader.getController();
+            controller.setModuleId(moduleId, candidatId);
+            Stage stage = new Stage();
+            stage.setTitle("Quiz - " + titreModule);
+            stage.setScene(new Scene(root));
+            stage.setOnHiding(e -> {
+                chargerModules();
+                mettreAJourProgression();
+            });
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("❌ Erreur", "Impossible de lancer le quiz");
+        }
+    }
+
+    // ============================================
+    // GESTION DU TEST FINAL
+    // ============================================
+
+    private void verifierEtatCours() {
+        boolean tousModulesReussis = isAllModulesReussis(coursActuel.getId());
+
+        if (tousModulesReussis) {
+            boolean testReussi = testCoursService.isCoursReussi(candidatId, coursActuel.getId());
+
+            if (!testReussi) {
+                // Afficher bouton test final
+                Button btnTestFinal = new Button("   🎯 PASSER LE TEST FINAL DU COURS");
+                btnTestFinal.setMaxWidth(Double.MAX_VALUE);
+                btnTestFinal.setStyle("-fx-background-color: #E0B1CB; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
+                btnTestFinal.setOnAction(e -> lancerTestFinal());
+                boxModules.getChildren().add(btnTestFinal);
+
+                // ✅ Mettre à jour la progression pour montrer que le test manque
+                mettreAJourProgression();
+
+            } else {
+                afficherSuccesCours();
+            }
+        }
+    }
+
+    private void afficherSuccesCours() {
+        Label lblCoursReussi = new Label("   🎓 FÉLICITATIONS ! VOUS AVEZ RÉUSSI LE COURS !");
+        lblCoursReussi.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold; -fx-font-size: 14px;");
+        boxModules.getChildren().add(lblCoursReussi);
+        Button btnCertificat = new Button("   📄 GÉNÉRER MON CERTIFICAT");
+        btnCertificat.setMaxWidth(Double.MAX_VALUE);
+        btnCertificat.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;");
+        btnCertificat.setOnAction(e -> genererCertificat());
+        boxModules.getChildren().add(btnCertificat);
+    }
+
+    private boolean isAllModulesReussis(int coursId) {
+        List<Module> modules = moduleService.getModulesByCours(coursId);
+
+        for (Module m : modules) {
+            // ✅ Vérifier si le module a des questions
+            if (aDesQuestionsQuiz(m.getId())) {
+                if (!quizModuleService.isModuleReussi(candidatId, m.getId())) {
+                    return false;
+                }
+            }
+            // ✅ Si pas de questions, le module est automatiquement réussi
+        }
+        return true;
+    }
+
+    // ✅ Vérifier si un module a des questions de quiz
+    private boolean aDesQuestionsQuiz(int moduleId) {
+        List<QuestionQuiz> questions = quizModuleService.getQuestionsByModule(moduleId);
+        return questions != null && !questions.isEmpty();
+    }
+
+    private void lancerTestFinal() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/TestFinalPlayer.fxml"));
+            Parent root = loader.load();
+            TestFinalPlayerController controller = loader.getController();
+            controller.setCoursId(coursActuel.getId(), candidatId);
+            Stage stage = new Stage();
+            stage.setTitle("Test final - " + coursActuel.getTitre());
+            stage.setScene(new Scene(root));
+            stage.setOnHiding(e -> {
+                chargerModules();
+                mettreAJourProgression();
+                if (testCoursService.isCoursReussi(candidatId, coursActuel.getId())) {
+                    try {
+                        progressionCoursService.ajouterOuUpdate(candidatId, coursActuel.getId(), 100);
+                        mettreAJourProgression();
+                        showAlert("🎓 FÉLICITATIONS !",
+                                "Vous avez réussi le test final du cours !\n\n" +
+                                        "Vous pouvez maintenant générer votre certificat.");
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("❌ Erreur", "Impossible de lancer le test final");
+        }
+    }
+
+    // ============================================
+    // GESTION DU CERTIFICAT
+    // ============================================
+
+    // ============================================
+// GESTION DU CERTIFICAT - VERSION INVIOLABLE
+// ============================================
+
+    private void genererCertificat() {
+        System.out.println("\n🟡=== GÉNÉRATION CERTIFICAT - VERSION INVIOLABLE ===🟡");
+
+        // ✅ 1. Vérifier la progression (100%)
+        double progression = progressionLeconService.getProgressionCours(candidatId, coursActuel.getId());
+        if (progression < 99.9) {
+            showAlert("⛔ PROGRESSION INCOMPLÈTE",
+                    "Progression: " + String.format("%.0f%%", progression) + "\nTerminez toutes les leçons.");
+            return;
+        }
+
+        // ✅ 2. Vérifier CHAQUE module - MÊME SANS QUESTIONS !
+        List<Module> modules = moduleService.getModulesByCours(coursActuel.getId());
+        List<String> modulesNonReussis = new ArrayList<>();
+
+        System.out.println("\n📝 VÉRIFICATION MODULES:");
+
+        for (Module m : modules) {
+            // ✅ Vérification INDÉPENDANTE - toujours vérifier isModuleReussi()
+            boolean reussi = quizModuleService.isModuleReussi(candidatId, m.getId());
+            System.out.println("   Module " + m.getId() + " - " + m.getTitre() +
+                    " | Réussi: " + (reussi ? "✅" : "❌"));
+
+            if (!reussi) {
+                modulesNonReussis.add("Module " + m.getOrdre() + " - " + m.getTitre());
+            }
+        }
+
+        // ✅ 3. BLOQUER si des modules ne sont pas réussis
+        if (!modulesNonReussis.isEmpty()) {
+            String liste = String.join("\n• ", modulesNonReussis);
+            showAlert("⛔ MODULES NON RÉUSSIS",
+                    "Vous devez réussir CES modules :\n\n• " + liste);
+            return;
+        }
+        System.out.println("✅ Tous les modules sont réussis !");
+
+        // ✅ 4. Vérifier le test final - TOUJOURS vérifier !
+        boolean testReussi = testCoursService.isCoursReussi(candidatId, coursActuel.getId());
+        System.out.println("   Test final: " + (testReussi ? "✅" : "❌"));
+
+        if (!testReussi) {
+            showAlert("⛔ TEST FINAL NON RÉUSSI",
+                    "Vous devez réussir le test final (70%).");
+            return;
+        }
+
+        // ✅ 5. Vérifier le certificat existant
+        try {
+            Certification existing = certificationService.readByCoursAndCandidat(coursActuel.getId(), candidatId);
+            if (existing != null) {
+                String date = existing.getDateObtention()
+                        .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                showAlert("ℹ️ CERTIFICAT EXISTANT", "Certificat déjà généré le " + date);
+                return;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // ✅ 6. TOUT EST BON - Générer le certificat
+        try {
+            String nomCandidat = "Bilal Eter";
+            String date = java.time.LocalDate.now()
+                    .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
+            String chemin = "C:/Users/MSI/Desktop/certificat_" +
+                    coursActuel.getTitre().replace(" ", "_") + "_" + date + ".pdf";
+
+            certificationService.genererEtEnregistrer(
+                    nomCandidat, coursActuel.getTitre(), chemin, candidatId, coursActuel.getId());
+
+            showAlert("🎓 FÉLICITATIONS !",
+                    "Certificat généré avec succès !\n" + chemin +
+                            "\n\nFélicitations pour votre réussite ! 🎉");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("❌ ERREUR", e.getMessage());
+        }
+    }
+
+    // ============================================
+    // GESTION DES LEÇONS - SCROLL 100% FONCTIONNEL
+    // ============================================
+
+    private void afficherLecon(Lecon lecon) {
+        arreterVerificationScroll();
         this.leconCourante = lecon;
         this.dejaValidee = false;
 
-        System.out.println("DEBUG: Affichage leçon ID=" + lecon.getId() + ", Titre=" + lecon.getTitre());
-
         lblLeconTitre.setText(lecon.getTitre());
 
-        // Afficher le contenu dans le WebView avec hauteur adaptative
-        afficherContenuWebViewAdaptatif(lecon.getContenu());
-        lblStatus.setText("");
+        // ✅ Afficher le contenu (vidéo ou texte)
+        if (lecon.getVideo() != null && lecon.getVideo().length > 0) {
+            afficherVideoLocale(lecon);
+        } else {
+            afficherContenuWebViewAdaptatif(lecon.getContenu());
+        }
 
-        // Vérifier si déjà terminée
+        // ✅ Vérifier si déjà terminée
         if (progressionLeconService.isLeconTerminee(candidatId, lecon.getId())) {
             lblStatus.setText("✔ Déjà terminée");
             btnTerminer.setVisible(false);
@@ -171,188 +411,107 @@ public class CoursPlayerController {
         }
 
         String type = lecon.getType();
-        System.out.println("DEBUG: Type de leçon = " + type);
-
-        if (type != null && (type.equalsIgnoreCase("QUIZ") || type.equalsIgnoreCase("EXAM"))) {
+        if (type != null && type.equalsIgnoreCase("QUIZ")) {
             btnTerminer.setVisible(true);
-            btnTerminer.setText(type.equalsIgnoreCase("QUIZ") ? "Passer le Quiz" : "Passer l'Examen");
+            btnTerminer.setText("Passer le Quiz");
+            lblStatus.setText("📝 Cliquez sur le bouton pour passer le quiz");
         } else {
             btnTerminer.setVisible(false);
-            // Redémarrer la vérification pour cette leçon
+            lblStatus.setText("📖 Scrollez jusqu'en bas pour valider la leçon");
+            // ✅ Démarrer la détection de scroll
             demarrerVerificationScroll();
+            System.out.println("✅ Détection de scroll activée pour: " + lecon.getTitre());
         }
     }
 
-    private void afficherContenuWebViewAdaptatif(String contenu) {
-        // Analyser la longueur du contenu
-        int nombreMots = contenu.split("\\s+").length;
-        int nombreLignes = contenu.split("\n").length;
+    @FXML
+    private void terminerLecon() {
+        if (leconCourante == null) return;
 
-        // Calculer une hauteur estimée (20px par ligne, min 400px, max 2000px)
-        int hauteurEstimee = Math.min(2000, Math.max(400, nombreLignes * 25 + 100));
-
-        System.out.println("Contenu: " + nombreMots + " mots, " + nombreLignes + " lignes → " + hauteurEstimee + "px");
-
-        // Formater le contenu avec une hauteur flexible
-        String htmlContent = "<!DOCTYPE html>" +
-                "<html>" +
-                "<head>" +
-                "<meta charset=\"UTF-8\">" +
-                "<style>" +
-                "* {" +
-                "    margin: 0;" +
-                "    padding: 0;" +
-                "    box-sizing: border-box;" +
-                "}" +
-                "body {" +
-                "    font-family: 'Segoe UI', Arial, sans-serif;" +
-                "    font-size: 16px;" +
-                "    line-height: 1.8;" +
-                "    color: #333;" +
-                "    background-color: #f9f9f9;" +
-                "    min-height: " + hauteurEstimee + "px;" +
-                "    padding: 30px;" +
-                "}" +
-                ".content-container {" +
-                "    max-width: 900px;" +
-                "    margin: 0 auto;" +
-                "    background-color: white;" +
-                "    padding: 40px;" +
-                "    border-radius: 10px;" +
-                "    box-shadow: 0 2px 10px rgba(0,0,0,0.1);" +
-                "    min-height: " + (hauteurEstimee - 100) + "px;" +
-                "}" +
-                "h1 {" +
-                "    color: #2c3e50;" +
-                "    margin-bottom: 30px;" +
-                "    padding-bottom: 15px;" +
-                "    border-bottom: 2px solid #3498db;" +
-                "}" +
-                "p {" +
-                "    margin-bottom: 20px;" +
-                "    text-align: justify;" +
-                "}" +
-                ".chapter {" +
-                "    margin-top: 40px;" +
-                "    padding-top: 20px;" +
-                "    border-top: 1px dashed #ddd;" +
-                "}" +
-                ".chapter-title {" +
-                "    color: #3498db;" +
-                "    font-size: 1.3em;" +
-                "    margin-bottom: 15px;" +
-                "}" +
-                ".end-marker {" +
-                "    text-align: center;" +
-                "    color: #7f8c8d;" +
-                "    font-style: italic;" +
-                "    margin-top: 50px;" +
-                "    padding-top: 20px;" +
-                "    border-top: 3px solid #3498db;" +
-                "}" +
-                "</style>" +
-                "</head>" +
-                "<body>" +
-                "<div class=\"content-container\">" +
-                "<h1>" + lblLeconTitre.getText() + "</h1>" +
-                formatContenuPourHTMLAdaptatif(contenu) +
-                "<div class=\"end-marker\">" +
-                "★ Fin du contenu ★<br>" +
-                "<small>Vous avez atteint la fin de cette leçon</small>" +
-                "</div>" +
-                "</div>" +
-                "</body>" +
-                "</html>";
-
-        webEngine.loadContent(htmlContent);
-    }
-
-    private String formatContenuPourHTMLAdaptatif(String contenu) {
-        if (contenu == null || contenu.isEmpty()) {
-            return "<p>Aucun contenu disponible pour cette leçon.</p>";
-        }
-
-        StringBuilder html = new StringBuilder();
-        String[] paragraphes = contenu.split("\n\n");
-
-        int chapitreNum = 1;
-        for (String paragraphe : paragraphes) {
-            if (!paragraphe.trim().isEmpty()) {
-                // Si le paragraphe commence par un titre de chapitre
-                if (paragraphe.startsWith("Chapitre") || paragraphe.startsWith("CHAPITRE") ||
-                        paragraphe.startsWith("Partie") || paragraphe.startsWith("SECTION")) {
-                    html.append("<div class=\"chapter\">")
-                            .append("<div class=\"chapter-title\">")
-                            .append(paragraphe.replace("\n", "<br>"))
-                            .append("</div>")
-                            .append("</div>");
-                } else {
-                    html.append("<p>")
-                            .append(paragraphe.replace("\n", "<br>"))
-                            .append("</p>");
-                }
+        if (leconCourante.getType() != null && leconCourante.getType().equalsIgnoreCase("QUIZ")) {
+            System.out.println("🖱️ Lancement du quiz: " + leconCourante.getTitre());
+            Module module = moduleService.getModuleById(leconCourante.getModuleId());
+            if (module != null) {
+                lancerQuizModule(module.getId(), module.getTitre());
             }
         }
-
-        return html.toString();
     }
 
-    // =============================
-    // DÉTECTION DE SCROLL PRÉCISE
-    // =============================
-    private void injecterDetectionScroll() {
-        webEngine.executeScript(
-                "// Marqueur de fin de contenu\n" +
-                        "var endMarker = document.querySelector('.end-marker');\n" +
-                        "if (endMarker) {\n" +
-                        "    endMarker.id = 'end-of-content';\n" +
-                        "}\n" +
-                        "\n" +
-                        "// Fonction pour vérifier si la fin est visible\n" +
-                        "function isEndVisible() {\n" +
-                        "    var endElement = document.getElementById('end-of-content') || document.body;\n" +
-                        "    var rect = endElement.getBoundingClientRect();\n" +
-                        "    var windowHeight = window.innerHeight || document.documentElement.clientHeight;\n" +
-                        "    \n" +
-                        "    // L'élément est visible si sa partie supérieure est dans la fenêtre\n" +
-                        "    return rect.top >= 0 && rect.top <= windowHeight;\n" +
-                        "}\n" +
-                        "\n" +
-                        "// Détecter le scroll\n" +
-                        "var scrollTimeout;\n" +
-                        "window.addEventListener('scroll', function() {\n" +
-                        "    clearTimeout(scrollTimeout);\n" +
-                        "    scrollTimeout = setTimeout(function() {\n" +
-                        "        if (isEndVisible()) {\n" +
-                        "            document.title = 'END_VISIBLE';\n" +
-                        "        }\n" +
-                        "    }, 300); // Délai pour éviter les déclenchements multiples\n" +
-                        "});\n" +
-                        "\n" +
-                        "console.log('Scroll detection injected');"
-        );
+    // ✅ Garder cette méthode pour la compatibilité
+    private void marquerCommeTerminee() {
+        validerLecon();
+    }
 
-        // Écouter les changements de titre
-        webEngine.titleProperty().addListener((obs, oldTitle, newTitle) -> {
-            if ("END_VISIBLE".equals(newTitle) && !dejaValidee && leconCourante != null) {
+    private void validerLecon() {
+        if (leconCourante == null) {
+            System.out.println("❌ Erreur: leconCourante est null");
+            return;
+        }
+
+        // ✅ NE PAS vérifier dejaValidee ici - on vérifie directement la BD
+        // ✅ On enlève le if (dejaValidee) car il bloque l'appel à la BD
+
+        // ✅ Vérifier si déjà terminée en base
+        if (progressionLeconService.isLeconTerminee(candidatId, leconCourante.getId())) {
+            System.out.println("⚠️ Déjà terminée en base: " + leconCourante.getTitre());
+            dejaValidee = true;
+            mettreAJourBoutonLecon(leconCourante);
+            return;
+        }
+
+        System.out.println("🎯 VALIDATION - Leçon terminée: " + leconCourante.getTitre());
+
+        try {
+            // ✅ 1. Marquer comme terminée dans la base de données
+            progressionLeconService.marquerTerminee(candidatId, leconCourante.getId());
+            System.out.println("✅ Base de données mise à jour");
+
+            // ✅ 2. Vérifier que c'est bien enregistré
+            boolean estTerminee = progressionLeconService.isLeconTerminee(candidatId, leconCourante.getId());
+            System.out.println("✅ Vérification: leçon terminée = " + estTerminee);
+
+            if (estTerminee) {
+                // ✅ 3. Mettre à jour l'interface SEULEMENT si la BD a fonctionné
                 dejaValidee = true;
-                System.out.println("WEBVIEW: Fin du contenu visible - validation");
-                arreterVerificationScroll();
-                marquerCommeTerminee();
+                lblStatus.setText("✔ Terminée - Félicitations !");
+                btnTerminer.setVisible(false);
+
+                // ✅ 4. Mettre à jour la progression du cours
+                mettreAJourProgression();
+
+                // ✅ 5. Mettre à jour le bouton de la leçon (✓)
+                mettreAJourBoutonLecon(leconCourante);
+
+                // ✅ 6. Recharger les modules pour afficher les quiz
+                Platform.runLater(() -> {
+                    chargerModules();
+                });
+
+                System.out.println("✅ Leçon validée avec succès: " + leconCourante.getTitre());
+            } else {
+                System.err.println("❌ Échec de l'enregistrement en base");
             }
-        });
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors de la validation: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+
+
+    // ============================================
+    // DÉTECTION DE SCROLL - CORRIGÉE
+    // ============================================
 
     private void demarrerVerificationScroll() {
+        arreterVerificationScroll();
         scrollCheckTimer = new Timer(true);
         scrollCheckTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> {
-                    verifierPositionScrollPrecise();
-                });
+                Platform.runLater(() -> verifierPositionScroll());
             }
-        }, 2000, 1000); // Commencer après 2s, vérifier chaque seconde
+        }, 500, 200);
     }
 
     private void arreterVerificationScroll() {
@@ -362,110 +521,212 @@ public class CoursPlayerController {
         }
     }
 
-    private void verifierPositionScrollPrecise() {
-        if (dejaValidee || leconCourante == null) {
+    private void verifierPositionScroll() {
+        // ✅ Ne pas vérifier si pas de leçon
+        if (leconCourante == null) {
+            return;
+        }
+
+        // ✅ Ne pas vérifier pour les quiz
+        if (leconCourante.getType() != null && leconCourante.getType().equalsIgnoreCase("QUIZ")) {
+            return;
+        }
+
+        // ✅ Vérifier directement en base si déjà terminée
+        if (progressionLeconService.isLeconTerminee(candidatId, leconCourante.getId())) {
+            // ✅ Mettre à jour l'interface pour refléter l'état réel
+            Platform.runLater(() -> {
+                lblStatus.setText("✔ Déjà terminée");
+                btnTerminer.setVisible(false);
+                mettreAJourBoutonLecon(leconCourante);
+            });
+            dejaValidee = true;
+            arreterVerificationScroll();
             return;
         }
 
         try {
-            // Vérifier si la fin du contenu est visible
+            // ✅ Vérification du scroll
             Object result = webEngine.executeScript(
-                    "(function() {\n" +
-                            "    var body = document.body;\n" +
-                            "    var html = document.documentElement;\n" +
-                            "    \n" +
-                            "    var windowHeight = window.innerHeight || html.clientHeight;\n" +
-                            "    var scrollTop = window.pageYOffset || html.scrollTop;\n" +
-                            "    var scrollHeight = Math.max(body.scrollHeight, html.scrollHeight);\n" +
-                            "    \n" +
-                            "    // Distance du bas\n" +
-                            "    var distanceFromBottom = scrollHeight - (scrollTop + windowHeight);\n" +
-                            "    \n" +
-                            "    // Si on est à moins de 50px du bas\n" +
-                            "    return distanceFromBottom <= 50;\n" +
+                    "(function() {" +
+                            "    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;" +
+                            "    var windowHeight = window.innerHeight || document.documentElement.clientHeight;" +
+                            "    var documentHeight = Math.max(" +
+                            "        document.body.scrollHeight, document.body.offsetHeight," +
+                            "        document.documentElement.clientHeight, document.documentElement.scrollHeight," +
+                            "        document.documentElement.offsetHeight);" +
+                            "    return (scrollTop + windowHeight) >= documentHeight - 30;" +
                             "})()"
             );
 
-            if (result instanceof Boolean) {
-                boolean atBottom = (Boolean) result;
-
-                if (atBottom && !dejaValidee) {
-                    dejaValidee = true;
-                    System.out.println("VERIFICATION: Bas du contenu atteint");
-                    arreterVerificationScroll();
-                    marquerCommeTerminee();
-                }
+            if (result instanceof Boolean && (Boolean) result) {
+                System.out.println("📜 SCROLL DÉTECTÉ - Bas de page atteint pour: " + leconCourante.getTitre());
+                arreterVerificationScroll();
+                validerLecon(); // ✅ Appelle la méthode corrigée
             }
         } catch (Exception e) {
-            // JavaScript pas encore prêt
+            // Ignorer les erreurs JavaScript
         }
     }
 
-    private void marquerCommeTerminee() {
-        if (leconCourante == null) {
-            System.out.println("ERROR: leconCourante est null!");
-            return;
-        }
+    private void injecterDetectionScroll() {
+        // ✅ Marqueur de fin visible
+        webEngine.executeScript(
+                "console.log('✅ Détection de scroll injectée');"
+        );
+    }
 
-        System.out.println("=== MARQUER COMME TERMINÉE ===");
-        System.out.println("Candidat ID: " + candidatId);
-        System.out.println("Leçon ID: " + leconCourante.getId());
-        System.out.println("Leçon Titre: " + leconCourante.getTitre());
+    // ============================================
+    // AFFICHAGE VIDÉO - AVEC MARQUEUR DE FIN
+    // ============================================
 
+    private void afficherVideoLocale(Lecon lecon) {
+        File tempFile = null;
         try {
-            progressionLeconService.marquerTerminee(candidatId, leconCourante.getId());
+            tempFile = File.createTempFile("video_" + lecon.getId() + "_", ".mp4");
+            tempFile.deleteOnExit();
+            Files.write(tempFile.toPath(), lecon.getVideo());
 
-            boolean estTerminee = progressionLeconService.isLeconTerminee(candidatId, leconCourante.getId());
-            System.out.println("Vérification BD: leçon terminée = " + estTerminee);
+            String videoPath = tempFile.toURI().toString();
+            String contenu = lecon.getContenu();
 
-            lblStatus.setText("✔ Terminée");
-            btnTerminer.setVisible(false);
+            String html = "<!DOCTYPE html>" +
+                    "<html><head><meta charset='UTF-8'>" +
+                    "<style>" +
+                    "body { font-family: Arial; padding: 20px; background: #f9f9f9; }" +
+                    ".video-container { background: black; border-radius: 10px; overflow: hidden; margin-bottom: 30px; }" +
+                    "video { width: 100%; max-height: 400px; }" +
+                    ".content { background: white; padding: 30px; border-radius: 10px; }" +
+                    "h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }" +
+                    ".end-marker { " +
+                    "    text-align: center; " +
+                    "    color: #7f8c8d; " +
+                    "    margin-top: 40px; " +
+                    "    padding-top: 20px; " +
+                    "    border-top: 2px dashed #bdc3c7; " +
+                    "    font-weight: bold;" +
+                    "}" +
+                    "</style></head><body>" +
+                    "<div class='video-container'><video controls preload='auto'>" +
+                    "<source src='" + videoPath + "' type='video/mp4'></video></div>" +
+                    "<div class='content'><h2>" + lecon.getTitre() + "</h2>" +
+                    formatContenuPourHTMLAdaptatif(contenu) +
+                    "<div class='end-marker'>★ FIN DE LA LEÇON ★</div></div>" +
+                    "</body></html>";
 
-            mettreAJourProgression();
-            mettreAJourBoutonLecon(leconCourante);
+            webEngine.loadContent(html);
 
-        } catch (Exception e) {
-            System.out.println("ERROR: " + e.getMessage());
+        } catch (IOException e) {
             e.printStackTrace();
+            afficherContenuWebViewAdaptatif(lecon.getContenu());
         }
     }
+
+    // ============================================
+    // AFFICHAGE TEXTE - AVEC MARQUEUR DE FIN
+    // ============================================
+
+    private void afficherContenuWebViewAdaptatif(String contenu) {
+        int nombreLignes = contenu.split("\n").length;
+        int hauteurEstimee = Math.min(2000, Math.max(400, nombreLignes * 25 + 100));
+
+        String htmlContent = "<!DOCTYPE html>" +
+                "<html><head><meta charset='UTF-8'>" +
+                "<style>" +
+                "body { font-family: 'Segoe UI'; font-size: 16px; line-height: 1.8; padding: 30px; background: #f9f9f9; }" +
+                ".container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; }" +
+                "h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 15px; }" +
+                "p { margin-bottom: 20px; text-align: justify; }" +
+                ".end-marker { " +
+                "    text-align: center; " +
+                "    color: #7f8c8d; " +
+                "    margin-top: 50px; " +
+                "    padding-top: 20px; " +
+                "    border-top: 3px solid #3498db; " +
+                "    font-size: 18px;" +
+                "    font-weight: bold;" +
+                "}" +
+                "</style></head><body>" +
+                "<div class='container'>" +
+                "<h1>" + lblLeconTitre.getText() + "</h1>" +
+                formatContenuPourHTMLAdaptatif(contenu) +
+                "<div class='end-marker'>★ FIN DE LA LEÇON ★</div>" +
+                "</div></body></html>";
+
+        webEngine.loadContent(htmlContent);
+    }
+
+    private String formatContenuPourHTMLAdaptatif(String contenu) {
+        if (contenu == null || contenu.isEmpty()) {
+            return "<p>Aucun contenu disponible.</p>";
+        }
+
+        StringBuilder html = new StringBuilder();
+        String[] paragraphes = contenu.split("\n\n");
+
+        for (String p : paragraphes) {
+            if (!p.trim().isEmpty()) {
+                if (p.startsWith("Chapitre") || p.startsWith("CHAPITRE") || p.startsWith("Partie")) {
+                    html.append("<div class='chapter'><div class='chapter-title'>")
+                            .append(p.replace("\n", "<br>"))
+                            .append("</div></div>");
+                } else {
+                    html.append("<p>").append(p.replace("\n", "<br>")).append("</p>");
+                }
+            }
+        }
+        return html.toString();
+    }
+
+    // ============================================
+    // PROGRESSION
+    // ============================================
 
     private void mettreAJourBoutonLecon(Lecon lecon) {
         for (javafx.scene.Node node : boxModules.getChildren()) {
             if (node instanceof Button) {
                 Button btn = (Button) node;
-                if (btn.getUserData() == lecon) {
-                    if (!btn.getText().contains("✓")) {
-                        btn.setText(btn.getText() + " ✓");
-                        System.out.println("DEBUG: Bouton mis à jour avec ✓");
-                    }
+                if (btn.getUserData() == lecon && !btn.getText().contains("✓")) {
+                    btn.setText(btn.getText() + " ✓");
                     break;
                 }
             }
         }
     }
 
-    @FXML
-    private void terminerLecon() {
-        System.out.println("DEBUG: Bouton Terminer cliqué");
-        marquerCommeTerminee();
-    }
-
     private void mettreAJourProgression() {
-        System.out.println("=== MISE À JOUR PROGRESSION ===");
-
+        // ✅ Utiliser la nouvelle méthode qui inclut quiz et test
         double prog = progressionLeconService.getProgressionCours(candidatId, coursActuel.getId());
-        System.out.println("DEBUG: Progression calculée = " + prog + "%");
 
         progressBar.setProgress(prog / 100);
         lblProgression.setText(String.format("%.0f%%", prog));
 
         try {
             progressionCoursService.ajouterOuUpdate(candidatId, coursActuel.getId(), (int) prog);
-            System.out.println("DEBUG: Progression enregistrée en BD");
+            System.out.println("📊 Progression enregistrée: " + prog + "%");
         } catch (Exception e) {
-            System.out.println("ERROR lors de l'enregistrement: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+
+    // ============================================
+    // UTILITAIRES
+    // ============================================
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

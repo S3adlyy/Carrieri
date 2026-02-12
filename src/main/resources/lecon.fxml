@@ -22,14 +22,24 @@
 
     <Separator/>
 
-    <!-- Formulaire -->
+    <!-- Formulaire d'ajout -->
     <VBox spacing="10">
-        <Label text="Leçon" style="-fx-font-weight: bold;"/>
+        <Label text="Ajouter une leçon" style="-fx-font-weight: bold;"/>
 
         <ComboBox fx:id="comboModules" promptText="Sélectionner un module"/>
 
         <TextField fx:id="txtTitre" promptText="Titre de la leçon"/>
         <TextArea fx:id="txtContenu" promptText="Contenu" prefRowCount="3"/>
+
+        <!-- ✅ SECTION VIDÉO SIMPLE - SANS COMPRESSION -->
+        <Label text="Vidéo (optionnelle)" style="-fx-font-weight: bold; -fx-text-fill: #5E548E;"/>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Button fx:id="btnChoisirVideo" text="🎬 Choisir une vidéo MP4"
+                    style="-fx-background-color: #5E548E; -fx-text-fill: white; -fx-background-radius: 5; -fx-padding: 8 15;"/>
+            <Label fx:id="lblVideoNom" text="Aucune vidéo"
+                   style="-fx-text-fill: #718096;"/>
+        </HBox>
+        <Label fx:id="lblTailleVideo" text="" style="-fx-text-fill: #27ae60; -fx-font-size: 12px;"/>
 
         <HBox spacing="10" alignment="CENTER_LEFT">
             <TextField fx:id="txtOrdre" promptText="Ordre" prefWidth="80"/>
@@ -61,7 +71,8 @@
         <columns>
             <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
             <TableColumn fx:id="colTitre" text="Titre" prefWidth="150"/>
-            <TableColumn fx:id="colContenu" text="Contenu" prefWidth="200"/>
+            <TableColumn fx:id="colContenu" text="Contenu" prefWidth="150"/>
+            <TableColumn fx:id="colVideo" text="Vidéo" prefWidth="100"/>
             <TableColumn fx:id="colOrdre" text="Ordre" prefWidth="80"/>
             <TableColumn fx:id="colType" text="Type" prefWidth="100"/>
             <TableColumn fx:id="colActions" text="Actions" prefWidth="180"/>
