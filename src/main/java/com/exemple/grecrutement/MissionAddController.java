@@ -39,7 +39,8 @@ public class MissionAddController {
             missionService.ajouter(mission);
 
             showAlert(Alert.AlertType.INFORMATION, "Success", "Mission added successfully!");
-            clearFields();
+
+            MissionShellController.getInstance().showMissionList();
 
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Invalid input", "Please enter valid numbers for score and creator ID.");
