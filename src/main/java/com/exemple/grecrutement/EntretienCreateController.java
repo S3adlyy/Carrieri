@@ -48,7 +48,8 @@ public class EntretienCreateController implements Initializable {
                 "Entretien avec le Manager",
                 "Entretien Final",
                 "Entretien Téléphonique",
-                "Entretien Vidéo"
+                "Entretien Vidéo",
+                "Entretirn Code"
         );
         comboType.setValue("Entretien Technique");
 
