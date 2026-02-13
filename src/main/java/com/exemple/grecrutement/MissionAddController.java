@@ -2,18 +2,18 @@ package com.exemple.grecrutement;
 
 import entities.Mission;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextArea;  // Change from TextField to TextArea
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.paint.Color;
+import javafx.scene.effect.DropShadow;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 import services.MissionService;
-
+import javafx.application.Platform;
 
 public class MissionAddController {
 
-
-
     @FXML
-    private TextArea descriptionField;  // Change from TextField to TextArea
+    private TextArea descriptionField;
 
     @FXML
     private TextField scoreField;
@@ -21,32 +21,280 @@ public class MissionAddController {
     @FXML
     private TextField createdByIdField;
 
+    @FXML
+    private Label descriptionError;
+
+    @FXML
+    private Label scoreError;
+
+    @FXML
+    private Label creatorIdError;
+
+    @FXML
+    private Label characterCountLabel;
+
+    @FXML
+    private Button submitButton;
+
     private final MissionService missionService = new MissionService();
+    private PauseTransition debounceTimer = new PauseTransition(Duration.millis(500));
+
+    @FXML
+    private void initialize() {
+        setupRealTimeValidation();
+        setupCharacterCounter();
+        setupSubmitButtonState();
+    }
+
+    private void setupRealTimeValidation() {
+        // Validation description avec debounce
+        descriptionField.textProperty().addListener((observable, oldValue, newValue) -> {
+            debounceTimer.setOnFinished(event -> validateDescription(newValue));
+            debounceTimer.playFromStart();
+        });
+
+        // Validation score en temps réel
+        scoreField.textProperty().addListener((observable, oldValue, newValue) -> {
+            validateScore(newValue);
+        });
+
+        // Validation creator ID en temps réel
+        createdByIdField.textProperty().addListener((observable, oldValue, newValue) -> {
+            validateCreatorId(newValue);
+        });
+
+        // Validation numérique
+        addNumericValidation(scoreField);
+        addNumericValidation(createdByIdField);
+
+        // Focus listeners pour nettoyer les styles
+        descriptionField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) validateDescription(descriptionField.getText());
+        });
+
+        scoreField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) validateScore(scoreField.getText());
+        });
+
+        createdByIdField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) validateCreatorId(createdByIdField.getText());
+        });
+    }
+
+    private void setupCharacterCounter() {
+        descriptionField.textProperty().addListener((observable, oldValue, newValue) -> {
+            int length = newValue != null ? newValue.length() : 0;
+            characterCountLabel.setText(length + "/1000");
+
+            if (length > 950) {
+                characterCountLabel.setStyle("-fx-text-fill: #ffaa00;");
+            } else if (length >= 50) {
+                characterCountLabel.setStyle("-fx-text-fill: #00C851;");
+            } else {
+                characterCountLabel.setStyle("-fx-text-fill: #888888;");
+            }
+        });
+    }
+
+    private void setupSubmitButtonState() {
+        submitButton.disableProperty().bind(
+                descriptionField.textProperty().isEmpty()
+                        .or(scoreField.textProperty().isEmpty())
+                        .or(createdByIdField.textProperty().isEmpty())
+        );
+    }
+
+    private void addNumericValidation(TextField field) {
+        field.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && !newValue.isEmpty()) {
+                if (!newValue.matches("\\d*")) {
+                    field.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+    }
+
+    private boolean validateDescription(String description) {
+        if (description == null || description.trim().isEmpty()) {
+            showFieldError(descriptionField, descriptionError, "La description est obligatoire");
+            return false;
+        }
+
+        String trimmedDesc = description.trim();
+        if (trimmedDesc.length() < 50) {
+            showFieldError(descriptionField, descriptionError,
+                    "Minimum 50 caractères (actuel: " + trimmedDesc.length() + ")");
+            return false;
+        }
+
+        if (trimmedDesc.length() > 1000) {
+            showFieldError(descriptionField, descriptionError,
+                    "Maximum 1000 caractères (actuel: " + trimmedDesc.length() + ")");
+            return false;
+        }
+
+        clearFieldError(descriptionField, descriptionError);
+        return true;
+    }
+
+    private boolean validateScore(String score) {
+        if (score == null || score.trim().isEmpty()) {
+            showFieldError(scoreField, scoreError, "Le score est obligatoire");
+            return false;
+        }
+
+        try {
+            int scoreValue = Integer.parseInt(score.trim());
+            if (scoreValue < 0) {
+                showFieldError(scoreField, scoreError, "Le score ne peut pas être négatif");
+                return false;
+            }
+            if (scoreValue > 100) {
+                showFieldError(scoreField, scoreError, "Le score maximum est 100");
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            showFieldError(scoreField, scoreError, "Veuillez entrer un nombre valide");
+            return false;
+        }
+
+        clearFieldError(scoreField, scoreError);
+        return true;
+    }
+
+    private boolean validateCreatorId(String creatorId) {
+        if (creatorId == null || creatorId.trim().isEmpty()) {
+            showFieldError(createdByIdField, creatorIdError, "L'ID du créateur est obligatoire");
+            return false;
+        }
+
+        try {
+            int idValue = Integer.parseInt(creatorId.trim());
+            if (idValue <= 0) {
+                showFieldError(createdByIdField, creatorIdError, "L'ID doit être positif");
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            showFieldError(createdByIdField, creatorIdError, "ID invalide");
+            return false;
+        }
+
+        clearFieldError(createdByIdField, creatorIdError);
+        return true;
+    }
+
+    private void showFieldError(Control field, Label errorLabel, String errorMessage) {
+        field.setStyle("-fx-border-color: #ff4444; -fx-border-width: 2; -fx-border-radius: 5; " +
+                "-fx-background-radius: 5;");
+
+        errorLabel.setText(errorMessage);
+        errorLabel.setVisible(true);
+        errorLabel.setManaged(true);
+
+        Tooltip errorTooltip = new Tooltip(errorMessage);
+        errorTooltip.setStyle("-fx-background-color: #ff4444; -fx-text-fill: white; " +
+                "-fx-font-size: 12px; -fx-padding: 5;");
+        field.setTooltip(errorTooltip);
+
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setColor(Color.rgb(255, 68, 68, 0.3));
+        dropShadow.setRadius(10);
+        field.setEffect(dropShadow);
+    }
+
+    private void clearFieldError(Control field, Label errorLabel) {
+        field.setStyle("");
+        field.setTooltip(null);
+        field.setEffect(null);
+        errorLabel.setVisible(false);
+        errorLabel.setManaged(false);
+    }
+
+    private boolean validateAllFields() {
+        boolean isValid = true;
+        isValid &= validateDescription(descriptionField.getText());
+        isValid &= validateScore(scoreField.getText());
+        isValid &= validateCreatorId(createdByIdField.getText());
+        return isValid;
+    }
 
     @FXML
     private void ajouterMission() {
-        try {
-            String description = descriptionField.getText();
-            int scoreMin = Integer.parseInt(scoreField.getText());
-            int creatorId = Integer.parseInt(createdByIdField.getText());
+        System.out.println("=== Début ajouterMission ===");
 
-            if (description.isEmpty() || scoreMin < 0 || scoreMin > 100) {
-                showAlert(Alert.AlertType.ERROR, "Invalid input", "Please check all fields.");
-                return;
-            }
+        if (!validateAllFields()) {
+            System.out.println("Validation échouée");
+            showAlert(Alert.AlertType.ERROR, "Erreur de validation",
+                    "Veuillez corriger les erreurs dans le formulaire.");
+            return;
+        }
+
+        try {
+            String description = descriptionField.getText().trim();
+            int scoreMin = Integer.parseInt(scoreField.getText().trim());
+            int creatorId = Integer.parseInt(createdByIdField.getText().trim());
+
+            System.out.println("Création mission: " + description + ", score=" + scoreMin + ", creator=" + creatorId);
 
             Mission mission = new Mission(description, scoreMin, creatorId);
+
+            System.out.println("Appel à missionService.ajouter()...");
             missionService.ajouter(mission);
+            System.out.println("Mission ajoutée avec succès!");
 
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Mission added successfully!");
-
-            MissionShellController.getInstance().showMissionList();
+            // Redirection immédiate vers la liste des missions
+            System.out.println("Redirection vers la liste des missions...");
+            navigateToMissionList();
 
         } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Invalid input", "Please enter valid numbers for score and creator ID.");
+            System.err.println("Erreur de format: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur de format",
+                    "Veuillez entrer des nombres valides.");
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Error", e.getMessage());
+            System.err.println("Erreur système: " + e.getMessage());
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur système",
+                    "Une erreur est survenue: " + e.getMessage());
         }
+    }
+
+    private void navigateToMissionList() {
+        try {
+            System.out.println("Récupération de l'instance MissionShellController...");
+            MissionShellController controller = MissionShellController.getInstance();
+
+            if (controller != null) {
+                System.out.println("Controller trouvé, appel de showMissionList()...");
+
+                // Utiliser Platform.runLater pour être sûr que l'opération UI est sur le bon thread
+                Platform.runLater(() -> {
+                    try {
+                        controller.showMissionList();
+                        System.out.println("Navigation réussie!");
+                    } catch (Exception e) {
+                        System.err.println("Erreur pendant la navigation: " + e.getMessage());
+                        e.printStackTrace();
+                        showAlert(Alert.AlertType.ERROR, "Erreur de navigation",
+                                "Impossible de retourner à la liste des missions.");
+                    }
+                });
+            } else {
+                System.err.println("MissionShellController.getInstance() a retourné null!");
+                showAlert(Alert.AlertType.ERROR, "Erreur de navigation",
+                        "Impossible de trouver le contrôleur principal.");
+            }
+        } catch (Exception e) {
+            System.err.println("Exception dans navigateToMissionList: " + e.getMessage());
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur de navigation",
+                    "Une erreur est survenue: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void resetForm() {
+        clearFields();
+        clearAllErrors();
     }
 
     private void clearFields() {
@@ -55,11 +303,52 @@ public class MissionAddController {
         createdByIdField.clear();
     }
 
+    private void clearAllErrors() {
+        clearFieldError(descriptionField, descriptionError);
+        clearFieldError(scoreField, scoreError);
+        clearFieldError(createdByIdField, creatorIdError);
+    }
+
+    @FXML
+    private void showHelp() {
+        Alert helpAlert = new Alert(Alert.AlertType.INFORMATION);
+        helpAlert.setTitle("Aide - Ajout de mission");
+        helpAlert.setHeaderText("Instructions");
+        helpAlert.setContentText(
+                "• Description : 50 à 1000 caractères\n" +
+                        "• Score : Entre 0 et 100\n" +
+                        "• ID Créateur : Nombre positif\n\n" +
+                        "Tous les champs sont obligatoires."
+        );
+        styleAlert(helpAlert);
+        helpAlert.showAndWait();
+    }
+
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-        alert.show();
+        styleAlert(alert);
+        alert.showAndWait();
+    }
+
+    private void styleAlert(Alert alert) {
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle("-fx-background-color: #2d2d2d;");
+        Label content = (Label) dialogPane.lookup(".content.label");
+        if (content != null) {
+            content.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
+        }
+        dialogPane.lookup(".header-panel").setStyle("-fx-background-color: #1e1e1e;");
+    }
+
+    @FXML
+    private void handleDescriptionPaste() {
+        String content = descriptionField.getText();
+        if (content != null && content.length() > 1000) {
+            descriptionField.setText(content.substring(0, 1000));
+            descriptionField.positionCaret(1000);
+        }
     }
 }
