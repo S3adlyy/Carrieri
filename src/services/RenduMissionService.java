@@ -9,17 +9,19 @@ import java.util.List;
 public class RenduMissionService implements IRenduMissionService {
 
     private Connection connection;
-
+    private AIClientService aiClient;
     public RenduMissionService() {
         this.connection = MyDatabase.getInstance().getConnection();
+        this.aiClient = new AIClientService();
     }
+
 
     @Override
     public void ajouterRenduMission(RenduMission renduMission) {
         String query = "INSERT INTO rendu_mission (code_solution, date_rendu, score, resultat, mission_id, candidat_id, feedback, langue) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement pst = connection.prepareStatement(query)) {
+        try (PreparedStatement pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, renduMission.getCodeSolution());
             pst.setDate(2, renduMission.getDateRendu());
             pst.setInt(3, renduMission.getScore());
@@ -30,7 +32,13 @@ public class RenduMissionService implements IRenduMissionService {
             pst.setString(8, renduMission.getLangue());
 
             pst.executeUpdate();
-            System.out.println("✅ RenduMission ajoutée avec succès!");
+
+            ResultSet generatedKeys = pst.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                renduMission.setId(generatedKeys.getInt(1));
+            }
+
+            System.out.println("✅ RenduMission saved with ID: " + renduMission.getId());
 
         } catch (SQLException e) {
             System.err.println("❌ Erreur lors de l'ajout: " + e.getMessage());
@@ -157,80 +165,74 @@ public class RenduMissionService implements IRenduMissionService {
         return rendus;
     }
 
-    public RenduMission evaluerCodePython(String code, int missionId, int candidatId) {
+    @Override
+    public RenduMission evaluerCodePython(String code, int missionId, int candidatId) throws Exception {
         System.out.println("=".repeat(50));
-        System.out.println("🧪 DÉBUT ÉVALUATION AI - DEBUG MODE");
+        System.out.println("🧪 DÉBUT ÉVALUATION AI");
         System.out.println("=".repeat(50));
 
-        RenduMission rendu = new RenduMission(code, missionId, candidatId);
+        // Get mission details
+        MissionService missionService = new MissionService();
+        entities.Mission mission = missionService.getById(missionId);
+
+        if (mission == null) {
+            throw new Exception("Mission not found with ID: " + missionId);
+        }
+
+        System.out.println("📋 Mission ID: " + missionId + ", Type: " + mission.getType());
+        System.out.println("📊 Minimum Score Required: " + mission.getScore_min() + "%");
+
+        // Create RenduMission object
+        RenduMission rendu = new RenduMission();
+        rendu.setCandidatId(candidatId);
+        rendu.setMissionId(missionId);
+        rendu.setCodeSolution(code);
+        rendu.setLangue("python");
+        rendu.setDateRendu(new Date(System.currentTimeMillis()));
 
         try {
-            // Get mission type
-            String missionType = getMissionType(missionId);
-            System.out.println("📋 Mission ID: " + missionId + ", Type: " + missionType);
-
-            // Create AI service with debug
-            System.out.println("🔍 Création du service AI...");
-            AIEvaluationService aiService = new AIEvaluationService();
-
-            // Show what we're sending
-            System.out.println("📤 Code à évaluer:");
-            System.out.println("```python");
-            System.out.println(code);
-            System.out.println("```");
-
-            System.out.println("🌐 Connexion au serveur AI: " + AIEvaluationService.AI_SERVER_URL);
-
             // Call AI service
+            System.out.println("🌐 Calling AI server: " + AIClientService.AI_SERVER_URL);
             long startTime = System.currentTimeMillis();
-            EvaluationResponse result = aiService.evaluatePythonCode(code, missionType);
+
+            EvaluationResponse result = aiClient.evaluatePythonCode(code, mission.getType());
+
             long endTime = System.currentTimeMillis();
+            System.out.println("📥 Response received in " + (endTime - startTime) + "ms");
+            System.out.println("✅ Score from AI: " + result.getScore() + "%");
+            System.out.println("✅ Result: " + result.getResult());
 
-            System.out.println("📥 Réponse reçue en " + (endTime - startTime) + "ms");
-            System.out.println("✅ Score: " + result.getScore() + "%");
-            System.out.println("✅ Résultat: " + result.getResult());
-
-            // Update rendu
+            // Update rendu with AI results
             rendu.setScore(result.getScore());
             rendu.setResultat(result.getResult());
 
-            // Debug: Always show what score we got
-            System.out.println("📊 DEBUG - Score brut: " + result.getScore());
+            // Check if accepted based on mission's minimum score
+            boolean accepted = result.getScore() >= mission.getScore_min();
 
-            // Add feedback
-            if (result.getScore() >= 80) {
-                rendu.setFeedback("Excellent! Code parfait.");
-            } else if (result.getScore() >= 60) {
-                rendu.setFeedback("Code acceptable.");
-            } else if (result.getScore() >= 40) {
-                rendu.setFeedback("Code médiocre.");
-            } else if (result.getScore() >= 20) {
-                rendu.setFeedback("Code faible.");
+            if (accepted) {
+                rendu.setFeedback("✅ Code accepted! Score: " + result.getScore() + "% meets minimum requirement of " + mission.getScore_min() + "%");
             } else {
-                rendu.setFeedback("Échec complet.");
+                rendu.setFeedback("❌ Code rejected. Score: " + result.getScore() + "% below minimum requirement of " + mission.getScore_min() + "%");
             }
 
             // Save to database
-            System.out.println("💾 Sauvegarde en base de données...");
+            System.out.println("💾 Saving to database...");
             ajouterRenduMission(rendu);
+
+            // Update candidate status if accepted
+            if (accepted) {
+                updateCandidateStatus(candidatId, missionId, result.getScore());
+            }
 
             System.out.println("🎉 ÉVALUATION TERMINÉE");
             System.out.println("=".repeat(50));
 
         } catch (Exception e) {
-            System.err.println("❌ ERREUR CRITIQUE: " + e.getMessage());
+            System.err.println("❌ ERREUR: " + e.getMessage());
             e.printStackTrace();
 
-            // Fallback score for debugging
-            rendu.setScore(85);  // Default fallback - THIS MIGHT BE THE PROBLEM!
-            rendu.setResultat("ERROR");
-            rendu.setFeedback("Erreur: " + e.getMessage());
-
-            try {
-                ajouterRenduMission(rendu);
-            } catch (Exception ex) {
-                System.err.println("❌ Impossible de sauvegarder: " + ex.getMessage());
-            }
+            // Don't use fallback score - throw the exception to the controller
+            throw new Exception("AI Evaluation failed: " + e.getMessage());
         }
 
         return rendu;
@@ -271,9 +273,8 @@ public class RenduMissionService implements IRenduMissionService {
     }
 
     private void updateCandidateStatus(int candidatId, int missionId, int score) {
-        // Check if candidat_mission table exists
+        // Check if table exists
         if (!tableExists("candidat_mission")) {
-            System.out.println("ℹ️ Table candidat_mission n'existe pas, création de la table...");
             createCandidatMissionTable();
         }
 
@@ -287,15 +288,11 @@ public class RenduMissionService implements IRenduMissionService {
             pst.setInt(3, score);
             pst.setInt(4, score);
 
-            int rows = pst.executeUpdate();
-            System.out.println("✅ Candidat " + candidatId + " accepté pour mission " + missionId +
-                    " (score: " + score + "%) - " + rows + " ligne(s) mise(s) à jour");
+            pst.executeUpdate();
+            System.out.println("✅ Candidate status updated for mission " + missionId);
 
         } catch (SQLException e) {
-            System.err.println("❌ Erreur updateCandidateStatus: " + e.getMessage());
-
-            // Try alternative query if ON DUPLICATE KEY doesn't work
-            tryAlternativeUpdate(candidatId, missionId, score);
+            System.err.println("❌ Error updating candidate status: " + e.getMessage());
         }
     }
 
@@ -340,10 +337,11 @@ public class RenduMissionService implements IRenduMissionService {
                 return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
-            System.err.println("❌ Erreur tableExists: " + e.getMessage());
+            System.err.println("❌ Error checking table existence: " + e.getMessage());
         }
         return false;
     }
+
 
     private void createCandidatMissionTable() {
         String query = "CREATE TABLE IF NOT EXISTS candidat_mission (" +
@@ -358,9 +356,9 @@ public class RenduMissionService implements IRenduMissionService {
 
         try (Statement st = connection.createStatement()) {
             st.executeUpdate(query);
-            System.out.println("✅ Table candidat_mission créée avec succès");
+            System.out.println("✅ Table candidat_mission created");
         } catch (SQLException e) {
-            System.err.println("❌ Erreur création table: " + e.getMessage());
+            System.err.println("❌ Error creating table: " + e.getMessage());
         }
     }
 

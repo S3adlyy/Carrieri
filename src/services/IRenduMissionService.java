@@ -10,5 +10,5 @@ public interface IRenduMissionService {
     RenduMission getRenduMissionById(int id);
     List<RenduMission> getRenduMissionsByCandidat(int candidatId);
     List<RenduMission> getRenduMissionsByMission(int missionId);
-    RenduMission evaluerCodePython(String code, int missionId, int candidatId);
+    RenduMission evaluerCodePython(String code, int missionId, int candidatId) throws Exception;
 }

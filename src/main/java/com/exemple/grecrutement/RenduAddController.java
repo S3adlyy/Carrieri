@@ -538,9 +538,8 @@ public class RenduAddController implements Initializable {
             isTimerFinished = true;
         }
 
-        if (txtCode.getText().isEmpty()) {
+        if (txtCode.getText().trim().isEmpty()) {
             alert("Error", "Please enter your Python code");
-            // Restart timer if code is empty
             if (!isTimerFinished) {
                 startTimer(remainingSeconds > 0 ? remainingSeconds : DEFAULT_TIMER_MINUTES * 60);
             }
@@ -553,7 +552,6 @@ public class RenduAddController implements Initializable {
             candidatId = Integer.parseInt(txtCandidatId.getText());
         } catch (Exception e) {
             alert("Error", "Invalid IDs. Please enter valid numbers for Mission ID and Candidate ID");
-            // Restart timer
             if (!isTimerFinished) {
                 startTimer(remainingSeconds > 0 ? remainingSeconds : DEFAULT_TIMER_MINUTES * 60);
             }
@@ -561,9 +559,8 @@ public class RenduAddController implements Initializable {
         }
 
         progress.setVisible(true);
-        lblResultat.setText("Evaluating code...");
+        lblResultat.setText("Evaluating code with AI system...");
 
-        // Disable evaluate button and code editor during evaluation
         Button evalButton = getEvaluateButton();
         if (evalButton != null) {
             evalButton.setDisable(true);
@@ -576,13 +573,11 @@ public class RenduAddController implements Initializable {
 
         new Thread(() -> {
             try {
-                RenduMission r = service.evaluerCodePython(
-                        txtCode.getText(), missionId, candidatId);
+                RenduMission r = service.evaluerCodePython(txtCode.getText(), missionId, candidatId);
 
                 Platform.runLater(() -> {
                     progress.setVisible(false);
 
-                    // Re-enable button and editor
                     if (evalButton != null) {
                         evalButton.setDisable(false);
                     }
@@ -591,14 +586,27 @@ public class RenduAddController implements Initializable {
                         fullScreenCodeEditor.setEditable(true);
                     }
 
-                    String resultText = "🎯 Score: " + r.getScore() + "% - " + r.getResultat();
+                    String resultText = "🎯 AI Score: " + r.getScore() + "% - " + r.getResultat() + "\n";
 
                     if (r.isAccepted()) {
-                        resultText += "\n✅ Code Accepted!";
+                        resultText += "✅ ACCEPTED! (Score meets minimum requirement)";
                         lblResultat.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold; -fx-font-size: 14px;");
+
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Code Accepted");
+                        alert.setHeaderText("✅ Congratulations!");
+                        alert.setContentText("Your code has been accepted with a score of " + r.getScore() + "%!");
+                        alert.showAndWait();
+
                     } else {
-                        resultText += "\n❌ Code Rejected";
+                        resultText += "❌ REJECTED (Score below minimum requirement)";
                         lblResultat.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 14px;");
+
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Code Rejected");
+                        alert.setHeaderText("❌ Code Rejected");
+                        alert.setContentText("Your code scored " + r.getScore() + "%, which is below the minimum requirement.");
+                        alert.showAndWait();
                     }
 
                     lblResultat.setText(resultText);
@@ -607,7 +615,6 @@ public class RenduAddController implements Initializable {
                 Platform.runLater(() -> {
                     progress.setVisible(false);
 
-                    // Re-enable button and editor
                     if (evalButton != null) {
                         evalButton.setDisable(false);
                     }
@@ -616,13 +623,18 @@ public class RenduAddController implements Initializable {
                         fullScreenCodeEditor.setEditable(true);
                     }
 
-                    // Restart timer if evaluation failed
                     if (!isTimerFinished) {
                         startTimer(remainingSeconds > 0 ? remainingSeconds : DEFAULT_TIMER_MINUTES * 60);
                     }
 
                     lblResultat.setText("❌ Error: " + e.getMessage());
                     lblResultat.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
+
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Evaluation Error");
+                    alert.setHeaderText("Failed to evaluate code");
+                    alert.setContentText(e.getMessage());
+                    alert.showAndWait();
                 });
             }
         }).start();

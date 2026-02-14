@@ -4,8 +4,8 @@ import java.sql.Date;
 
 public class RenduMission {
     private int id;
-    private String codeSolution; // This should match "code_solution" in database
-    private String fichier;      // If you have this column
+    private String codeSolution;
+    private String fichier;
     private Date dateRendu;
     private int score;
     private String resultat;
@@ -16,14 +16,6 @@ public class RenduMission {
 
     // Constructors
     public RenduMission() {}
-
-    public RenduMission(String codeSolution, int missionId, int candidatId) {
-        this.codeSolution = codeSolution;
-        this.missionId = missionId;
-        this.candidatId = candidatId;
-        this.dateRendu = new Date(System.currentTimeMillis());
-        this.langue = "python";
-    }
 
     // Getters and Setters
     public int getId() { return id; }
@@ -62,6 +54,11 @@ public class RenduMission {
 
     @Override
     public String toString() {
-        return "RenduMission [id=" + id + ", score=" + score + ", resultat=" + resultat + "]";
+        return "RenduMission{" +
+                "id=" + id +
+                ", score=" + score +
+                ", resultat='" + resultat + '\'' +
+                ", accepted=" + isAccepted() +
+                '}';
     }
 }

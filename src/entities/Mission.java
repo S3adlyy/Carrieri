@@ -5,11 +5,10 @@ import java.time.LocalDateTime;
 public class Mission {
     private int id;
     private String description;
+    private String type;  // This field exists but missing getter/setter
     private int score_min;
     private LocalDateTime created_at;
     private Integer created_by_id;
-
-
 
     public Mission() {
     }
@@ -46,6 +45,16 @@ public class Mission {
         this.description = description;
     }
 
+    // ADD THIS - Getter for type
+    public String getType() {
+        return type;
+    }
+
+    // ADD THIS - Setter for type
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public int getScore_min() {
         return score_min;
     }
@@ -70,12 +79,12 @@ public class Mission {
         this.created_by_id = created_by_id;
     }
 
-
     @Override
     public String toString() {
         return "Mission{" +
                 "id=" + id +
                 ", description='" + description + '\'' +
+                ", type='" + type + '\'' +  // Add type to toString
                 ", score_min=" + score_min +
                 ", created_at=" + created_at +
                 ", created_by_id=" + created_by_id +
