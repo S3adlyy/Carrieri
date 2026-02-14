@@ -40,6 +40,18 @@ public class CertificationService implements ICertificationService {
     }
 
     @Override
+    public void modifier(Certification c) throws SQLException {
+        String sql = "UPDATE certification SET candidat_id = ?, cours_id = ?, date_obtention = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, c.getCandidatId());
+            ps.setInt(2, c.getCoursId());
+            ps.setTimestamp(3, Timestamp.valueOf(c.getDateObtention()));
+            ps.setInt(4, c.getId());
+            ps.executeUpdate();
+        }
+    }
+
+    @Override
     public void supprimer(int id) throws SQLException {
         String sql = "DELETE FROM certification WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -177,5 +189,10 @@ public class CertificationService implements ICertificationService {
         String nom = nomCandidat.replace(" ", "_");
         String cours = titreCours.replace(" ", "_");
         return "certificats/certificat_" + nom + "_" + cours + "_" + date + ".pdf";
+    }
+
+    @Override
+    public List<Certification> getAll() throws SQLException {
+        return read();
     }
 }

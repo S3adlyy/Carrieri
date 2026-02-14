@@ -12,7 +12,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import services.ModuleService;
+import services.QuizAutoGenerator;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,8 +95,8 @@ public class ModuleController {
         colOrdre.setCellValueFactory(new PropertyValueFactory<>("ordre"));
 
         colActions.setCellFactory(param -> new TableCell<>() {
-            private final Button btnEdit = new Button("✏️ Modifier");
-            private final Button btnDelete = new Button("🗑️ Supprimer");
+            private final Button btnEdit = new Button("✏️");
+            private final Button btnDelete = new Button("🗑️");
             private final HBox box = new HBox(5);
 
             {
@@ -106,7 +110,7 @@ public class ModuleController {
                 btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 5 10; -fx-background-radius: 5;");
                 btnDelete.setOnAction(event -> {
                     Module module = getTableView().getItems().get(getIndex());
-                    supprimerModuleSelectionne(module); // ← RENOMMÉ
+                    supprimerModuleSelectionne(module);
                 });
 
                 box.getChildren().addAll(btnEdit, btnDelete);
@@ -201,7 +205,7 @@ public class ModuleController {
         supprimerModuleSelectionne(moduleSelectionne);
     }
 
-    private void supprimerModuleSelectionne(Module module) { // ← NOUVELLE MÉTHODE
+    private void supprimerModuleSelectionne(Module module) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("🗑️ Confirmation");
         confirm.setHeaderText("Supprimer le module");
@@ -246,6 +250,52 @@ public class ModuleController {
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Impossible d'ouvrir la gestion des leçons");
+        }
+    }
+
+    // ============================================
+    // GÉNÉRER AUTOMATIQUEMENT LE QUIZ DU MODULE
+    // ============================================
+
+    @FXML
+    private void genererQuizAutomatique() {
+        if (moduleSelectionne == null) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Sélectionnez d'abord un module");
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("🤖 Génération intelligente");
+        confirm.setHeaderText("Générer le quiz du module ?");
+        confirm.setContentText("5 questions INTELLIGENTES seront créées à partir d'une banque de questions JavaFX.\n\nLes anciennes questions seront supprimées.");
+
+        Optional<ButtonType> result = confirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                // Supprimer les anciennes questions
+                Connection con = utils.MyDatabase.getInstance().getConnection();
+
+                String deleteReponses = "DELETE FROM reponse WHERE question_id IN (SELECT id FROM question_quiz WHERE module_id = ?) AND question_type = 'QUIZ'";
+                PreparedStatement ps1 = con.prepareStatement(deleteReponses);
+                ps1.setInt(1, moduleSelectionne.getId());
+                ps1.executeUpdate();
+
+                String deleteQuestions = "DELETE FROM question_quiz WHERE module_id = ?";
+                PreparedStatement ps2 = con.prepareStatement(deleteQuestions);
+                ps2.setInt(1, moduleSelectionne.getId());
+                ps2.executeUpdate();
+
+                // Générer avec le NOUVEAU générateur intelligent
+                QuizAutoGenerator generator = new QuizAutoGenerator();
+                generator.genererQuizModule(moduleSelectionne.getId());
+
+                showAlert(Alert.AlertType.INFORMATION, "✅ Succès",
+                        "Quiz généré avec 5 questions INTELLIGENTES !\n\nLes questions sont maintenant logiques.");
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "❌ Erreur", e.getMessage());
+            }
         }
     }
 

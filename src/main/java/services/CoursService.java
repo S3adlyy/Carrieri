@@ -47,6 +47,11 @@ public class CoursService implements ICoursService {
     }
 
     @Override
+    public void modifier(Cours cours) throws SQLException {
+        update(cours);
+    }
+
+    @Override
     public void supprimer(int id) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement("DELETE FROM cours WHERE id=?")) {
             ps.setInt(1, id);
@@ -64,6 +69,11 @@ public class CoursService implements ICoursService {
             }
         }
         return list;
+    }
+
+    @Override
+    public List<Cours> getAll() throws SQLException {
+        return readAll();
     }
 
     @Override

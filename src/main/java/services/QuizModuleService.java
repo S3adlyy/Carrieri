@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuizModuleService {
+public class QuizModuleService implements IQuizModuleService {
     private Connection con = MyDatabase.getInstance().getConnection();
 
     // Ajouter une question de quiz pour un module

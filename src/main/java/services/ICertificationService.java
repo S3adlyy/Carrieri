@@ -4,9 +4,7 @@ import entities.Certification;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface ICertificationService {
-    void ajouter(Certification c) throws SQLException;
-    void supprimer(int id) throws SQLException;
+public interface ICertificationService extends IService<Certification> {
     List<Certification> read() throws SQLException;
     Certification readByCoursAndCandidat(int coursId, int candidatId) throws SQLException;
     boolean aDejaCertificat(int coursId, int candidatId) throws SQLException;

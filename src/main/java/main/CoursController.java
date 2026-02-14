@@ -1,8 +1,6 @@
 package main;
 
 import entities.Cours;
-import entities.Module;
-import entities.Lecon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -25,9 +23,13 @@ import javafx.stage.Stage;
 import services.CoursService;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import services.QuizAutoGenerator;
+import utils.MyDatabase;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -469,6 +471,51 @@ public class CoursController {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    // ============================================
+    // GÉNÉRER AUTOMATIQUEMENT LE TEST FINAL
+    // ============================================
+
+    @FXML
+    private void genererTestFinalAutomatique() {
+        if (coursSelectionne == null) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Sélectionnez d'abord un cours");
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("🤖 Génération intelligente");
+        confirm.setHeaderText("Générer le test final du cours ?");
+        confirm.setContentText("15 questions INTELLIGENTES seront créées à partir d'une banque de questions JavaFX.\n\nLes anciennes questions seront supprimées.");
+
+        Optional<ButtonType> result = confirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                Connection con = utils.MyDatabase.getInstance().getConnection();
+
+                String deleteReponses = "DELETE FROM reponse WHERE question_id IN (SELECT id FROM question_test WHERE cours_id = ?) AND question_type = 'TEST'";
+                PreparedStatement ps1 = con.prepareStatement(deleteReponses);
+                ps1.setInt(1, coursSelectionne.getId());
+                ps1.executeUpdate();
+
+                String deleteQuestions = "DELETE FROM question_test WHERE cours_id = ?";
+                PreparedStatement ps2 = con.prepareStatement(deleteQuestions);
+                ps2.setInt(1, coursSelectionne.getId());
+                ps2.executeUpdate();
+
+                // Générer avec le NOUVEAU générateur intelligent
+                QuizAutoGenerator generator = new QuizAutoGenerator();
+                generator.genererTestFinal(coursSelectionne.getId());
+
+                showAlert(Alert.AlertType.INFORMATION, "✅ Succès",
+                        "Test final généré avec 15 questions INTELLIGENTES !\n\nLes questions sont maintenant logiques.");
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "❌ Erreur", e.getMessage());
+            }
         }
     }
 

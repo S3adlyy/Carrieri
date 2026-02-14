@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestCoursService {
+public class TestCoursService implements ITestCoursService {
     private Connection con = MyDatabase.getInstance().getConnection();
 
     // Ajouter une question de test pour un cours

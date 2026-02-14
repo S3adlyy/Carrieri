@@ -194,6 +194,10 @@
 
                     </columns>
                 </TableView>
+                <!-- Ajoutez ce bouton dans la partie droite (liste des cours) -->
+                <Button text="🤖 GÉNÉRER TEST FINAL AUTO"
+                        onAction="#genererTestFinalAutomatique"
+                        style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;"/>
             </VBox>
         </GridPane>
     </center>

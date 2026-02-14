@@ -61,6 +61,11 @@
         </columns>
     </TableView>
 
+
+    <!-- Ajoutez ce bouton après la table des modules -->
+    <Button text="🤖 GÉNÉRER QUIZ AUTO"
+            onAction="#genererQuizAutomatique"
+            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;"/>
     <HBox spacing="10" alignment="CENTER">
         <Button text="📖 Gérer les leçons"
                 onAction="#ajouterLecons"
