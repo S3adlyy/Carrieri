@@ -2,62 +2,118 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.FontWeight?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <BorderPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.exemple.grecrutement.MissionShellController"
-            stylesheets="@app.css">
+            stylesheets="@app.css"
+            styleClass="root-container"
+            prefWidth="1280"
+            prefHeight="800">
 
-    <!-- Top: Navbar -->
-    <top>
-        <HBox styleClass="navBar" spacing="12" alignment="CENTER_LEFT">
+    <!-- Left: Vertical Sidebar Navbar -->
+    <left>
+        <VBox styleClass="sidebar" spacing="0">
             <!-- Logo/Brand Section -->
-            <HBox spacing="8" alignment="CENTER_LEFT">
-                <Region styleClass="navBrandDot"/>
-                <Label text="Carrieri" styleClass="navBrand"/>
+            <HBox styleClass="sidebar-brand" alignment="CENTER_LEFT" spacing="12">
+                <!-- Logo Image with fx:id for controller access -->
+                <ImageView fx:id="brandLogo" styleClass="brand-logo" fitWidth="36" fitHeight="36" preserveRatio="true"/>
+
+                <!-- Brand Text -->
+                <Label text="Carrieri" styleClass="brandText"/>
             </HBox>
 
-            <!-- Spacer -->
-            <Region HBox.hgrow="ALWAYS"/>
-
-            <!-- Mission Navigation Buttons -->
-            <HBox spacing="6" alignment="CENTER" styleClass="navLinks">
+            <!-- Navigation Links - Vertical -->
+            <VBox styleClass="nav-links-container" spacing="4">
                 <Button fx:id="btnAddMission"
-                        text="➕ Add Mission"
+                        text="Add Mission"
                         onAction="#showAddMission"
-                        styleClass="navLinkBtn"/>
+                        styleClass="nav-link"
+                        maxWidth="Infinity">
+                    <graphic>
+                        <Label text="➕" styleClass="nav-icon"/>
+                    </graphic>
+                </Button>
 
                 <Button fx:id="btnMissionList"
-                        text="📋 Mission List"
+                        text="Mission List"
                         onAction="#showMissionList"
-                        styleClass="navLinkBtn"/>
+                        styleClass="nav-link"
+                        maxWidth="Infinity">
+                    <graphic>
+                        <Label text="📋" styleClass="nav-icon"/>
+                    </graphic>
+                </Button>
 
                 <Button fx:id="btnSubmitRendu"
-                        text="🤖 Submit Rendu"
+                        text="Submit Rendu"
                         onAction="#showRenduAdd"
-                        styleClass="navLinkBtn"/>
+                        styleClass="nav-link"
+                        maxWidth="Infinity">
+                    <graphic>
+                        <Label text="🤖" styleClass="nav-icon"/>
+                    </graphic>
+                </Button>
 
                 <Button fx:id="btnRenduList"
-                        text="📑 Rendu List"
+                        text="Rendu List"
                         onAction="#showRenduList"
-                        styleClass="navLinkBtn"/>
-            </HBox>
+                        styleClass="nav-link"
+                        maxWidth="Infinity">
+                    <graphic>
+                        <Label text="📑" styleClass="nav-icon"/>
+                    </graphic>
+                </Button>
+            </VBox>
 
-            <!-- Right Side Spacer -->
-            <Region HBox.hgrow="ALWAYS"/>
+            <!-- Spacer -->
+            <Region VBox.vgrow="ALWAYS"/>
 
-            <!-- User Section -->
-            <HBox spacing="10" alignment="CENTER_RIGHT">
-                <Circle fx:id="navAvatar" radius="14" styleClass="navAvatar"/>
-                <Label fx:id="navNameLabel" text="User" styleClass="navName"/>
-            </HBox>
-        </HBox>
-    </top>
+            <!-- Statistics Link (Optional) -->
+            <Button text="Statistics"
+                    onAction="#showStatistics"
+                    styleClass="nav-link"
+                    maxWidth="Infinity"
+                    visible="false"
+                    managed="false">
+                <graphic>
+                    <Label text="📊" styleClass="nav-icon"/>
+                </graphic>
+            </Button>
 
-    <!-- Center: Content Area -->
+            <!-- User Section at Bottom -->
+            <VBox styleClass="user-section" spacing="12">
+                <Separator styleClass="sidebar-separator"/>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Circle fx:id="navAvatar" radius="18" styleClass="user-avatar"/>
+                    <VBox spacing="2">
+                        <Label fx:id="navNameLabel" text="User Name" styleClass="user-name"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Logout Button -->
+                <Button text="Logout" styleClass="logout-btn" maxWidth="Infinity">
+                    <graphic>
+                        <Label text="🚪" styleClass="nav-icon"/>
+                    </graphic>
+                </Button>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- Center: Content Area with Padding -->
     <center>
-        <StackPane fx:id="contentPane" />
+        <StackPane fx:id="contentPane" styleClass="content-area">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
+        </StackPane>
     </center>
 
 </BorderPane>

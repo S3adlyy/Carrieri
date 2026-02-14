@@ -55,22 +55,22 @@
 .bg-orb-1 {
     -fx-fill: #A78BFA;
     -fx-opacity: 0.15;
-    -fx-translate-x: -380;
-    -fx-translate-y: -250;
+    -fx-translate-x: -450;
+    -fx-translate-y: -300;
 }
 
 .bg-orb-2 {
     -fx-fill: #A78BFA;
     -fx-opacity: 0.18;
-    -fx-translate-x: 350;
-    -fx-translate-y: 180;
+    -fx-translate-x: 450;
+    -fx-translate-y: 250;
 }
 
 .bg-orb-3 {
     -fx-fill: #A78BFA;
     -fx-opacity: 0.20;
-    -fx-translate-x: -100;
-    -fx-translate-y: 400;
+    -fx-translate-x: -150;
+    -fx-translate-y: 500;
 }
 
 .main-scroll {
@@ -884,3 +884,424 @@
 .form-actions {
     -fx-padding: 20 0 0 0;
 }
+
+.content-wrapper-large {
+    -fx-padding: 30 40 40 40;
+    -fx-max-width: 1300;
+    -fx-min-width: 1200;
+}
+
+.header-section-large {
+    -fx-padding: 0 0 30 0;
+}
+
+
+.icon-container-large {
+    -fx-padding: 0;
+}
+
+.icon-pulse-large {
+    -fx-fill: radial-gradient(circle, rgba(167, 139, 250, 0.2) 0%, rgba(196, 181, 253, 0.1) 70%, transparent 100%);
+}
+
+.icon-bg-large {
+    -fx-fill: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.5), 30, 0.3, 0, 10);
+}
+
+.icon-symbol-large {
+    -fx-text-fill: white;
+    -fx-font-size: 30px;
+    -fx-font-weight: 300;
+}
+
+.main-title-large {
+    -fx-font-family: 'Fraunces', 'Georgia', serif;
+    -fx-font-size: 42px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0F172A;
+    -fx-letter-spacing: -1px;
+}
+
+.subtitle-large {
+    -fx-font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: 400;
+    -fx-text-fill: #64748B;
+    -fx-max-width: 700;
+}
+
+/* Horizontal Form - Large */
+.horizontal-form-large {
+    -fx-background-color: white;
+    -fx-background-radius: 28;
+    -fx-padding: 32 35 35 35;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.1), 40, 0.2, 0, 20);
+    -fx-border-color: rgba(226, 232, 240, 0.8);
+    -fx-border-width: 1;
+    -fx-border-radius: 28;
+    -fx-min-height: 550;
+    -fx-max-height: 600;
+    -fx-pref-width: 1200;
+}
+
+.form-column-large {
+    -fx-background-color: transparent;
+    -fx-padding: 5;
+}
+
+/* Field Titles - Large */
+.field-title-large {
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 20px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1E293B;
+}
+
+.badge-required-large {
+    -fx-background-color: rgba(239, 68, 68, 0.1);
+    -fx-text-fill: #DC2626;
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-padding: 4 12 4 12;
+    -fx-background-radius: 15;
+}
+
+/* Description Area - Large */
+.description-area-large {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 16;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 2;
+    -fx-border-radius: 16;
+    -fx-padding: 15 18 15 18;
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 15px;
+    -fx-pref-height: 220;
+    -fx-pref-width: 420;
+    -fx-control-inner-background: #F8FAFC;
+}
+
+.description-area-large .content {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 12;
+    -fx-padding: 10;
+}
+
+.description-area-large:focused {
+    -fx-background-color: white;
+    -fx-border-color: #8B5CF6;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.3), 20, 0, 0, 8);
+}
+
+.char-counter-large {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Monospaced';
+}
+
+/* Preview Box - Large */
+.preview-box-large {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 14;
+    -fx-padding: 15 18 15 18;
+    -fx-border-color: rgba(203, 213, 225, 0.6);
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+}
+
+.preview-title-large {
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #334155;
+}
+
+.preview-text-large {
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748B;
+    -fx-wrap-text: true;
+}
+
+/* Score Input - Large */
+.score-input-large {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 14;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 2;
+    -fx-border-radius: 14;
+    -fx-padding: 12 18 12 18;
+    -fx-font-size: 15px;
+    -fx-pref-width: 280;
+}
+
+.field-hint-large {
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: 400;
+    -fx-text-fill: #94A3B8;
+}
+
+/* Score Levels - Large */
+.score-levels-large {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 14;
+    -fx-padding: 15 18 15 18;
+    -fx-spacing: 10;
+}
+
+.score-dot-fail {
+    -fx-fill: #EF4444;
+}
+
+.score-dot-pass {
+    -fx-fill: #F59E0B;
+}
+
+.score-dot-excellent {
+    -fx-fill: #10B981;
+}
+
+.score-level-fail-large {
+    -fx-text-fill: #EF4444;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+
+.score-level-pass-large {
+    -fx-text-fill: #F59E0B;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+
+.score-level-excellent-large {
+    -fx-text-fill: #10B981;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+
+/* Tips Box - Large */
+.tips-box-large {
+    -fx-background-color: linear-gradient(135deg, rgba(167, 139, 250, 0.1) 0%, rgba(196, 181, 253, 0.15) 100%);
+    -fx-background-radius: 18;
+    -fx-padding: 20 22 20 22;
+    -fx-border-color: rgba(139, 92, 246, 0.25);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 18;
+}
+
+.tips-title-large {
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1E293B;
+}
+
+.tips-item-large {
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: 400;
+    -fx-text-fill: #475569;
+    -fx-wrap-text: true;
+}
+
+/* Creator Input - Large */
+.creator-input-large {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 14;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 2;
+    -fx-border-radius: 14;
+    -fx-padding: 12 18 12 18;
+    -fx-font-size: 15px;
+    -fx-pref-width: 280;
+}
+
+/* Verify Button - Large */
+.verify-button-large {
+    -fx-background-color: #8B5CF6;
+    -fx-text-fill: white;
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-padding: 8 25 8 25;
+    -fx-background-radius: 25;
+    -fx-cursor: hand;
+}
+
+.verify-button-large:hover {
+    -fx-background-color: #7C3AED;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.4), 15, 0, 0, 5);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.verified-badge-large {
+    -fx-text-fill: #10B981;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+
+.tracking-badge-large {
+    -fx-background-color: rgba(16, 185, 129, 0.1);
+    -fx-text-fill: #059669;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-padding: 6 12 6 12;
+    -fx-background-radius: 20;
+}
+
+/* User Info - Large */
+.user-info-large {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 18;
+    -fx-padding: 20 22 20 22;
+    -fx-border-color: rgba(226, 232, 240, 0.8);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 18;
+}
+
+.user-separator-large {
+    -fx-background-color: rgba(203, 213, 225, 0.6);
+    -fx-pref-height: 1;
+}
+
+.user-avatar-large {
+    -fx-fill: linear-gradient(135deg, #8B5CF6, #A78BFA);
+    -fx-stroke: white;
+    -fx-stroke-width: 2.5;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.3), 12, 0, 0, 3);
+}
+
+.user-name-large {
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1E293B;
+}
+
+.user-role-large {
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #64748B;
+}
+
+/* Logout Button - Large */
+.logout-button-large {
+    -fx-background-color: transparent;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 25;
+    -fx-text-fill: #EF4444;
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 10 0 10 0;
+    -fx-cursor: hand;
+}
+
+.logout-button-large:hover {
+    -fx-background-color: rgba(239, 68, 68, 0.05);
+    -fx-border-color: #EF4444;
+}
+
+/* Stats Box - Large */
+.stats-box-large {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 15 20 15 20;
+    -fx-border-color: rgba(226, 232, 240, 0.8);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.02), 5, 0, 0, 2);
+}
+
+.stat-label-large {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}
+
+.stat-value-large {
+    -fx-text-fill: #1E293B;
+    -fx-font-size: 22px;
+    -fx-font-weight: 700;
+}
+
+.stats-separator-large {
+    -fx-background-color: #E2E8F0;
+    -fx-pref-width: 1;
+    -fx-min-height: 30;
+}
+
+/* Submit Row - Large */
+.submit-row-large {
+    -fx-padding: 30 0 20 0;
+}
+
+.secondary-button-large {
+    -fx-background-color: transparent;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 2;
+    -fx-border-radius: 30;
+    -fx-text-fill: #64748B;
+    -fx-font-size: 18px;
+    -fx-font-weight: 600;
+    -fx-padding: 12 40 12 40;
+    -fx-cursor: hand;
+}
+
+.secondary-button-large:hover {
+    -fx-background-color: rgba(100, 116, 139, 0.05);
+    -fx-border-color: #94A3B8;
+}
+
+.submit-button-large {
+    -fx-background-color: #8B5CF6;
+    -fx-text-fill: white;
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-padding: 12 50 12 50;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.4), 20, 0, 0, 8);
+}
+
+.submit-button-large:hover {
+    -fx-background-color: #7C3AED;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.5), 25, 0, 0, 10);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+/* Trust Badges - Large */
+.trust-badges-large {
+    -fx-padding: 15 0 0 0;
+}
+
+.trust-icon-large {
+    -fx-font-size: 18px;
+}
+
+.trust-text-large {
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 15px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #64748B;
+}
+
+.trust-separator-large {
+    -fx-font-size: 16px;
+    -fx-text-fill: #CBD5E1;
+}
+
+
+
+
+
+
