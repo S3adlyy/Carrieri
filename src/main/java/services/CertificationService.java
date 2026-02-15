@@ -29,6 +29,7 @@ public class CertificationService implements ICertificationService {
 
     @Override
     public void ajouter(Certification c) throws SQLException {
+        validateCertification(c);
         String sql = "INSERT INTO certification (candidat_id, cours_id, date_obtention) VALUES (?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, c.getCandidatId());
@@ -41,6 +42,7 @@ public class CertificationService implements ICertificationService {
 
     @Override
     public void modifier(Certification c) throws SQLException {
+        validateCertification(c);
         String sql = "UPDATE certification SET candidat_id = ?, cours_id = ?, date_obtention = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, c.getCandidatId());
@@ -195,4 +197,30 @@ public class CertificationService implements ICertificationService {
     public List<Certification> getAll() throws SQLException {
         return read();
     }
+
+    // ============================================
+    // VALIDATION
+    // ============================================
+    private void validateCertification(Certification certification) {
+        // Validation du candidat ID
+        if (certification.getCandidatId() <= 0) {
+            throw new IllegalArgumentException("ID candidat invalide");
+        }
+
+        // Validation du cours ID
+        if (certification.getCoursId() <= 0) {
+            throw new IllegalArgumentException("ID cours invalide");
+        }
+
+        // Validation de la date d'obtention
+        if (certification.getDateObtention() == null) {
+            throw new IllegalArgumentException("La date d'obtention est obligatoire");
+        }
+
+        // Vérifier que la date n'est pas dans le futur
+        if (certification.getDateObtention().isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("La date d'obtention ne peut pas être dans le futur");
+        }
+    }
 }
+

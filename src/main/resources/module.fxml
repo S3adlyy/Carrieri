@@ -22,8 +22,17 @@
 
     <Separator/>
 
+    <!-- Header avec bouton toggle -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Modules existants" style="-fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnToggleForm" text="➕"
+                onAction="#toggleForm"
+                style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 16px; -fx-padding: 8 12;"/>
+    </HBox>
+
     <!-- Formulaire -->
-    <VBox spacing="10">
+    <VBox fx:id="formBox" spacing="10" managed="false" visible="false">
         <Label text="Module" style="-fx-font-weight: bold;"/>
 
         <TextField fx:id="txtTitre" promptText="Titre du module"/>
@@ -40,33 +49,26 @@
             <Button fx:id="btnSupprimer" text="🗑️ SUPPRIMER"
                     onAction="#supprimerModule"
                     style="-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
-            <Button fx:id="btnAnnuler" text="❌ ANNULER"
-                    onAction="#annuler"
-                    style="-fx-background-color: #718096; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
         </HBox>
+        <Separator/>
     </VBox>
 
-    <Separator/>
-
     <!-- Liste des modules -->
-    <Label text="Modules existants" style="-fx-font-weight: bold;"/>
-
-    <TableView fx:id="tableModules" prefHeight="250">
+    <TableView fx:id="tableModules" prefHeight="350" VBox.vgrow="ALWAYS" editable="true">
         <columns>
             <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
-            <TableColumn fx:id="colTitre" text="Titre" prefWidth="150"/>
-            <TableColumn fx:id="colDescription" text="Description" prefWidth="200"/>
-            <TableColumn fx:id="colOrdre" text="Ordre" prefWidth="80"/>
-            <TableColumn fx:id="colActions" text="Actions" prefWidth="180"/>
+            <TableColumn fx:id="colTitre" text="Titre" prefWidth="150" editable="true"/>
+            <TableColumn fx:id="colDescription" text="Description" prefWidth="200" editable="true"/>
+            <TableColumn fx:id="colOrdre" text="Ordre" prefWidth="80" editable="true"/>
+            <TableColumn fx:id="colActions" text="Actions" prefWidth="80"/>
         </columns>
     </TableView>
 
-
-    <!-- Ajoutez ce bouton après la table des modules -->
-    <Button text="🤖 GÉNÉRER QUIZ AUTO"
-            onAction="#genererQuizAutomatique"
-            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;"/>
+    <!-- Boutons d'actions -->
     <HBox spacing="10" alignment="CENTER">
+        <Button text="🤖 GÉNÉRER QUIZ AUTO"
+                onAction="#genererQuizAutomatique"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
         <Button text="📖 Gérer les leçons"
                 onAction="#ajouterLecons"
                 style="-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>

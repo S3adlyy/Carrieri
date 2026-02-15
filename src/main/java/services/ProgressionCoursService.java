@@ -13,6 +13,17 @@ public class ProgressionCoursService implements IProgressionCoursService {
 
     @Override
     public void ajouterOuUpdate(int candidatId, int coursId, int progression) throws SQLException {
+        // Validation
+        if (candidatId <= 0) {
+            throw new IllegalArgumentException("ID candidat invalide");
+        }
+        if (coursId <= 0) {
+            throw new IllegalArgumentException("ID cours invalide");
+        }
+        if (progression < 0 || progression > 100) {
+            throw new IllegalArgumentException("La progression doit être entre 0 et 100");
+        }
+
         String check = "SELECT * FROM progression_cours WHERE candidat_id=? AND cours_id=?";
         PreparedStatement ps = conn.prepareStatement(check);
         ps.setInt(1, candidatId);

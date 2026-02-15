@@ -21,6 +21,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import services.CoursService;
+import services.ModuleService;
+import services.LeconService;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import services.QuizAutoGenerator;
@@ -47,6 +49,9 @@ public class CoursController {
     @FXML private Label lblCount;
     @FXML private Label lblStatus;
     @FXML private TextField txtSearch;
+    @FXML private ScrollPane formPane;
+    @FXML private VBox tablePane;
+    @FXML private Button btnToggleForm;
 
     // TABLE
     @FXML private TableView<Cours> tableCours;
@@ -58,18 +63,20 @@ public class CoursController {
     @FXML private TableColumn<Cours, String> colCompetences;
     @FXML private TableColumn<Cours, Boolean> colObligatoire;
     @FXML private TableColumn<Cours, byte[]> colImage;
+    @FXML private TableColumn<Cours, Void> colActions;
 
     // BUTTONS
     @FXML private Button btnAjouter;
     @FXML private Button btnModifier;
     @FXML private Button btnSupprimer;
-    @FXML private Button btnRefresh;
     @FXML private Button btnChoisirImage;
     @FXML private Label lblImageNom;
     @FXML private ImageView imageViewForm;
     @FXML private VBox card;
 
     private CoursService coursService;
+    private ModuleService moduleService;
+    private LeconService leconService;
     private ObservableList<Cours> coursList;
     private FilteredList<Cours> filteredList;
 
@@ -80,6 +87,8 @@ public class CoursController {
     @FXML
     public void initialize() {
         coursService = new CoursService();
+        moduleService = new ModuleService();
+        leconService = new LeconService();
         coursList = FXCollections.observableArrayList();
         filteredList = new FilteredList<>(coursList, p -> true);
 
@@ -88,8 +97,25 @@ public class CoursController {
         setupSearchListener();
         setupCheckBoxListener();
         setupImageChooser();
+        setupNumericFieldsOnly();
 
-        refresh();
+        btnModifier.setVisible(false);
+        btnModifier.setManaged(false);
+        btnSupprimer.setVisible(false);
+        btnSupprimer.setManaged(false);
+
+        // Start with table visible and form hidden
+        setFormVisible(false);
+        setTableVisible(true);
+
+        loadCours();
+
+        // Remove focus from search field on startup
+        javafx.application.Platform.runLater(() -> {
+            if (tablePane != null) {
+                tablePane.requestFocus();
+            }
+        });
     }
 
     private void setupImageChooser() {
@@ -121,82 +147,67 @@ public class CoursController {
 
     private void setupTableView() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colId.setVisible(false);
+
+        // Titre - Éditable inline
         colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
+        colTitre.setCellFactory(column -> new CoursTitleCell(coursService));
+
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+        colDescription.setCellFactory(column -> new CoursDescriptionCell(coursService));
+
+        // Durée - Éditable inline
         colDuree.setCellValueFactory(new PropertyValueFactory<>("duree"));
+        colDuree.setCellFactory(column -> new CoursDureeCell(coursService));
+
         colNiveau.setCellValueFactory(new PropertyValueFactory<>("niveau"));
+        colNiveau.setCellFactory(column -> new CoursNiveauCell(coursService));
+
         colCompetences.setCellValueFactory(new PropertyValueFactory<>("competences_visees"));
+        colCompetences.setCellFactory(column -> new CoursCompetencesCell(coursService));
+
         colObligatoire.setCellValueFactory(new PropertyValueFactory<>("est_obligatoire"));
+        colObligatoire.setCellFactory(column -> new CoursObligatoireCell(coursService));
+
         colImage.setCellValueFactory(new PropertyValueFactory<>("imageCouverture"));
+        colImage.setCellFactory(column -> new CoursImageCell(coursService));
 
-        // Style pour le niveau
-        colNiveau.setCellFactory(column -> new TableCell<Cours, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(item);
-                    setAlignment(javafx.geometry.Pos.CENTER);
-                    String style = "-fx-font-weight: bold; -fx-padding: 5 10; -fx-background-radius: 15; ";
-                    switch (item.toLowerCase()) {
-                        case "débutant": style += "-fx-text-fill: #10b981; -fx-background-color: #d1fae5;"; break;
-                        case "intermédiaire": style += "-fx-text-fill: #3b82f6; -fx-background-color: #dbeafe;"; break;
-                        case "avancé": style += "-fx-text-fill: #f59e0b; -fx-background-color: #fef3c7;"; break;
-                        case "expert": style += "-fx-text-fill: #8b5cf6; -fx-background-color: #ede9fe;"; break;
-                        case "master": style += "-fx-text-fill: #ef4444; -fx-background-color: #fee2e2;"; break;
-                    }
-                    setStyle(style);
-                }
-            }
-        });
-
-        // Style pour obligatoire
-        colObligatoire.setCellFactory(col -> new TableCell<Cours, Boolean>() {
-            @Override
-            protected void updateItem(Boolean item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    HBox container = new HBox(8);
-                    container.setAlignment(javafx.geometry.Pos.CENTER);
-                    Circle dot = new Circle(6);
-                    Label label = new Label();
-                    if (item) {
-                        dot.setFill(javafx.scene.paint.Color.valueOf("#10b981"));
-                        label.setText("Obligatoire");
-                        label.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
-                    } else {
-                        dot.setFill(javafx.scene.paint.Color.valueOf("#6b7280"));
-                        label.setText("Optionnel");
-                        label.setStyle("-fx-text-fill: #6b7280; -fx-font-weight: bold;");
-                    }
-                    container.getChildren().addAll(dot, label);
-                    setGraphic(container);
-                }
-            }
-        });
-
-        // Image dans la table
-        colImage.setCellFactory(column -> new TableCell<Cours, byte[]>() {
-            private final ImageView imageView = new ImageView();
+        // Colonne Actions avec bouton de suppression
+        colActions.setCellFactory(param -> new TableCell<>() {
+            private final Button btnModules = new Button("📚");
+            private final Button btnLecons = new Button("📖");
+            private final Button btnDelete = new Button("🗑️");
+            private final HBox actions = new HBox(6, btnModules, btnLecons, btnDelete);
             {
-                imageView.setFitWidth(80);
-                imageView.setFitHeight(60);
-                imageView.setPreserveRatio(true);
+                actions.setAlignment(javafx.geometry.Pos.CENTER);
+                btnModules.setStyle("-fx-background-color: #5E548E; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5;");
+                btnLecons.setStyle("-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5;");
+                btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5;");
+
+                btnModules.setOnAction(event -> {
+                    Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (cours != null) {
+                        ouvrirGestionModules(cours);
+                    }
+                });
+                btnLecons.setOnAction(event -> {
+                    Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (cours != null) {
+                        ouvrirGestionLecons(cours);
+                    }
+                });
+                btnDelete.setOnAction(event -> {
+                    Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (cours != null) {
+                        supprimerCoursAvecConfirmation(cours);
+                    }
+                });
             }
             @Override
-            protected void updateItem(byte[] imageBytes, boolean empty) {
-                super.updateItem(imageBytes, empty);
-                if (empty || imageBytes == null) {
-                    setGraphic(null);
-                } else {
-                    imageView.setImage(new Image(new ByteArrayInputStream(imageBytes)));
-                    setGraphic(imageView);
-                }
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : actions);
+                setAlignment(javafx.geometry.Pos.CENTER);
             }
         });
 
@@ -204,7 +215,8 @@ public class CoursController {
         tableCours.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 coursSelectionne = newSelection;
-                chargerCoursFormulaire(newSelection);
+            } else {
+                coursSelectionne = null;
             }
         });
 
@@ -237,6 +249,15 @@ public class CoursController {
         });
     }
 
+    private void setupNumericFieldsOnly() {
+        // Restreindre le champ durée aux nombres uniquement
+        txtDuree.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                txtDuree.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+    }
+
     private void filterTable(String searchText) {
         filteredList.setPredicate(cours -> {
             if (searchText == null || searchText.isEmpty()) return true;
@@ -248,7 +269,7 @@ public class CoursController {
     }
 
     // ============================================
-    // MÉTHODE PRINCIPALE : AJOUTER COURS + CONTENU
+    // MÉTHODE PRINCIPALE : AJOUTER COURS
     // ============================================
     @FXML
     private void ajouter() {
@@ -270,83 +291,17 @@ public class CoursController {
             // 2. Sauvegarder le cours
             coursService.ajouter(nouveauCours);
 
-            // 3. Récupérer le cours avec son ID
-            List<Cours> tousCours = coursService.readByAdmin(currentUserId);
-            Optional<Cours> coursAjouteOpt = tousCours.stream()
-                    .filter(c -> c.getTitre().equals(nouveauCours.getTitre()))
-                    .reduce((first, second) -> second);
+            // 3. Afficher message de succès et recharger la table
+            showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Cours ajouté avec succès !\n\nUtilisez les icônes 📚 et 📖 pour ajouter des modules et leçons.");
 
-            if (coursAjouteOpt.isPresent()) {
-                Cours coursAjoute = coursAjouteOpt.get();
-                // 4. Ouvrir la fenêtre pour ajouter modules et leçons
-                ouvrirAjoutContenu(coursAjoute);
-            }
+            loadCours();
+            clearForm();
 
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur base de données: " + e.getMessage());
         }
     }
 
-    // ============================================
-    // OUVRIR LA FENÊTRE D'AJOUT DE CONTENU
-    // ============================================
-    private void ouvrirAjoutContenu(Cours cours) {
-        try {
-            // Charger le ModuleController pour ajouter des modules
-            FXMLLoader loaderModule = new FXMLLoader(getClass().getResource("/module.fxml"));
-            Parent rootModule = loaderModule.load();
-
-            ModuleController moduleController = loaderModule.getController();
-            moduleController.setCoursId(cours.getId());
-            moduleController.setModeAjoutApresCours(true);
-
-            Stage stageModule = new Stage();
-            stageModule.setTitle("Ajouter des modules - " + cours.getTitre());
-            stageModule.setScene(new Scene(rootModule));
-            stageModule.initModality(Modality.APPLICATION_MODAL);
-
-            // Attendre que la fenêtre des modules soit fermée
-            stageModule.showAndWait();
-
-            // Proposer d'ajouter des leçons
-            if (moduleController.aDesModulesAjoutes()) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("✅ Cours ajouté");
-                alert.setHeaderText("Cours '" + cours.getTitre() + "' ajouté avec succès !");
-                alert.setContentText("Voulez-vous ajouter des leçons maintenant ?");
-
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    ouvrirAjoutLecons(cours.getId());
-                }
-            }
-
-            refresh();
-            clearForm();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void ouvrirAjoutLecons(int coursId) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/lecon.fxml"));
-            Parent root = loader.load();
-
-            LeconController leconController = loader.getController();
-            leconController.setCoursId(coursId);
-
-            Stage stage = new Stage();
-            stage.setTitle("Ajouter des leçons");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.show();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     // ============================================
     // MODIFIER COURS
@@ -377,6 +332,7 @@ public class CoursController {
 
             showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Cours modifié avec succès !");
             clearForm();
+            loadCours();
 
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "❌ Erreur", e.getMessage());
@@ -392,18 +348,21 @@ public class CoursController {
             showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Veuillez sélectionner un cours à supprimer !");
             return;
         }
+        supprimerCoursAvecConfirmation(coursSelectionne);
+    }
 
+    private void supprimerCoursAvecConfirmation(Cours cours) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("🗑️ Confirmation");
         confirm.setHeaderText("Supprimer le cours");
-        confirm.setContentText("Êtes-vous sûr de vouloir supprimer le cours :\n\"" + coursSelectionne.getTitre() + "\" ?\n\nTous les modules et leçons associés seront également supprimés !");
+        confirm.setContentText("Êtes-vous sûr de vouloir supprimer le cours :\n\"" + cours.getTitre() + "\" ?\n\nTous les modules et leçons associés seront également supprimés !");
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                coursService.supprimer(coursSelectionne.getId());
+                coursService.supprimer(cours.getId());
                 showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Cours supprimé !");
-                refresh();
+                loadCours();
                 clearForm();
             } catch (SQLException e) {
                 showAlert(Alert.AlertType.ERROR, "❌ Erreur", e.getMessage());
@@ -411,8 +370,7 @@ public class CoursController {
         }
     }
 
-    @FXML
-    private void refresh() {
+    private void loadCours() {
         try {
             List<Cours> list = coursService.readByAdmin(currentUserId);
             coursList.setAll(list);
@@ -432,22 +390,7 @@ public class CoursController {
             showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Veuillez sélectionner un cours !");
             return;
         }
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/module.fxml"));
-            Parent root = loader.load();
-
-            ModuleController controller = loader.getController();
-            controller.setCoursId(coursSelectionne.getId());
-
-            Stage stage = new Stage();
-            stage.setTitle("Gestion des modules - " + coursSelectionne.getTitre());
-            stage.setScene(new Scene(root));
-            stage.show();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ouvrirGestionModules(coursSelectionne);
     }
 
     @FXML
@@ -456,21 +399,52 @@ public class CoursController {
             showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Veuillez sélectionner un cours !");
             return;
         }
+        ouvrirGestionLecons(coursSelectionne);
+    }
 
+    private void ouvrirGestionModules(Cours cours) {
         try {
+            System.out.println("📚 Ouverture gestion modules pour cours ID: " + cours.getId() + " - " + cours.getTitre());
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/module.fxml"));
+            Parent root = loader.load();
+
+            ModuleController controller = loader.getController();
+            controller.setCoursId(cours.getId());
+
+            Stage stage = new Stage();
+            stage.setTitle("Gestion des modules - " + cours.getTitre());
+            stage.setScene(new Scene(root));
+            stage.show();
+
+            System.out.println("✅ Fenêtre modules ouverte avec succès");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Impossible d'ouvrir la gestion des modules:\n" + e.getMessage());
+        }
+    }
+
+    private void ouvrirGestionLecons(Cours cours) {
+        try {
+            System.out.println("📖 Ouverture gestion leçons pour cours ID: " + cours.getId() + " - " + cours.getTitre());
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/lecon.fxml"));
             Parent root = loader.load();
 
             LeconController controller = loader.getController();
-            controller.setCoursId(coursSelectionne.getId());
+            controller.setCoursId(cours.getId());
 
             Stage stage = new Stage();
-            stage.setTitle("Gestion des leçons - " + coursSelectionne.getTitre());
+            stage.setTitle("Gestion des leçons - " + cours.getTitre());
             stage.setScene(new Scene(root));
             stage.show();
 
+            System.out.println("✅ Fenêtre leçons ouverte avec succès");
+
         } catch (Exception e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Impossible d'ouvrir la gestion des leçons:\n" + e.getMessage());
         }
     }
 
@@ -482,6 +456,21 @@ public class CoursController {
     private void genererTestFinalAutomatique() {
         if (coursSelectionne == null) {
             showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Sélectionnez d'abord un cours");
+            return;
+        }
+
+        List<entities.Module> modules = moduleService.getModulesByCours(coursSelectionne.getId());
+        if (modules == null || modules.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Impossible de générer un test : ce cours ne contient aucun module.");
+            return;
+        }
+
+        boolean hasLecons = modules.stream().anyMatch(m -> {
+            List<entities.Lecon> lecons = leconService.getLeconsByModule(m.getId());
+            return lecons != null && !lecons.isEmpty();
+        });
+        if (!hasLecons) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Impossible de générer un test : les modules sont vides (aucune leçon).");
             return;
         }
 
@@ -525,17 +514,54 @@ public class CoursController {
     private boolean validateForm() {
         StringBuilder errors = new StringBuilder();
 
-        if (txtTitre.getText().trim().isEmpty()) errors.append("• Le titre est obligatoire\n");
-        if (comboNiveau.getValue() == null) errors.append("• Le niveau est obligatoire\n");
+        // Validation du titre
+        String titre = txtTitre.getText().trim();
+        if (titre.isEmpty()) {
+            errors.append("• Le titre est obligatoire\n");
+        } else if (titre.length() < 3) {
+            errors.append("• Le titre doit contenir au moins 3 caractères\n");
+        } else if (titre.length() > 200) {
+            errors.append("• Le titre ne peut pas dépasser 200 caractères\n");
+        }
+
+        // Validation de la description
+        String description = txtDescription.getText().trim();
+        if (description.isEmpty()) {
+            errors.append("• La description est obligatoire\n");
+        } else if (description.length() < 10) {
+            errors.append("• La description doit contenir au moins 10 caractères\n");
+        } else if (description.length() > 1000) {
+            errors.append("• La description ne peut pas dépasser 1000 caractères\n");
+        }
+
+        // Validation du niveau
+        if (comboNiveau.getValue() == null) {
+            errors.append("• Le niveau est obligatoire\n");
+        }
+
+        // Validation de la durée
         if (txtDuree.getText().trim().isEmpty()) {
             errors.append("• La durée est obligatoire\n");
         } else {
             try {
-                Integer.parseInt(txtDuree.getText());
+                int duree = Integer.parseInt(txtDuree.getText().trim());
+                if (duree <= 0) {
+                    errors.append("• La durée doit être un nombre positif\n");
+                } else if (duree > 1000) {
+                    errors.append("• La durée ne peut pas dépasser 1000 heures\n");
+                }
             } catch (NumberFormatException e) {
-                errors.append("• La durée doit être un nombre\n");
+                errors.append("• La durée doit être un nombre entier valide\n");
             }
         }
+
+        // Validation des compétences
+        String competences = txtCompetences.getText().trim();
+        if (!competences.isEmpty() && competences.length() > 500) {
+            errors.append("• Les compétences ne peuvent pas dépasser 500 caractères\n");
+        }
+
+        // Validation de l'image
         if (coursSelectionne == null && imageBytesSelected == null) {
             errors.append("• L'image du cours est obligatoire\n");
         }
@@ -558,6 +584,9 @@ public class CoursController {
         imageBytesSelected = null;
         lblImageNom.setText("Aucune image");
         coursSelectionne = null;
+        tableCours.getSelectionModel().clearSelection();
+        setFormVisible(false);
+        setTableVisible(true);
     }
 
     private void updateCount() {
@@ -570,6 +599,43 @@ public class CoursController {
         lblStatus.setText("📌 " + message);
     }
 
+    private void setFormVisible(boolean visible) {
+        if (formPane != null) {
+            formPane.setVisible(visible);
+            formPane.setManaged(visible);
+        }
+        if (btnToggleForm != null) {
+            btnToggleForm.setText(visible ? "✖️" : "➕");
+            btnToggleForm.setStyle(visible ?
+                "-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 16px; -fx-padding: 8 12;" :
+                "-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 16px; -fx-padding: 8 12;");
+        }
+    }
+
+    private void setTableVisible(boolean visible) {
+        if (tablePane != null) {
+            tablePane.setVisible(visible);
+            tablePane.setManaged(visible);
+        }
+    }
+
+    @FXML
+    private void toggleForm() {
+        boolean isVisible = formPane != null && formPane.isVisible();
+        if (!isVisible) {
+            // Show form for adding, hide table
+            clearForm();
+            coursSelectionne = null;
+            tableCours.getSelectionModel().clearSelection();
+            setTableVisible(false);
+            setFormVisible(true);
+        } else {
+            // Hide form, show table
+            setFormVisible(false);
+            setTableVisible(true);
+        }
+    }
+
     private void showAlert(Alert.AlertType type, String title, String msg) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -577,4 +643,10 @@ public class CoursController {
         alert.setContentText(msg);
         alert.showAndWait();
     }
+
+    // ============================================
+    // INNER CLASSES - CELLULES ÉDITABLES
+    // ============================================
+
+    // Removed: inner editable cell classes (now in separate files)
 }

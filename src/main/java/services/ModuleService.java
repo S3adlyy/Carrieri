@@ -13,12 +13,13 @@ public class ModuleService implements IModuleService {  // ← AJOUTER implement
 
     @Override  // ← AJOUTER @Override
     public void ajouter(Module module) {
+        validateModule(module);
         String sql = "INSERT INTO module (titre, description, ordre, cours_id) VALUES (?, ?, ?, ?)";
 
         try {
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, module.getTitre());
-            ps.setString(2, module.getDescription());
+            ps.setString(1, module.getTitre().trim());
+            ps.setString(2, module.getDescription().trim());
             ps.setInt(3, module.getOrdre());
             ps.setInt(4, module.getCoursId());
             int rows = ps.executeUpdate();
@@ -33,12 +34,13 @@ public class ModuleService implements IModuleService {  // ← AJOUTER implement
 
     @Override
     public void modifier(Module module) {
+        validateModule(module);
         String sql = "UPDATE module SET titre=?, description=?, ordre=?, cours_id=? WHERE id=?";
 
         try {
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, module.getTitre());
-            ps.setString(2, module.getDescription());
+            ps.setString(1, module.getTitre().trim());
+            ps.setString(2, module.getDescription().trim());
             ps.setInt(3, module.getOrdre());
             ps.setInt(4, module.getCoursId());
             ps.setInt(5, module.getId());
@@ -167,4 +169,45 @@ public class ModuleService implements IModuleService {  // ← AJOUTER implement
         }
         return null;
     }
+
+    // ============================================
+    // VALIDATION
+    // ============================================
+    private void validateModule(Module module) {
+        // Validation du titre
+        if (module.getTitre() == null || module.getTitre().trim().isEmpty()) {
+            throw new IllegalArgumentException("Le titre du module est obligatoire");
+        }
+        if (module.getTitre().trim().length() < 3) {
+            throw new IllegalArgumentException("Le titre doit contenir au moins 3 caractères");
+        }
+        if (module.getTitre().length() > 200) {
+            throw new IllegalArgumentException("Le titre ne peut pas dépasser 200 caractères");
+        }
+
+        // Validation de la description
+        if (module.getDescription() == null || module.getDescription().trim().isEmpty()) {
+            throw new IllegalArgumentException("La description est obligatoire");
+        }
+        if (module.getDescription().trim().length() < 10) {
+            throw new IllegalArgumentException("La description doit contenir au moins 10 caractères");
+        }
+        if (module.getDescription().length() > 1000) {
+            throw new IllegalArgumentException("La description ne peut pas dépasser 1000 caractères");
+        }
+
+        // Validation de l'ordre
+        if (module.getOrdre() <= 0) {
+            throw new IllegalArgumentException("L'ordre doit être un nombre positif");
+        }
+        if (module.getOrdre() > 100) {
+            throw new IllegalArgumentException("L'ordre ne peut pas dépasser 100");
+        }
+
+        // Validation du cours ID
+        if (module.getCoursId() <= 0) {
+            throw new IllegalArgumentException("Le module doit être associé à un cours valide");
+        }
+    }
 }
+

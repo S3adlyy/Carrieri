@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import services.LeconService;
@@ -31,6 +32,7 @@ public class LeconController {
     @FXML private ComboBox<String> comboType;
     @FXML private ComboBox<Module> comboModules;
     @FXML private Label lblInfo;
+    @FXML private VBox formBox;
 
     // Vidéo fields - SIMPLE
     @FXML private Button btnChoisirVideo;
@@ -42,7 +44,7 @@ public class LeconController {
     @FXML private TableColumn<Lecon, Integer> colId;
     @FXML private TableColumn<Lecon, String> colTitre;
     @FXML private TableColumn<Lecon, String> colContenu;
-    @FXML private TableColumn<Lecon, String> colVideo;
+    @FXML private TableColumn<Lecon, byte[]> colVideo;
     @FXML private TableColumn<Lecon, Integer> colOrdre;
     @FXML private TableColumn<Lecon, String> colType;
     @FXML private TableColumn<Lecon, Void> colActions;
@@ -51,7 +53,7 @@ public class LeconController {
     @FXML private Button btnAjouter;
     @FXML private Button btnModifier;
     @FXML private Button btnSupprimer;
-    @FXML private Button btnAnnuler;
+    @FXML private Button btnToggleForm;
 
     // ============================================
     // SERVICES & DATA
@@ -80,12 +82,24 @@ public class LeconController {
         setupTableColumns();
         setupComboBoxes();
         setupVideoChooser();  // ✅ VERSION SIMPLE
+        setupNumericFieldsOnly();
 
         comboType.setItems(FXCollections.observableArrayList("Leçon", "Quiz", "Examen"));
         comboType.setValue("Leçon");
 
         btnModifier.setDisable(true);
         btnSupprimer.setDisable(true);
+        btnModifier.setVisible(false);
+        btnModifier.setManaged(false);
+        btnSupprimer.setVisible(false);
+        btnSupprimer.setManaged(false);
+        lblInfo.setVisible(false);
+        lblInfo.setManaged(false);
+        txtOrdre.setVisible(false);
+        txtOrdre.setManaged(false);
+
+        // Start with form hidden
+        setFormVisible(false);
 
         comboModules.valueProperty().addListener((obs, oldModule, newModule) -> {
             if (newModule != null) {
@@ -100,10 +114,12 @@ public class LeconController {
                 chargerLeconFormulaire(newSelection);
                 btnModifier.setDisable(false);
                 btnSupprimer.setDisable(false);
+                setFormVisible(false);
             } else {
                 leconSelectionnee = null;
                 btnModifier.setDisable(true);
                 btnSupprimer.setDisable(true);
+                txtOrdre.clear();
             }
         });
     }
@@ -137,10 +153,24 @@ public class LeconController {
         this.coursId = id;
         this.moduleId = 0;
         lblInfo.setText("Cours ID: " + id);
+        lblInfo.setVisible(true);
+        lblInfo.setManaged(true);
         comboModules.setDisable(false);
         chargerModules();
+
+        // Charger TOUTES les leçons du cours
+        chargerToutesLeconsParCours(id);
+    }
+
+    private void chargerToutesLeconsParCours(int coursId) {
         leconList.clear();
+        List<Module> modules = moduleService.getModulesByCours(coursId);
+        for (Module module : modules) {
+            List<Lecon> lecons = leconService.getLeconsByModule(module.getId());
+            leconList.addAll(lecons);
+        }
         tableLecons.setItems(leconList);
+        tableLecons.refresh();
     }
 
     // ============================================
@@ -221,6 +251,15 @@ public class LeconController {
         }
     }
 
+    private void setupNumericFieldsOnly() {
+        // Restreindre le champ ordre aux nombres uniquement
+        txtOrdre.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                txtOrdre.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+    }
+
     private void chargerLeconsParModule(int moduleId) {
         leconList.clear();
         List<Lecon> lecons = leconService.getLeconsByModule(moduleId);
@@ -255,19 +294,22 @@ public class LeconController {
 
     private void setupTableColumns() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colId.setVisible(false);
+
+        // Titre - Éditable inline
         colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
+        colTitre.setCellFactory(column -> new LeconTitleCell(leconService));
+
         colContenu.setCellValueFactory(new PropertyValueFactory<>("contenu"));
+        colContenu.setCellFactory(column -> new LeconContenuCell(leconService));
 
-        colVideo.setCellValueFactory(data -> {
-            byte[] video = data.getValue().getVideo();
-            if (video != null && video.length > 0) {
-                return new javafx.beans.property.SimpleStringProperty("🎥 " + formatTaille(video.length));
-            } else {
-                return new javafx.beans.property.SimpleStringProperty("❌");
-            }
-        });
+        // Vidéo - Éditable inline
+        colVideo.setCellValueFactory(new PropertyValueFactory<>("video"));
+        colVideo.setCellFactory(column -> new LeconVideoCell(leconService));
 
+        // Ordre - Éditable inline
         colOrdre.setCellValueFactory(new PropertyValueFactory<>("ordre"));
+        colOrdre.setCellFactory(column -> new LeconOrdreCell(leconService, leconList));
 
         colType.setCellValueFactory(data -> {
             String type = data.getValue().getType();
@@ -277,30 +319,23 @@ public class LeconController {
             return new javafx.beans.property.SimpleStringProperty(display);
         });
 
+        // Colonne Actions avec bouton de suppression uniquement
         colActions.setCellFactory(param -> new TableCell<>() {
-            private final Button btnEdit = new Button("✏️");
             private final Button btnDelete = new Button("🗑️");
-            private final HBox box = new HBox(5);
             {
-                btnEdit.setStyle("-fx-background-color: #E0B1CB; -fx-text-fill: white; -fx-background-radius: 5;");
-                btnEdit.setOnAction(event -> {
-                    Lecon lecon = getTableView().getItems().get(getIndex());
-                    tableLecons.getSelectionModel().select(lecon);
-                });
-
-                btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-background-radius: 5;");
+                btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5 10; -fx-background-radius: 5;");
                 btnDelete.setOnAction(event -> {
-                    Lecon lecon = getTableView().getItems().get(getIndex());
-                    supprimerLeconSelectionnee(lecon);
+                    Lecon lecon = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (lecon != null) {
+                        supprimerLeconSelectionnee(lecon);
+                    }
                 });
-
-                box.getChildren().addAll(btnEdit, btnDelete);
-                box.setAlignment(javafx.geometry.Pos.CENTER);
             }
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : box);
+                setGraphic(empty ? null : btnDelete);
+                setAlignment(javafx.geometry.Pos.CENTER);
             }
         });
 
@@ -344,11 +379,18 @@ public class LeconController {
             return;
         }
 
-        int ordre = 1;
-        try {
-            ordre = Integer.parseInt(txtOrdre.getText().trim());
-        } catch (NumberFormatException e) {
-            ordre = leconList.size() + 1;
+        int ordre = leconList.stream().mapToInt(Lecon::getOrdre).max().orElse(0) + 1;
+
+        // Vérifier que l'ordre n'existe pas déjà dans ce module
+        final int ordreVerif = ordre;
+        final int moduleVerif = targetModuleId;
+        boolean ordreExiste = leconList.stream()
+                .anyMatch(l -> l.getOrdre() == ordreVerif && l.getModuleId() == moduleVerif);
+        
+        if (ordreExiste) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Ordre déjà utilisé", 
+                    "Une leçon avec l'ordre " + ordre + " existe déjà dans ce module.\nVeuillez choisir un autre ordre.");
+            return;
         }
 
         String type = comboType.getValue();
@@ -379,11 +421,27 @@ public class LeconController {
             return;
         }
 
+        if (!validerFormulaire()) return;
+
         int ordre = 1;
         try {
             ordre = Integer.parseInt(txtOrdre.getText().trim());
         } catch (NumberFormatException e) {
             ordre = leconSelectionnee.getOrdre();
+        }
+
+        // Vérifier que l'ordre n'est pas utilisé par une autre leçon du même module
+        final int ordreVerif = ordre;
+        final int moduleVerif = leconSelectionnee.getModuleId();
+        boolean ordreExiste = leconList.stream()
+                .anyMatch(l -> l.getOrdre() == ordreVerif && 
+                              l.getModuleId() == moduleVerif && 
+                              l.getId() != leconSelectionnee.getId());
+        
+        if (ordreExiste) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Ordre déjà utilisé", 
+                    "Une autre leçon a déjà l'ordre " + ordre + " dans ce module.\nVeuillez choisir un autre ordre.");
+            return;
         }
 
         String type = comboType.getValue();
@@ -447,10 +505,59 @@ public class LeconController {
     }
 
     private boolean validerFormulaire() {
-        if (txtTitre.getText().trim().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "⚠️", "Le titre est obligatoire");
+        StringBuilder errors = new StringBuilder();
+
+        // Validation du titre
+        String titre = txtTitre.getText().trim();
+        if (titre.isEmpty()) {
+            errors.append("• Le titre est obligatoire\n");
+        } else if (titre.length() < 3) {
+            errors.append("• Le titre doit contenir au moins 3 caractères\n");
+        } else if (titre.length() > 200) {
+            errors.append("• Le titre ne peut pas dépasser 200 caractères\n");
+        }
+
+        // Validation du contenu
+        String contenu = txtContenu.getText().trim();
+        if (contenu.isEmpty()) {
+            errors.append("• Le contenu est obligatoire\n");
+        } else if (contenu.length() < 10) {
+            errors.append("• Le contenu doit contenir au moins 10 caractères\n");
+        } else if (contenu.length() > 5000) {
+            errors.append("• Le contenu ne peut pas dépasser 5000 caractères\n");
+        }
+
+        // Validation de l'ordre
+        String ordreText = txtOrdre.getText().trim();
+        if (!ordreText.isEmpty()) {
+            try {
+                int ordre = Integer.parseInt(ordreText);
+                if (ordre <= 0) {
+                    errors.append("• L'ordre doit être un nombre positif\n");
+                } else if (ordre > 100) {
+                    errors.append("• L'ordre ne peut pas dépasser 100\n");
+                }
+            } catch (NumberFormatException e) {
+                errors.append("• L'ordre doit être un nombre entier valide\n");
+            }
+        }
+
+        // Validation du type
+        String type = comboType.getValue();
+        if (type == null || type.trim().isEmpty()) {
+            errors.append("• Le type de leçon est obligatoire\n");
+        }
+
+        // Validation de la vidéo (taille maximale = limite MySQL max_allowed_packet)
+        if (videoBytes != null && videoBytes.length > 64 * 1024 * 1024) { // 64 MB max
+            errors.append("• La vidéo ne peut pas dépasser 64 MB (limite MySQL)\n");
+        }
+
+        if (errors.length() > 0) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Validation", "Veuillez corriger :\n\n" + errors);
             return false;
         }
+
         return true;
     }
 
@@ -471,6 +578,34 @@ public class LeconController {
         btnModifier.setDisable(true);
         btnSupprimer.setDisable(true);
         txtTitre.requestFocus();
+        setFormVisible(true);
+    }
+
+    private void setFormVisible(boolean visible) {
+        if (formBox != null) {
+            formBox.setVisible(visible);
+            formBox.setManaged(visible);
+        }
+        if (btnToggleForm != null) {
+            btnToggleForm.setText(visible ? "✖️" : "➕");
+            btnToggleForm.setStyle(visible ?
+                "-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 16px; -fx-padding: 8 12;" :
+                "-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 16px; -fx-padding: 8 12;");
+        }
+    }
+
+    @FXML
+    private void toggleForm() {
+        boolean isVisible = formBox != null && formBox.isVisible();
+        if (!isVisible) {
+            // Show form for adding
+            clearFields();
+            leconSelectionnee = null;
+            tableLecons.getSelectionModel().clearSelection();
+        } else {
+            // Hide form
+            setFormVisible(false);
+        }
     }
 
     private void showAlert(Alert.AlertType type, String title, String msg) {
@@ -481,3 +616,4 @@ public class LeconController {
         alert.showAndWait();
     }
 }
+

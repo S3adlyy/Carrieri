@@ -9,10 +9,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.scene.layout.VBox;
+
 import services.ModuleService;
 import services.QuizAutoGenerator;
+import services.LeconService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,6 +28,7 @@ public class ModuleController {
     @FXML private TextArea txtDescription;
     @FXML private TextField txtOrdre;
     @FXML private Label lblCoursInfo;
+    @FXML private VBox formBox;
 
     @FXML private TableView<Module> tableModules;
     @FXML private TableColumn<Module, Integer> colId;
@@ -34,12 +37,14 @@ public class ModuleController {
     @FXML private TableColumn<Module, Integer> colOrdre;
     @FXML private TableColumn<Module, Void> colActions;
 
+    // Buttons
     @FXML private Button btnAjouter;
     @FXML private Button btnModifier;
     @FXML private Button btnSupprimer;
-    @FXML private Button btnAnnuler;
+    @FXML private Button btnToggleForm;
 
     private ModuleService moduleService = new ModuleService();
+    private LeconService leconService = new LeconService();
     private ObservableList<Module> moduleList = FXCollections.observableArrayList();
 
     private int coursId = 0;
@@ -50,9 +55,21 @@ public class ModuleController {
     @FXML
     public void initialize() {
         setupTableColumns();
+        setupNumericFieldsOnly();
 
         btnModifier.setDisable(true);
         btnSupprimer.setDisable(true);
+        btnModifier.setVisible(false);
+        btnModifier.setManaged(false);
+        btnSupprimer.setVisible(false);
+        btnSupprimer.setManaged(false);
+        lblCoursInfo.setVisible(false);
+        lblCoursInfo.setManaged(false);
+        txtOrdre.setVisible(false);
+        txtOrdre.setManaged(false);
+
+        // Start with form hidden
+        setFormVisible(false);
 
         tableModules.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
@@ -60,14 +77,24 @@ public class ModuleController {
                 chargerModuleFormulaire(newSelection);
                 btnModifier.setDisable(false);
                 btnSupprimer.setDisable(false);
+                setFormVisible(false);
             } else {
                 moduleSelectionne = null;
                 btnModifier.setDisable(true);
                 btnSupprimer.setDisable(true);
+                txtOrdre.clear();
             }
         });
     }
 
+    private void setupNumericFieldsOnly() {
+        // Restreindre le champ ordre aux nombres uniquement
+        txtOrdre.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                txtOrdre.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+    }
     public void setCoursId(int id) {
         this.coursId = id;
         lblCoursInfo.setText("Cours ID: " + id);
@@ -90,36 +117,36 @@ public class ModuleController {
 
     private void setupTableColumns() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colId.setVisible(false);
+
+        // Titre - Éditable inline
         colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
+        colTitre.setCellFactory(column -> new ModuleTitleCell(moduleService));
+
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+        colDescription.setCellFactory(column -> new ModuleDescriptionCell(moduleService));
+
+        // Ordre - Éditable inline
         colOrdre.setCellValueFactory(new PropertyValueFactory<>("ordre"));
+        colOrdre.setCellFactory(column -> new ModuleOrdreCell(moduleService, moduleList));
 
+        // Colonne Actions avec bouton de suppression uniquement
         colActions.setCellFactory(param -> new TableCell<>() {
-            private final Button btnEdit = new Button("✏️");
             private final Button btnDelete = new Button("🗑️");
-            private final HBox box = new HBox(5);
-
             {
-                btnEdit.setStyle("-fx-background-color: #E0B1CB; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 5 10; -fx-background-radius: 5;");
-                btnEdit.setOnAction(event -> {
-                    Module module = getTableView().getItems().get(getIndex());
-                    tableModules.getSelectionModel().select(module);
-                    chargerModuleFormulaire(module);
-                });
-
-                btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 5 10; -fx-background-radius: 5;");
+                btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5 10; -fx-background-radius: 5;");
                 btnDelete.setOnAction(event -> {
-                    Module module = getTableView().getItems().get(getIndex());
-                    supprimerModuleSelectionne(module);
+                    Module module = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (module != null) {
+                        supprimerModuleSelectionne(module);
+                    }
                 });
-
-                box.getChildren().addAll(btnEdit, btnDelete);
-                box.setAlignment(javafx.geometry.Pos.CENTER);
             }
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : box);
+                setGraphic(empty ? null : btnDelete);
+                setAlignment(javafx.geometry.Pos.CENTER);
             }
         });
 
@@ -137,11 +164,17 @@ public class ModuleController {
     private void ajouterModule() {
         if (!validerFormulaire()) return;
 
-        int ordre = 1;
-        try {
-            ordre = Integer.parseInt(txtOrdre.getText().trim());
-        } catch (NumberFormatException e) {
-            ordre = moduleList.size() + 1;
+        int ordre = moduleList.stream().mapToInt(Module::getOrdre).max().orElse(0) + 1;
+
+        // Vérifier que l'ordre n'existe pas déjà
+        final int ordreVerif = ordre;
+        boolean ordreExiste = moduleList.stream()
+                .anyMatch(m -> m.getOrdre() == ordreVerif);
+        
+        if (ordreExiste) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Ordre déjà utilisé", 
+                    "Un module avec l'ordre " + ordre + " existe déjà.\nVeuillez choisir un autre ordre.");
+            return;
         }
 
         Module module = new Module(
@@ -176,11 +209,24 @@ public class ModuleController {
             return;
         }
 
+        if (!validerFormulaire()) return;
+
         int ordre = 1;
         try {
             ordre = Integer.parseInt(txtOrdre.getText().trim());
         } catch (NumberFormatException e) {
             ordre = moduleSelectionne.getOrdre();
+        }
+
+        // Vérifier que l'ordre n'est pas utilisé par un autre module
+        final int ordreVerif = ordre;
+        boolean ordreExiste = moduleList.stream()
+                .anyMatch(m -> m.getOrdre() == ordreVerif && m.getId() != moduleSelectionne.getId());
+        
+        if (ordreExiste) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Ordre déjà utilisé", 
+                    "Un autre module a déjà l'ordre " + ordre + ".\nVeuillez choisir un autre ordre.");
+            return;
         }
 
         moduleSelectionne.setTitre(txtTitre.getText().trim());
@@ -223,11 +269,6 @@ public class ModuleController {
     }
 
     @FXML
-    private void annuler() {
-        clearFields();
-    }
-
-    @FXML
     private void ajouterLecons() {
         if (moduleSelectionne == null) {
             showAlert(Alert.AlertType.WARNING, "⚠️", "Sélectionnez un module d'abord");
@@ -261,6 +302,12 @@ public class ModuleController {
     private void genererQuizAutomatique() {
         if (moduleSelectionne == null) {
             showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Sélectionnez d'abord un module");
+            return;
+        }
+
+        List<entities.Lecon> lecons = leconService.getLeconsByModule(moduleSelectionne.getId());
+        if (lecons == null || lecons.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Impossible de générer un quiz : ce module ne contient aucune leçon.");
             return;
         }
 
@@ -306,10 +353,48 @@ public class ModuleController {
     }
 
     private boolean validerFormulaire() {
-        if (txtTitre.getText().trim().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "⚠️", "Le titre du module est obligatoire");
+        StringBuilder errors = new StringBuilder();
+
+        // Validation du titre
+        String titre = txtTitre.getText().trim();
+        if (titre.isEmpty()) {
+            errors.append("• Le titre du module est obligatoire\n");
+        } else if (titre.length() < 3) {
+            errors.append("• Le titre doit contenir au moins 3 caractères\n");
+        } else if (titre.length() > 200) {
+            errors.append("• Le titre ne peut pas dépasser 200 caractères\n");
+        }
+
+        // Validation de la description
+        String description = txtDescription.getText().trim();
+        if (description.isEmpty()) {
+            errors.append("• La description est obligatoire\n");
+        } else if (description.length() < 10) {
+            errors.append("• La description doit contenir au moins 10 caractères\n");
+        } else if (description.length() > 1000) {
+            errors.append("• La description ne peut pas dépasser 1000 caractères\n");
+        }
+
+        // Validation de l'ordre
+        String ordreText = txtOrdre.getText().trim();
+        if (!ordreText.isEmpty()) {
+            try {
+                int ordre = Integer.parseInt(ordreText);
+                if (ordre <= 0) {
+                    errors.append("• L'ordre doit être un nombre positif\n");
+                } else if (ordre > 100) {
+                    errors.append("• L'ordre ne peut pas dépasser 100\n");
+                }
+            } catch (NumberFormatException e) {
+                errors.append("• L'ordre doit être un nombre entier valide\n");
+            }
+        }
+
+        if (errors.length() > 0) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Validation", "Veuillez corriger :\n\n" + errors);
             return false;
         }
+
         return true;
     }
 
@@ -322,6 +407,34 @@ public class ModuleController {
         btnModifier.setDisable(true);
         btnSupprimer.setDisable(true);
         txtTitre.requestFocus();
+        setFormVisible(true);
+    }
+
+    private void setFormVisible(boolean visible) {
+        if (formBox != null) {
+            formBox.setVisible(visible);
+            formBox.setManaged(visible);
+        }
+        if (btnToggleForm != null) {
+            btnToggleForm.setText(visible ? "✖️" : "➕");
+            btnToggleForm.setStyle(visible ?
+                "-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 16px; -fx-padding: 8 12;" :
+                "-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 16px; -fx-padding: 8 12;");
+        }
+    }
+
+    @FXML
+    private void toggleForm() {
+        boolean isVisible = formBox != null && formBox.isVisible();
+        if (!isVisible) {
+            // Show form for adding
+            clearFields();
+            moduleSelectionne = null;
+            tableModules.getSelectionModel().clearSelection();
+        } else {
+            // Hide form
+            setFormVisible(false);
+        }
     }
 
     private void showAlert(Alert.AlertType type, String title, String msg) {
@@ -332,3 +445,4 @@ public class ModuleController {
         alert.showAndWait();
     }
 }
+

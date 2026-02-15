@@ -106,9 +106,44 @@ public class CoursService implements ICoursService {
     }
 
     private void validateCours(Cours cours) {
-        if (cours.getTitre() == null || cours.getTitre().trim().isEmpty())
+        // Validation du titre
+        if (cours.getTitre() == null || cours.getTitre().trim().isEmpty()) {
             throw new IllegalArgumentException("Le titre est obligatoire");
-        if (cours.getNiveau() == null || cours.getNiveau().trim().isEmpty())
+        }
+        if (cours.getTitre().trim().length() < 3) {
+            throw new IllegalArgumentException("Le titre doit contenir au moins 3 caractères");
+        }
+        if (cours.getTitre().length() > 200) {
+            throw new IllegalArgumentException("Le titre ne peut pas dépasser 200 caractères");
+        }
+
+        // Validation du niveau
+        if (cours.getNiveau() == null || cours.getNiveau().trim().isEmpty()) {
             throw new IllegalArgumentException("Le niveau est obligatoire");
+        }
+
+        // Validation de la durée
+        if (cours.getDuree() <= 0) {
+            throw new IllegalArgumentException("La durée doit être un nombre positif");
+        }
+        if (cours.getDuree() > 1000) {
+            throw new IllegalArgumentException("La durée ne peut pas dépasser 1000 heures");
+        }
+
+        // Validation de la description
+        if (cours.getDescription() == null || cours.getDescription().trim().isEmpty()) {
+            throw new IllegalArgumentException("La description est obligatoire");
+        }
+        if (cours.getDescription().trim().length() < 10) {
+            throw new IllegalArgumentException("La description doit contenir au moins 10 caractères");
+        }
+        if (cours.getDescription().length() > 1000) {
+            throw new IllegalArgumentException("La description ne peut pas dépasser 1000 caractères");
+        }
+
+        // Validation des compétences
+        if (cours.getCompetences_visees() != null && cours.getCompetences_visees().length() > 500) {
+            throw new IllegalArgumentException("Les compétences ne peuvent pas dépasser 500 caractères");
+        }
     }
 }

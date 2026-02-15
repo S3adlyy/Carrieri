@@ -12,6 +12,14 @@ public class ProgressionLeconService implements IProgressionLeconService {
 
     @Override
     public void marquerTerminee(int candidatId, int leconId) {
+        // Validation
+        if (candidatId <= 0) {
+            throw new IllegalArgumentException("ID candidat invalide");
+        }
+        if (leconId <= 0) {
+            throw new IllegalArgumentException("ID leçon invalide");
+        }
+
         System.out.println("🔵 SERVICE: marquerTerminee - candidat=" + candidatId + ", leçon=" + leconId);
 
         String sql = "INSERT INTO progression_lecon (candidat_id, lecon_id, termine) " +

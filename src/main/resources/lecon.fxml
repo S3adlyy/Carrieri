@@ -22,8 +22,17 @@
 
     <Separator/>
 
+    <!-- Header avec bouton toggle -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Leçons existantes" style="-fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnToggleForm" text="➕"
+                onAction="#toggleForm"
+                style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 16px; -fx-padding: 8 12;"/>
+    </HBox>
+
     <!-- Formulaire d'ajout -->
-    <VBox spacing="10">
+    <VBox fx:id="formBox" spacing="10" managed="false" visible="false">
         <Label text="Ajouter une leçon" style="-fx-font-weight: bold;"/>
 
         <ComboBox fx:id="comboModules" promptText="Sélectionner un module"/>
@@ -56,26 +65,20 @@
             <Button fx:id="btnSupprimer" text="🗑️ SUPPRIMER"
                     onAction="#supprimerLecon"
                     style="-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
-            <Button fx:id="btnAnnuler" text="❌ ANNULER"
-                    onAction="#annuler"
-                    style="-fx-background-color: #718096; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
         </HBox>
+        <Separator/>
     </VBox>
 
-    <Separator/>
-
     <!-- Liste des leçons -->
-    <Label text="Leçons existantes" style="-fx-font-weight: bold;"/>
-
-    <TableView fx:id="tableLecons" prefHeight="250">
+    <TableView fx:id="tableLecons" prefHeight="350" VBox.vgrow="ALWAYS" editable="true">
         <columns>
             <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
-            <TableColumn fx:id="colTitre" text="Titre" prefWidth="150"/>
-            <TableColumn fx:id="colContenu" text="Contenu" prefWidth="150"/>
-            <TableColumn fx:id="colVideo" text="Vidéo" prefWidth="100"/>
-            <TableColumn fx:id="colOrdre" text="Ordre" prefWidth="80"/>
+            <TableColumn fx:id="colTitre" text="Titre" prefWidth="150" editable="true"/>
+            <TableColumn fx:id="colContenu" text="Contenu" prefWidth="150" editable="true"/>
+            <TableColumn fx:id="colVideo" text="Vidéo" prefWidth="100" editable="true"/>
+            <TableColumn fx:id="colOrdre" text="Ordre" prefWidth="80" editable="true"/>
             <TableColumn fx:id="colType" text="Type" prefWidth="100"/>
-            <TableColumn fx:id="colActions" text="Actions" prefWidth="180"/>
+            <TableColumn fx:id="colActions" text="Actions" prefWidth="80"/>
         </columns>
     </TableView>
 
