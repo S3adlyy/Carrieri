@@ -1,32 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="10" alignment="CENTER"
+<VBox spacing="14"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="main.OffresListController">
+      fx:controller="main.OffresListController"
+      stylesheets="@style.css"
+      >
 
-    <Label text="Liste des Offres d'Emploi" />
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
 
-    <TableView fx:id="tableOffres" prefWidth="800" prefHeight="400">
+    <Label text="Gestion des Offres d'Emploi" styleClass="title"/>
 
-        <columns>
-            <TableColumn fx:id="colTitre" text="Titre" prefWidth="150"/>
-            <TableColumn fx:id="colDescription" text="Description" prefWidth="200"/>
-            <TableColumn fx:id="colSalaire" text="Salaire" prefWidth="100"/>
-            <TableColumn fx:id="colType" text="Type Contrat" prefWidth="100"/>
-            <TableColumn fx:id="colLocalisation" text="Localisation" prefWidth="100"/>
-            <TableColumn fx:id="colExpiration" text="Date Expiration" prefWidth="150"/>
-        </columns>
+    <Label text="Gestion des Offres d'Emploi" styleClass="title"/>
 
-    </TableView>
+    <VBox styleClass="card" spacing="12">
+        <TableView fx:id="tableOffres" prefHeight="420">
 
-    <HBox spacing="10" alignment="CENTER">
-        <Button text="Ajouter"/>
-        <Button text="Modifier"/>
-        <Button text="Supprimer"/>
-        <Button text="Postuler"/>
-    </HBox>
+            <columns>
+                <TableColumn fx:id="colTitre" text="Titre" prefWidth="160"/>
+                <TableColumn fx:id="colDescription" text="Description" prefWidth="240"/>
+                <TableColumn fx:id="colSalaire" text="Salaire" prefWidth="90"/>
+                <TableColumn fx:id="colType" text="Contrat" prefWidth="110"/>
+                <TableColumn fx:id="colLocalisation" text="Localisation" prefWidth="110"/>
+                <TableColumn fx:id="colExpiration" text="Expiration" prefWidth="140"/>
+            </columns>
+
+        </TableView>
+
+        <HBox spacing="10">
+            <Button text="Ajouter" styleClass="primary"/>
+            <Button text="Modifier" styleClass="secondary"/>
+            <Button text="Supprimer" styleClass="danger"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button text="Postuler" styleClass="primary"/>
+        </HBox>
+    </VBox>
 
 </VBox>
