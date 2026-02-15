@@ -656,3 +656,344 @@
     -fx-border-width: 2.5 !important;
     -fx-effect: dropshadow(gaussian, rgba(220,38,38,0.22), 12, 0, 0, 3);
 }
+
+/* Status label */
+.status-label {
+    -fx-font-size: 16;
+    -fx-font-weight: 600;
+    -fx-text-fill: #4c1d95;
+    -fx-padding: 8 0 0 0;
+}
+
+/* Filter button */
+.btn-filter-elegant {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16;
+    -fx-border-color: #a78bfa;
+    -fx-border-radius: 16;
+    -fx-border-width: 2;
+    -fx-text-fill: #6d28d9;
+    -fx-font-size: 15;
+    -fx-font-weight: 600;
+    -fx-padding: 12 20;
+    -fx-graphic-text-gap: 8;
+}
+
+.btn-filter-elegant:hover {
+    -fx-background-color: #f3e8ff;
+}
+
+/* Offer card */
+.offer-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 20;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 20;
+    -fx-border-width: 1;
+    -fx-padding: 24;
+    -fx-pref-width: 300; /* Adjust for responsiveness */
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.14), 20, 0, 0, 8);
+}
+
+.offer-title {
+    -fx-font-size: 20;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1e1133;
+}
+
+.offer-contract-badge {
+    -fx-background-color: #f3e8ff;
+    -fx-background-radius: 12;
+    -fx-text-fill: #7c3aed;
+    -fx-font-size: 13;
+    -fx-font-weight: 600;
+    -fx-padding: 6 12;
+}
+
+.offer-description {
+    -fx-font-size: 14;
+    -fx-text-fill: #374151;
+    -fx-line-spacing: 4;
+    -fx-padding: 12 0 0 0;
+}
+
+.offer-info {
+    -fx-font-size: 13;
+    -fx-text-fill: #6b7280;
+    -fx-padding: 8 0 0 0;
+}
+
+.offer-salary {
+    -fx-font-size: 18;
+    -fx-font-weight: 700;
+    -fx-text-fill: #4c1d95;
+    -fx-padding: 16 0 0 0;
+}
+
+.offer-actions {
+    -fx-padding: 16 0 0 0;
+    -fx-spacing: 12;
+}
+
+.btn-postuler {
+    -fx-background-color: linear-gradient(to right, #7c3aed, #a78bfa);
+    -fx-background-radius: 14;
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+    -fx-font-weight: 600;
+    -fx-padding: 10 20;
+    -fx-graphic-text-gap: 8;
+}
+
+.btn-postuler:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.btn-icon-edit, .btn-icon-delete {
+    -fx-background-color: transparent;
+    -fx-padding: 8;
+    -fx-cursor: hand;
+}
+
+.btn-icon-edit .label {
+    -fx-text-fill: #6d28d9;
+    -fx-font-size: 16;
+}
+
+.btn-icon-delete .label {
+    -fx-text-fill: #dc2626;
+    -fx-font-size: 16;
+}
+
+/* ======================== OFFRES LIST ======================== */
+
+.header-title-big {
+    -fx-font-size: 38;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1e1133;
+}
+
+.header-subtitle {
+    -fx-font-size: 16;
+    -fx-text-fill: #4c1d95;
+    -fx-font-weight: 400;
+}
+
+.search-input {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 30;
+    -fx-border-color: #d1c4e9;
+    -fx-border-radius: 30;
+    -fx-border-width: 2;
+    -fx-padding: 14 24;
+    -fx-font-size: 15;
+}
+
+.btn-filter {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 30;
+    -fx-border-color: #7c3aed;
+    -fx-border-radius: 30;
+    -fx-border-width: 2;
+    -fx-text-fill: #7c3aed;
+    -fx-font-size: 15;
+    -fx-font-weight: 600;
+    -fx-padding: 14 28;
+}
+
+.btn-filter:hover {
+    -fx-background-color: #f3e8ff;
+}
+
+.status-label {
+    -fx-font-size: 15;
+    -fx-font-weight: 600;
+    -fx-text-fill: #4c1d95;
+    -fx-padding: 8 0 0 0;
+}
+
+.offer-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 20;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 20;
+    -fx-border-width: 1;
+    -fx-padding: 28;
+    -fx-pref-width: 340;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.12), 16, 0, 0, 6);
+}
+
+.offer-title {
+    -fx-font-size: 20;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1e1133;
+}
+
+.offer-contract-badge {
+    -fx-background-color: #f3e8ff;
+    -fx-background-radius: 12;
+    -fx-text-fill: #7c3aed;
+    -fx-font-size: 13;
+    -fx-font-weight: 600;
+    -fx-padding: 6 14;
+    -fx-alignment: CENTER;
+}
+
+.offer-description {
+    -fx-font-size: 14;
+    -fx-text-fill: #374151;
+    -fx-line-spacing: 4;
+}
+
+.offer-info {
+    -fx-font-size: 13;
+    -fx-text-fill: #6b7280;
+    -fx-padding: 8 0 0 0;
+}
+
+.offer-salary {
+    -fx-font-size: 20;
+    -fx-font-weight: 800;
+    -fx-text-fill: #4c1d95;
+    -fx-padding: 12 0 0 0;
+}
+
+.offer-actions {
+    -fx-padding: 16 0 0 0;
+    -fx-spacing: 16;
+}
+
+.btn-postuler {
+    -fx-background-color: linear-gradient(to right, #7c3aed, #a78bfa);
+    -fx-background-radius: 14;
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+    -fx-font-weight: 600;
+    -fx-padding: 10 24;
+}
+
+.btn-postuler:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.btn-icon-edit, .btn-icon-delete {
+    -fx-background-color: transparent;
+    -fx-padding: 8;
+    -fx-cursor: hand;
+}
+
+.btn-icon-edit .label {
+    -fx-text-fill: #6d28d9;
+    -fx-font-size: 18;
+}
+
+.btn-icon-delete .label {
+    -fx-text-fill: #dc2626;
+    -fx-font-size: 18;
+}
+
+/* Centered cards container */
+.flow-pane {
+    -fx-alignment: center;
+}
+
+/* Card centering & spacing */
+.offer-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 24;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 24;
+    -fx-border-width: 1;
+    -fx-padding: 32 28;
+    -fx-pref-width: 360;
+    -fx-max-width: 380;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.15), 24, 0, 0, 8);
+    -fx-alignment: center;
+}
+
+/* Title centered */
+.offer-title {
+    -fx-font-size: 22;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1e1133;
+    -fx-text-alignment: center;
+}
+
+/* Badge centered */
+.offer-contract-badge {
+    -fx-background-color: #f3e8ff;
+    -fx-background-radius: 14;
+    -fx-text-fill: #7c3aed;
+    -fx-font-size: 14;
+    -fx-font-weight: 700;
+    -fx-padding: 8 16;
+}
+
+/* Icons spacing */
+.offer-card .icon {
+    -fx-font-size: 20;
+    -fx-text-fill: #7c3aed;
+}
+
+/* Description centered */
+.offer-description {
+    -fx-font-size: 14;
+    -fx-text-fill: #374151;
+    -fx-text-alignment: center;
+    -fx-line-spacing: 5;
+    -fx-padding: 12 0;
+}
+
+/* Info row centered */
+.offer-info {
+    -fx-font-size: 14;
+    -fx-text-fill: #6b7280;
+    -fx-text-alignment: center;
+}
+
+/* Salary centered */
+.offer-salary {
+    -fx-font-size: 24;
+    -fx-font-weight: 800;
+    -fx-text-fill: #4c1d95;
+    -fx-text-alignment: center;
+    -fx-padding: 16 0 0 0;
+}
+
+/* Actions centered */
+.offer-actions {
+    -fx-alignment: center;
+    -fx-spacing: 24;
+    -fx-padding: 20 0 0 0;
+}
+
+/* Postuler button */
+.btn-postuler {
+    -fx-background-color: linear-gradient(to right, #7c3aed, #a78bfa);
+    -fx-background-radius: 16;
+    -fx-text-fill: white;
+    -fx-font-size: 15;
+    -fx-font-weight: 600;
+    -fx-padding: 12 32;
+}
+
+.btn-postuler:hover {
+    -fx-scale-x: 1.06;
+    -fx-scale-y: 1.06;
+}
+
+/* Icon buttons */
+.btn-icon-edit .label,
+.btn-icon-delete .label {
+    -fx-font-size: 20;
+}
+
+.btn-icon-edit .label {
+    -fx-text-fill: #6d28d9;
+}
+
+.btn-icon-delete .label {
+    -fx-text-fill: #dc2626;
+}

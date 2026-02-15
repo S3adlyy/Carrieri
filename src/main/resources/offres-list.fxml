@@ -3,33 +3,51 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 
-<VBox xmlns="http://javafx.com/javafx/17"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="main.OffresListController"
-      spacing="14">
+<ScrollPane fitToWidth="true" fitToHeight="false"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="scroll-pane-clean"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="main.OffresListController">
 
-    <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
-    </padding>
+    <VBox alignment="TOP_CENTER" spacing="0" styleClass="view-root">
 
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="List Offer" style="-fx-font-size:26px; -fx-font-weight:900;"/>
-        <Pane HBox.hgrow="ALWAYS"/>
-        <Button text="🔄 Refresh" onAction="#refresh"/>
-    </HBox>
+        <!-- ==================== HEADER ==================== -->
+        <VBox alignment="CENTER" spacing="16" styleClass="header-gradient" prefHeight="260">
+            <padding><Insets top="70" bottom="50"/></padding>
 
-    <!-- IMPORTANT: No ID column shown -->
-    <TableView fx:id="table" prefHeight="520">
-        <columns>
-            <TableColumn fx:id="colTitre" text="Titre" prefWidth="160"/>
-            <TableColumn fx:id="colDesc" text="Description" prefWidth="240"/>
-            <TableColumn fx:id="colSalaire" text="Salaire" prefWidth="90"/>
-            <TableColumn fx:id="colType" text="Contrat" prefWidth="110"/>
-            <TableColumn fx:id="colLoc" text="Localisation" prefWidth="120"/>
-            <TableColumn fx:id="colExp" text="Expiration" prefWidth="160"/>
-            <TableColumn fx:id="colActions" text="Actions" prefWidth="180"/>
-        </columns>
-    </TableView>
+            <StackPane prefWidth="110" prefHeight="110" styleClass="header-icon-circle">
+                <Label text="✦" style="-fx-font-size: 80; -fx-text-fill: white; -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.75), 20, 0, 0, 0);"/>
+            </StackPane>
 
-</VBox>
+            <Label text="Liste des Offres" styleClass="header-title-big"/>
+            <Label text="Consultez, modifiez ou postulez aux offres disponibles"
+                   styleClass="header-subtitle" wrapText="true" textAlignment="CENTER"/>
+        </VBox>
+
+        <!-- ==================== SEARCH + FILTER + STATUS ==================== -->
+        <VBox spacing="28" style="-fx-padding: 40 80 30 80; -fx-background-color: #faf7ff;">
+
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <TextField fx:id="txtSearch" promptText="Rechercher par titre, entreprise ou localisation..."
+                           styleClass="search-input" HBox.hgrow="ALWAYS"/>
+                <Button text="Filtrer" styleClass="btn-filter">
+                    <graphic>
+                        <Label text="▼" style="-fx-font-size: 13; -fx-text-fill: #7c3aed;"/>
+                    </graphic>
+                </Button>
+            </HBox>
+
+            <Label fx:id="lblStatus" text="0 offres trouvées" styleClass="status-label"/>
+        </VBox>
+
+        <!-- ==================== CARDS CONTAINER (centered) ==================== -->
+        <FlowPane fx:id="flowOffers" hgap="32" vgap="32"
+                  alignment="CENTER"
+                  style="-fx-padding: 0 80 80 80; -fx-background-color: #faf7ff;">
+            <!-- Cards added dynamically -->
+        </FlowPane>
+
+    </VBox>
+</ScrollPane>
