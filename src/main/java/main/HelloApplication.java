@@ -1,22 +1,24 @@
 package main;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class HelloApplication extends Application {
 
     @Override
-    public void start(Stage stage) {
-        Label label = new Label("JavaFX is working!");
-        StackPane root = new StackPane(label);
+    public void start(Stage stage) throws Exception {
 
-        Scene scene = new Scene(root, 400, 300);
+        FXMLLoader fxmlLoader = new FXMLLoader(
+                getClass().getResource("/OffresList.fxml")
+        );
 
-        stage.setTitle("GOffres");
+        Scene scene = new Scene(fxmlLoader.load());
+
+        stage.setTitle("Gestion des Offres d'Emploi");
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
 
