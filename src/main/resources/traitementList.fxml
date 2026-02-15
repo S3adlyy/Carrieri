@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.TraitementController" spacing="10" style="-fx-padding: 20;">
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="🛠️ Gestion des Traitements" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="➕ Nouveau traitement" style="-fx-background-color: #27ae60; -fx-text-fill: white;"
+                onAction="#showAddTraitementForm"/>
+        <Button text="🔄 Rafraîchir" onAction="#loadTraitements"/>
+    </HBox>
+
+    <Separator/>
+
+    <HBox spacing="10">
+        <Label text="Filtrer par réclamation ID:"/>
+        <TextField fx:id="filterReclamationField" promptText="ID réclamation" prefWidth="120"/>
+        <Button text="Filtrer" onAction="#filterByReclamation"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="Total: " fx:id="totalLabel" style="-fx-font-weight: bold;"/>
+    </HBox>
+
+    <TableView fx:id="traitementTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="ID" prefWidth="50">
+                <cellValueFactory><PropertyValueFactory property="id"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Date Traitement" prefWidth="150">
+                <cellValueFactory><PropertyValueFactory property="dateTraitement"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Réponse Admin" prefWidth="300">
+                <cellValueFactory><PropertyValueFactory property="reponseAdmin"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Statut Final" prefWidth="100">
+                <cellValueFactory><PropertyValueFactory property="statutFinal"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Réclamation ID" prefWidth="100">
+                <cellValueFactory><PropertyValueFactory property="reclamationId"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Admin ID" prefWidth="80">
+                <cellValueFactory><PropertyValueFactory property="adminId"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Actions" prefWidth="100"/>
+        </columns>
+    </TableView>
+</VBox>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<DialogPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.TraitementFormController" prefWidth="500">
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <header>
+        <Label fx:id="dialogTitle" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 0 0 10 0;"/>
+    </header>
+
+    <content>
+        <VBox spacing="15">
+            <!-- Réclamation ID -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Réclamation ID:" style="-fx-font-weight: bold; -fx-min-width: 120;"/>
+                <TextField fx:id="reclamationIdField" promptText="ID de la réclamation" HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <!-- Admin ID -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Admin ID:" style="-fx-font-weight: bold; -fx-min-width: 120;"/>
+                <TextField fx:id="adminIdField" promptText="ID de l'administrateur" HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <!-- Statut Final -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Statut Final:" style="-fx-font-weight: bold; -fx-min-width: 120;"/>
+                <ComboBox fx:id="statutFinalCombo" promptText="Sélectionner statut" HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <!-- Date Traitement -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Date Traitement:" style="-fx-font-weight: bold; -fx-min-width: 120;"/>
+                <DatePicker fx:id="datePicker" promptText="jj/mm/aaaa" HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <!-- Réponse Admin -->
+            <VBox spacing="5">
+                <Label text="Réponse Admin:" style="-fx-font-weight: bold;"/>
+                <TextArea fx:id="reponseArea" promptText="Réponse détaillée..."
+                          prefRowCount="4" wrapText="true"/>
+            </VBox>
+
+            <!-- Boutons -->
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button text="Sauvegarder" onAction="#handleSave"
+                        style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 100; -fx-padding: 8 15;"/>
+                <Button text="Annuler" onAction="#handleCancel"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 100; -fx-padding: 8 15;"/>
+            </HBox>
+        </VBox>
+    </content>
+</DialogPane>

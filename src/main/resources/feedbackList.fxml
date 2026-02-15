@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.FeedbackController" spacing="10" style="-fx-padding: 20;">
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="⭐ Gestion des Feedback" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="➕ Ajouter" style="-fx-background-color: #27ae60; -fx-text-fill: white;"
+                onAction="#showAddFeedbackForm"/>
+    </HBox>
+
+    <Separator/>
+
+    <HBox spacing="10">
+        <Label text="Filtrer par note:"/>
+        <TextField fx:id="minNoteField" promptText="Note min" prefWidth="80"/>
+        <Label text="-"/>
+        <TextField fx:id="maxNoteField" promptText="Note max" prefWidth="80"/>
+        <Button text="Filtrer" onAction="#filterByNoteRange"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="Moyenne:" fx:id="averageLabel" style="-fx-font-weight: bold;"/>
+    </HBox>
+
+    <TableView fx:id="feedbackTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="ID" prefWidth="50">
+                <cellValueFactory>
+                    <PropertyValueFactory property="id" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Commentaire" prefWidth="300">
+                <cellValueFactory>
+                    <PropertyValueFactory property="commentaire" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Note" prefWidth="60">
+                <cellValueFactory>
+                    <PropertyValueFactory property="note" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Date" prefWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="createdAt" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Rendu ID" prefWidth="80">
+                <cellValueFactory>
+                    <PropertyValueFactory property="renduId" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Actions" prefWidth="100"/>
+        </columns>
+    </TableView>
+</VBox>

@@ -9,7 +9,7 @@ public class MyDatabase {
 
     private final String USER = "root";
     private final String PASSWORD = "";
-    private final String URL = "jdbc:mysql://localhost:3306/Carreri";
+    private final String URL = "jdbc:mysql://localhost:3306/Carrieri";
     private static MyDatabase instance;
     private Connection connection;
 

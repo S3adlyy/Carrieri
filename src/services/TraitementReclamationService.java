@@ -120,7 +120,7 @@ public class TraitementReclamationService implements ITraitementReclamationServi
     public void traiterReclamation(int reclamationId, String reponseAdmin, String statutFinal, int adminId) throws SQLException {
         // Créer un nouveau traitement
         TraitementReclamation traitement = new TraitementReclamation(
-                new Date(),
+                new java.util.Date(),
                 reponseAdmin,
                 statutFinal,
                 reclamationId,

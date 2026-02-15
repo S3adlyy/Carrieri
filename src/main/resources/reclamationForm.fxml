@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<DialogPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.ReclamationFormController"
+            prefWidth="400">
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <content>
+        <VBox spacing="10">
+            <Label fx:id="dialogTitle" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <TextField fx:id="objetField" promptText="Objet"/>
+            <ComboBox fx:id="categorieCombo" promptText="Catégorie"/>
+            <ComboBox fx:id="prioriteCombo" promptText="Priorité"/>
+            <TextArea fx:id="descriptionArea" promptText="Description" prefRowCount="3"/>
+            <ComboBox fx:id="statutCombo" promptText="Statut"/>
+            <DatePicker fx:id="datePicker" promptText="Date"/>
+            <TextField fx:id="utilisateurIdField" promptText="Utilisateur ID"/>
+
+            <!-- Boutons qui appellent handleSave et handleCancel -->
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button text="Sauvegarder" onAction="#handleSave"
+                        style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 100;"/>
+                <Button text="Annuler" onAction="#handleCancel"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 100;"/>
+            </HBox>
+        </VBox>
+    </content>
+</DialogPane>

@@ -24,7 +24,14 @@ public class ReclamationService implements IReclamationService {
         preparedStatement.setString(1, reclamation.getObjet());
         preparedStatement.setString(2, reclamation.getDescription());
         preparedStatement.setString(3, reclamation.getCategorie());
-        preparedStatement.setTimestamp(4, new Timestamp(reclamation.getDateCreation().getTime()));
+
+        // CORRECTION: Vérifier que la date n'est pas null
+        if (reclamation.getDateCreation() != null) {
+            preparedStatement.setTimestamp(4, new Timestamp(reclamation.getDateCreation().getTime()));
+        } else {
+            preparedStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+        }
+
         preparedStatement.setString(5, reclamation.getStatut());
         preparedStatement.setString(6, reclamation.getPriorite());
 

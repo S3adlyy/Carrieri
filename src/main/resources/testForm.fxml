@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<DialogPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.ReclamationFormController">
+
+    <content>
+        <VBox spacing="10">
+            <Label fx:id="dialogTitle" text="TEST FORMULAIRE"/>
+            <TextField fx:id="objetField" promptText="Objet"/>
+            <Button text="TEST MANUEL" onAction="#handleSave"/>
+        </VBox>
+    </content>
+
+    <buttonTypes>
+        <ButtonType fx:constant="OK" />
+        <ButtonType fx:constant="CANCEL" />
+    </buttonTypes>
+</DialogPane>
