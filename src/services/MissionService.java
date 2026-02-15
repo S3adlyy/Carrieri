@@ -197,4 +197,31 @@ public class MissionService implements IMissionService<Mission> {
         }
         return false;
     }
+
+    public boolean existsByDescription(String description) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM mission WHERE description = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, description);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean existsByDescriptionIgnoreCase(String description) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM mission WHERE LOWER(description) = LOWER(?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, description);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
 }

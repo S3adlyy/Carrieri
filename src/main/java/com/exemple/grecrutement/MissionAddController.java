@@ -9,6 +9,7 @@ import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import services.MissionService;
 import javafx.application.Platform;
+import java.sql.SQLException; // Add this import
 
 public class MissionAddController {
 
@@ -183,6 +184,29 @@ public class MissionAddController {
         return true;
     }
 
+    // New method to validate unique description
+    private boolean validateUniqueDescription(String description) {
+        try {
+            // Trim and normalize the description for comparison
+            String normalizedDesc = description.trim();
+
+            // Check if description already exists (case-insensitive)
+            if (missionService.existsByDescriptionIgnoreCase(normalizedDesc)) {
+                showFieldError(descriptionField, descriptionError,
+                        "Une mission avec cette description existe déjà. Veuillez modifier la description pour la rendre unique.");
+                return false;
+            }
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la vérification de la description: " + e.getMessage());
+            e.printStackTrace();
+            // Show a temporary error but allow submission? Better to show error
+            showAlert(Alert.AlertType.ERROR, "Erreur de vérification",
+                    "Impossible de vérifier l'unicité de la description. Veuillez réessayer.");
+            return false;
+        }
+    }
+
     private void showFieldError(Control field, Label errorLabel, String errorMessage) {
         field.setStyle("-fx-border-color: #ff4444; -fx-border-width: 2; -fx-border-radius: 5; " +
                 "-fx-background-radius: 5;");
@@ -215,6 +239,12 @@ public class MissionAddController {
         isValid &= validateDescription(descriptionField.getText());
         isValid &= validateScore(scoreField.getText());
         isValid &= validateCreatorId(createdByIdField.getText());
+
+        // Only check uniqueness if description is valid
+        if (isValid && validateDescription(descriptionField.getText())) {
+            isValid &= validateUniqueDescription(descriptionField.getText().trim());
+        }
+
         return isValid;
     }
 
