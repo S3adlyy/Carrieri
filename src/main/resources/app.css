@@ -1,14 +1,270 @@
-/* app.css (updated to add icon styles for actions: edit, delete) */
-/* ... (keep existing content, add at the end) */
+/* =========================================================
+   MAIN APP STYLES - Carrieri
+   ========================================================= */
 
-/* Icon buttons for table actions */
+/* ---------- Global Reset ---------- */
+.content-area {
+    -fx-background-color: #f5f0fa;
+}
+
+.view-root {
+    -fx-background-color: #f5f0fa;
+}
+
+.scroll-pane-clean {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+}
+
+.scroll-pane-clean .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane-clean .scroll-bar:vertical,
+.scroll-pane-clean .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane-clean .scroll-bar .thumb {
+    -fx-background-color: #c4b5e0;
+    -fx-background-radius: 10;
+    -fx-background-insets: 3;
+}
+
+.scroll-pane-clean .scroll-bar .thumb:hover {
+    -fx-background-color: #a78bfa;
+}
+
+/* =========================================================
+   HEADER GRADIENT
+   ========================================================= */
+.header-gradient {
+    -fx-background-color: linear-gradient(to bottom right, #ede5f7, #e0d4f5, #d4c4f0);
+    -fx-background-radius: 0 0 24 24;
+}
+
+.header-icon-circle {
+    -fx-background-color: #1a1225;
+    -fx-background-radius: 100;
+    -fx-pref-width: 56;
+    -fx-pref-height: 56;
+    -fx-alignment: center;
+}
+
+.header-icon-diamond {
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+}
+
+.header-title-big {
+    -fx-font-size: 38;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1e1133;
+    -fx-effect: dropshadow(gaussian, rgba(30,17,51,0.15), 8, 0, 0, 2);
+}
+
+.header-subtitle {
+    -fx-font-size: 16;
+    -fx-text-fill: #4c1d95;
+    -fx-font-weight: 400;
+}
+
+/* =========================================================
+   FORM BODY
+   ========================================================= */
+.form-body {
+    -fx-background-color: rgba(255, 255, 255, 0.6);
+    -fx-background-radius: 20;
+    -fx-border-color: #e8e0f0;
+    -fx-border-radius: 20;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(120, 80, 180, 0.06), 12, 0, 0, 3);
+}
+
+/* ---------- Field Labels ---------- */
+.field-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1225;
+    -fx-font-family: "Segoe UI";
+}
+
+.badge-required {
+    -fx-background-color: #fef2f2;
+    -fx-text-fill: #dc2626;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 2 8;
+    -fx-background-radius: 8;
+    -fx-border-color: #fecaca;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+/* ---------- Inputs ---------- */
+.field-input {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 10 14;
+    -fx-font-size: 13px;
+    -fx-prompt-text-fill: #a094b0;
+    -fx-font-family: "Segoe UI";
+}
+
+.field-input:focused {
+    -fx-border-color: #7c3aed;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.15), 6, 0, 0, 0);
+}
+
+.field-textarea {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 10 14;
+    -fx-font-size: 13px;
+    -fx-prompt-text-fill: #a094b0;
+    -fx-font-family: "Segoe UI";
+}
+
+.field-textarea:focused {
+    -fx-border-color: #7c3aed;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.15), 6, 0, 0, 0);
+}
+
+.field-textarea .content {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+}
+
+.field-combo {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 6 10;
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI";
+}
+
+.field-combo:focused {
+    -fx-border-color: #7c3aed;
+    -fx-border-width: 2;
+}
+
+.field-hint {
+    -fx-font-size: 11px;
+    -fx-text-fill: #8b7fa0;
+    -fx-font-family: "Segoe UI";
+}
+
+.char-counter {
+    -fx-font-size: 11px;
+    -fx-text-fill: #a094b0;
+    -fx-font-family: "Courier New";
+}
+
+/* =========================================================
+   PREVIEW CARD
+   ========================================================= */
+.preview-card {
+    -fx-background-color: #f9f7fc;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 16 20;
+}
+
+.preview-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1225;
+    -fx-font-family: "Segoe UI";
+}
+
+.preview-text {
+    -fx-font-size: 12.5px;
+    -fx-text-fill: #6b5f80;
+    -fx-font-family: "Segoe UI";
+}
+
+/* =========================================================
+   TIPS / BONNES PRATIQUES CARD
+   ========================================================= */
+.tips-card {
+    -fx-background-color: #faf8ff;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-border-width: 1;
+}
+
+.tips-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1225;
+    -fx-font-family: "Segoe UI";
+}
+
+.tips-item {
+    -fx-font-size: 12.5px;
+    -fx-text-fill: #5c5470;
+    -fx-font-family: "Segoe UI";
+    -fx-padding: 1 0 1 8;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+.btn-primary {
+    -fx-background-color: linear-gradient(to right, #7c3aed, #9061f0);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-font-family: "Segoe UI";
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.3), 6, 0, 0, 2);
+}
+
+.btn-primary:hover {
+    -fx-background-color: linear-gradient(to right, #6d28d9, #7c3aed);
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.45), 10, 0, 0, 3);
+}
+
+.btn-primary:pressed {
+    -fx-background-color: #5b21b6;
+}
+
+.btn-secondary {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #5c5470;
+    -fx-font-size: 14px;
+    -fx-font-weight: normal;
+    -fx-background-radius: 12;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-font-family: "Segoe UI";
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #f5f0fa;
+    -fx-border-color: #c4b5e0;
+}
+
+/* ---- Small icon buttons for table actions ---- */
 .btn-icon {
     -fx-background-color: transparent;
-    -fx-padding: 4;
+    -fx-padding: 4 8;
+    -fx-background-radius: 8;
     -fx-cursor: hand;
-    -fx-min-width: 28;
-    -fx-min-height: 28;
-    -fx-background-radius: 6;
 }
 
 .btn-icon:hover {
@@ -16,15 +272,377 @@
 }
 
 .btn-icon-edit {
-    -fx-graphic: url('data:image/svg+xml;base64,...'); /* Or use Region with CSS background */
-    /* Alternatively, define as Region in FXML and style here */
-    /* For simplicity, use text or unicode */
-    /* Example: -fx-text-fill: #3b82f6; but since button, set graphic to Label with &#9998; (pencil) */
+    -fx-text-fill: #7c3aed;
+    -fx-font-size: 14px;
 }
 
-/* In code, instead of style classes for icons, you can set graphic: */
-/* In controller: btnEdit.setGraphic(new Label("\u270E")); // Pencil unicode */
-/* btnDelete.setGraphic(new Label("\u274C")); // X unicode */
-/* And style the labels in CSS if needed. */
+.btn-icon-delete {
+    -fx-text-fill: #dc2626;
+    -fx-font-size: 14px;
+}
 
-/* For now, assume unicode in code, no extra CSS needed beyond existing. */
+.btn-postuler {
+    -fx-background-color: linear-gradient(to right, #7c3aed, #9061f0);
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 5 14;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-family: "Segoe UI";
+}
+
+.btn-postuler:hover {
+    -fx-background-color: linear-gradient(to right, #6d28d9, #7c3aed);
+}
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+.styled-table {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-border-width: 1;
+}
+
+.styled-table .column-header-background {
+    -fx-background-color: #f5f0fa;
+    -fx-background-radius: 12 12 0 0;
+}
+
+.styled-table .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #e0d4f5 transparent;
+    -fx-padding: 10 12;
+}
+
+.styled-table .column-header .label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5c5470;
+    -fx-font-family: "Segoe UI";
+}
+
+.styled-table .table-row-cell {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent transparent #f0eaf6 transparent;
+    -fx-padding: 6 0;
+}
+
+.styled-table .table-row-cell:selected {
+    -fx-background-color: #ede5f7;
+}
+
+.styled-table .table-row-cell:hover {
+    -fx-background-color: #faf8ff;
+}
+
+.styled-table .table-cell {
+    -fx-font-size: 12.5px;
+    -fx-text-fill: #1a1225;
+    -fx-padding: 8 12;
+    -fx-font-family: "Segoe UI";
+}
+
+.styled-table .placeholder .label {
+    -fx-text-fill: #a094b0;
+}
+
+/* =========================================================
+   SEARCH BAR
+   ========================================================= */
+.search-bar {
+    /* already styled via field-input and buttons */
+}
+
+/* =========================================================
+   STATUS BAR
+   ========================================================= */
+.status-text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #8b7fa0;
+    -fx-font-family: "Segoe UI";
+}
+
+/* =========================================================
+   POSTULER VIEW
+   ========================================================= */
+.postuler-root {
+    -fx-background-color: #f5f0fa;
+}
+
+.postuler-header-card {
+    -fx-background-color: linear-gradient(to bottom right, #ede5f7, #e0d4f5);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-max-width: 600;
+}
+
+.postuler-icon-circle {
+    -fx-background-color: #1a1225;
+    -fx-background-radius: 100;
+    -fx-pref-width: 48;
+    -fx-pref-height: 48;
+    -fx-alignment: center;
+}
+
+.postuler-icon {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+}
+
+.postuler-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1225;
+    -fx-padding: 8 0 2 0;
+    -fx-font-family: "Segoe UI";
+}
+
+.postuler-offre-info {
+    -fx-font-size: 13px;
+    -fx-text-fill: #5c5470;
+    -fx-font-family: "Segoe UI";
+}
+
+.postuler-form-card {
+    -fx-background-color: rgba(255, 255, 255, 0.7);
+    -fx-background-radius: 20;
+    -fx-border-color: #e8e0f0;
+    -fx-border-radius: 20;
+    -fx-border-width: 1;
+    -fx-max-width: 600;
+    -fx-effect: dropshadow(gaussian, rgba(120, 80, 180, 0.06), 12, 0, 0, 3);
+}
+
+/* Status dots */
+.dot-pending  { -fx-fill: #f59e0b; }
+.dot-progress { -fx-fill: #3b82f6; }
+.dot-accepted { -fx-fill: #10b981; }
+.dot-refused  { -fx-fill: #ef4444; }
+
+.legend-text {
+    -fx-font-size: 11px;
+    -fx-text-fill: #5c5470;
+    -fx-font-family: "Segoe UI";
+}
+
+/* =========================================================
+   DIALOG / OVERLAY (for inline postuler popup)
+   ========================================================= */
+.dialog-overlay {
+    -fx-background-color: rgba(26, 18, 37, 0.5);
+}
+
+.dialog-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(120, 80, 180, 0.25), 24, 0, 0, 8);
+    -fx-max-width: 520;
+    -fx-padding: 28 32;
+}
+
+.dialog-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1225;
+    -fx-font-family: "Segoe UI";
+}
+
+.dialog-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #5c5470;
+    -fx-font-family: "Segoe UI";
+}
+
+
+/* --------------------------------------------*/
+
+.form-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 20;
+    -fx-border-width: 1;
+    -fx-padding: 32;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.12), 20, 0, 0, 6);
+}
+
+.card-title {
+    -fx-font-size: 22;
+    -fx-font-weight: 700;
+    -fx-text-fill: #4c1d95;
+}
+
+.input-elegant, .textarea-elegant, .combo-elegant {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 14;
+    -fx-border-color: #d1c4e9;
+    -fx-border-radius: 14;
+    -fx-border-width: 2;
+    -fx-padding: 14 18;
+    -fx-font-size: 15;
+}
+
+.input-elegant:focused, .textarea-elegant:focused, .combo-elegant:focused {
+    -fx-border-color: #8b5cf6;
+    -fx-effect: dropshadow(gaussian, #c4b5fd66, 12, 0, 0, 4);
+}
+
+.btn-reset-elegant {
+    -fx-background-color: transparent;
+    -fx-border-color: #a78bfa;
+    -fx-border-width: 2.5;
+    -fx-border-radius: 14;
+    -fx-text-fill: #6d28d9;
+    -fx-font-size: 16;
+    -fx-font-weight: 600;
+    -fx-pref-width: 180;
+    -fx-pref-height: 52;
+}
+
+.btn-reset-elegant:hover {
+    -fx-background-color: #f3e8ff;
+}
+
+.btn-publish-elegant {
+    -fx-background-color: linear-gradient(to right, #7c3aed, #a78bfa);
+    -fx-background-radius: 16;
+    -fx-text-fill: white;
+    -fx-font-size: 17;
+    -fx-font-weight: 700;
+    -fx-pref-width: 240;
+    -fx-pref-height: 56;
+    -fx-effect: dropshadow(gaussian, #7c3aed88, 16, 0, 0, 6);
+}
+
+.btn-publish-elegant:hover {
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
+}
+
+.preview-card {
+    -fx-background-color: #f9f5ff;
+    -fx-background-radius: 20;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 20;
+    -fx-padding: 28;
+    -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.1), 16, 0, 0, 4);
+}
+
+.preview-text {
+    -fx-font-size: 15;
+    -fx-text-fill: #374151;
+    -fx-line-spacing: 6;
+}
+
+/* === DatePicker – modern & aesthetic style === */
+.date-picker-elegant {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16;
+    -fx-border-color: #d1c4e9;
+    -fx-border-radius: 16;
+    -fx-border-width: 2;
+    -fx-padding: 0;
+    -fx-font-size: 15;
+}
+
+.date-picker-elegant .text-field {
+    -fx-background-color: transparent;
+    -fx-background-radius: 16;
+    -fx-padding: 14 18;
+    -fx-prompt-text-fill: #9ca3af;
+}
+
+.date-picker-elegant .arrow-button {
+    -fx-background-color: #f3e8ff;
+    -fx-background-radius: 0 16 16 0;
+    -fx-border-color: #d1c4e9;
+    -fx-border-width: 0 0 0 2;
+    -fx-padding: 0 12;
+}
+
+.date-picker-elegant .arrow-button:hover {
+    -fx-background-color: #e9d5ff;
+}
+
+.date-picker-elegant .arrow-button .arrow {
+    -fx-background-color: #7c3aed;
+}
+
+/* Popup du DatePicker (calendrier) */
+.date-picker-popup {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16;
+    -fx-border-color: #d1c4e9;
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.18), 20, 0, 0, 8);
+}
+
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: linear-gradient(to bottom, #7c3aed, #a78bfa);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.date-picker-popup > .calendar-grid {
+    -fx-background-color: transparent;
+}
+
+.date-picker-popup .day-cell {
+    -fx-font-size: 14;
+    -fx-padding: 8;
+}
+
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: #f3e8ff;
+}
+
+.date-picker-popup .selected {
+    -fx-background-color: #7c3aed !important;
+    -fx-text-fill: white !important;
+    -fx-font-weight: bold;
+}
+
+/* Focus effect on the whole DatePicker */
+.date-picker-elegant:focused {
+    -fx-border-color: #8b5cf6;
+    -fx-effect: dropshadow(gaussian, #c4b5fd66, 12, 0, 0, 4);
+}
+
+/* Spinner for time – make it match your elegant inputs */
+.spinner {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16;
+    -fx-border-color: #d1c4e9;
+    -fx-border-radius: 16;
+    -fx-border-width: 2;
+}
+
+.spinner .text-field {
+    -fx-background-color: transparent;
+    -fx-padding: 12 16;
+    -fx-font-size: 15;
+    -fx-alignment: CENTER;
+}
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-background-color: #f3e8ff;
+    -fx-background-radius: 0 16 16 0;
+}
+
+.spinner .increment-arrow-button:hover,
+.spinner .decrement-arrow-button:hover {
+    -fx-background-color: #e9d5ff;
+}
+
+.field-hint-small {
+    -fx-font-size: 12;
+    -fx-text-fill: #9ca3af;
+    -fx-padding: 4 0 0 4;
+}

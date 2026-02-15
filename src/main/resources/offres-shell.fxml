@@ -25,8 +25,8 @@
         </HBox>
 
         <!-- Nav Buttons -->
-        <Button fx:id="btnOffreAdd" text="+ Offre" onAction="#showOffreAdd"
-                styleClass="nav-btn, nav-btn-add" maxWidth="Infinity">
+        <Button fx:id="btnOffreAdd" text="Ajouter Offre" onAction="#showOffreAdd"
+                styleClass="nav-btn" maxWidth="Infinity">
             <graphic>
                 <Region styleClass="icon-plus" prefWidth="16" prefHeight="16"/>
             </graphic>
@@ -35,14 +35,14 @@
         <VBox spacing="4" styleClass="nav-section">
             <padding><Insets top="8"/></padding>
 
-            <Button fx:id="btnOffresList" text="List Offer" onAction="#showOffresList"
+            <Button fx:id="btnOffresList" text="Liste des Offres" onAction="#showOffresList"
                     styleClass="nav-btn" maxWidth="Infinity">
                 <graphic>
                     <Region styleClass="icon-list" prefWidth="16" prefHeight="16"/>
                 </graphic>
             </Button>
 
-            <Button fx:id="btnPostulationsList" text="List Postulations" onAction="#showPostulationsList"
+            <Button fx:id="btnPostulationsList" text="Listes des Postulations" onAction="#showPostulationsList"
                     styleClass="nav-btn" maxWidth="Infinity">
                 <graphic>
                     <Region styleClass="icon-list" prefWidth="16" prefHeight="16"/>

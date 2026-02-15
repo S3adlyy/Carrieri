@@ -18,7 +18,7 @@ public class OffresShellController {
 
     @FXML private Button btnOffresList;
     @FXML private Button btnOffreAdd;
-    @FXML private Button btnPostulationsList; // New button
+    @FXML private Button btnPostulationsList;
 
     @FXML private Circle navAvatar;
     @FXML private Label navNameLabel;
@@ -36,7 +36,7 @@ public class OffresShellController {
     @FXML
     public void initialize() {
         navNameLabel.setText("Ons Nagara");
-        showOffreAdd();
+        showOffreAdd();           // default view when app starts
         setActiveButton(btnOffreAdd);
     }
 
@@ -53,47 +53,68 @@ public class OffresShellController {
     }
 
     @FXML
-    public void showPostulationsList() { // New method
+    public void showPostulationsList() {
         loadViewWithFade("postulations-list.fxml");
         setActiveButton(btnPostulationsList);
     }
 
-    /** Called from OffresListController when user clicks "Postuler" on a row */
+    /**
+     * Called from OffresListController when user clicks "Postuler" on a row
+     */
     public void showPostuler(int offreId, String offreTitre) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/postuler.fxml"));
-            Node view = loader.load();
-
-            // Pass offre info to the PostulerController
-            PostulerController ctrl = loader.getController();
-            ctrl.setOffreInfo(offreId, offreTitre);
-
-            contentPane.getChildren().setAll(view);
-
-            FadeTransition ft = new FadeTransition(Duration.millis(250), view);
-            ft.setFromValue(0);
-            ft.setToValue(1);
-            ft.play();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        loadViewWithFadeAndInit("/postuler.fxml", controller -> {
+            if (controller instanceof PostulerController postulerCtrl) {
+                postulerCtrl.setOffreInfo(offreId, offreTitre);
+            }
+        });
     }
 
-    private void loadViewWithFade(String fxml) {
+    /**
+     * Main loading method - tries to load FXML and shows error in UI if it fails
+     */
+    private void loadViewWithFade(String fxmlFileName) {
+        loadViewWithFadeAndInit("/" + fxmlFileName, null);
+    }
+
+    private void loadViewWithFadeAndInit(String resourcePath, java.util.function.Consumer<Object> initializer) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/" + fxml));
+            // Debug: print what we're trying to load
+            System.out.println("Loading view: " + resourcePath);
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(resourcePath));
+
+            if (loader.getLocation() == null) {
+                throw new IllegalStateException("Resource not found: " + resourcePath);
+            }
+
             Node view = loader.load();
+
+            // Optional: run initializer (mainly for postuler)
+            if (initializer != null) {
+                initializer.accept(loader.getController());
+            }
 
             contentPane.getChildren().setAll(view);
 
+            // Fade animation
             FadeTransition ft = new FadeTransition(Duration.millis(250), view);
             ft.setFromValue(0);
             ft.setToValue(1);
             ft.play();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); // still log to console
+
+            // Show error directly in the UI
+            Label errorLabel = new Label("Erreur de chargement de la page :\n" + e.getMessage());
+            errorLabel.setStyle(
+                    "-fx-font-size: 18px; " +
+                            "-fx-text-fill: #dc2626; " +
+                            "-fx-padding: 40; " +
+                            "-fx-alignment: center;"
+            );
+            errorLabel.setWrapText(true);
+            contentPane.getChildren().setAll(errorLabel);
         }
     }
 
