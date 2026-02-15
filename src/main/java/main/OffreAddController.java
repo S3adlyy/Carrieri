@@ -1,6 +1,7 @@
 package main;
 
 import entities.OffreEmploi;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import services.OffreEmploiService;
@@ -8,93 +9,146 @@ import services.OffreEmploiService;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OffreAddController {
 
-    // Form fields
-    @FXML private TextField titreField;
-    @FXML private TextArea descriptionField;
-    @FXML private TextField salaireField;
-    @FXML private TextField typeContratField;
-    @FXML private TextField localisationField;
-    @FXML private DatePicker dpExpirationDate;
-    @FXML private Spinner<Integer> spExpirationTime;      // Hours (0-23)
-    @FXML private Spinner<Integer> spExpirationMinute;    // Minutes (0-59)
-    @FXML private TextField niveauField;
-    @FXML private TextField experienceField;
-    @FXML private TextField competencesField;
-    @FXML private TextField secteurField;
-    @FXML private TextField entrepriseField;
-    @FXML private TextField contactField;
+    private static final PseudoClass ERROR_CLASS = PseudoClass.getPseudoClass("error");
 
-    @FXML private Label errorLabel;
+    // === FXML ids (MUST match offre-add.fxml) ===
+    @FXML private TextField txtTitre;
+    @FXML private TextArea txtDescription;
+    @FXML private Label lblCharCount;
+
+    @FXML private TextField txtSalaire;
+    @FXML private TextField txtLocalisation;
+    @FXML private TextField txtSecteur;
+
+    @FXML private ComboBox<String> comboTypeContrat;
+    @FXML private ComboBox<String> comboQualification;
+
+    @FXML private TextField txtExperience;
+    @FXML private TextField txtCompetences;
+
+    @FXML private TextField txtEntreprise;
+    @FXML private TextField txtContact;
+
+    @FXML private DatePicker dpExpirationDate;
+    @FXML private Spinner<Integer> spExpirationTime;      // 0-23
+    @FXML private Spinner<Integer> spExpirationMinute;    // 0-59
 
     private final OffreEmploiService service = new OffreEmploiService();
 
     @FXML
     public void initialize() {
-        // Set default expiration time to end of day (23:59)
+
+        // ====== combos ======
+        comboTypeContrat.getItems().setAll("CDI", "CDD", "Stage", "Freelance", "Alternance");
+        comboQualification.getItems().setAll("Bac", "Bac+2", "Bac+3", "Bac+5", "Doctorat");
+
+        // ====== spinners ======
         spExpirationTime.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23, 23));
         spExpirationMinute.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, 59, 5));
-
-        // Optional: make spinners editable and add arrow buttons styling if needed
         spExpirationTime.setEditable(true);
         spExpirationMinute.setEditable(true);
+
+        // ====== default date ======
+        dpExpirationDate.setValue(LocalDate.now().plusDays(7));
+
+        // ====== salary: allow only digits + optional .xx ======
+        txtSalaire.setTextFormatter(new TextFormatter<>(change -> {
+            String next = change.getControlNewText().trim();
+            if (next.isEmpty()) return change;
+            return next.matches("\\d{0,9}(\\.\\d{0,2})?") ? change : null;
+        }));
+
+        // ====== description counter + hard limit 2000 ======
+        txtDescription.textProperty().addListener((obs, oldV, newV) -> {
+            if (newV == null) newV = "";
+            if (newV.length() > 2000) {
+                txtDescription.setText(newV.substring(0, 2000));
+                return;
+            }
+            if (lblCharCount != null) {
+                lblCharCount.setText(newV.length() + "/2000");
+            }
+        });
+        if (lblCharCount != null) {
+            lblCharCount.setText((txtDescription.getText() == null ? 0 : txtDescription.getText().length()) + "/2000");
+        }
     }
 
     @FXML
-    private void save() {
-        hideError();
+    private void handleSave() {
+        clearErrors();
 
-        // ===================== INPUT VALIDATION =====================
-        String titre = safe(titreField.getText());
-        String description = safe(descriptionField.getText());
-        String typeContrat = safe(typeContratField.getText());
-        String localisation = safe(localisationField.getText());
-        String niveau = safe(niveauField.getText());
-        String experience = safe(experienceField.getText());
-        String competences = safe(competencesField.getText());
-        String secteur = safe(secteurField.getText());
-        String entreprise = safe(entrepriseField.getText());
-        String contact = safe(contactField.getText());
+        // ====== read values ======
+        String titre = safe(txtTitre.getText());
+        String description = safe(txtDescription.getText());
+        String typeContrat = comboTypeContrat.getValue() == null ? "" : comboTypeContrat.getValue().trim();
+        String entreprise = safe(txtEntreprise.getText());
 
-        // Required text fields
-        if (titre.isEmpty())          { showError("Le titre est obligatoire."); return; }
-        if (description.isEmpty())    { showError("La description est obligatoire."); return; }
-        if (typeContrat.isEmpty())    { showError("Le type de contrat est obligatoire."); return; }
-        if (localisation.isEmpty())   { showError("La localisation est obligatoire."); return; }
-        if (niveau.isEmpty())         { showError("Le niveau de qualification est obligatoire."); return; }
-        if (experience.isEmpty())     { showError("L'expérience requise est obligatoire."); return; }
-        if (competences.isEmpty())    { showError("Les compétences sont obligatoires."); return; }
-        if (secteur.isEmpty())        { showError("Le secteur d'activité est obligatoire."); return; }
-        if (entreprise.isEmpty())     { showError("Le nom de l'entreprise est obligatoire."); return; }
-        if (contact.isEmpty())        { showError("Le contact recruteur est obligatoire."); return; }
+        String localisation = safe(txtLocalisation.getText());
+        String secteur = safe(txtSecteur.getText());
+        String niveau = comboQualification.getValue() == null ? "" : comboQualification.getValue().trim();
 
-        // Email validation
-        if (!isValidEmail(contact)) {
-            showError("Format d'email invalide (ex: recrutement@entreprise.tn).");
+        String experience = safe(txtExperience.getText());
+        String competences = safe(txtCompetences.getText());
+        String contact = safe(txtContact.getText());
+
+        LocalDate datePart = dpExpirationDate.getValue();
+        Integer hours = spExpirationTime.getValue();
+        Integer minutes = spExpirationMinute.getValue();
+
+        // ====== validations (precise + popups + highlight field) ======
+        if (titre.isEmpty())          { fail(txtTitre, "Le titre est obligatoire."); return; }
+        if (description.isEmpty())    { fail(txtDescription, "La description est obligatoire."); return; }
+        if (typeContrat.isEmpty())    { fail(comboTypeContrat, "Le type de contrat est obligatoire."); return; }
+        if (entreprise.isEmpty())     { fail(txtEntreprise, "Le nom de l'entreprise est obligatoire."); return; }
+
+        if (localisation.isEmpty())   { fail(txtLocalisation, "La localisation est obligatoire."); return; }
+        if (secteur.isEmpty())        { fail(txtSecteur, "Le secteur d'activité est obligatoire."); return; }
+        if (niveau.isEmpty())         { fail(comboQualification, "Le niveau de qualification est obligatoire."); return; }
+
+        if (experience.isEmpty())     { fail(txtExperience, "L'expérience requise est obligatoire."); return; }
+        if (!experience.matches("^\\d+(\\s*ans)?$|^\\d+\\s*-\\s*\\d+(\\s*ans)?$")) {
+            fail(txtExperience, "Expérience invalide (ex: 2, 2-5, 3 ans).");
             return;
         }
 
-        // Salary validation
+        if (competences.isEmpty())    { fail(txtCompetences, "Les compétences sont obligatoires."); return; }
+        if (!competences.contains(",")) {
+            fail(txtCompetences, "Sépare les compétences par des virgules (ex: Java, SQL, React).");
+            return;
+        }
+
+        if (contact.isEmpty())        { fail(txtContact, "Le contact recruteur est obligatoire."); return; }
+        if (!isValidEmail(contact))   { fail(txtContact, "Email invalide (ex: recrutement@entreprise.tn)."); return; }
+
+        if (safe(txtSalaire.getText()).isEmpty()) { fail(txtSalaire, "Le salaire est obligatoire."); return; }
+
         double salaire;
         try {
-            salaire = Double.parseDouble(safe(salaireField.getText()));
-            if (salaire <= 0) throw new NumberFormatException();
+            salaire = Double.parseDouble(safe(txtSalaire.getText()));
+            if (salaire <= 0) {
+                fail(txtSalaire, "Le salaire doit être > 0 (ex: 2500).");
+                return;
+            }
         } catch (Exception e) {
-            showError("Le salaire doit être un nombre positif (ex: 2500).");
+            fail(txtSalaire, "Le salaire doit être un nombre valide (ex: 2500).");
             return;
         }
 
-        // Expiration date & time
-        LocalDate datePart = dpExpirationDate.getValue();
-        if (datePart == null) {
-            showError("La date d'expiration est obligatoire.");
+        if (datePart == null) { fail(dpExpirationDate, "La date d'expiration est obligatoire."); return; }
+        if (datePart.isBefore(LocalDate.now())) {
+            fail(dpExpirationDate, "La date d'expiration doit être dans le futur.");
             return;
         }
-
-        int hours = spExpirationTime.getValue();
-        int minutes = spExpirationMinute.getValue();
+        if (hours == null || minutes == null) {
+            showErrorPopup("Heure/minute d'expiration invalide.");
+            return;
+        }
 
         LocalDateTime expirationDateTime = LocalDateTime.of(
                 datePart.getYear(),
@@ -104,17 +158,20 @@ public class OffreAddController {
                 minutes
         );
 
-        LocalDateTime datePublication = LocalDateTime.now();
+        // (Optionnel mais clean) : si même jour, empêcher une heure déjà passée
+        if (datePart.equals(LocalDate.now()) && expirationDateTime.isBefore(LocalDateTime.now())) {
+            fail(dpExpirationDate, "L'expiration doit être dans le futur (date + heure).");
+            return;
+        }
 
-        // ===================== CREATE OFFRE OBJECT =====================
+        // ====== create + insert ======
         OffreEmploi offre = new OffreEmploi(
-                0,                      // id = 0 for new record
                 titre,
                 description,
                 salaire,
                 typeContrat,
                 localisation,
-                datePublication,
+                LocalDateTime.now(),
                 expirationDateTime,
                 niveau,
                 experience,
@@ -125,53 +182,84 @@ public class OffreAddController {
         );
 
         try {
-            service.ajouter(offre);
+            service.ajouter(offre); // insert SQL ok :contentReference[oaicite:1]{index=1}
             handleReset();
             showInfo("✅ Offre ajoutée avec succès !");
         } catch (SQLException e) {
-            showError("Erreur base de données : " + e.getMessage());
+            showErrorPopup("Erreur base de données : " + e.getMessage());
         }
     }
 
     @FXML
     private void handleReset() {
-        titreField.clear();
-        descriptionField.clear();
-        salaireField.clear();
-        typeContratField.clear();
-        localisationField.clear();
-        dpExpirationDate.setValue(null);
+        clearErrors();
+
+        txtTitre.clear();
+        txtDescription.clear();
+        txtSalaire.clear();
+        txtLocalisation.clear();
+        txtSecteur.clear();
+
+        comboTypeContrat.getSelectionModel().clearSelection();
+        comboQualification.getSelectionModel().clearSelection();
+
+        txtExperience.clear();
+        txtCompetences.clear();
+
+        txtEntreprise.clear();
+        txtContact.clear();
+
+        dpExpirationDate.setValue(LocalDate.now().plusDays(7));
         spExpirationTime.getValueFactory().setValue(23);
         spExpirationMinute.getValueFactory().setValue(59);
-        niveauField.clear();
-        experienceField.clear();
-        competencesField.clear();
-        secteurField.clear();
-        entrepriseField.clear();
-        contactField.clear();
-        hideError();
+
+        if (lblCharCount != null) lblCharCount.setText("0/2000");
     }
 
-    // ==================== HELPERS ====================
+    // ==================== helpers ====================
+
+    private void fail(Control field, String message) {
+        markError(field, true);
+        showErrorPopup(message);
+        field.requestFocus();
+    }
+
+    private void markError(Control c, boolean on) {
+        if (c != null) c.pseudoClassStateChanged(ERROR_CLASS, on);
+    }
+
+    private void clearErrors() {
+        List<Control> all = new ArrayList<>();
+        all.add(txtTitre);
+        all.add(txtDescription);
+        all.add(txtSalaire);
+        all.add(txtLocalisation);
+        all.add(txtSecteur);
+        all.add(comboTypeContrat);
+        all.add(comboQualification);
+        all.add(txtExperience);
+        all.add(txtCompetences);
+        all.add(txtEntreprise);
+        all.add(txtContact);
+        all.add(dpExpirationDate);
+
+        for (Control c : all) markError(c, false);
+    }
 
     private String safe(String s) {
         return s == null ? "" : s.trim();
     }
 
     private boolean isValidEmail(String email) {
-        // Simple but effective email regex
-        return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
+        return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
 
-    private void showError(String msg) {
-        errorLabel.setText(msg);
-        errorLabel.setVisible(true);
-        errorLabel.setManaged(true);
-    }
-
-    private void hideError() {
-        errorLabel.setVisible(false);
-        errorLabel.setManaged(false);
+    private void showErrorPopup(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur de saisie");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
     }
 
     private void showInfo(String msg) {

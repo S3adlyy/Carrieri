@@ -646,3 +646,13 @@
     -fx-text-fill: #9ca3af;
     -fx-padding: 4 0 0 4;
 }
+
+/* ===== Validation error state (PseudoClass: :error) ===== */
+.text-field.error,
+.text-area.error,
+.combo-box.error,
+.date-picker.error {
+    -fx-border-color: #dc2626 !important;
+    -fx-border-width: 2.5 !important;
+    -fx-effect: dropshadow(gaussian, rgba(220,38,38,0.22), 12, 0, 0, 3);
+}

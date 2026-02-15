@@ -178,7 +178,7 @@
             <HBox spacing="32" alignment="CENTER" style="-fx-padding: 20 0 40 0;">
                 <Button text="Réinitialiser" onAction="#handleReset"
                         styleClass="btn-reset-elegant" prefWidth="180" prefHeight="54"/>
-                <Button text="Publier l'offre" onAction="#save"
+                <Button text="Publier l'offre" onAction="#handleSave"
                         styleClass="btn-publish-elegant" prefWidth="260" prefHeight="58"/>
             </HBox>
 
