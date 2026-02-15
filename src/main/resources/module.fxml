@@ -31,50 +31,46 @@
                 style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 16px; -fx-padding: 8 12;"/>
     </HBox>
 
-    <!-- Formulaire -->
+    <!-- Formulaire (caché au démarrage) -->
     <VBox fx:id="formBox" spacing="10" managed="false" visible="false">
-        <Label text="Module" style="-fx-font-weight: bold;"/>
+        <Label text="📝 Ajouter un Module" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
 
         <TextField fx:id="txtTitre" promptText="Titre du module"/>
         <TextArea fx:id="txtDescription" promptText="Description" prefRowCount="2"/>
         <TextField fx:id="txtOrdre" promptText="Ordre (1, 2, 3...)" prefWidth="150"/>
 
-        <HBox spacing="10" alignment="CENTER">
+        <HBox spacing="10" alignment="CENTER_LEFT">
             <Button fx:id="btnAjouter" text="➕ AJOUTER"
                     onAction="#ajouterModule"
                     style="-fx-background-color: #5E548E; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
-            <Button fx:id="btnModifier" text="✏️ MODIFIER"
-                    onAction="#modifierModule"
-                    style="-fx-background-color: #E0B1CB; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
-            <Button fx:id="btnSupprimer" text="🗑️ SUPPRIMER"
-                    onAction="#supprimerModule"
-                    style="-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
         </HBox>
         <Separator/>
     </VBox>
 
     <!-- Liste des modules -->
-    <TableView fx:id="tableModules" prefHeight="350" VBox.vgrow="ALWAYS" editable="true">
-        <columns>
-            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
-            <TableColumn fx:id="colTitre" text="Titre" prefWidth="150" editable="true"/>
-            <TableColumn fx:id="colDescription" text="Description" prefWidth="200" editable="true"/>
-            <TableColumn fx:id="colOrdre" text="Ordre" prefWidth="80" editable="true"/>
-            <TableColumn fx:id="colActions" text="Actions" prefWidth="80"/>
-        </columns>
-    </TableView>
+    <VBox fx:id="tablePane" spacing="10" VBox.vgrow="ALWAYS">
+        <TableView fx:id="tableModules" prefHeight="350" VBox.vgrow="ALWAYS" editable="true">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                <TableColumn fx:id="colTitre" text="Titre" prefWidth="150" editable="true"/>
+                <TableColumn fx:id="colDescription" text="Description" prefWidth="200" editable="true"/>
+                <TableColumn fx:id="colOrdre" text="Ordre" prefWidth="80" editable="true"/>
+                <TableColumn fx:id="colActions" text="Actions" prefWidth="80"/>
+            </columns>
+        </TableView>
 
-    <!-- Boutons d'actions -->
-    <HBox spacing="10" alignment="CENTER">
-        <Button text="🤖 GÉNÉRER QUIZ AUTO"
-                onAction="#genererQuizAutomatique"
-                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
-        <Button text="📖 Gérer les leçons"
-                onAction="#ajouterLecons"
-                style="-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
-        <Button text="❌ Fermer"
-                onAction="#fermer"
-                style="-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
-    </HBox>
+        <!-- Boutons d'actions -->
+        <HBox spacing="10" alignment="CENTER">
+            <Button text="🤖 GÉNÉRER QUIZ AUTO"
+                    onAction="#genererQuizAutomatique"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
+            <Button text="📖 Gérer les leçons"
+                    onAction="#ajouterLecons"
+                    style="-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
+            <Button text="❌ Fermer"
+                    onAction="#fermer"
+                    style="-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
+        </HBox>
+    </VBox>
 
 </VBox>

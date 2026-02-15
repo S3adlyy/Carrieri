@@ -7,7 +7,6 @@ public class Lecon {
     private byte[] video;        // ✅ LONGBLOB - pas de changement !
     private int ordre;
     private int moduleId;
-    private String type;
 
     // Constructeur sans ID (pour ajout)
     public Lecon(String titre, String contenu, byte[] video, int ordre, int moduleId) {
@@ -46,7 +45,4 @@ public class Lecon {
 
     public int getModuleId() { return moduleId; }
     public void setModuleId(int moduleId) { this.moduleId = moduleId; }
-
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
 }

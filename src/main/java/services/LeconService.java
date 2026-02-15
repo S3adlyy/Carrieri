@@ -13,7 +13,7 @@ public class LeconService implements ILeconService {
     @Override
     public void ajouter(Lecon l) {
         validateLecon(l);
-        String sql = "INSERT INTO lecon (titre, contenu, video, ordre, module_id, type) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO lecon (titre, contenu, video, ordre, module_id) VALUES (?, ?, ?, ?, ?)";
 
         try {
             PreparedStatement ps = con.prepareStatement(sql);
@@ -22,12 +22,12 @@ public class LeconService implements ILeconService {
             ps.setBytes(3, l.getVideo());        // ✅ AUCUNE COMPRESSION !
             ps.setInt(4, l.getOrdre());
             ps.setInt(5, l.getModuleId());
-            ps.setString(6, l.getType());
             ps.executeUpdate();
             System.out.println("✅ Leçon ajoutée: " + l.getTitre());
         } catch (SQLException e) {
             System.err.println("❌ Erreur ajout leçon: " + e.getMessage());
             e.printStackTrace();
+            throw new RuntimeException("Erreur lors de l'ajout de la leçon: " + e.getMessage(), e);
         }
     }
 
@@ -50,7 +50,6 @@ public class LeconService implements ILeconService {
                         rs.getInt("ordre"),
                         rs.getInt("module_id")
                 );
-                lecon.setType(rs.getString("type"));
                 list.add(lecon);
             }
         } catch (SQLException e) {
@@ -62,7 +61,7 @@ public class LeconService implements ILeconService {
     @Override
     public void modifier(Lecon l) {
         validateLecon(l);
-        String sql = "UPDATE lecon SET titre=?, contenu=?, video=?, ordre=?, module_id=?, type=? WHERE id=?";
+        String sql = "UPDATE lecon SET titre=?, contenu=?, video=?, ordre=?, module_id=? WHERE id=?";
 
         try {
             PreparedStatement ps = con.prepareStatement(sql);
@@ -71,8 +70,7 @@ public class LeconService implements ILeconService {
             ps.setBytes(3, l.getVideo());        // ✅ AUCUNE COMPRESSION !
             ps.setInt(4, l.getOrdre());
             ps.setInt(5, l.getModuleId());
-            ps.setString(6, l.getType());
-            ps.setInt(7, l.getId());
+            ps.setInt(6, l.getId());
             int rows = ps.executeUpdate();
             if (rows > 0) {
                 System.out.println("✅ Leçon modifiée: " + l.getId());
@@ -80,6 +78,7 @@ public class LeconService implements ILeconService {
         } catch (SQLException e) {
             System.err.println("❌ Erreur modification leçon: " + e.getMessage());
             e.printStackTrace();
+            throw new RuntimeException("Erreur lors de la modification de la leçon: " + e.getMessage(), e);
         }
     }
 
@@ -135,7 +134,6 @@ public class LeconService implements ILeconService {
                         rs.getInt("ordre"),
                         rs.getInt("module_id")
                 );
-                lecon.setType(rs.getString("type"));
                 list.add(lecon);
             }
         } catch (SQLException e) {
@@ -158,6 +156,16 @@ public class LeconService implements ILeconService {
         if (lecon.getTitre().length() > 200) {
             throw new IllegalArgumentException("Le titre ne peut pas dépasser 200 caractères");
         }
+        
+        // ✅ VALIDATION LOGIQUE: Le titre ne peut pas être composé uniquement de chiffres
+        if (isOnlyDigits(lecon.getTitre().trim())) {
+            throw new IllegalArgumentException("Le titre ne peut pas être composé uniquement de chiffres");
+        }
+
+        // ✅ VALIDATION D'UNICITÉ: Vérifier que le titre de la leçon est unique dans le module
+        if (isTitreLeconExiste(lecon.getTitre().trim(), lecon.getModuleId(), lecon.getId())) {
+            throw new IllegalArgumentException("Une leçon avec ce titre existe déjà dans ce module !");
+        }
 
         // Validation du contenu
         if (lecon.getContenu() == null || lecon.getContenu().trim().isEmpty()) {
@@ -166,8 +174,18 @@ public class LeconService implements ILeconService {
         if (lecon.getContenu().trim().length() < 10) {
             throw new IllegalArgumentException("Le contenu doit contenir au moins 10 caractères");
         }
-        if (lecon.getContenu().length() > 5000) {
-            throw new IllegalArgumentException("Le contenu ne peut pas dépasser 5000 caractères");
+        if (lecon.getContenu().length() > 10000) {
+            throw new IllegalArgumentException("Le contenu ne peut pas dépasser 10000 caractères");
+        }
+        
+        // ✅ VALIDATION LOGIQUE: Le contenu ne peut pas être composé uniquement de chiffres
+        if (isOnlyDigits(lecon.getContenu().trim())) {
+            throw new IllegalArgumentException("Le contenu ne peut pas être composé uniquement de chiffres");
+        }
+        
+        // ✅ VALIDATION LOGIQUE: Le contenu ne doit pas contenir trop de chiffres (max 30%)
+        if (hasTooManyDigits(lecon.getContenu().trim(), 30)) {
+            throw new IllegalArgumentException("Le contenu contient trop de chiffres (maximum 30% autorisé)");
         }
 
         // Validation de l'ordre
@@ -188,5 +206,57 @@ public class LeconService implements ILeconService {
             throw new IllegalArgumentException("La vidéo ne peut pas dépasser 64 MB (limite MySQL)");
         }
     }
-}
+    
+    // ✅ MÉTHODE POUR VÉRIFIER SI UN TEXTE EST COMPOSÉ UNIQUEMENT DE CHIFFRES
+    private boolean isOnlyDigits(String text) {
+        if (text == null || text.isEmpty()) {
+            return false;
+        }
+        String textWithoutSpaces = text.replaceAll("\\s+", "");
+        return textWithoutSpaces.matches("\\d+");
+    }
+    
+    // ✅ MÉTHODE POUR VÉRIFIER SI UN TEXTE CONTIENT TROP DE CHIFFRES
+    private boolean hasTooManyDigits(String text, int maxPercentage) {
+        if (text == null || text.isEmpty()) {
+            return false;
+        }
+        
+        int totalChars = 0;
+        int digitCount = 0;
+        
+        for (char c : text.toCharArray()) {
+            if (!Character.isWhitespace(c)) {
+                totalChars++;
+                if (Character.isDigit(c)) {
+                    digitCount++;
+                }
+            }
+        }
+        
+        if (totalChars == 0) {
+            return false;
+        }
+        
+        double digitPercentage = (digitCount * 100.0) / totalChars;
+        return digitPercentage > maxPercentage;
+    }
 
+    // ✅ MÉTHODE POUR VÉRIFIER L'UNICITÉ DU TITRE DE LA LEÇON DANS UN MODULE
+    private boolean isTitreLeconExiste(String titre, int moduleId, int leconIdExclu) {
+        String sql = "SELECT COUNT(*) FROM lecon WHERE LOWER(titre) = LOWER(?) AND module_id = ? AND id != ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, titre);
+            ps.setInt(2, moduleId);
+            ps.setInt(3, leconIdExclu <= 0 ? -1 : leconIdExclu);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur vérification unicité titre leçon: " + e.getMessage());
+        }
+        return false;
+    }
+}

@@ -1255,6 +1255,7 @@ public class QuizAutoGenerator implements IQuizAutoGenerator {
         String sqlReponse = "INSERT INTO reponse (question_id, question_type, reponse_text, est_correcte, ordre) VALUES (?, 'QUIZ', ?, ?, ?)";
 
         try {
+            con.setAutoCommit(false);
             int ordre = 1;
             for (QuestionGeneree q : questions) {
                 if (q == null) continue;
@@ -1285,8 +1286,21 @@ public class QuizAutoGenerator implements IQuizAutoGenerator {
 
                 System.out.println("   ✅ Question: " + tronquer(q.getQuestion(), 60));
             }
+            con.commit();
+            System.out.println("✅ Quiz sauvegardé avec succès");
         } catch (SQLException e) {
+            try {
+                con.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
+        } finally {
+            try {
+                con.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -1300,6 +1314,7 @@ public class QuizAutoGenerator implements IQuizAutoGenerator {
         String sqlReponse = "INSERT INTO reponse (question_id, question_type, reponse_text, est_correcte, ordre) VALUES (?, 'TEST', ?, ?, ?)";
 
         try {
+            con.setAutoCommit(false);
             int ordre = 1;
             for (QuestionGeneree q : questions) {
                 if (q == null) continue;
@@ -1330,8 +1345,21 @@ public class QuizAutoGenerator implements IQuizAutoGenerator {
 
                 System.out.println("   ✅ Question: " + tronquer(q.getQuestion(), 60));
             }
+            con.commit();
+            System.out.println("✅ Test sauvegardé avec succès");
         } catch (SQLException e) {
+            try {
+                con.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
+        } finally {
+            try {
+                con.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -410,31 +410,19 @@ public class CoursPlayerController {
             return;
         }
 
-        String type = lecon.getType();
-        if (type != null && type.equalsIgnoreCase("QUIZ")) {
-            btnTerminer.setVisible(true);
-            btnTerminer.setText("Passer le Quiz");
-            lblStatus.setText("📝 Cliquez sur le bouton pour passer le quiz");
-        } else {
-            btnTerminer.setVisible(false);
-            lblStatus.setText("📖 Scrollez jusqu'en bas pour valider la leçon");
-            // ✅ Démarrer la détection de scroll
-            demarrerVerificationScroll();
-            System.out.println("✅ Détection de scroll activée pour: " + lecon.getTitre());
-        }
+        // Toujours traiter comme une leçon classique
+        btnTerminer.setVisible(false);
+        lblStatus.setText("📖 Scrollez jusqu'en bas pour valider la leçon");
+        demarrerVerificationScroll();
+        System.out.println("✅ Détection de scroll activée pour: " + lecon.getTitre());
     }
 
     @FXML
     private void terminerLecon() {
         if (leconCourante == null) return;
 
-        if (leconCourante.getType() != null && leconCourante.getType().equalsIgnoreCase("QUIZ")) {
-            System.out.println("🖱️ Lancement du quiz: " + leconCourante.getTitre());
-            Module module = moduleService.getModuleById(leconCourante.getModuleId());
-            if (module != null) {
-                lancerQuizModule(module.getId(), module.getTitre());
-            }
-        }
+        // Sans type, on valide directement la leçon
+        validerLecon();
     }
 
     // ✅ Garder cette méthode pour la compatibilité
@@ -524,11 +512,6 @@ public class CoursPlayerController {
     private void verifierPositionScroll() {
         // ✅ Ne pas vérifier si pas de leçon
         if (leconCourante == null) {
-            return;
-        }
-
-        // ✅ Ne pas vérifier pour les quiz
-        if (leconCourante.getType() != null && leconCourante.getType().equalsIgnoreCase("QUIZ")) {
             return;
         }
 
@@ -730,3 +713,4 @@ public class CoursPlayerController {
         alert.showAndWait();
     }
 }
+

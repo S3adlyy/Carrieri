@@ -32,6 +32,7 @@ public class CoursService implements ICoursService {
 
     @Override
     public void update(Cours cours) throws SQLException {
+        validateCours(cours);
         String sql = "UPDATE cours SET titre=?, description=?, duree=?, niveau=?, competences_visees=?, est_obligatoire=?, image_couverture=? WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, cours.getTitre());
@@ -53,9 +54,114 @@ public class CoursService implements ICoursService {
 
     @Override
     public void supprimer(int id) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement("DELETE FROM cours WHERE id=?")) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
+        connection.setAutoCommit(false);
+        try {
+            // 1. Supprimer les réponses des questions de quiz
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "DELETE r FROM reponse r " +
+                    "INNER JOIN question_quiz qq ON r.question_id = qq.id AND r.question_type = 'QUIZ' " +
+                    "INNER JOIN module m ON qq.module_id = m.id " +
+                    "WHERE m.cours_id = ?")) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            // 2. Supprimer les réponses des questions de test
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "DELETE r FROM reponse r " +
+                    "INNER JOIN question_test qt ON r.question_id = qt.id AND r.question_type = 'TEST' " +
+                    "WHERE qt.cours_id = ?")) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            // 3. Supprimer les questions de quiz
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "DELETE qq FROM question_quiz qq " +
+                    "INNER JOIN module m ON qq.module_id = m.id " +
+                    "WHERE m.cours_id = ?")) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            // 4. Supprimer les questions de test
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "DELETE FROM question_test WHERE cours_id = ?")) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            // 5. Supprimer les résultats de quiz
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "DELETE rq FROM resultat_quiz_module rq " +
+                    "INNER JOIN module m ON rq.module_id = m.id " +
+                    "WHERE m.cours_id = ?")) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            // 6. Supprimer les résultats de test final
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "DELETE FROM resultat_test_cours WHERE cours_id = ?")) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            // 7. Supprimer les progressions de leçons
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "DELETE pl FROM progression_lecon pl " +
+                    "INNER JOIN lecon l ON pl.lecon_id = l.id " +
+                    "INNER JOIN module m ON l.module_id = m.id " +
+                    "WHERE m.cours_id = ?")) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            // 8. Supprimer les leçons
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "DELETE l FROM lecon l " +
+                    "INNER JOIN module m ON l.module_id = m.id " +
+                    "WHERE m.cours_id = ?")) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            // 9. Supprimer les modules
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "DELETE FROM module WHERE cours_id = ?")) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            // 10. Supprimer les progressions de cours
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "DELETE FROM progression_cours WHERE cours_id = ?")) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            // 11. Supprimer les certifications
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "DELETE FROM certification WHERE cours_id = ?")) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            // 12. Enfin supprimer le cours lui-même
+            try (PreparedStatement ps = connection.prepareStatement("DELETE FROM cours WHERE id=?")) {
+                ps.setInt(1, id);
+                int rowsAffected = ps.executeUpdate();
+                System.out.println("✅ Cours supprimé: " + rowsAffected + " ligne(s) affectée(s)");
+            }
+
+            connection.commit();
+            System.out.println("✅ Transaction validée");
+        } catch (SQLException e) {
+            connection.rollback();
+            System.err.println("❌ Erreur lors de la suppression, rollback effectué: " + e.getMessage());
+            throw e;
+        } finally {
+            connection.setAutoCommit(true);
         }
     }
 
@@ -117,6 +223,16 @@ public class CoursService implements ICoursService {
             throw new IllegalArgumentException("Le titre ne peut pas dépasser 200 caractères");
         }
 
+        // ✅ VALIDATION LOGIQUE: Le titre ne peut pas être composé uniquement de chiffres
+        if (isOnlyDigits(cours.getTitre().trim())) {
+            throw new IllegalArgumentException("Le titre ne peut pas être composé uniquement de chiffres");
+        }
+
+        // ✅ VALIDATION D'UNICITÉ: Vérifier que le titre du cours est unique
+        if (isTitreCourExiste(cours.getTitre().trim(), cours.getId())) {
+            throw new IllegalArgumentException("Un cours avec ce titre existe déjà !");
+        }
+
         // Validation du niveau
         if (cours.getNiveau() == null || cours.getNiveau().trim().isEmpty()) {
             throw new IllegalArgumentException("Le niveau est obligatoire");
@@ -141,9 +257,82 @@ public class CoursService implements ICoursService {
             throw new IllegalArgumentException("La description ne peut pas dépasser 1000 caractères");
         }
 
+        // ✅ VALIDATION LOGIQUE: La description ne peut pas être composée uniquement de chiffres
+        if (isOnlyDigits(cours.getDescription().trim())) {
+            throw new IllegalArgumentException("La description ne peut pas être composée uniquement de chiffres");
+        }
+
+        // ✅ VALIDATION LOGIQUE: La description ne doit pas contenir trop de chiffres (max 30%)
+        if (hasTooManyDigits(cours.getDescription().trim(), 30)) {
+            throw new IllegalArgumentException("La description contient trop de chiffres (maximum 30% autorisé)");
+        }
+
         // Validation des compétences
         if (cours.getCompetences_visees() != null && cours.getCompetences_visees().length() > 500) {
             throw new IllegalArgumentException("Les compétences ne peuvent pas dépasser 500 caractères");
         }
+
+        // ✅ VALIDATION LOGIQUE: Les compétences ne peuvent pas être composées uniquement de chiffres
+        if (cours.getCompetences_visees() != null && !cours.getCompetences_visees().trim().isEmpty()) {
+            if (isOnlyDigits(cours.getCompetences_visees().trim())) {
+                throw new IllegalArgumentException("Les compétences ne peuvent pas être composées uniquement de chiffres");
+            }
+            if (hasTooManyDigits(cours.getCompetences_visees().trim(), 30)) {
+                throw new IllegalArgumentException("Les compétences contiennent trop de chiffres (maximum 30% autorisé)");
+            }
+        }
+    }
+
+    // ✅ MÉTHODE POUR VÉRIFIER SI UN TEXTE EST COMPOSÉ UNIQUEMENT DE CHIFFRES
+    private boolean isOnlyDigits(String text) {
+        if (text == null || text.isEmpty()) {
+            return false;
+        }
+        // Retirer les espaces pour la vérification
+        String textWithoutSpaces = text.replaceAll("\\s+", "");
+        return textWithoutSpaces.matches("\\d+");
+    }
+
+    // ✅ MÉTHODE POUR VÉRIFIER SI UN TEXTE CONTIENT TROP DE CHIFFRES
+    private boolean hasTooManyDigits(String text, int maxPercentage) {
+        if (text == null || text.isEmpty()) {
+            return false;
+        }
+
+        int totalChars = 0;
+        int digitCount = 0;
+
+        for (char c : text.toCharArray()) {
+            if (!Character.isWhitespace(c)) {
+                totalChars++;
+                if (Character.isDigit(c)) {
+                    digitCount++;
+                }
+            }
+        }
+
+        if (totalChars == 0) {
+            return false;
+        }
+
+        double digitPercentage = (digitCount * 100.0) / totalChars;
+        return digitPercentage > maxPercentage;
+    }
+
+    // ✅ MÉTHODE POUR VÉRIFIER L'UNICITÉ DU TITRE DU COURS
+    private boolean isTitreCourExiste(String titre, int coursIdExclu) {
+        String sql = "SELECT COUNT(*) FROM cours WHERE LOWER(titre) = LOWER(?) AND id != ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, titre);
+            ps.setInt(2, coursIdExclu <= 0 ? -1 : coursIdExclu);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur vérification unicité titre cours: " + e.getMessage());
+        }
+        return false;
     }
 }

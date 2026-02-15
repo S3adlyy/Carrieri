@@ -29,6 +29,7 @@ public class ModuleController {
     @FXML private TextField txtOrdre;
     @FXML private Label lblCoursInfo;
     @FXML private VBox formBox;
+    @FXML private VBox tablePane;
 
     @FXML private TableView<Module> tableModules;
     @FXML private TableColumn<Module, Integer> colId;
@@ -39,8 +40,6 @@ public class ModuleController {
 
     // Buttons
     @FXML private Button btnAjouter;
-    @FXML private Button btnModifier;
-    @FXML private Button btnSupprimer;
     @FXML private Button btnToggleForm;
 
     private ModuleService moduleService = new ModuleService();
@@ -51,38 +50,32 @@ public class ModuleController {
     private boolean modeAjoutApresCours = false;
     private boolean modulesAjoutes = false;
     private Module moduleSelectionne = null;
+    private Scene previousScene;
+
+    public void setPreviousScene(Scene previousScene) {
+        this.previousScene = previousScene;
+    }
 
     @FXML
     public void initialize() {
         setupTableColumns();
         setupNumericFieldsOnly();
 
-        btnModifier.setDisable(true);
-        btnSupprimer.setDisable(true);
-        btnModifier.setVisible(false);
-        btnModifier.setManaged(false);
-        btnSupprimer.setVisible(false);
-        btnSupprimer.setManaged(false);
         lblCoursInfo.setVisible(false);
         lblCoursInfo.setManaged(false);
         txtOrdre.setVisible(false);
         txtOrdre.setManaged(false);
 
-        // Start with form hidden
+        // Start with table visible and form hidden
         setFormVisible(false);
+        setTableVisible(true);
 
         tableModules.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 moduleSelectionne = newSelection;
                 chargerModuleFormulaire(newSelection);
-                btnModifier.setDisable(false);
-                btnSupprimer.setDisable(false);
-                setFormVisible(false);
             } else {
                 moduleSelectionne = null;
-                btnModifier.setDisable(true);
-                btnSupprimer.setDisable(true);
-                txtOrdre.clear();
             }
         });
     }
@@ -184,62 +177,35 @@ public class ModuleController {
                 coursId
         );
 
-        if (coursId > 0) {
-            moduleService.ajouter(module);
-            modulesAjoutes = true;
+        try {
+            if (coursId > 0) {
+                moduleService.ajouter(module);
+                modulesAjoutes = true;
 
-            List<Module> modules = moduleService.getModulesByCours(coursId);
-            for (Module m : modules) {
-                if (m.getTitre().equals(module.getTitre()) && m.getOrdre() == ordre) {
-                    module = m;
-                    break;
+                List<Module> modules = moduleService.getModulesByCours(coursId);
+                for (Module m : modules) {
+                    if (m.getTitre().equals(module.getTitre()) && m.getOrdre() == ordre) {
+                        module = m;
+                        break;
+                    }
                 }
             }
+
+            moduleList.add(module);
+            showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Module ajouté !");
+            clearFields();
+            // Return to table view
+            setFormVisible(false);
+            setTableVisible(true);
+        } catch (IllegalArgumentException e) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Validation", e.getMessage());
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof IllegalArgumentException) {
+                showAlert(Alert.AlertType.WARNING, "⚠️ Validation", e.getCause().getMessage());
+            } else {
+                showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur lors de l'ajout: " + e.getMessage());
+            }
         }
-
-        moduleList.add(module);
-        showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Module ajouté !");
-        clearFields();
-    }
-
-    @FXML
-    private void modifierModule() {
-        if (moduleSelectionne == null) {
-            showAlert(Alert.AlertType.WARNING, "⚠️", "Sélectionnez un module à modifier");
-            return;
-        }
-
-        if (!validerFormulaire()) return;
-
-        int ordre = 1;
-        try {
-            ordre = Integer.parseInt(txtOrdre.getText().trim());
-        } catch (NumberFormatException e) {
-            ordre = moduleSelectionne.getOrdre();
-        }
-
-        // Vérifier que l'ordre n'est pas utilisé par un autre module
-        final int ordreVerif = ordre;
-        boolean ordreExiste = moduleList.stream()
-                .anyMatch(m -> m.getOrdre() == ordreVerif && m.getId() != moduleSelectionne.getId());
-        
-        if (ordreExiste) {
-            showAlert(Alert.AlertType.WARNING, "⚠️ Ordre déjà utilisé", 
-                    "Un autre module a déjà l'ordre " + ordre + ".\nVeuillez choisir un autre ordre.");
-            return;
-        }
-
-        moduleSelectionne.setTitre(txtTitre.getText().trim());
-        moduleSelectionne.setDescription(txtDescription.getText().trim());
-        moduleSelectionne.setOrdre(ordre);
-
-        if (coursId > 0) {
-            moduleService.modifier(moduleSelectionne);
-        }
-
-        tableModules.refresh();
-        showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Module modifié !");
-        clearFields();
     }
 
     @FXML
@@ -283,7 +249,8 @@ public class ModuleController {
             controller.setModuleId(moduleSelectionne.getId());
             controller.setModuleTitre(moduleSelectionne.getTitre());
 
-            Stage stage = new Stage();
+            Stage stage = (Stage) txtTitre.getScene().getWindow();
+            controller.setPreviousScene(stage.getScene());
             stage.setTitle("Gestion des leçons - " + moduleSelectionne.getTitre());
             stage.setScene(new Scene(root));
             stage.show();
@@ -349,7 +316,12 @@ public class ModuleController {
     @FXML
     private void fermer() {
         Stage stage = (Stage) txtTitre.getScene().getWindow();
-        stage.close();
+        if (previousScene != null) {
+            stage.setScene(previousScene);
+            stage.show();
+        } else {
+            stage.close();
+        }
     }
 
     private boolean validerFormulaire() {
@@ -404,10 +376,7 @@ public class ModuleController {
         txtOrdre.clear();
         tableModules.getSelectionModel().clearSelection();
         moduleSelectionne = null;
-        btnModifier.setDisable(true);
-        btnSupprimer.setDisable(true);
         txtTitre.requestFocus();
-        setFormVisible(true);
     }
 
     private void setFormVisible(boolean visible) {
@@ -423,17 +392,27 @@ public class ModuleController {
         }
     }
 
+    private void setTableVisible(boolean visible) {
+        if (tablePane != null) {
+            tablePane.setVisible(visible);
+            tablePane.setManaged(visible);
+        }
+    }
+
     @FXML
     private void toggleForm() {
         boolean isVisible = formBox != null && formBox.isVisible();
         if (!isVisible) {
-            // Show form for adding
+            // Show form for adding, hide table
             clearFields();
             moduleSelectionne = null;
             tableModules.getSelectionModel().clearSelection();
+            setTableVisible(false);
+            setFormVisible(true);
         } else {
-            // Hide form
+            // Hide form, show table
             setFormVisible(false);
+            setTableVisible(true);
         }
     }
 

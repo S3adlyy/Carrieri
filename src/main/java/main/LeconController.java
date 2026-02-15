@@ -5,6 +5,7 @@ import entities.Module;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
@@ -29,10 +30,10 @@ public class LeconController {
     @FXML private TextField txtTitre;
     @FXML private TextArea txtContenu;
     @FXML private TextField txtOrdre;
-    @FXML private ComboBox<String> comboType;
     @FXML private ComboBox<Module> comboModules;
     @FXML private Label lblInfo;
     @FXML private VBox formBox;
+    @FXML private VBox tablePane;
 
     // Vidéo fields - SIMPLE
     @FXML private Button btnChoisirVideo;
@@ -46,13 +47,10 @@ public class LeconController {
     @FXML private TableColumn<Lecon, String> colContenu;
     @FXML private TableColumn<Lecon, byte[]> colVideo;
     @FXML private TableColumn<Lecon, Integer> colOrdre;
-    @FXML private TableColumn<Lecon, String> colType;
     @FXML private TableColumn<Lecon, Void> colActions;
 
     // Buttons
     @FXML private Button btnAjouter;
-    @FXML private Button btnModifier;
-    @FXML private Button btnSupprimer;
     @FXML private Button btnToggleForm;
 
     // ============================================
@@ -73,6 +71,9 @@ public class LeconController {
     private byte[] videoBytes = null;
     private String videoNom = null;
 
+    // Previous scene support
+    private Scene previousScene;
+
     // ============================================
     // INITIALIZATION
     // ============================================
@@ -84,22 +85,14 @@ public class LeconController {
         setupVideoChooser();  // ✅ VERSION SIMPLE
         setupNumericFieldsOnly();
 
-        comboType.setItems(FXCollections.observableArrayList("Leçon", "Quiz", "Examen"));
-        comboType.setValue("Leçon");
-
-        btnModifier.setDisable(true);
-        btnSupprimer.setDisable(true);
-        btnModifier.setVisible(false);
-        btnModifier.setManaged(false);
-        btnSupprimer.setVisible(false);
-        btnSupprimer.setManaged(false);
         lblInfo.setVisible(false);
         lblInfo.setManaged(false);
         txtOrdre.setVisible(false);
         txtOrdre.setManaged(false);
 
-        // Start with form hidden
+        // Start with table visible and form hidden
         setFormVisible(false);
+        setTableVisible(true);
 
         comboModules.valueProperty().addListener((obs, oldModule, newModule) -> {
             if (newModule != null) {
@@ -112,13 +105,8 @@ public class LeconController {
             if (newSelection != null) {
                 leconSelectionnee = newSelection;
                 chargerLeconFormulaire(newSelection);
-                btnModifier.setDisable(false);
-                btnSupprimer.setDisable(false);
-                setFormVisible(false);
             } else {
                 leconSelectionnee = null;
-                btnModifier.setDisable(true);
-                btnSupprimer.setDisable(true);
                 txtOrdre.clear();
             }
         });
@@ -226,6 +214,14 @@ public class LeconController {
     }
 
     // ============================================
+    // PUBLIC METHODS
+    // ============================================
+
+    public void setPreviousScene(Scene previousScene) {
+        this.previousScene = previousScene;
+    }
+
+    // ============================================
     // PRIVATE HELPER METHODS
     // ============================================
 
@@ -285,11 +281,6 @@ public class LeconController {
             lblVideoNom.setText("Aucune vidéo");
             lblTailleVideo.setText("");
         }
-
-        String type = lecon.getType();
-        if (type == null) comboType.setValue("Leçon");
-        else if (type.equals("QUIZ")) comboType.setValue("Quiz");
-        else if (type.equals("EXAM")) comboType.setValue("Examen");
     }
 
     private void setupTableColumns() {
@@ -310,14 +301,6 @@ public class LeconController {
         // Ordre - Éditable inline
         colOrdre.setCellValueFactory(new PropertyValueFactory<>("ordre"));
         colOrdre.setCellFactory(column -> new LeconOrdreCell(leconService, leconList));
-
-        colType.setCellValueFactory(data -> {
-            String type = data.getValue().getType();
-            String display = type == null ? "Leçon" :
-                    type.equals("QUIZ") ? "Quiz" :
-                            type.equals("EXAM") ? "Examen" : "Leçon";
-            return new javafx.beans.property.SimpleStringProperty(display);
-        });
 
         // Colonne Actions avec bouton de suppression uniquement
         colActions.setCellFactory(param -> new TableCell<>() {
@@ -393,11 +376,6 @@ public class LeconController {
             return;
         }
 
-        String type = comboType.getValue();
-        if ("Quiz".equals(type)) type = "QUIZ";
-        else if ("Examen".equals(type)) type = "EXAM";
-        else type = null;
-
         Lecon lecon = new Lecon(
                 txtTitre.getText().trim(),
                 txtContenu.getText().trim(),
@@ -406,12 +384,23 @@ public class LeconController {
                 targetModuleId
         );
 
-        lecon.setType(type);
-        leconService.ajouter(lecon);
-
-        chargerLeconsParModule(targetModuleId);
-        showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Leçon ajoutée !");
-        clearFields();
+        try {
+            leconService.ajouter(lecon);
+            chargerLeconsParModule(targetModuleId);
+            showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Leçon ajoutée !");
+            clearFields();
+            // Return to table view
+            setFormVisible(false);
+            setTableVisible(true);
+        } catch (IllegalArgumentException e) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Validation", e.getMessage());
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof IllegalArgumentException) {
+                showAlert(Alert.AlertType.WARNING, "⚠️ Validation", e.getCause().getMessage());
+            } else {
+                showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur lors de l'ajout: " + e.getMessage());
+            }
+        }
     }
 
     @FXML
@@ -444,11 +433,6 @@ public class LeconController {
             return;
         }
 
-        String type = comboType.getValue();
-        if ("Quiz".equals(type)) type = "QUIZ";
-        else if ("Examen".equals(type)) type = "EXAM";
-        else type = null;
-
         leconSelectionnee.setTitre(txtTitre.getText().trim());
         leconSelectionnee.setContenu(txtContenu.getText().trim());
 
@@ -457,13 +441,21 @@ public class LeconController {
         }
 
         leconSelectionnee.setOrdre(ordre);
-        leconSelectionnee.setType(type);
 
-        leconService.modifier(leconSelectionnee);
-
-        chargerLeconsParModule(leconSelectionnee.getModuleId());
-        showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Leçon modifiée !");
-        clearFields();
+        try {
+            leconService.modifier(leconSelectionnee);
+            chargerLeconsParModule(leconSelectionnee.getModuleId());
+            showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Leçon modifiée !");
+            clearFields();
+        } catch (IllegalArgumentException e) {
+            showAlert(Alert.AlertType.WARNING, "⚠️ Validation", e.getMessage());
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof IllegalArgumentException) {
+                showAlert(Alert.AlertType.WARNING, "⚠️ Validation", e.getCause().getMessage());
+            } else {
+                showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur lors de la modification: " + e.getMessage());
+            }
+        }
     }
 
     @FXML
@@ -501,7 +493,12 @@ public class LeconController {
     @FXML
     private void fermer() {
         Stage stage = (Stage) txtTitre.getScene().getWindow();
-        stage.close();
+        if (previousScene != null) {
+            stage.setScene(previousScene);
+            stage.show();
+        } else {
+            stage.close();
+        }
     }
 
     private boolean validerFormulaire() {
@@ -523,8 +520,8 @@ public class LeconController {
             errors.append("• Le contenu est obligatoire\n");
         } else if (contenu.length() < 10) {
             errors.append("• Le contenu doit contenir au moins 10 caractères\n");
-        } else if (contenu.length() > 5000) {
-            errors.append("• Le contenu ne peut pas dépasser 5000 caractères\n");
+        } else if (contenu.length() > 10000) {
+            errors.append("• Le contenu ne peut pas dépasser 10000 caractères\n");
         }
 
         // Validation de l'ordre
@@ -540,12 +537,6 @@ public class LeconController {
             } catch (NumberFormatException e) {
                 errors.append("• L'ordre doit être un nombre entier valide\n");
             }
-        }
-
-        // Validation du type
-        String type = comboType.getValue();
-        if (type == null || type.trim().isEmpty()) {
-            errors.append("• Le type de leçon est obligatoire\n");
         }
 
         // Validation de la vidéo (taille maximale = limite MySQL max_allowed_packet)
@@ -565,7 +556,6 @@ public class LeconController {
         txtTitre.clear();
         txtContenu.clear();
         txtOrdre.clear();
-        comboType.setValue("Leçon");
 
         // ✅ Réinitialiser vidéo
         videoBytes = null;
@@ -575,10 +565,7 @@ public class LeconController {
 
         tableLecons.getSelectionModel().clearSelection();
         leconSelectionnee = null;
-        btnModifier.setDisable(true);
-        btnSupprimer.setDisable(true);
         txtTitre.requestFocus();
-        setFormVisible(true);
     }
 
     private void setFormVisible(boolean visible) {
@@ -594,17 +581,27 @@ public class LeconController {
         }
     }
 
+    private void setTableVisible(boolean visible) {
+        if (tablePane != null) {
+            tablePane.setVisible(visible);
+            tablePane.setManaged(visible);
+        }
+    }
+
     @FXML
     private void toggleForm() {
         boolean isVisible = formBox != null && formBox.isVisible();
         if (!isVisible) {
-            // Show form for adding
+            // Show form for adding, hide table
             clearFields();
             leconSelectionnee = null;
             tableLecons.getSelectionModel().clearSelection();
+            setTableVisible(false);
+            setFormVisible(true);
         } else {
-            // Hide form
+            // Hide form, show table
             setFormVisible(false);
+            setTableVisible(true);
         }
     }
 
@@ -616,4 +613,3 @@ public class LeconController {
         alert.showAndWait();
     }
 }
-
