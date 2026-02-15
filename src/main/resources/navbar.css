@@ -1,138 +1,104 @@
-/* navbar.css - Modern Glass Navbar with Liquid Effects */
+/* =========================================================
+   SIDEBAR / NAVBAR STYLES - Carrieri
+   ========================================================= */
 
-/* Root background */
-.mission-bg {
-    -fx-background-color: linear-gradient(to bottom right, #0a0a2a, #1a1a3a, #0f0c29);
-    -fx-background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23181847' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+.sidebar {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e8e0f0;
+    -fx-border-width: 0 1 0 0;
+    -fx-effect: dropshadow(gaussian, rgba(120, 80, 180, 0.08), 10, 0, 2, 0);
 }
 
-/* Glass Effect Navbar */
-.mission-header {
-    -fx-background-color: rgba(255, 255, 255, 0.08);
-    -fx-backdrop-filter: blur(20px);
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 20, 0, 0, 4);
-    -fx-border-color: rgba(255, 255, 255, 0.15);
-    -fx-border-width: 0 0 1px 0;
-    -fx-padding: 15px 0;
-    -fx-spacing: 0;
+/* ---------- Logo ---------- */
+.logo-row {
+    -fx-padding: 0 0 24 0;
 }
 
-/* Navbar Container */
-.navbar-container {
-    -fx-padding: 0 40px;
-    -fx-spacing: 25px;
-    -fx-alignment: CENTER;
+.logo-text {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1225;
+    -fx-font-family: "Segoe UI";
 }
 
-/* Liquid Button Base */
-.liquid-btn {
-    -fx-background-color: linear-gradient(to right, #6a11cb, #2575fc);
-    -fx-text-fill: white;
-    -fx-font-weight: 800;
-    -fx-font-size: 13px;
-    -fx-font-family: 'Segoe UI', 'Roboto', sans-serif;
-    -fx-padding: 14px 28px;
-    -fx-background-radius: 50px;
-    -fx-border-radius: 50px;
+/* ---------- Nav Buttons ---------- */
+.nav-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5c5470;
+    -fx-font-size: 13.5px;
+    -fx-font-weight: normal;
+    -fx-padding: 10 16;
+    -fx-background-radius: 10;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(106, 17, 203, 0.4), 15, 0, 0, 5);
-    -fx-border-color: rgba(255, 255, 255, 0.25);
-    -fx-border-width: 1.5px;
-    -fx-letter-spacing: 0.5px;
-    -fx-transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    -fx-background-insets: 0;
+    -fx-alignment: CENTER_LEFT;
+    -fx-graphic-text-gap: 10;
+    -fx-font-family: "Segoe UI";
 }
 
-/* Outline Button Style */
-.liquid-btn-outline {
-    -fx-background-color: transparent;
-    -fx-text-fill: rgba(255, 255, 255, 0.9);
-    -fx-font-weight: 700;
-    -fx-font-size: 13px;
-    -fx-font-family: 'Segoe UI', 'Roboto', sans-serif;
-    -fx-padding: 14px 28px;
-    -fx-background-radius: 50px;
-    -fx-border-radius: 50px;
-    -fx-border-color: rgba(255, 255, 255, 0.4);
-    -fx-border-width: 2px;
-    -fx-cursor: hand;
-    -fx-transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    -fx-letter-spacing: 0.5px;
+.nav-btn:hover {
+    -fx-background-color: #f3eef8;
+    -fx-text-fill: #7c3aed;
 }
 
-/* Hover Effects */
-.liquid-btn:hover {
-    -fx-background-color: linear-gradient(to right, #2575fc, #6a11cb);
-    -fx-scale-x: 1.08;
-    -fx-scale-y: 1.08;
-    -fx-effect: dropshadow(gaussian, rgba(106, 17, 203, 0.6), 25, 0, 0, 8);
-    -fx-border-color: rgba(255, 255, 255, 0.5);
-    -fx-text-fill: #ffffff;
+.nav-btn-add {
+    -fx-background-color: linear-gradient(to right, #ede5f7, #e0d4f5);
+    -fx-text-fill: #6d28d9;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
 }
 
-.liquid-btn-outline:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.12);
-    -fx-border-color: rgba(255, 255, 255, 0.8);
-    -fx-text-fill: #ffffff;
-    -fx-scale-x: 1.08;
-    -fx-scale-y: 1.08;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 15, 0, 0, 5);
+.nav-btn-add:hover {
+    -fx-background-color: linear-gradient(to right, #e0d4f5, #d4c4f0);
+    -fx-text-fill: #5b21b6;
 }
 
-/* Active/Pressed State */
-.liquid-btn:pressed, .liquid-btn-outline:pressed {
-    -fx-scale-x: 0.96;
-    -fx-scale-y: 0.96;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 8, 0, 0, 2);
-    -fx-transition: all 0.1s ease;
-}
-
-/* Content Pane */
-#contentPane {
-    -fx-padding: 25px;
-    -fx-background-color: transparent;
-}
-
-/* Glass Overlay Effects */
-.glass-overlay {
-    -fx-fill: linear-gradient(to bottom,
-    rgba(255, 255, 255, 0.05),
-    rgba(255, 255, 255, 0.02));
-}
-
-/* Liquid Ripple Container */
-.liquid-ripple-container {
-    -fx-background-color: transparent;
-}
-
-/* Button Icon Styling */
-.liquid-btn .text, .liquid-btn-outline .text {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 2, 0, 1, 1);
-}
-
-/* Shimmer Effect for Active Button */
-@keyframes shimmer {
-    0% {
-        -fx-background-color: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
-    }
-    100% {
-        -fx-background-color: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
-    }
-}
-
-/* Pulse Animation */
-@keyframes pulse {
-    0% {
-        -fx-effect: dropshadow(gaussian, rgba(106, 17, 203, 0.4), 15, 0, 0, 5);
-    }
-    50% {
-        -fx-effect: dropshadow(gaussian, rgba(106, 17, 203, 0.8), 20, 0, 0, 8);
-    }
-    100% {
-        -fx-effect: dropshadow(gaussian, rgba(106, 17, 203, 0.4), 15, 0, 0, 5);
-    }
-}
-
+/* Active state - applied via controller */
 .liquid-btn-active {
-    -fx-animation: pulse 2s infinite ease-in-out;
+    -fx-background-color: linear-gradient(to right, #7c3aed, #9061f0) !important;
+    -fx-text-fill: white !important;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.3), 8, 0, 0, 2);
+}
+
+/* ---------- Separator ---------- */
+.nav-separator {
+    -fx-padding: 8 0 0 0;
+}
+.nav-separator .line {
+    -fx-border-color: #e8e0f0;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* ---------- User Section ---------- */
+.user-section {
+    -fx-padding: 0;
+}
+
+.user-row {
+    -fx-padding: 6 4;
+}
+
+.avatar-circle {
+    -fx-fill: #c4b5e0;
+    -fx-stroke: #a78bfa;
+    -fx-stroke-width: 2;
+}
+
+.user-name {
+    -fx-font-size: 13.5px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1225;
+    -fx-font-family: "Segoe UI";
+}
+
+/* ---------- Logout ---------- */
+.logout-btn {
+    -fx-text-fill: #dc2626;
+    -fx-font-weight: normal;
+}
+
+.logout-btn:hover {
+    -fx-background-color: #fef2f2;
+    -fx-text-fill: #b91c1c;
 }

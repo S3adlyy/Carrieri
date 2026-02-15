@@ -1,17 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox spacing="14" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="main.OffreAddController">
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="main.OffreAddController"
+      spacing="14">
 
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
 
-    <Label text="➕ Ajouter une Offre" style="-fx-font-size:26px; -fx-font-weight:900; -fx-text-fill:#231942;"/>
-    <Label text="(On mettra ici le formulaire complet, style mission-add)"
-           style="-fx-text-fill: rgba(35,25,66,0.65); -fx-font-size:13px;"/>
+    <Label text="+ Ajouter Offre" style="-fx-font-size:26px; -fx-font-weight:900;"/>
+
+    <GridPane hgap="12" vgap="12">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="33"/>
+            <ColumnConstraints percentWidth="33"/>
+            <ColumnConstraints percentWidth="34"/>
+        </columnConstraints>
+
+        <TextField fx:id="titreField" promptText="Titre" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="typeContratField" promptText="Type contrat (CDI, CDD...)" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <TextField fx:id="localisationField" promptText="Localisation" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+
+        <TextField fx:id="salaireField" promptText="Salaire" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="niveauField" promptText="Niveau (Bac+3...)" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <TextField fx:id="experienceField" promptText="Expérience (2 ans...)" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+
+        <TextField fx:id="competencesField" promptText="Compétences (Java, SQL...)" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="secteurField" promptText="Secteur" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <TextField fx:id="entrepriseField" promptText="Entreprise" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+
+        <TextField fx:id="contactField" promptText="Contact recruteur (email)" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <DatePicker fx:id="expirationPicker" promptText="Date expiration (obligatoire)" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+    </GridPane>
+
+    <TextArea fx:id="descriptionField" promptText="Description..." prefRowCount="5" wrapText="true"/>
+
+    <Label fx:id="errorLabel" text="" style="-fx-text-fill:#e11d48; -fx-font-weight:700;" visible="false" managed="false"/>
+
+    <HBox spacing="10">
+        <Button text="Reset" onAction="#reset"/>
+        <Button text="Ajouter" onAction="#save"/>
+    </HBox>
+
 </VBox>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="main.PostulationsListController"
+            stylesheets="@app.css"
+            fitToWidth="true" styleClass="scroll-pane-clean">
+
+    <VBox spacing="0" styleClass="view-root">
+
+        <!-- ========== HEADER ========== -->
+        <VBox alignment="CENTER" styleClass="header-gradient" prefHeight="160">
+            <padding><Insets top="24" bottom="16"/></padding>
+            <StackPane prefWidth="56" prefHeight="56" styleClass="header-icon-circle">
+                <Label text="&#9776;" styleClass="header-icon-diamond"/>
+            </StackPane>
+            <Label text="Liste des Postulations" styleClass="header-title"/>
+            <Label text="Consultez les postulations par offre" styleClass="header-subtitle"/>
+        </VBox>
+
+        <!-- ========== SEARCH / FILTER BAR ========== -->
+        <HBox spacing="12" alignment="CENTER_LEFT" styleClass="search-bar">
+            <padding><Insets top="20" right="36" bottom="12" left="36"/></padding>
+            <TextField fx:id="txtSearch" promptText="Rechercher par offre ou candidat..." HBox.hgrow="ALWAYS" styleClass="field-input"/>
+            <Button text="Rechercher" onAction="#handleSearch" styleClass="btn-primary" prefHeight="38"/>
+            <Button text="Rafraichir" onAction="#handleRefresh" styleClass="btn-secondary" prefHeight="38"/>
+        </HBox>
+
+        <!-- ========== TABLE ========== -->
+        <VBox styleClass="table-container">
+            <padding><Insets top="0" right="36" bottom="24" left="36"/></padding>
+
+            <TableView fx:id="tablePostulations" styleClass="styled-table" VBox.vgrow="ALWAYS" prefHeight="400">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                    <TableColumn fx:id="colOffreTitre" text="Offre" prefWidth="150"/>
+                    <TableColumn fx:id="colCandidatId" text="Candidat ID" prefWidth="100"/>
+                    <TableColumn fx:id="colDate" text="Date Postulation" prefWidth="140"/>
+                    <TableColumn fx:id="colStatut" text="Statut" prefWidth="100"/>
+                    <TableColumn fx:id="colMotivation" text="Motivation" prefWidth="200"/>
+                    <TableColumn fx:id="colActions" text="Actions" prefWidth="120" sortable="false"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- ========== BOTTOM STATUS ========== -->
+        <HBox spacing="16" alignment="CENTER" styleClass="status-bar">
+            <padding><Insets top="8" bottom="16"/></padding>
+            <Label fx:id="lblStatus" text="0 postulations trouvées" styleClass="status-text"/>
+        </HBox>
+
+    </VBox>
+</ScrollPane>

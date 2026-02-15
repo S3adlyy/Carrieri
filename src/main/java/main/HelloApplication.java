@@ -10,7 +10,7 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/offres-shell.fxml"));
-        Scene scene = new Scene(loader.load(), 1200, 720);
+        Scene scene = new Scene(loader.load(), 1280, 800);
         stage.setTitle("Gestion des Offres d'Emploi");
         stage.setScene(scene);
         stage.show();

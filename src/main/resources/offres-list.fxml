@@ -1,17 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox spacing="14" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="main.OffresListController">
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="main.OffresListController"
+      spacing="14">
 
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
 
-    <Label text="📋 Liste des Offres" style="-fx-font-size:26px; -fx-font-weight:900; -fx-text-fill:#231942;"/>
-    <Label text="(On mettra ici ton TableView stylé comme dans Recrutement)"
-           style="-fx-text-fill: rgba(35,25,66,0.65); -fx-font-size:13px;"/>
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="List Offer" style="-fx-font-size:26px; -fx-font-weight:900;"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Button text="🔄 Refresh" onAction="#refresh"/>
+    </HBox>
+
+    <!-- IMPORTANT: No ID column shown -->
+    <TableView fx:id="table" prefHeight="520">
+        <columns>
+            <TableColumn fx:id="colTitre" text="Titre" prefWidth="160"/>
+            <TableColumn fx:id="colDesc" text="Description" prefWidth="240"/>
+            <TableColumn fx:id="colSalaire" text="Salaire" prefWidth="90"/>
+            <TableColumn fx:id="colType" text="Contrat" prefWidth="110"/>
+            <TableColumn fx:id="colLoc" text="Localisation" prefWidth="120"/>
+            <TableColumn fx:id="colExp" text="Expiration" prefWidth="160"/>
+            <TableColumn fx:id="colActions" text="Actions" prefWidth="180"/>
+        </columns>
+    </TableView>
+
 </VBox>

@@ -18,7 +18,7 @@ public class OffresShellController {
 
     @FXML private Button btnOffresList;
     @FXML private Button btnOffreAdd;
-    @FXML private Button btnPostuler;
+    @FXML private Button btnPostulationsList; // New button
 
     @FXML private Circle navAvatar;
     @FXML private Label navNameLabel;
@@ -35,11 +35,9 @@ public class OffresShellController {
 
     @FXML
     public void initialize() {
-        // Example user name (you can replace later)
         navNameLabel.setText("Ons Nagara");
-
-        showOffresList(); // default view
-        setActiveButton(btnOffresList);
+        showOffreAdd();
+        setActiveButton(btnOffreAdd);
     }
 
     @FXML
@@ -55,9 +53,31 @@ public class OffresShellController {
     }
 
     @FXML
-    public void showPostuler() {
-        loadViewWithFade("postuler.fxml");
-        setActiveButton(btnPostuler);
+    public void showPostulationsList() { // New method
+        loadViewWithFade("postulations-list.fxml");
+        setActiveButton(btnPostulationsList);
+    }
+
+    /** Called from OffresListController when user clicks "Postuler" on a row */
+    public void showPostuler(int offreId, String offreTitre) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/postuler.fxml"));
+            Node view = loader.load();
+
+            // Pass offre info to the PostulerController
+            PostulerController ctrl = loader.getController();
+            ctrl.setOffreInfo(offreId, offreTitre);
+
+            contentPane.getChildren().setAll(view);
+
+            FadeTransition ft = new FadeTransition(Duration.millis(250), view);
+            ft.setFromValue(0);
+            ft.setToValue(1);
+            ft.play();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadViewWithFade(String fxml) {
