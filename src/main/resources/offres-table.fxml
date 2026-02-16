@@ -13,19 +13,19 @@
     <VBox alignment="TOP_CENTER" spacing="0" styleClass="view-root">
 
         <!-- Header -->
-        <VBox alignment="CENTER" spacing="16" styleClass="header-gradient" prefHeight="220">
-            <padding><Insets top="60" bottom="40"/></padding>
+        <VBox alignment="CENTER" spacing="12" styleClass="header-gradient" prefHeight="140">
+            <padding><Insets top="30" bottom="25"/></padding>
 
-            <StackPane styleClass="header-icon-circle-large">
-                <Label text="📋"/>
+            <StackPane prefWidth="60" prefHeight="60" styleClass="header-icon-circle">
+                <Label text="📋" style="-fx-font-size: 40; -fx-text-fill: white;"/>
             </StackPane>
 
-            <Label text="Liste des Offres " styleClass="header-title-big"/>
-            <Label text="Consultez, Editez, Modifiez ou Suuprimez les offres" styleClass="header-subtitle"/>
+            <Label text="Liste des Offres " styleClass="header-title-big" style="-fx-font-size: 28;"/>
+            <Label text="Consultez, Editez, Modifiez ou Supprimez les offres" styleClass="header-subtitle" style="-fx-font-size: 14;"/>
         </VBox>
 
         <!-- Search & Controls -->
-        <VBox spacing="14" style="-fx-padding: 26 60 12 60;">
+        <VBox spacing="12" style="-fx-padding: 20 60 10 60;">
             <HBox spacing="16" alignment="CENTER_LEFT">
                 <TextField fx:id="txtSearch"
                            promptText="Rechercher par titre, entreprise, localisation, secteur, compétences..."
@@ -37,8 +37,8 @@
         </VBox>
 
         <!-- Table -->
-        <VBox style="-fx-padding: 0 60 40 60;">
-            <TableView fx:id="tableOffres" editable="true" prefHeight="600" styleClass="styled-table">
+        <VBox style="-fx-padding: 0 60 30 60;">
+            <TableView fx:id="tableOffres" editable="true" prefHeight="400" styleClass="styled-table">
 
                 <columns>
                     <!-- DB order -->
