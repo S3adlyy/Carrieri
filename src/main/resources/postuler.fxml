@@ -1,115 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.effect.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="main.PostulerController"
-      stylesheets="@app.css"
-      spacing="0" styleClass="postuler-root" alignment="TOP_CENTER">
+<!-- postuler-popup.fxml -->
+<VBox spacing="20" styleClass="postuler-card"
+      xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="main.PostulerPopupController"
+      prefWidth="600" prefHeight="500">
 
-    <padding><Insets top="30" right="40" bottom="30" left="40"/></padding>
+    <padding><Insets top="30" right="40" bottom="40" left="40"/></padding>
 
-    <!-- ========== HEADER CARD ========== -->
-    <VBox alignment="CENTER" spacing="6" styleClass="postuler-header-card">
-        <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
-
-        <StackPane prefWidth="48" prefHeight="48" styleClass="postuler-icon-circle">
-            <Label text="&#9993;" styleClass="postuler-icon"/>
+    <!-- Header -->
+    <VBox alignment="CENTER" spacing="12">
+        <StackPane prefWidth="80" prefHeight="80" styleClass="postuler-icon-circle">
+            <Label text="📨" style="-fx-font-size: 48; -fx-text-fill: white;"/>
         </StackPane>
 
-        <Label text="Postuler a cette offre" styleClass="postuler-title"/>
-        <Label fx:id="lblOffreInfo" text="Offre: -" styleClass="postuler-offre-info" wrapText="true"/>
+        <Label text="Postuler à cette offre" styleClass="postuler-title"/>
+        <Label fx:id="lblOfferTitle" text="Offre: [Titre]" styleClass="postuler-subtitle"/>
     </VBox>
 
-    <!-- ========== FORM ========== -->
-    <VBox spacing="20" styleClass="postuler-form-card">
-        <padding><Insets top="28" right="32" bottom="28" left="32"/></padding>
+    <!-- Form fields -->
+    <VBox spacing="24">
 
-        <!-- Candidat ID -->
-        <VBox spacing="6">
-            <HBox spacing="8" alignment="CENTER_LEFT">
-                <Label text="Identifiant Candidat" styleClass="field-label"/>
-                <Label text="Requis" styleClass="badge-required"/>
-            </HBox>
-            <TextField fx:id="txtCandidatId" promptText="Votre ID candidat (ex: 101)" styleClass="field-input"/>
-            <Label text="Cet ID sera associe a votre postulation" styleClass="field-hint"/>
-        </VBox>
-
-        <!-- Offre ID (pre-filled or manual) -->
-        <VBox spacing="6">
-            <Label text="ID de l'offre" styleClass="field-label"/>
-            <TextField fx:id="txtOffreId" promptText="ID de l'offre" styleClass="field-input"/>
-        </VBox>
-
-        <!-- Statut -->
-        <VBox spacing="6">
-            <Label text="Statut initial" styleClass="field-label"/>
-            <ComboBox fx:id="comboStatut" promptText="Choisir le statut" maxWidth="Infinity" styleClass="field-combo">
-                <items>
-                    <javafx.collections.FXCollections fx:factory="observableArrayList">
-                        <String fx:value="En attente"/>
-                        <String fx:value="En cours"/>
-                        <String fx:value="Acceptee"/>
-                        <String fx:value="Refusee"/>
-                    </javafx.collections.FXCollections>
-                </items>
-            </ComboBox>
-
-            <!-- Status legend -->
-            <HBox spacing="16" styleClass="status-legend">
-                <padding><Insets top="6"/></padding>
-                <HBox spacing="4" alignment="CENTER_LEFT">
-                    <Circle radius="5" styleClass="dot-pending"/>
-                    <Label text="En attente" styleClass="legend-text"/>
-                </HBox>
-                <HBox spacing="4" alignment="CENTER_LEFT">
-                    <Circle radius="5" styleClass="dot-progress"/>
-                    <Label text="En cours" styleClass="legend-text"/>
-                </HBox>
-                <HBox spacing="4" alignment="CENTER_LEFT">
-                    <Circle radius="5" styleClass="dot-accepted"/>
-                    <Label text="Acceptee" styleClass="legend-text"/>
-                </HBox>
-                <HBox spacing="4" alignment="CENTER_LEFT">
-                    <Circle radius="5" styleClass="dot-refused"/>
-                    <Label text="Refusee" styleClass="legend-text"/>
-                </HBox>
-            </HBox>
-        </VBox>
-
-        <!-- Motivation -->
-        <VBox spacing="6">
-            <HBox spacing="8" alignment="CENTER_LEFT">
+        <!-- Lettre de motivation -->
+        <VBox spacing="8">
+            <HBox spacing="6" alignment="CENTER_LEFT">
                 <Label text="Lettre de motivation" styleClass="field-label"/>
                 <Label text="Requis" styleClass="badge-required"/>
             </HBox>
-            <TextArea fx:id="txtMotivation" promptText="Expliquez pourquoi vous etes le candidat ideal pour ce poste..." prefRowCount="5" styleClass="field-textarea"/>
+            <TextArea fx:id="txtMotivation" promptText="Expliquez pourquoi vous êtes le candidat idéal pour ce poste..."
+                      prefRowCount="8" wrapText="true" styleClass="textarea-elegant"/>
             <HBox alignment="CENTER_RIGHT">
-                <Label fx:id="lblMotivCharCount" text="0/1500" styleClass="char-counter"/>
+                <Label fx:id="lblCharCount" text="0/1500" styleClass="char-counter"/>
             </HBox>
         </VBox>
-
-        <!-- Bonnes pratiques -->
-        <VBox spacing="6" styleClass="tips-card">
-            <padding><Insets top="12" right="16" bottom="12" left="16"/></padding>
-            <Label text="Conseils pour votre candidature" styleClass="tips-title"/>
-            <Label text="- Soyez specifique sur vos competences" styleClass="tips-item" wrapText="true"/>
-            <Label text="- Mentionnez votre experience pertinente" styleClass="tips-item" wrapText="true"/>
-            <Label text="- Exprimez votre motivation clairement" styleClass="tips-item" wrapText="true"/>
-            <Label text="- Relisez avant d'envoyer" styleClass="tips-item" wrapText="true"/>
-        </VBox>
-
-        <!-- Buttons -->
-        <HBox spacing="16" alignment="CENTER">
-            <padding><Insets top="8"/></padding>
-            <Button text="Annuler" onAction="#handleCancel" styleClass="btn-secondary" prefWidth="160" prefHeight="42"/>
-            <Button text="Envoyer ma candidature" onAction="#handleSubmit" styleClass="btn-primary" prefWidth="220" prefHeight="42"/>
-        </HBox>
-
     </VBox>
+
+    <!-- Conseils -->
+    <VBox spacing="12" styleClass="tips-card">
+        <Label text="Conseils pour votre candidature" styleClass="tips-title"/>
+        <Label text="- Soyez spécifique sur vos compétences" styleClass="tips-item" wrapText="true"/>
+        <Label text="- Mentionnez votre expérience pertinente" styleClass="tips-item" wrapText="true"/>
+        <Label text="- Exprimez votre motivation clairement" styleClass="tips-item" wrapText="true"/>
+        <Label text="- Relisez avant d'envoyer" styleClass="tips-item" wrapText="true"/>
+    </VBox>
+
+    <!-- Buttons -->
+    <HBox spacing="24" alignment="CENTER">
+        <Button text="Annuler" onAction="#handleCancel" styleClass="btn-reset-elegant" prefWidth="180" prefHeight="54"/>
+        <Button text="Envoyer ma candidature" onAction="#handleSubmit" styleClass="btn-publish-elegant" prefWidth="260" prefHeight="58"/>
+    </HBox>
 
 </VBox>

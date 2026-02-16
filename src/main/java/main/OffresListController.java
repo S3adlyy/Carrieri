@@ -5,11 +5,17 @@ import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
 import services.OffreEmploiService;
 
@@ -102,7 +108,7 @@ public class OffresListController {
         lblStatus.setText("0 offres trouvées");
     }
 
-    // ===================== CARD UI (screenshot style + all attributes) =====================
+    // ===================== CARD UI (screenshot style + attributes) =====================
 
     private VBox createOfferCard(OffreEmploi offre) {
         VBox card = new VBox(10);
@@ -127,41 +133,42 @@ public class OffresListController {
         companyRow.getStyleClass().add("c-company-row");
 
         // Description
-        Label desc = new Label(trimTo(emptyAsDash(offre.getDescription()), 110));
+        Label desc = new Label(trimTo(emptyAsDash(offre.getDescription()), 2500));
         desc.getStyleClass().add("c-desc");
         desc.setWrapText(true);
 
-        // Meta: location + expiration
+        // Meta: location + expiration (small row)
         HBox meta = new HBox(18);
         meta.setAlignment(Pos.CENTER_LEFT);
 
-        String exp = (offre.getDateExpiration() == null) ? "—" : dateFmt.format(offre.getDateExpiration());
+        String expSmall = (offre.getDateExpiration() == null) ? "—" : dateFmt.format(offre.getDateExpiration());
         meta.getChildren().add(metaRowItem("📍", emptyAsDash(offre.getLocalisation())));
 
-        // Details grid (all important fields)
+        // Details grid (Expiration next to Contact)
         GridPane details = new GridPane();
         details.getStyleClass().add("c-details");
         details.setHgap(18);
         details.setVgap(10);
 
-        String pub = (offre.getDateExpiration() == null) ? "—" : dateFmt.format(offre.getDateExpiration());
+        String pub = (offre.getDatePublication() == null) ? "—" : dateFmt.format(offre.getDatePublication());
+        String expDetail = (offre.getDateExpiration() == null) ? "—" : dateFmt.format(offre.getDateExpiration());
 
+        details.add(detailItem("🎓", "Niveau", emptyAsDash(offre.getNiveauQualification())), 0, 0);
+        details.add(detailItem("⏳", "Expérience", emptyAsDash(offre.getExperienceRequise())), 1, 0);
 
-        details.add(detailItem("🎓", "Niveau", emptyAsDash(offre.getNiveauQualification())), 0, 1);
-        details.add(detailItem("⏳", "Expérience", emptyAsDash(offre.getExperienceRequise())), 1, 1);
+        details.add(detailItem("🏷️", "Secteur", emptyAsDash(offre.getSecteurActivite())), 0, 1);
+        details.add(detailItem("🧩", "Compétences", emptyAsDash(offre.getCompetencesRequises())), 1, 1);
 
-        details.add(detailItem("🏷️", "Secteur", emptyAsDash(offre.getSecteurActivite())), 0, 2);
-        details.add(detailItem("🧩", "Compétences", emptyAsDash(offre.getCompetencesRequises())), 1, 2);
+        details.add(detailItem("✉️", "Contact", emptyAsDash(offre.getContactRecruteur())), 0, 2);
+        details.add(detailItem("🕒", "Expiration", expDetail), 1, 2);
 
-        details.add(detailItem("✉️", "Contact", emptyAsDash(offre.getContactRecruteur())), 0, 3);
-        details.add(detailItem("🕒", "Expiration", pub), 1, 3);
 
 
         // Divider
         Separator sep = new Separator();
         sep.getStyleClass().add("c-sep");
 
-        // Footer: Salary + actions (exact like screenshot)
+        // Footer: Salary + actions
         HBox footer = new HBox(12);
         footer.setAlignment(Pos.CENTER_LEFT);
 
@@ -173,9 +180,7 @@ public class OffresListController {
 
         Button btnPostuler = new Button("Postuler");
         btnPostuler.getStyleClass().add("c-btn");
-        btnPostuler.setOnAction(e ->
-                OffresShellController.getInstance().showPostuler(offre.getId(), offre.getTitre())
-        );
+        btnPostuler.setOnAction(e -> openPostulerPopup(offre)); // ✅ popup + insert postulation
 
         Button btnEdit = new Button();
         btnEdit.getStyleClass().addAll("c-iconbtn", "c-iconbtn-edit");
@@ -229,6 +234,41 @@ public class OffresListController {
         VBox box = new VBox(4, top, v);
         box.getStyleClass().add("c-detail-box");
         return box;
+    }
+
+    // ===================== ✅ POSTULER POPUP (Motivation only) =====================
+
+    private void openPostulerPopup(OffreEmploi offre) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/postuler.fxml"));
+            Parent root = loader.load();
+
+            // Your controller class: PostulerPopupController
+            PostulerPopupController ctrl = loader.getController();
+            ctrl.setOffreInfo(offre.getId(), offre.getTitre());
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+
+            Window owner = (flowOffers.getScene() != null) ? flowOffers.getScene().getWindow() : null;
+            if (owner != null) stage.initOwner(owner);
+
+            stage.setTitle("Postuler • " + safe(offre.getTitre()));
+
+            Scene scene = new Scene(root);
+            try {
+                scene.getStylesheets().add(getClass().getResource("/app.css").toExternalForm());
+            } catch (Exception ignored) {}
+
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.showAndWait();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible d'ouvrir la fenêtre Postuler.\n" + ex.getMessage());
+        }
     }
 
     // ===================== DELETE =====================

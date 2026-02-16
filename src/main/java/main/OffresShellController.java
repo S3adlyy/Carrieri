@@ -63,7 +63,7 @@ public class OffresShellController {
      */
     public void showPostuler(int offreId, String offreTitre) {
         loadViewWithFadeAndInit("/postuler.fxml", controller -> {
-            if (controller instanceof PostulerController postulerCtrl) {
+            if (controller instanceof PostulerPopupController postulerCtrl) {
                 postulerCtrl.setOffreInfo(offreId, offreTitre);
             }
         });

@@ -22,7 +22,7 @@
             </StackPane>
 
             <Label text="Liste des Offres" styleClass="header-title-big"/>
-            <Label text="Consultez, modifiez ou postulez aux offres disponibles"
+            <Label text="Consultez et Postulez aux offres disponibles"
                    styleClass="header-subtitle" wrapText="true" textAlignment="CENTER"/>
         </VBox>
 
