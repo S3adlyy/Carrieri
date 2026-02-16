@@ -26,243 +26,210 @@ public class OffresListController {
     @FXML private Label lblStatus;
 
     private final OffreEmploiService service = new OffreEmploiService();
-    private final ObservableList<OffreEmploi> data = FXCollections.observableArrayList();
     private final ObservableList<OffreEmploi> allData = FXCollections.observableArrayList();
+    private final ObservableList<OffreEmploi> filtered = FXCollections.observableArrayList();
 
     private final DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @FXML
     public void initialize() {
-        // live search
-        txtSearch.textProperty().addListener((obs, oldV, newV) -> handleSearch());
+        txtSearch.textProperty().addListener((obs, o, n) -> applyFilter());
         refreshList();
     }
 
     public void refreshList() {
         try {
             allData.setAll(service.read());
-            data.setAll(allData);
-            updateStatus();
-            renderCards();
+            applyFilter();
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger les offres :\n" + e.getMessage());
-            data.clear();
             allData.clear();
-            updateStatus();
-            renderCards();
+            filtered.clear();
+            renderEmpty("Impossible de charger les offres :\n" + e.getMessage());
         }
     }
 
-    @FXML
-    private void handleSearch() {
-        String search = safe(txtSearch.getText()).toLowerCase().trim();
+    private void applyFilter() {
+        String q = safe(txtSearch.getText()).toLowerCase().trim();
 
-        if (search.isEmpty()) {
-            data.setAll(allData);
+        if (q.isEmpty()) {
+            filtered.setAll(allData);
         } else {
-            data.setAll(allData.filtered(o ->
-                    safe(o.getTitre()).toLowerCase().contains(search) ||
-                            safe(o.getEntreprise()).toLowerCase().contains(search) ||
-                            safe(o.getLocalisation()).toLowerCase().contains(search) ||
-                            safe(o.getSecteurActivite()).toLowerCase().contains(search) ||
-                            safe(o.getCompetencesRequises()).toLowerCase().contains(search)
+            filtered.setAll(allData.filtered(o ->
+                    safe(o.getTitre()).toLowerCase().contains(q) ||
+                            safe(o.getEntreprise()).toLowerCase().contains(q) ||
+                            safe(o.getLocalisation()).toLowerCase().contains(q) ||
+                            safe(o.getSecteurActivite()).toLowerCase().contains(q) ||
+                            safe(o.getCompetencesRequises()).toLowerCase().contains(q)
             ));
         }
 
-        updateStatus();
+        lblStatus.setText(filtered.size() + " offres trouvées");
         renderCards();
-    }
-
-    private void updateStatus() {
-        lblStatus.setText(data.size() + " offres trouvées");
     }
 
     private void renderCards() {
         flowOffers.getChildren().clear();
 
-        if (data.isEmpty()) {
-            VBox empty = new VBox(10);
-            empty.setAlignment(Pos.CENTER);
-            empty.setPadding(new Insets(40));
-            Label t = new Label("Aucune offre à afficher");
-            t.getStyleClass().add("offer-title");
-            Label s = new Label("Essayez de modifier la recherche ou ajoutez une nouvelle offre.");
-            s.getStyleClass().add("offer-info");
-            empty.getChildren().addAll(t, s);
-            flowOffers.getChildren().add(empty);
+        if (filtered.isEmpty()) {
+            renderEmpty("Aucune offre à afficher");
             return;
         }
 
-        for (OffreEmploi offre : data) {
+        for (OffreEmploi offre : filtered) {
             VBox card = createOfferCard(offre);
             flowOffers.getChildren().add(card);
 
-            FadeTransition fade = new FadeTransition(Duration.millis(450), card);
-            fade.setFromValue(0.0);
-            fade.setToValue(1.0);
-            fade.play();
+            FadeTransition ft = new FadeTransition(Duration.millis(350), card);
+            ft.setFromValue(0);
+            ft.setToValue(1);
+            ft.play();
         }
     }
 
-    // ===================== CARD UI =====================
+    private void renderEmpty(String message) {
+        flowOffers.getChildren().clear();
+
+        VBox box = new VBox(10);
+        box.setAlignment(Pos.CENTER);
+        box.setPadding(new Insets(40));
+
+        Label t = new Label(message);
+        t.getStyleClass().add("offer-info");
+
+        box.getChildren().add(t);
+        flowOffers.getChildren().add(box);
+
+        lblStatus.setText("0 offres trouvées");
+    }
+
+    // ===================== CARD UI (screenshot style + all attributes) =====================
 
     private VBox createOfferCard(OffreEmploi offre) {
-        VBox card = new VBox(14);
-        card.getStyleClass().addAll("offer-card", "offer-card-premium");
+        VBox card = new VBox(10);
+        card.getStyleClass().addAll("offer-card", "card-like-screenshot");
         card.setMaxWidth(560);
 
-        // ===== Header (Title + badge) =====
+        // Header
         HBox header = new HBox(12);
         header.setAlignment(Pos.CENTER_LEFT);
 
-        VBox titleBox = new VBox(4);
-
         Label title = new Label(emptyAsDash(offre.getTitre()));
-        title.getStyleClass().add("offer-title-premium");
+        title.getStyleClass().add("c-title");
+        HBox.setHgrow(title, Priority.ALWAYS);
 
-        Label subtitle = new Label(emptyAsDash(offre.getEntreprise()) + "  •  " + emptyAsDash(offre.getSecteurActivite()));
-        subtitle.getStyleClass().add("offer-subtitle-premium");
+        Label badge = new Label(emptyAsDash(offre.getTypeContrat()));
+        badge.getStyleClass().add("c-badge");
 
-        titleBox.getChildren().addAll(title, subtitle);
+        header.getChildren().addAll(title, badge);
+
+        // Company
+        HBox companyRow = metaRowItem("🏢", emptyAsDash(offre.getEntreprise()));
+        companyRow.getStyleClass().add("c-company-row");
+
+        // Description
+        Label desc = new Label(trimTo(emptyAsDash(offre.getDescription()), 110));
+        desc.getStyleClass().add("c-desc");
+        desc.setWrapText(true);
+
+        // Meta: location + expiration
+        HBox meta = new HBox(18);
+        meta.setAlignment(Pos.CENTER_LEFT);
+
+        String exp = (offre.getDateExpiration() == null) ? "—" : dateFmt.format(offre.getDateExpiration());
+        meta.getChildren().add(metaRowItem("📍", emptyAsDash(offre.getLocalisation())));
+
+        // Details grid (all important fields)
+        GridPane details = new GridPane();
+        details.getStyleClass().add("c-details");
+        details.setHgap(18);
+        details.setVgap(10);
+
+        String pub = (offre.getDateExpiration() == null) ? "—" : dateFmt.format(offre.getDateExpiration());
+
+
+        details.add(detailItem("🎓", "Niveau", emptyAsDash(offre.getNiveauQualification())), 0, 1);
+        details.add(detailItem("⏳", "Expérience", emptyAsDash(offre.getExperienceRequise())), 1, 1);
+
+        details.add(detailItem("🏷️", "Secteur", emptyAsDash(offre.getSecteurActivite())), 0, 2);
+        details.add(detailItem("🧩", "Compétences", emptyAsDash(offre.getCompetencesRequises())), 1, 2);
+
+        details.add(detailItem("✉️", "Contact", emptyAsDash(offre.getContactRecruteur())), 0, 3);
+        details.add(detailItem("🕒", "Expiration", pub), 1, 3);
+
+
+        // Divider
+        Separator sep = new Separator();
+        sep.getStyleClass().add("c-sep");
+
+        // Footer: Salary + actions (exact like screenshot)
+        HBox footer = new HBox(12);
+        footer.setAlignment(Pos.CENTER_LEFT);
+
+        Label salary = new Label(String.format("%.0f DT", offre.getSalaire()));
+        salary.getStyleClass().add("c-salary");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Label badge = new Label(emptyAsDash(offre.getTypeContrat()));
-        badge.getStyleClass().add("offer-badge-premium");
-
-        header.getChildren().addAll(titleBox, spacer, badge);
-
-        // ===== Short description (nice emphasis) =====
-        Label desc = new Label(trimTo(emptyAsDash(offre.getDescription()), 140));
-        desc.getStyleClass().add("offer-desc-premium");
-        desc.setWrapText(true);
-
-        // ===== 2-column info grid =====
-        GridPane grid = new GridPane();
-        grid.getStyleClass().add("offer-grid");
-        grid.setHgap(18);
-        grid.setVgap(12);
-
-        String pub = (offre.getDatePublication() == null) ? "—" : dateFmt.format(offre.getDatePublication());
-        String exp = (offre.getDateExpiration() == null) ? "—" : dateFmt.format(offre.getDateExpiration());
-
-        // Row 0
-        grid.add(pillLine("💰", "Salaire", String.format("%.0f DT", offre.getSalaire())), 0, 0);
-        grid.add(pillLine("📍", "Localisation", emptyAsDash(offre.getLocalisation())), 1, 0);
-
-        // Row 1
-        grid.add(pillLine("🕒", "Publication", pub), 0, 1);
-        grid.add(pillLine("🗓", "Expiration", exp), 1, 1);
-
-        // Row 2
-        grid.add(pillLine("🎓", "Niveau", emptyAsDash(offre.getNiveauQualification())), 0, 2);
-        grid.add(pillLine("⏳", "Expérience", emptyAsDash(offre.getExperienceRequise())), 1, 2);
-
-        // Row 3 (Contact + Type contrat)
-        grid.add(pillLine("✉", "Contact", emptyAsDash(offre.getContactRecruteur())), 0, 3);
-        grid.add(pillLine("📄", "Contrat", emptyAsDash(offre.getTypeContrat())), 1, 3);
-
-        // ===== Skills chips =====
-        VBox skillsBox = new VBox(8);
-        Label skillsTitle = new Label("Compétences");
-        skillsTitle.getStyleClass().add("section-title");
-
-        FlowPane chips = new FlowPane(8, 8);
-        chips.getStyleClass().add("chips-row");
-        addSkillChipsPretty(chips, emptyAsDash(offre.getCompetencesRequises()));
-
-        skillsBox.getChildren().addAll(skillsTitle, chips);
-
-        // ===== Separator =====
-        Separator sep = new Separator();
-        sep.getStyleClass().add("offer-sep-premium");
-
-        // ===== Bottom actions =====
-        HBox bottom = new HBox(10);
-        bottom.setAlignment(Pos.CENTER_RIGHT);
-
         Button btnPostuler = new Button("Postuler");
-        btnPostuler.getStyleClass().add("btn-postuler-premium");
-        btnPostuler.setGraphic(new Label("✈"));
+        btnPostuler.getStyleClass().add("c-btn");
         btnPostuler.setOnAction(e ->
                 OffresShellController.getInstance().showPostuler(offre.getId(), offre.getTitre())
         );
 
         Button btnEdit = new Button();
-        btnEdit.getStyleClass().addAll("icon-btn-premium", "icon-btn-edit");
+        btnEdit.getStyleClass().addAll("c-iconbtn", "c-iconbtn-edit");
         btnEdit.setGraphic(new Label("✎"));
         btnEdit.setTooltip(new Tooltip("Modifier"));
         btnEdit.setOnAction(e -> openEditDialog(offre));
 
         Button btnDelete = new Button();
-        btnDelete.getStyleClass().addAll("icon-btn-premium", "icon-btn-delete");
+        btnDelete.getStyleClass().addAll("c-iconbtn", "c-iconbtn-delete");
         btnDelete.setGraphic(new Label("🗑"));
         btnDelete.setTooltip(new Tooltip("Supprimer"));
         btnDelete.setOnAction(e -> handleDelete(offre));
 
-        bottom.getChildren().addAll(btnPostuler, btnEdit, btnDelete);
+        HBox actions = new HBox(10, btnPostuler, btnEdit, btnDelete);
+        actions.setAlignment(Pos.CENTER_RIGHT);
 
-        card.getChildren().addAll(header, desc, grid, skillsBox, sep, bottom);
+        footer.getChildren().addAll(salary, spacer, actions);
+
+        card.getChildren().addAll(header, companyRow, desc, meta, details, sep, footer);
         return card;
     }
-    private void addSkillChipsPretty(FlowPane chips, String competences) {
-        chips.getChildren().clear();
 
-        if (competences == null || competences.isBlank() || "—".equals(competences.trim())) {
-            Label chip = new Label("Aucune");
-            chip.getStyleClass().add("chip-muted");
-            chips.getChildren().add(chip);
-            return;
-        }
+    private HBox metaRowItem(String icon, String text) {
+        Label i = new Label(icon);
+        i.getStyleClass().add("c-meta-icon");
 
-        String[] parts = competences.split(",");
-        for (String p : parts) {
-            String c = p.trim();
-            if (c.isEmpty()) continue;
+        Label t = new Label(text == null || text.isBlank() ? "—" : text);
+        t.getStyleClass().add("c-meta");
 
-            Label chip = new Label(c);
-            chip.getStyleClass().add("chip-premium");
-            chips.getChildren().add(chip);
-        }
-    }
-
-    private HBox attrLine(String icon, String label, String value) {
-        Label ic = new Label(icon);
-        ic.getStyleClass().add("attr-icon");
-
-        Label l = new Label(label + " :");
-        l.getStyleClass().add("attr-label");
-
-        Label v = new Label(value == null || value.isBlank() ? "—" : value);
-        v.getStyleClass().add("attr-value");
-        v.setWrapText(true);
-
-        HBox row = new HBox(10, ic, l, v);
+        HBox row = new HBox(8, i, t);
         row.setAlignment(Pos.CENTER_LEFT);
         return row;
     }
 
-    private HBox pillLine(String icon, String label, String value) {
-        Label ic = new Label(icon);
-        ic.getStyleClass().add("pill-icon");
+    private VBox detailItem(String icon, String label, String value) {
+        HBox top = new HBox(8);
+        top.setAlignment(Pos.CENTER_LEFT);
 
-        VBox text = new VBox(2);
+        Label i = new Label(icon);
+        i.getStyleClass().add("c-mini-icon");
+
         Label l = new Label(label);
-        l.getStyleClass().add("pill-label");
+        l.getStyleClass().add("c-mini-label");
+
+        top.getChildren().addAll(i, l);
+
         Label v = new Label(value == null || value.isBlank() ? "—" : value);
-        v.getStyleClass().add("pill-value");
+        v.getStyleClass().add("c-mini-value");
         v.setWrapText(true);
 
-        text.getChildren().addAll(l, v);
-
-        HBox pill = new HBox(10, ic, text);
-        pill.getStyleClass().add("pill");
-        pill.setAlignment(Pos.CENTER_LEFT);
-        return pill;
+        VBox box = new VBox(4, top, v);
+        box.getStyleClass().add("c-detail-box");
+        return box;
     }
-    
-
 
     // ===================== DELETE =====================
 
@@ -284,7 +251,7 @@ public class OffresListController {
         }
     }
 
-    // ===================== EDIT DIALOG =====================
+    // ===================== EDIT =====================
 
     private void openEditDialog(OffreEmploi offre) {
         Dialog<OffreEmploi> dialog = new Dialog<>();
@@ -334,13 +301,21 @@ public class OffresListController {
         dialog.setResultConverter(btn -> {
             if (btn != saveBtn) return null;
 
-            if (titre.getText().trim().isEmpty()) { showAlert(Alert.AlertType.ERROR, "Erreur", "Le titre est obligatoire."); return null; }
-            if (desc.getText().trim().isEmpty())  { showAlert(Alert.AlertType.ERROR, "Erreur", "La description est obligatoire."); return null; }
+            if (titre.getText().trim().isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Le titre est obligatoire.");
+                return null;
+            }
+            if (desc.getText().trim().isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "La description est obligatoire.");
+                return null;
+            }
             if (typeContrat.getValue() == null || typeContrat.getValue().trim().isEmpty()) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Le type de contrat est obligatoire."); return null;
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Le type de contrat est obligatoire.");
+                return null;
             }
             if (!isValidEmail(contact.getText().trim())) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Email invalide."); return null;
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Email invalide.");
+                return null;
             }
 
             double sal;
@@ -387,72 +362,7 @@ public class OffresListController {
         }
     }
 
-    // ===================== UI HELPERS =====================
-
-    private HBox iconLine(String icon, String text) {
-        Label i = new Label(icon);
-        i.getStyleClass().add("mini-icon");
-
-        Label t = new Label(text == null || text.isBlank() ? "—" : text);
-        t.getStyleClass().add("mini-text");
-        t.setWrapText(true);
-
-        HBox row = new HBox(8, i, t);
-        row.setAlignment(Pos.CENTER_LEFT);
-        return row;
-    }
-
-    private Separator separator() {
-        Separator s = new Separator();
-        s.getStyleClass().add("offer-sep");
-        return s;
-    }
-
-    private void addCompetenceChips(FlowPane chips, String competences) {
-        chips.getChildren().clear();
-
-        if (competences == null || competences.isBlank()) {
-            Label chip = new Label("Aucune compétence");
-            chip.getStyleClass().add("chip");
-            chips.getChildren().add(chip);
-            return;
-        }
-
-        String[] parts = competences.split(",");
-        int shown = 0;
-
-        for (String p : parts) {
-            String c = p.trim();
-            if (c.isEmpty()) continue;
-            if (shown == 3) break;
-
-            Label chip = new Label(c);
-            chip.getStyleClass().add("chip");
-            chips.getChildren().add(chip);
-            shown++;
-        }
-
-        int extra = countNonEmpty(parts) - shown;
-        if (extra > 0) {
-            Label more = new Label("+" + extra);
-            more.getStyleClass().add("chip-muted");
-            chips.getChildren().add(more);
-        }
-    }
-
-    private int countNonEmpty(String[] arr) {
-        int c = 0;
-        for (String s : arr) if (s != null && !s.trim().isEmpty()) c++;
-        return c;
-    }
-
-    private String trimTo(String s, int max) {
-        if (s == null) return "";
-        if (s.length() <= max) return s;
-        return s.substring(0, max).trim() + "...";
-    }
-
-    // ===================== VALIDATION + ALERTS =====================
+    // ===================== HELPERS =====================
 
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert a = new Alert(type);
@@ -463,8 +373,13 @@ public class OffresListController {
     }
 
     private boolean isValidEmail(String email) {
-        if (email == null) return false;
-        return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+        return email != null && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    private String trimTo(String s, int max) {
+        if (s == null) return "";
+        if (s.length() <= max) return s;
+        return s.substring(0, max).trim() + "...";
     }
 
     private String safe(String s) {

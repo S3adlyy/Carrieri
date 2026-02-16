@@ -5,6 +5,11 @@ import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import services.OffreEmploiService;
+import javafx.util.StringConverter;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Locale;
+
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -15,6 +20,8 @@ import java.util.List;
 public class OffreAddController {
 
     private static final PseudoClass ERROR_CLASS = PseudoClass.getPseudoClass("error");
+    private static final DateTimeFormatter FR_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
 
     // === FXML ids (MUST match offre-add.fxml) ===
     @FXML private TextField txtTitre;
@@ -53,8 +60,60 @@ public class OffreAddController {
         spExpirationTime.setEditable(true);
         spExpirationMinute.setEditable(true);
 
-        // ====== default date ======
+        // ===== DatePicker: format + vraie validation =====
         dpExpirationDate.setValue(LocalDate.now().plusDays(7));
+        dpExpirationDate.setPromptText("jj/mm/aaaa");
+
+// Force l’affichage/saisie en dd/MM/yyyy
+        dpExpirationDate.setConverter(new StringConverter<LocalDate>() {
+            @Override
+            public String toString(LocalDate date) {
+                return (date == null) ? "" : FR_FORMAT.format(date);
+            }
+
+            @Override
+            public LocalDate fromString(String text) {
+                if (text == null) return null;
+                String t = text.trim();
+                if (t.isEmpty()) return null;
+
+                try {
+                    return LocalDate.parse(t, FR_FORMAT); // vraie date (ex: 31/02 -> erreur)
+                } catch (DateTimeParseException e) {
+                    return null;
+                }
+            }
+        });
+
+// Bloquer les dates passées directement dans le calendrier
+        dpExpirationDate.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) return;
+
+                // interdit passé (et tu peux mettre <= si tu veux bloquer aujourd’hui aussi)
+                if (item.isBefore(LocalDate.now())) {
+                    setDisable(true);
+                    setOpacity(0.35);
+                }
+            }
+        });
+
+// Si l’utilisateur tape au clavier, vérifier quand il quitte le champ
+        dpExpirationDate.getEditor().focusedProperty().addListener((obs, was, isNow) -> {
+            if (!isNow) {
+                LocalDate parsed = dpExpirationDate.getConverter().fromString(dpExpirationDate.getEditor().getText());
+                if (parsed == null) {
+                    // date invalide -> reset + erreur
+                    dpExpirationDate.setValue(null);
+                    dpExpirationDate.getEditor().clear();
+                    fail(dpExpirationDate, "Date invalide. Format attendu : jj/mm/aaaa (ex: 23/02/2026).");
+                } else {
+                    dpExpirationDate.setValue(parsed);
+                }
+            }
+        });
 
         // ====== salary: allow only digits + optional .xx ======
         txtSalaire.setTextFormatter(new TextFormatter<>(change -> {

@@ -540,6 +540,7 @@
 }
 
 /* === DatePicker – modern & aesthetic style === */
+
 .date-picker-elegant {
     -fx-background-color: #ffffff;
     -fx-background-radius: 16;
@@ -585,7 +586,7 @@
 
 .date-picker-popup > .month-year-pane {
     -fx-background-color: linear-gradient(to bottom, #7c3aed, #a78bfa);
-    -fx-text-fill: white;
+    -fx-text-fill: #111827;
     -fx-font-weight: bold;
 }
 
@@ -604,7 +605,7 @@
 
 .date-picker-popup .selected {
     -fx-background-color: #7c3aed !important;
-    -fx-text-fill: white !important;
+    -fx-text-fill: #111827 !important;
     -fx-font-weight: bold;
 }
 
@@ -612,6 +613,23 @@
 .date-picker-elegant:focused {
     -fx-border-color: #8b5cf6;
     -fx-effect: dropshadow(gaussian, #c4b5fd66, 12, 0, 0, 4);
+}
+
+/* ===== FIX REAL: month/year are inside spinner text-fields ===== */
+.date-picker-popup .month-year-pane .spinner .text-field {
+    -fx-text-fill: #111827;          /* visible text */
+    -fx-background-color: white;     /* keep the white capsule */
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-border-color: rgba(255,255,255,0.65);
+    -fx-padding: 4 10;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+}
+
+/* in some skins, the actual text node is ".text" */
+.date-picker-popup .month-year-pane .spinner .text-field .text {
+    -fx-fill: #111827;
 }
 
 /* Spinner for time – make it match your elegant inputs */
@@ -1353,4 +1371,125 @@
 
 .icon-btn-delete:hover .label {
     -fx-text-fill: #dc2626;
+}
+/* ===== Card exactly like screenshot ===== */
+.card-like-screenshot {
+    -fx-padding: 18;
+    -fx-spacing: 10;
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(17, 24, 39, 0.08);
+    -fx-border-width: 1;
+}
+
+.c-title {
+    -fx-font-size: 18;
+    -fx-font-weight: 800;
+    -fx-text-fill: #111827;
+}
+
+.c-badge {
+    -fx-background-color: #f3e8ff;
+    -fx-text-fill: #6d28d9;
+    -fx-font-weight: 800;
+    -fx-font-size: 12;
+    -fx-padding: 6 12;
+    -fx-background-radius: 999;
+}
+
+.c-company {
+    -fx-font-size: 13;
+    -fx-text-fill: #6b7280;
+}
+
+.c-desc {
+    -fx-font-size: 13.5;
+    -fx-text-fill: #6b7280;
+}
+
+.c-meta-icon {
+    -fx-font-size: 13.5;
+    -fx-text-fill: #6b7280;
+}
+
+.c-meta {
+    -fx-font-size: 13;
+    -fx-text-fill: #6b7280;
+}
+
+/* ===== Extra details (still clean) ===== */
+.c-details {
+    -fx-padding: 6 0 0 0;
+}
+
+.c-detail-box {
+    -fx-background-color: transparent;
+}
+
+.c-mini-icon {
+    -fx-font-size: 13.5;
+    -fx-text-fill: #7c3aed;
+}
+
+.c-mini-label {
+    -fx-font-size: 12.2;
+    -fx-text-fill: #6b7280;
+    -fx-font-weight: 700;
+}
+
+.c-mini-value {
+    -fx-font-size: 13.2;
+    -fx-text-fill: #111827;
+    -fx-font-weight: 700;
+}
+
+/* Divider like screenshot */
+.c-sep {
+    -fx-opacity: 0.2;
+    -fx-padding: 6 0 6 0;
+}
+
+.c-salary {
+    -fx-font-size: 18;
+    -fx-font-weight: 900;
+    -fx-text-fill: #111827;
+}
+
+/* Postuler button */
+.c-btn {
+    -fx-background-color: #7c3aed;
+    -fx-text-fill: white;
+    -fx-font-weight: 800;
+    -fx-background-radius: 999;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.c-btn:hover {
+    -fx-background-color: #6d28d9;
+}
+
+/* Icon buttons */
+.c-iconbtn {
+    -fx-background-color: transparent;
+    -fx-padding: 6 8;
+    -fx-cursor: hand;
+}
+
+.c-iconbtn .label {
+    -fx-font-size: 14;
+    -fx-text-fill: #6b7280;
+}
+
+.c-iconbtn:hover .label {
+    -fx-text-fill: #7c3aed;
+}
+
+.c-iconbtn-delete:hover .label {
+    -fx-text-fill: #dc2626;
+}
+
+.c-title, .c-badge, .c-mini-label, .c-mini-value {
+    -fx-font-weight: 400; /* normal */
 }
