@@ -37,7 +37,7 @@
                         styleClass="nav-link"
                         maxWidth="Infinity">
                     <graphic>
-                        <Label text="➕" styleClass="nav-icon"/>
+                        <Label text="➕" styleClass="nav-icon-black"/>
                     </graphic>
                 </Button>
 
@@ -47,7 +47,7 @@
                         styleClass="nav-link"
                         maxWidth="Infinity">
                     <graphic>
-                        <Label text="📋" styleClass="nav-icon"/>
+                        <Label text="📋" styleClass="nav-icon-black"/>
                     </graphic>
                 </Button>
 
@@ -57,7 +57,7 @@
                         styleClass="nav-link"
                         maxWidth="Infinity">
                     <graphic>
-                        <Label text="🤖" styleClass="nav-icon"/>
+                        <Label text="🤖" styleClass="nav-icon-black"/>
                     </graphic>
                 </Button>
 
@@ -67,7 +67,7 @@
                         styleClass="nav-link"
                         maxWidth="Infinity">
                     <graphic>
-                        <Label text="📑" styleClass="nav-icon"/>
+                        <Label text="📑" styleClass="nav-icon-black"/>
                     </graphic>
                 </Button>
             </VBox>
@@ -83,7 +83,7 @@
                     visible="false"
                     managed="false">
                 <graphic>
-                    <Label text="📊" styleClass="nav-icon"/>
+                    <Label text="📊" styleClass="nav-icon-black"/>
                 </graphic>
             </Button>
 
@@ -100,7 +100,7 @@
                 <!-- Logout Button -->
                 <Button text="Logout" styleClass="logout-btn" maxWidth="Infinity">
                     <graphic>
-                        <Label text="🚪" styleClass="nav-icon"/>
+                        <Label text="🚪" styleClass="nav-icon-black"/>
                     </graphic>
                 </Button>
             </VBox>
