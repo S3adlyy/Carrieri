@@ -682,10 +682,10 @@ public class OffresTableController {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
         // Style for labels
-        String labelStyle = "-fx-font-weight: bold; -fx-text-fill: #1a1225; -fx-font-size: 13px;";
+        final String labelStyle = "-fx-font-weight: bold; -fx-text-fill: #1a1225; -fx-font-size: 13px;";
 
         // Style for input fields
-        String inputStyle =
+        final String inputStyle =
             "-fx-background-color: white;" +
             "-fx-border-color: #e0d4f5;" +
             "-fx-border-radius: 10;" +
@@ -693,8 +693,18 @@ public class OffresTableController {
             "-fx-padding: 10 14;" +
             "-fx-font-size: 13px;";
 
+        // Style for input fields with error
+        final String inputErrorStyle =
+            "-fx-background-color: white;" +
+            "-fx-border-color: #dc2626;" +
+            "-fx-border-radius: 10;" +
+            "-fx-background-radius: 10;" +
+            "-fx-padding: 10 14;" +
+            "-fx-font-size: 13px;" +
+            "-fx-border-width: 2;";
+
         // Style for error labels
-        String errorLabelStyle =
+        final String errorLabelStyle =
             "-fx-font-size: 12px;" +
             "-fx-text-fill: #dc2626;" +
             "-fx-font-weight: 600;" +
@@ -735,6 +745,31 @@ public class OffresTableController {
         errContact.setStyle(errorLabelStyle);
         errContact.setVisible(false);
         errContact.setManaged(false);
+
+        Label errEntreprise = new Label();
+        errEntreprise.setStyle(errorLabelStyle);
+        errEntreprise.setVisible(false);
+        errEntreprise.setManaged(false);
+
+        Label errSecteur = new Label();
+        errSecteur.setStyle(errorLabelStyle);
+        errSecteur.setVisible(false);
+        errSecteur.setManaged(false);
+
+        Label errNiveau = new Label();
+        errNiveau.setStyle(errorLabelStyle);
+        errNiveau.setVisible(false);
+        errNiveau.setManaged(false);
+
+        Label errExperience = new Label();
+        errExperience.setStyle(errorLabelStyle);
+        errExperience.setVisible(false);
+        errExperience.setManaged(false);
+
+        Label errCompetences = new Label();
+        errCompetences.setStyle(errorLabelStyle);
+        errCompetences.setVisible(false);
+        errCompetences.setManaged(false);
 
         TextField titre = new TextField(safe(offre.getTitre()));
         titre.setStyle(inputStyle);
@@ -864,28 +899,33 @@ public class OffresTableController {
 
         Label lblNiveau = new Label("Niveau");
         lblNiveau.setStyle(labelStyle);
+        VBox vboxNiveau = new VBox(6, niveau, errNiveau);
         grid.add(lblNiveau, 0, row);
-        grid.add(niveau, 1, row++);
+        grid.add(vboxNiveau, 1, row++);
 
         Label lblExperience = new Label("Expérience");
         lblExperience.setStyle(labelStyle);
+        VBox vboxExperience = new VBox(6, experience, errExperience);
         grid.add(lblExperience, 0, row);
-        grid.add(experience, 1, row++);
+        grid.add(vboxExperience, 1, row++);
 
         Label lblComp = new Label("Compétences");
         lblComp.setStyle(labelStyle);
+        VBox vboxComp = new VBox(6, competences, errCompetences);
         grid.add(lblComp, 0, row);
-        grid.add(competences, 1, row++);
+        grid.add(vboxComp, 1, row++);
 
         Label lblSecteur = new Label("Secteur");
         lblSecteur.setStyle(labelStyle);
+        VBox vboxSecteur = new VBox(6, secteur, errSecteur);
         grid.add(lblSecteur, 0, row);
-        grid.add(secteur, 1, row++);
+        grid.add(vboxSecteur, 1, row++);
 
         Label lblEntreprise = new Label("Entreprise");
         lblEntreprise.setStyle(labelStyle);
+        VBox vboxEntreprise = new VBox(6, entreprise, errEntreprise);
         grid.add(lblEntreprise, 0, row);
-        grid.add(entreprise, 1, row++);
+        grid.add(vboxEntreprise, 1, row++);
 
         Label lblContact = new Label("Contact (email)");
         lblContact.setStyle(labelStyle);
@@ -918,6 +958,16 @@ public class OffresTableController {
             errExpiration.setManaged(false);
             errContact.setVisible(false);
             errContact.setManaged(false);
+            errEntreprise.setVisible(false);
+            errEntreprise.setManaged(false);
+            errSecteur.setVisible(false);
+            errSecteur.setManaged(false);
+            errNiveau.setVisible(false);
+            errNiveau.setManaged(false);
+            errExperience.setVisible(false);
+            errExperience.setManaged(false);
+            errCompetences.setVisible(false);
+            errCompetences.setManaged(false);
 
             boolean hasError = false;
 
@@ -1009,6 +1059,73 @@ public class OffresTableController {
                     salaire.setStyle(inputErrorStyle);
                     hasError = true;
                 }
+            }
+
+            // Validate entreprise
+            if (safe(entreprise.getText()).isEmpty()) {
+                errEntreprise.setText("Le nom de l'entreprise est obligatoire.");
+                errEntreprise.setVisible(true);
+                errEntreprise.setManaged(true);
+                entreprise.setStyle(inputErrorStyle);
+                hasError = true;
+            } else {
+                entreprise.setStyle(inputStyle);
+            }
+
+            // Validate secteur
+            if (safe(secteur.getText()).isEmpty()) {
+                errSecteur.setText("Le secteur d'activité est obligatoire.");
+                errSecteur.setVisible(true);
+                errSecteur.setManaged(true);
+                secteur.setStyle(inputErrorStyle);
+                hasError = true;
+            } else {
+                secteur.setStyle(inputStyle);
+            }
+
+            // Validate niveau
+            if (safe(niveau.getText()).isEmpty()) {
+                errNiveau.setText("Le niveau de qualification est obligatoire.");
+                errNiveau.setVisible(true);
+                errNiveau.setManaged(true);
+                niveau.setStyle(inputErrorStyle);
+                hasError = true;
+            } else {
+                niveau.setStyle(inputStyle);
+            }
+
+            // Validate experience
+            if (safe(experience.getText()).isEmpty()) {
+                errExperience.setText("L'expérience requise est obligatoire.");
+                errExperience.setVisible(true);
+                errExperience.setManaged(true);
+                experience.setStyle(inputErrorStyle);
+                hasError = true;
+            } else if (!experience.getText().matches("^\\d+(\\s*ans)?$|^\\d+\\s*-\\s*\\d+(\\s*ans)?$")) {
+                errExperience.setText("Expérience invalide (ex: 2, 2-5, 3 ans).");
+                errExperience.setVisible(true);
+                errExperience.setManaged(true);
+                experience.setStyle(inputErrorStyle);
+                hasError = true;
+            } else {
+                experience.setStyle(inputStyle);
+            }
+
+            // Validate competences
+            if (safe(competences.getText()).isEmpty()) {
+                errCompetences.setText("Les compétences sont obligatoires.");
+                errCompetences.setVisible(true);
+                errCompetences.setManaged(true);
+                competences.setStyle(inputErrorStyle);
+                hasError = true;
+            } else if (!competences.getText().contains(",")) {
+                errCompetences.setText("Séparez les compétences par des virgules (ex: Java, SQL, React).");
+                errCompetences.setVisible(true);
+                errCompetences.setManaged(true);
+                competences.setStyle(inputErrorStyle);
+                hasError = true;
+            } else {
+                competences.setStyle(inputStyle);
             }
 
             // Validate dates
