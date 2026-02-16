@@ -35,18 +35,25 @@
         </VBox>
 
         <!-- Stats Cards -->
+        <!-- Stats Cards with Gradient Shadows -->
+        <!-- Stats Cards with Gradient Shadows - BIGGER WIDTH -->
         <HBox styleClass="stats-container">
-            <VBox styleClass="stats-card">
-                <Label fx:id="lblTotalMissions" text="0" styleClass="stats-value"/>
-                <Label text="Total Missions" styleClass="stats-label"/>
+            <VBox styleClass="stats-card-gradient-wide">
+                <Label fx:id="lblTotalMissions" text="0" styleClass="stats-value-gradient-wide"/>
+                <Label text="Total Missions" styleClass="stats-label-gradient-wide"/>
+                <Label text="All time" styleClass="stats-hint-wide"/>
             </VBox>
-            <VBox styleClass="stats-card">
-                <Label fx:id="lblAvgScore" text="0%" styleClass="stats-value"/>
-                <Label text="Avg. Min Score" styleClass="stats-label"/>
+
+            <VBox styleClass="stats-card-gradient-wide">
+                <Label fx:id="lblAvgScore" text="0%" styleClass="stats-value-gradient-wide"/>
+                <Label text="Avg. Min Score" styleClass="stats-label-gradient-wide"/>
+                <Label text="Required" styleClass="stats-hint-wide"/>
             </VBox>
-            <VBox styleClass="stats-card">
-                <Label fx:id="lblActiveMissions" text="0" styleClass="stats-value"/>
-                <Label text="Active" styleClass="stats-label"/>
+
+            <VBox styleClass="stats-card-gradient-wide">
+                <Label fx:id="lblActiveMissions" text="0" styleClass="stats-value-gradient-wide"/>
+                <Label text="Active" styleClass="stats-label-gradient-wide"/>
+                <Label text="Current" styleClass="stats-hint-wide"/>
             </VBox>
         </HBox>
 

@@ -288,3 +288,82 @@
     -fx-background-color: rgba(94,84,142,0.2) !important;
     -fx-text-fill: #231942 !important;
 }
+
+/* ========================================================================
+   STATS CARDS WITH GRADIENT SHADOWS - WIDE VERSION
+   ======================================================================== */
+
+.stats-card-gradient-wide {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 18px;
+    -fx-border-radius: 18px;
+    -fx-border-color: rgba(248,188,255,0.25);
+    -fx-border-width: 1.5px;
+    -fx-padding: 25px 35px;      /* More horizontal padding */
+    -fx-min-width: 200px;         /* Much wider */
+    -fx-max-width: 240px;         /* Max width */
+    -fx-pref-width: 220px;        /* Preferred width - MUCH BIGGER */
+    -fx-alignment: center;
+    -fx-spacing: 8px;
+
+    /* White-Purple Gradient Shadow - Enhanced for bigger cards */
+    -fx-effect:
+            dropshadow(gaussian, rgba(255, 255, 255, 0.9), 20, 0.5, -4, -4)
+            , dropshadow(gaussian, rgba(248, 188, 255, 0.6), 25, 0.5, 4, 4)
+            , dropshadow(gaussian, rgba(200, 150, 255, 0.4), 30, 0.4, 8, 8)
+            , dropshadow(gaussian, rgba(35, 25, 66, 0.15), 35, 0.3, 10, 10);
+
+    -fx-transition: all 0.2s ease;
+}
+
+.stats-card-gradient-wide:hover {
+    -fx-effect:
+            dropshadow(gaussian, rgba(255, 255, 255, 1), 25, 0.6, -5, -5)
+            , dropshadow(gaussian, rgba(248, 188, 255, 0.8), 30, 0.6, 5, 5)
+            , dropshadow(gaussian, rgba(200, 150, 255, 0.6), 35, 0.5, 10, 10)
+            , dropshadow(gaussian, rgba(35, 25, 66, 0.2), 40, 0.4, 12, 12);
+    -fx-translate-y: -3px;
+}
+
+.stats-value-gradient-wide {
+    -fx-text-fill: linear-gradient(135deg, #231942, #5E548E, #9F86C0);
+    -fx-font-size: 36px !important;     /* Bigger font */
+    -fx-font-weight: 900 !important;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial' !important;
+    -fx-effect: dropshadow(gaussian, rgba(248,188,255,0.5), 10, 0.4, 2, 2);
+}
+
+.stats-label-gradient-wide {
+    -fx-text-fill: #4a3a6a;
+    -fx-font-size: 16px !important;     /* Bigger font */
+    -fx-font-weight: 700 !important;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial' !important;
+    -fx-letter-spacing: 0.3px;
+}
+
+.stats-hint-wide {
+    -fx-text-fill: rgba(139, 92, 246, 0.7);
+    -fx-font-size: 13px;                 /* Bigger font */
+    -fx-font-weight: 600;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial';
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 5, 0.2, 0, 1);
+    -fx-padding: 5px 0 0 0;
+    -fx-background-color: rgba(248,188,255,0.1);
+    -fx-background-radius: 20px;
+    -fx-padding: 5px 15px;
+}
+
+/* Even WIDER option if you need more */
+.stats-card-gradient-extra-wide {
+    -fx-min-width: 250px;
+    -fx-pref-width: 280px;
+    -fx-padding: 28px 40px;
+}
+
+.stats-card-gradient-extra-wide .stats-value-gradient-wide {
+    -fx-font-size: 40px !important;
+}
+
+.stats-card-gradient-extra-wide .stats-label-gradient-wide {
+    -fx-font-size: 18px !important;
+}
