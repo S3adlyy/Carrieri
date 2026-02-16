@@ -41,11 +41,7 @@ public class OffresShellController {
         setActiveButton(btnOffreAdd);
     }
 
-    @FXML
-    public void showOffresList() {
-        loadViewWithFade("offres-list.fxml");
-        setActiveButton(btnOffresList);
-    }
+
 
     @FXML
     public void showOffresTable() {
@@ -62,6 +58,24 @@ public class OffresShellController {
     @FXML
     public void showPostulationsList() {
         loadViewWithFade("postulations-list.fxml");
+        setActiveButton(btnPostulationsList);
+    }
+
+    @FXML
+    public void showOffresList() {
+        loadViewWithFade("offres-list.fxml");
+        setActiveButton(btnOffresList);
+    }
+
+    //  used by OffresTableController to show postulations of ONE offer
+    public void showPostulationsForOffre(int offreId, String offreTitre) {
+        loadViewWithFadeAndInit("/postulations-list.fxml", controller -> {
+            if (controller instanceof PostulationsListController plc) {
+                plc.setOffreFilter(offreId, offreTitre);
+            }
+        });
+
+        // optional: highlight navbar postulations button
         setActiveButton(btnPostulationsList);
     }
 
@@ -148,6 +162,7 @@ public class OffresShellController {
         });
         setActiveButton(btnPostulationsList);
     }
+    
 
 
 }

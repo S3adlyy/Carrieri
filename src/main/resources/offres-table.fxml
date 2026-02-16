@@ -20,8 +20,8 @@
                 <Label text="📋" style="-fx-font-size: 64; -fx-text-fill: white;"/>
             </StackPane>
 
-            <Label text="Offres en Table" styleClass="header-title-big"/>
-            <Label text="Toutes les informations + actions rapides" styleClass="header-subtitle"/>
+            <Label text="Liste des Offres " styleClass="header-title-big"/>
+            <Label text="Consultez, Modifiez ou Suuprimez les offres" styleClass="header-subtitle"/>
         </VBox>
 
         <!-- Search & Controls -->
@@ -38,7 +38,7 @@
 
         <!-- Table -->
         <VBox style="-fx-padding: 0 60 40 60;">
-            <TableView fx:id="tableOffres" prefHeight="600" styleClass="styled-table">
+            <TableView fx:id="tableOffres" editable="true" prefHeight="600" styleClass="styled-table">
 
                 <columns>
                     <!-- DB order -->
