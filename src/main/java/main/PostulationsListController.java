@@ -21,6 +21,8 @@ public class PostulationsListController {
     @FXML private FlowPane flowPostulations;
     @FXML private TextField txtSearch;
     @FXML private Label lblStatus;
+    @FXML private Button btnBack;
+    @FXML private Button btnFilter;
 
     private final PostulationService service = new PostulationService();
     private final ObservableList<Postulation> data = FXCollections.observableArrayList();
@@ -37,6 +39,15 @@ public class PostulationsListController {
         refreshTable();
     }
 
+    @FXML
+    private void handleBack() {
+        // Retour au tableau des offres pour recruteur
+        OffresShellController shellController = OffresShellController.getInstance();
+        if (shellController != null) {
+            shellController.showOffresTable();
+        }
+    }
+
     //  ADDED: called by Shell when user clicks 👥 on an offer
     public void setOffreFilter(int offreId, String offreTitre) {
         this.filterOffreId = offreId;
@@ -44,6 +55,7 @@ public class PostulationsListController {
         if (txtSearch != null) txtSearch.clear();
         refreshTable();
     }
+
 
     @FXML
     private void handleRefresh() {
@@ -57,10 +69,12 @@ public class PostulationsListController {
             data.setAll(allData);
         } else {
             data.setAll(allData.filtered(p ->
+                    String.valueOf(p.getId()).contains(search) ||
                     String.valueOf(p.getOffreId()).contains(search) ||
-                            String.valueOf(p.getCandidatId()).contains(search) ||
-                            p.getStatut().toLowerCase().contains(search) ||
-                            p.getMotivationCandidature().toLowerCase().contains(search)
+                    String.valueOf(p.getCandidatId()).contains(search) ||
+                    p.getStatut().toLowerCase().contains(search) ||
+                    p.getMotivationCandidature().toLowerCase().contains(search) ||
+                    p.getDatePostulation().toString().contains(search)
             ));
         }
 
@@ -74,6 +88,46 @@ public class PostulationsListController {
             lblStatus.setText(data.size() + " postulations trouvées");
         }
 
+        renderCards();
+    }
+
+    @FXML
+    private void handleFilter() {
+        // Créer un menu contextuel pour filtrer par statut
+        ContextMenu filterMenu = new ContextMenu();
+
+        MenuItem allItem = new MenuItem("Toutes les postulations");
+        allItem.setOnAction(e -> {
+            filterOffreId = null;
+            filterOffreTitre = null;
+            txtSearch.clear();
+            refreshTable();
+        });
+
+        MenuItem pendingItem = new MenuItem("En attente");
+        pendingItem.setOnAction(e -> filterByStatut("En attente"));
+
+        MenuItem progressItem = new MenuItem("En cours");
+        progressItem.setOnAction(e -> filterByStatut("En cours"));
+
+        MenuItem acceptedItem = new MenuItem("Acceptée");
+        acceptedItem.setOnAction(e -> filterByStatut("Acceptée"));
+
+        MenuItem refusedItem = new MenuItem("Refusée");
+        refusedItem.setOnAction(e -> filterByStatut("Refusée"));
+
+        filterMenu.getItems().addAll(allItem, new SeparatorMenuItem(),
+                                     pendingItem, progressItem, acceptedItem, refusedItem);
+
+        // Afficher le menu sous le bouton filter
+        if (btnFilter != null) {
+            filterMenu.show(btnFilter, javafx.geometry.Side.BOTTOM, 0, 0);
+        }
+    }
+
+    private void filterByStatut(String statut) {
+        data.setAll(allData.filtered(p -> p.getStatut().equalsIgnoreCase(statut)));
+        lblStatus.setText(data.size() + " postulations (" + statut + ")");
         renderCards();
     }
 

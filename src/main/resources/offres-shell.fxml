@@ -49,7 +49,14 @@
                 </graphic>
             </Button>
 
-            <Button fx:id="btnPostulationsList" text="Listes des Postulations" onAction="#showPostulationsList"
+            <!-- <Button fx:id="btnPostulationsList" text="Postulations par Offre" onAction="#showPostulationsList"
+                    styleClass="nav-btn" maxWidth="Infinity">
+                <graphic>
+                    <Region styleClass="icon-list" prefWidth="16" prefHeight="16"/>
+                </graphic>
+            </Button> -->
+
+            <Button fx:id="btnPostulationsCandidats" text="Postulations par Candidat" onAction="#showPostulationsCandidats"
                     styleClass="nav-btn" maxWidth="Infinity">
                 <graphic>
                     <Region styleClass="icon-list" prefWidth="16" prefHeight="16"/>

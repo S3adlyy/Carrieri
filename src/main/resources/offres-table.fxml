@@ -13,14 +13,16 @@
     <VBox alignment="TOP_CENTER" spacing="0" styleClass="view-root">
 
         <!-- Header -->
-        <VBox alignment="CENTER" spacing="8" styleClass="header-gradient" prefHeight="100">
-            <padding><Insets top="15" bottom="15"/></padding>
+        <VBox alignment="CENTER" spacing="16" styleClass="header-gradient" prefHeight="260">
+            <padding><Insets top="70" bottom="50"/></padding>
 
-            <StackPane prefWidth="45" prefHeight="45" styleClass="header-icon-circle">
-                <Label text="📋" style="-fx-font-size: 28; -fx-text-fill: white;"/>
+            <StackPane prefWidth="110" prefHeight="110" styleClass="header-icon-circle">
+                <Label text="📋" style="-fx-font-size: 80; -fx-text-fill: white; -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.75), 20, 0, 0, 0);"/>
             </StackPane>
 
-            <Label text="Liste des Offres" styleClass="header-title-big" style="-fx-font-size: 22;"/>
+            <Label text="Liste des Offres" styleClass="header-title-big"/>
+            <Label text="Consultez, Ajoutez, Modifiez ou Supprimez des offres"
+                   styleClass="header-subtitle" wrapText="true" textAlignment="CENTER"/>
         </VBox>
 
         <!-- Search & Controls -->

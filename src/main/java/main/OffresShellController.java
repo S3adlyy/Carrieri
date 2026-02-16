@@ -20,6 +20,7 @@ public class OffresShellController {
     @FXML private Button btnOffresTable;
     @FXML private Button btnOffreAdd;
     @FXML private Button btnPostulationsList;
+    @FXML private Button btnPostulationsCandidats;
 
     @FXML private Circle navAvatar;
     @FXML private Label navNameLabel;
@@ -59,10 +60,16 @@ public class OffresShellController {
         setActiveButton(btnOffreAdd);
     }
 
-    @FXML
+    /*@FXML
     public void showPostulationsList() {
         loadViewWithFade("postulations-list.fxml");
         setActiveButton(btnPostulationsList);
+    }*/
+
+    @FXML
+    public void showPostulationsCandidats() {
+        loadViewWithFade("postulations-candidats.fxml");
+        setActiveButton(btnPostulationsCandidats);
     }
 
     //  ADDED: load postulations-list and pass selected offreId to filter

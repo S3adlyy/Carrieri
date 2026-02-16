@@ -793,134 +793,6 @@
 
 .btn-icon-edit .label {
     -fx-text-fill: #6d28d9;
-    -fx-font-size: 16;
-}
-
-.btn-icon-delete .label {
-    -fx-text-fill: #dc2626;
-    -fx-font-size: 16;
-}
-
-/* ======================== OFFRES LIST ======================== */
-
-.header-title-big {
-    -fx-font-size: 38;
-    -fx-font-weight: 800;
-    -fx-text-fill: #1e1133;
-}
-
-.header-subtitle {
-    -fx-font-size: 16;
-    -fx-text-fill: #4c1d95;
-    -fx-font-weight: 400;
-}
-
-.search-input {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 30;
-    -fx-border-color: #d1c4e9;
-    -fx-border-radius: 30;
-    -fx-border-width: 2;
-    -fx-padding: 14 24;
-    -fx-font-size: 15;
-}
-
-.btn-filter {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 30;
-    -fx-border-color: #7c3aed;
-    -fx-border-radius: 30;
-    -fx-border-width: 2;
-    -fx-text-fill: #7c3aed;
-    -fx-font-size: 15;
-    -fx-font-weight: 600;
-    -fx-padding: 14 28;
-}
-
-.btn-filter:hover {
-    -fx-background-color: #f3e8ff;
-}
-
-.status-label {
-    -fx-font-size: 15;
-    -fx-font-weight: 600;
-    -fx-text-fill: #4c1d95;
-    -fx-padding: 8 0 0 0;
-}
-
-.offer-card {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 20;
-    -fx-border-color: #e0d4f5;
-    -fx-border-radius: 20;
-    -fx-border-width: 1;
-    -fx-padding: 28;
-    -fx-pref-width: 340;
-    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.12), 16, 0, 0, 6);
-}
-
-.offer-title {
-    -fx-font-size: 20;
-    -fx-font-weight: 700;
-    -fx-text-fill: #1e1133;
-}
-
-.offer-contract-badge {
-    -fx-background-color: #f3e8ff;
-    -fx-background-radius: 12;
-    -fx-text-fill: #7c3aed;
-    -fx-font-size: 13;
-    -fx-font-weight: 600;
-    -fx-padding: 6 14;
-    -fx-alignment: CENTER;
-}
-
-.offer-description {
-    -fx-font-size: 14;
-    -fx-text-fill: #374151;
-    -fx-line-spacing: 4;
-}
-
-.offer-info {
-    -fx-font-size: 13;
-    -fx-text-fill: #6b7280;
-    -fx-padding: 8 0 0 0;
-}
-
-.offer-salary {
-    -fx-font-size: 20;
-    -fx-font-weight: 800;
-    -fx-text-fill: #4c1d95;
-    -fx-padding: 12 0 0 0;
-}
-
-.offer-actions {
-    -fx-padding: 16 0 0 0;
-    -fx-spacing: 16;
-}
-
-.btn-postuler {
-    -fx-background-color: linear-gradient(to right, #7c3aed, #a78bfa);
-    -fx-background-radius: 14;
-    -fx-text-fill: white;
-    -fx-font-size: 14;
-    -fx-font-weight: 600;
-    -fx-padding: 10 24;
-}
-
-.btn-postuler:hover {
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-}
-
-.btn-icon-edit, .btn-icon-delete {
-    -fx-background-color: transparent;
-    -fx-padding: 8;
-    -fx-cursor: hand;
-}
-
-.btn-icon-edit .label {
-    -fx-text-fill: #6d28d9;
     -fx-font-size: 18;
 }
 
@@ -1626,3 +1498,70 @@
     -fx-padding: 10 20;
 }
 
+/* =========================================================
+   BACK ARROW AND FILTER BUTTONS
+   ========================================================= */
+
+/* Back arrow button inline (next to search) */
+.btn-back-arrow-inline {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+    -fx-border-color: #7c3aed;
+    -fx-border-radius: 12;
+    -fx-border-width: 2;
+    -fx-padding: 8 14;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.15), 6, 0, 0, 2);
+}
+
+.btn-back-arrow-inline:hover {
+    -fx-background-color: #f3e8ff;
+    -fx-border-color: #6d28d9;
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.25), 8, 0, 0, 3);
+}
+
+.btn-back-arrow-inline:pressed {
+    -fx-background-color: #e9d5ff;
+}
+
+/* Filter button styling */
+.btn-filter {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #7c3aed;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 12;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 12;
+    -fx-border-width: 2;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+    -fx-font-family: "Segoe UI";
+}
+
+.btn-filter:hover {
+    -fx-background-color: #f3e8ff;
+    -fx-border-color: #c4b5e0;
+}
+
+.btn-filter:pressed {
+    -fx-background-color: #e9d5ff;
+}
+
+/* Search input styling */
+.search-input {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 10 16;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #a094b0;
+    -fx-font-family: "Segoe UI";
+}
+
+.search-input:focused {
+    -fx-border-color: #7c3aed;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.18), 8, 0, 0, 2);
+}
