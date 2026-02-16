@@ -1,32 +1,24 @@
 package main;
 
 import entities.Postulation;
+import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
+import javafx.util.Duration;
 import services.PostulationService;
 
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-import javafx.geometry.Pos;
-
 
 public class PostulationsListController {
 
-    @FXML private TableView<Postulation> tablePostulations;
-    @FXML private TableColumn<Postulation, Integer> colId;
-    @FXML private TableColumn<Postulation, String> colOffreTitre; // We'll set this manually
-    @FXML private TableColumn<Postulation, Integer> colCandidatId;
-    @FXML private TableColumn<Postulation, LocalDateTime> colDate;
-    @FXML private TableColumn<Postulation, String> colStatut;
-    @FXML private TableColumn<Postulation, String> colMotivation;
-    @FXML private TableColumn<Postulation, Void> colActions;
-
+    @FXML private FlowPane flowPostulations;
     @FXML private TextField txtSearch;
     @FXML private Label lblStatus;
 
@@ -34,91 +26,11 @@ public class PostulationsListController {
     private final ObservableList<Postulation> data = FXCollections.observableArrayList();
     private final ObservableList<Postulation> allData = FXCollections.observableArrayList();
 
+    private final DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     @FXML
     public void initialize() {
-        // Map columns
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colCandidatId.setCellValueFactory(new PropertyValueFactory<>("candidatId"));
-        colDate.setCellValueFactory(new PropertyValueFactory<>("datePostulation"));
-        colStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
-        colMotivation.setCellValueFactory(new PropertyValueFactory<>("motivationCandidature"));
-
-        // OffreTitre: Need to fetch offre titre, but for simplicity, assume we add a method in Postulation or fetch separately
-        // For now, we'll use a custom cell factory to display "Offre ID: X" - extend to join with OffreService if needed
-        colOffreTitre.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                    setText("");
-                } else {
-                    Postulation p = getTableRow().getItem();
-                    setText("Offre ID: " + p.getOffreId()); // TODO: Fetch titre from OffreService if needed
-                }
-            }
-        });
-
-        // Date formatter
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        colDate.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(LocalDateTime item, boolean empty) {
-                super.updateItem(item, empty);
-                setText((empty || item == null) ? "" : fmt.format(item));
-            }
-        });
-
-        // Actions column: Edit Statut + Delete
-        colActions.setCellFactory(param -> new TableCell<>() {
-            private final Button btnEdit = new Button();
-            private final Button btnDelete = new Button();
-
-            {
-                // Set icons via style classes (define in CSS)
-                btnEdit.getStyleClass().addAll("btn-icon", "btn-icon-edit");
-                btnEdit.setTooltip(new Tooltip("Modifier Statut"));
-                btnEdit.setOnAction(event -> {
-                    Postulation postulation = getTableRow().getItem();
-                    if (postulation != null) {
-                        handleEdit(postulation);
-                    }
-                });
-
-                btnDelete.getStyleClass().addAll("btn-icon", "btn-icon-delete");
-                btnDelete.setTooltip(new Tooltip("Supprimer"));
-                btnDelete.setOnAction(event -> {
-                    Postulation postulation = getTableRow().getItem();
-                    if (postulation != null) {
-                        handleDelete(postulation);
-                    }
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    HBox actions = new HBox(8, btnEdit, btnDelete);
-                    actions.setAlignment(Pos.CENTER);
-                    setGraphic(actions);
-                }
-            }
-        });
-
-        tablePostulations.setItems(data);
         refreshTable();
-    }
-
-    private void refreshTable() {
-        try {
-            allData.setAll(service.read());
-            data.setAll(allData);
-            lblStatus.setText(data.size() + " postulations trouvées");
-        } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
-        }
     }
 
     @FXML
@@ -135,42 +47,168 @@ public class PostulationsListController {
             data.setAll(allData.filtered(p ->
                     String.valueOf(p.getOffreId()).contains(search) ||
                             String.valueOf(p.getCandidatId()).contains(search) ||
-                            p.getStatut().toLowerCase().contains(search)
+                            p.getStatut().toLowerCase().contains(search) ||
+                            p.getMotivationCandidature().toLowerCase().contains(search)
             ));
         }
         lblStatus.setText(data.size() + " postulations trouvées");
+        renderCards();
     }
 
-    private void handleEdit(Postulation postulation) {
-        // Simple dialog to change statut
-        ChoiceDialog<String> dialog = new ChoiceDialog<>(postulation.getStatut(),
-                FXCollections.observableArrayList("En attente", "En cours", "Acceptée", "Refusée"));
-        dialog.setTitle("Modifier Statut");
-        dialog.setHeaderText("Changer le statut de la postulation ID: " + postulation.getId());
-        dialog.setContentText("Nouveau statut:");
+    private void refreshTable() {
+        try {
+            allData.setAll(service.read());
+            data.setAll(allData);
+            lblStatus.setText(data.size() + " postulations trouvées");
+            renderCards();
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+        }
+    }
 
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(statut -> {
+    private void renderCards() {
+        flowPostulations.getChildren().clear();
+
+        for (Postulation p : data) {
+            VBox card = createPostulationCard(p);
+            flowPostulations.getChildren().add(card);
+
+            FadeTransition fade = new FadeTransition(Duration.millis(700), card);
+            fade.setFromValue(0.0);
+            fade.setToValue(1.0);
+            fade.play();
+        }
+    }
+
+    private VBox createPostulationCard(Postulation p) {
+        VBox card = new VBox(14);
+        card.getStyleClass().add("offer-card");  // Reuse offer-card style for consistency
+        card.setAlignment(Pos.TOP_CENTER);
+        card.setMaxWidth(360);
+
+        // Title: "Postulation ID: X"
+        Label title = new Label("Postulation ID: " + p.getId());
+        title.getStyleClass().add("offer-title");
+
+        // Offre + icon
+        HBox offreRow = new HBox(10);
+        offreRow.setAlignment(Pos.CENTER);
+
+        Label offreIcon = new Label("📄");
+        offreIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #7c3aed;");
+
+        Label offreLabel = new Label("Offre ID: " + p.getOffreId());  // Or fetch titre if needed
+        offreLabel.getStyleClass().add("offer-description");
+
+        offreRow.getChildren().addAll(offreIcon, offreLabel);
+
+        // Candidat + icon
+        HBox candidatRow = new HBox(10);
+        candidatRow.setAlignment(Pos.CENTER);
+
+        Label candidatIcon = new Label("👤");
+        candidatIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #4c1d95;");
+
+        Label candidatLabel = new Label("Candidat ID: " + p.getCandidatId());
+        candidatLabel.getStyleClass().add("offer-info");
+
+        candidatRow.getChildren().addAll(candidatIcon, candidatLabel);
+
+        // Date + icon
+        HBox dateRow = new HBox(10);
+        dateRow.setAlignment(Pos.CENTER);
+
+        Label dateIcon = new Label("📅");
+        dateIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #6b7280;");
+
+        Label dateLabel = new Label(dateFmt.format(p.getDatePostulation()));
+        dateLabel.getStyleClass().add("offer-info");
+
+        dateRow.getChildren().addAll(dateIcon, dateLabel);
+
+        // Statut with badge + modifier combo
+        HBox statutRow = new HBox(12);
+        statutRow.setAlignment(Pos.CENTER);
+
+        Label statutIcon = new Label("🔖");
+        statutIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #7c3aed;");
+
+        ComboBox<String> comboStatut = new ComboBox<>(FXCollections.observableArrayList("En attente", "En cours", "Acceptée", "Refusée"));
+        comboStatut.setValue(p.getStatut());
+        comboStatut.getStyleClass().add("combo-elegant");
+        comboStatut.setPrefWidth(200);
+
+        comboStatut.setOnAction(e -> {
+            String newStatut = comboStatut.getValue();
             try {
-                service.changerStatut(postulation.getId(), statut);
-                refreshTable();
-            } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+                service.changerStatut(p.getId(), newStatut);
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Statut mis à jour.");
+            } catch (SQLException ex) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", ex.getMessage());
+                comboStatut.setValue(p.getStatut());  // Revert on error
             }
         });
+
+        statutRow.getChildren().addAll(statutIcon, comboStatut);
+
+        // Motivation snippet + icon
+        HBox motivationRow = new HBox(10);
+        motivationRow.setAlignment(Pos.CENTER);
+
+        Label motivationIcon = new Label("📝");
+        motivationIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #374151;");
+
+        String motivSnippet = p.getMotivationCandidature().length() > 80
+                ? p.getMotivationCandidature().substring(0, 80) + "..."
+                : p.getMotivationCandidature();
+        Label motivation = new Label(motivSnippet);
+        motivation.getStyleClass().add("offer-description");
+        motivation.setWrapText(true);
+
+        motivationRow.getChildren().addAll(motivationIcon, motivation);
+
+        // Actions: only delete (as it's a postulation)
+        HBox actions = new HBox(20);
+        actions.setAlignment(Pos.CENTER);
+        actions.getStyleClass().add("offer-actions");
+
+        Button btnDelete = new Button();
+        btnDelete.getStyleClass().add("btn-icon-delete");
+        btnDelete.setGraphic(new Label("🗑"));
+        btnDelete.setOnAction(e -> handleDelete(p));
+
+        actions.getChildren().add(btnDelete);
+
+        // Assemble card
+        card.getChildren().addAll(title, offreRow, candidatRow, dateRow, statutRow, motivationRow, actions);
+
+        // Hover animation
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(220), card);
+        scaleUp.setToX(1.04);
+        scaleUp.setToY(1.04);
+
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(220), card);
+        scaleDown.setToX(1.0);
+        scaleDown.setToY(1.0);
+
+        card.setOnMouseEntered(e -> scaleUp.playFromStart());
+        card.setOnMouseExited(e -> scaleDown.playFromStart());
+
+        return card;
     }
 
-    private void handleDelete(Postulation postulation) {
+    private void handleDelete(Postulation p) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmation");
-        confirm.setHeaderText("Supprimer la postulation ?");
-        confirm.setContentText("Voulez-vous vraiment supprimer la postulation ID: " + postulation.getId() + " ?");
+        confirm.setTitle("Confirmer suppression");
+        confirm.setHeaderText("Supprimer cette postulation ?");
+        confirm.setContentText("ID: " + p.getId());
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                service.supprimer(postulation.getId());
+                service.supprimer(p.getId());
                 refreshTable();
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Postulation supprimée.");
             } catch (SQLException e) {
                 showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
             }

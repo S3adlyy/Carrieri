@@ -1553,3 +1553,40 @@
     -fx-text-fill: #374151;
     -fx-padding: 4 0;
 }
+
+/* Reuse and adjust from offer styles for postulations */
+.offer-card {  // Shared with offers for consistency
+-fx-alignment: center;
+    -fx-padding: 32 28;
+}
+
+.offer-title {
+    -fx-text-alignment: center;
+    -fx-padding: 0 0 8 0;
+}
+
+.offer-description {
+    -fx-text-alignment: center;
+    -fx-padding: 8 0;
+}
+
+.offer-info {
+    -fx-text-alignment: center;
+    -fx-padding: 8 0;
+}
+
+.combo-elegant {
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-padding: 10;
+}
+
+.combo-elegant:focused {
+    -fx-border-color: #8b5cf6;
+}
+
+/* Icon styles */
+.icon-label {
+    -fx-font-size: 20;
+    -fx-padding: 0 8 0 0;
+}

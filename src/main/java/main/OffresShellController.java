@@ -18,6 +18,7 @@ public class OffresShellController {
 
     @FXML private Button btnOffresList;
     @FXML private Button btnOffreAdd;
+    @FXML private Button btnOffresTable;
     @FXML private Button btnPostulationsList;
 
     @FXML private Circle navAvatar;
@@ -44,6 +45,12 @@ public class OffresShellController {
     public void showOffresList() {
         loadViewWithFade("offres-list.fxml");
         setActiveButton(btnOffresList);
+    }
+
+    @FXML
+    public void showOffresTable() {
+        loadViewWithFade("offres-table.fxml");   // ← new FXML we'll create
+        setActiveButton(btnOffresTable);
     }
 
     @FXML
@@ -127,4 +134,20 @@ public class OffresShellController {
             button.getStyleClass().add("liquid-btn-active");
         }
     }
+
+    public void showPostulationsForOffre(int offreId, String offreTitre) {
+        loadViewWithFadeAndInit("/postulations-list.fxml", controller -> {
+            try {
+                // Call setOffreFilter(offreId, offreTitre) if it exists
+                controller.getClass()
+                        .getMethod("setOffreFilter", int.class, String.class)
+                        .invoke(controller, offreId, offreTitre);
+            } catch (Exception ignored) {
+                System.out.println("Postulations controller has no setOffreFilter(int,String).");
+            }
+        });
+        setActiveButton(btnPostulationsList);
+    }
+
+
 }

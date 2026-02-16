@@ -35,10 +35,17 @@
         <VBox spacing="4" styleClass="nav-section">
             <padding><Insets top="8"/></padding>
 
-            <Button fx:id="btnOffresList" text="Liste des Offres" onAction="#showOffresList"
+            <Button fx:id="btnOffresList" text="Liste des Offres (pour candidat)" onAction="#showOffresList"
                     styleClass="nav-btn" maxWidth="Infinity">
                 <graphic>
                     <Region styleClass="icon-list" prefWidth="16" prefHeight="16"/>
+                </graphic>
+            </Button>
+
+            <Button fx:id="btnOffresTable" text="Liste des Offres (pour recruteur)" onAction="#showOffresTable"
+                    styleClass="nav-btn" maxWidth="Infinity">
+                <graphic>
+                    <Region styleClass="icon-table" prefWidth="16" prefHeight="16"/>
                 </graphic>
             </Button>
 
@@ -48,6 +55,7 @@
                     <Region styleClass="icon-list" prefWidth="16" prefHeight="16"/>
                 </graphic>
             </Button>
+
         </VBox>
 
         <!-- Spacer pushes user to bottom -->

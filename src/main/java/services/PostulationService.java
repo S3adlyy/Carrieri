@@ -113,6 +113,13 @@ public class PostulationService implements IPostulationService {
         ps.executeUpdate();
     }
 
+    public int supprimerParOffre(int offreId) throws SQLException {
+        String sql = "DELETE FROM postulation WHERE offre_id=?";
+        PreparedStatement ps = cnx.prepareStatement(sql);
+        ps.setInt(1, offreId);
+        return ps.executeUpdate(); // returns number of deleted rows
+    }
+
     // helper mapper
     private Postulation map(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");

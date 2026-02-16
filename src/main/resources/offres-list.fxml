@@ -18,7 +18,7 @@
             <padding><Insets top="70" bottom="50"/></padding>
 
             <StackPane prefWidth="110" prefHeight="110" styleClass="header-icon-circle">
-                <Label text="✦" style="-fx-font-size: 80; -fx-text-fill: white; -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.75), 20, 0, 0, 0);"/>
+                <Label text="📋" style="-fx-font-size: 80; -fx-text-fill: white; -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.75), 20, 0, 0, 0);"/>
             </StackPane>
 
             <Label text="Liste des Offres" styleClass="header-title-big"/>
