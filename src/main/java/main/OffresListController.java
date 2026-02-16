@@ -30,6 +30,14 @@ public class OffresListController {
     @FXML private FlowPane flowOffers;
     @FXML private TextField txtSearch;
     @FXML private Label lblStatus;
+    @FXML private Button btnFilter;
+    @FXML private VBox filterPanel;
+    @FXML private ComboBox<String> comboFilterTypeContrat;
+    @FXML private ComboBox<String> comboFilterNiveau;
+    @FXML private TextField txtFilterSalaireMin;
+    @FXML private TextField txtFilterSalaireMax;
+    @FXML private Button btnApplyFilters;
+    @FXML private Button btnResetFilters;
 
     private final OffreEmploiService service = new OffreEmploiService();
     private final ObservableList<OffreEmploi> allData = FXCollections.observableArrayList();
@@ -37,9 +45,29 @@ public class OffresListController {
 
     private final DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    private boolean filterPanelVisible = false;
+
     @FXML
     public void initialize() {
         txtSearch.textProperty().addListener((obs, o, n) -> applyFilter());
+
+        // Initialiser les ComboBox de filtre
+        if (comboFilterTypeContrat != null) {
+            comboFilterTypeContrat.getItems().addAll("Tous", "CDI", "CDD", "Stage", "Freelance", "Alternance");
+            comboFilterTypeContrat.setValue("Tous");
+        }
+
+        if (comboFilterNiveau != null) {
+            comboFilterNiveau.getItems().addAll("Tous", "Bac", "Bac+2", "Bac+3 (Licence)", "Bac+5 (Master/Ingenieur)", "Doctorat");
+            comboFilterNiveau.setValue("Tous");
+        }
+
+        // Cacher le panneau de filtres au démarrage
+        if (filterPanel != null) {
+            filterPanel.setVisible(false);
+            filterPanel.setManaged(false);
+        }
+
         refreshList();
     }
 
@@ -57,21 +85,70 @@ public class OffresListController {
     private void applyFilter() {
         String q = safe(txtSearch.getText()).toLowerCase().trim();
 
-        if (q.isEmpty()) {
+        // Filtres avancés
+        String typeContratFilter = (comboFilterTypeContrat != null && comboFilterTypeContrat.getValue() != null)
+                ? comboFilterTypeContrat.getValue() : "Tous";
+        String niveauFilter = (comboFilterNiveau != null && comboFilterNiveau.getValue() != null)
+                ? comboFilterNiveau.getValue() : "Tous";
+
+        Double salaireMin = null;
+        Double salaireMax = null;
+
+        if (txtFilterSalaireMin != null && !safe(txtFilterSalaireMin.getText()).isEmpty()) {
+            try {
+                salaireMin = Double.parseDouble(txtFilterSalaireMin.getText().trim());
+            } catch (NumberFormatException e) {
+                // Ignorer si invalide
+            }
+        }
+
+        if (txtFilterSalaireMax != null && !safe(txtFilterSalaireMax.getText()).isEmpty()) {
+            try {
+                salaireMax = Double.parseDouble(txtFilterSalaireMax.getText().trim());
+            } catch (NumberFormatException e) {
+                // Ignorer si invalide
+            }
+        }
+
+        final Double finalSalaireMin = salaireMin;
+        final Double finalSalaireMax = salaireMax;
+
+        if (q.isEmpty() && "Tous".equals(typeContratFilter) && "Tous".equals(niveauFilter)
+                && finalSalaireMin == null && finalSalaireMax == null) {
             filtered.setAll(allData);
         } else {
-            filtered.setAll(allData.filtered(o ->
+            filtered.setAll(allData.filtered(o -> {
+                // Filtre de recherche textuelle
+                boolean matchesSearch = q.isEmpty() || (
                     safe(o.getTitre()).toLowerCase().contains(q) ||
-                            safe(o.getEntreprise()).toLowerCase().contains(q) ||
-                            safe(o.getLocalisation()).toLowerCase().contains(q) ||
-                            safe(o.getSecteurActivite()).toLowerCase().contains(q) ||
-                            safe(o.getCompetencesRequises()).toLowerCase().contains(q) ||
-                            safe(o.getDescription()).toLowerCase().contains(q) ||
-                            safe(o.getTypeContrat()).toLowerCase().contains(q) ||
-                            safe(o.getNiveauQualification()).toLowerCase().contains(q) ||
-                            safe(o.getExperienceRequise()).toLowerCase().contains(q) ||
-                            safe(o.getContactRecruteur()).toLowerCase().contains(q)
-            ));
+                    safe(o.getEntreprise()).toLowerCase().contains(q) ||
+                    safe(o.getLocalisation()).toLowerCase().contains(q) ||
+                    safe(o.getSecteurActivite()).toLowerCase().contains(q) ||
+                    safe(o.getCompetencesRequises()).toLowerCase().contains(q) ||
+                    safe(o.getDescription()).toLowerCase().contains(q) ||
+                    safe(o.getTypeContrat()).toLowerCase().contains(q) ||
+                    safe(o.getNiveauQualification()).toLowerCase().contains(q) ||
+                    safe(o.getExperienceRequise()).toLowerCase().contains(q) ||
+                    safe(o.getContactRecruteur()).toLowerCase().contains(q)
+                );
+
+                // Filtre type de contrat
+                boolean matchesTypeContrat = "Tous".equals(typeContratFilter)
+                        || safe(o.getTypeContrat()).equalsIgnoreCase(typeContratFilter);
+
+                // Filtre niveau
+                boolean matchesNiveau = "Tous".equals(niveauFilter)
+                        || safe(o.getNiveauQualification()).equalsIgnoreCase(niveauFilter);
+
+                // Filtre salaire minimum
+                boolean matchesSalaireMin = finalSalaireMin == null || o.getSalaire() >= finalSalaireMin;
+
+                // Filtre salaire maximum
+                boolean matchesSalaireMax = finalSalaireMax == null || o.getSalaire() <= finalSalaireMax;
+
+                return matchesSearch && matchesTypeContrat && matchesNiveau
+                        && matchesSalaireMin && matchesSalaireMax;
+            }));
         }
 
         lblStatus.setText(filtered.size() + " offres trouvées");
@@ -395,6 +472,40 @@ public class OffresListController {
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Modification impossible :\n" + e.getMessage());
         }
+    }
+
+    // ===================== FILTER PANEL TOGGLE =====================
+
+    @FXML
+    private void toggleFilterPanel() {
+        filterPanelVisible = !filterPanelVisible;
+
+        if (filterPanel != null) {
+            filterPanel.setVisible(filterPanelVisible);
+            filterPanel.setManaged(filterPanelVisible);
+        }
+    }
+
+    @FXML
+    private void handleApplyFilters() {
+        applyFilter();
+    }
+
+    @FXML
+    private void handleResetFilters() {
+        if (comboFilterTypeContrat != null) {
+            comboFilterTypeContrat.setValue("Tous");
+        }
+        if (comboFilterNiveau != null) {
+            comboFilterNiveau.setValue("Tous");
+        }
+        if (txtFilterSalaireMin != null) {
+            txtFilterSalaireMin.clear();
+        }
+        if (txtFilterSalaireMax != null) {
+            txtFilterSalaireMax.clear();
+        }
+        applyFilter();
     }
 
     // ===================== HELPERS =====================

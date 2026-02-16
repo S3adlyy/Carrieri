@@ -14,6 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import services.OffreEmploiService;
 import services.PostulationService;
@@ -59,8 +60,9 @@ public class OffresTableController {
     @FXML
     public void initialize() {
 
-        // ✅ INLINE EDIT ENABLED
+        //  INLINE EDIT ENABLED
         tableOffres.setEditable(true);
+
 
         // ===== Bind columns =====
         colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
@@ -77,6 +79,22 @@ public class OffresTableController {
         colEntreprise.setCellValueFactory(new PropertyValueFactory<>("entreprise"));
         colContact.setCellValueFactory(new PropertyValueFactory<>("contactRecruteur"));
 
+        // Configure description column to show full text without wrapping
+        colDescription.setCellFactory(col -> new TableCell<OffreEmploi, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setTooltip(null);
+                } else {
+                    setText(item);
+                    setWrapText(false);
+                    setTooltip(new Tooltip(item));
+                }
+            }
+        });
+
         // ===== Inline editing (cell factories + commit => DB update) =====
         enableInlineEditing();
 
@@ -86,10 +104,11 @@ public class OffresTableController {
             private final Button btnEdit  = iconBtn("✏", "Modifier (dialog)");
             private final Button btnDel   = iconBtn("🗑", "Supprimer");
 
-            private final HBox box = new HBox(10, btnPosts, btnEdit, btnDel);
+            private final HBox box = new HBox(20, btnPosts, btnEdit, btnDel);
 
             {
                 box.setAlignment(Pos.CENTER);
+                box.setPadding(new Insets(6, 12, 6, 12));
 
                 btnPosts.getStyleClass().addAll("icon-btn", "icon-btn-neutral");
                 btnEdit.getStyleClass().addAll("icon-btn", "icon-btn-edit");
@@ -377,8 +396,13 @@ public class OffresTableController {
     // ===================== DATA / FILTER =====================
 
     @FXML
-    private void handleRefresh() {
-        loadData();
+    private void handleGoToAddOffre() {
+        OffresShellController shell = OffresShellController.getInstance();
+        if (shell != null) {
+            shell.showOffreAdd();
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Shell non disponible.");
+        }
     }
 
     private void loadData() {
@@ -435,13 +459,74 @@ public class OffresTableController {
 
             if (!posts.isEmpty()) {
                 Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-                confirm.setTitle("Confirmation");
-                confirm.setHeaderText("Cette offre a déjà des postulations (" + posts.size() + ")");
-                confirm.setContentText("Voulez-vous supprimer aussi les postulations puis supprimer l'offre ?");
+                confirm.setTitle("Confirmation de suppression");
+                confirm.setHeaderText(null);
+
+                // Custom content with styled layout
+                VBox content = new VBox(16);
+                content.setPadding(new Insets(20));
+                content.setStyle("-fx-background-color: white;");
+
+                Label icon = new Label("⚠️");
+                icon.setStyle("-fx-font-size: 48px;");
+
+                Label title = new Label("Attention : Postulations existantes");
+                title.setStyle(
+                    "-fx-font-size: 18px;" +
+                    "-fx-font-weight: bold;" +
+                    "-fx-text-fill: #dc2626;"
+                );
+
+                Label message = new Label(
+                    "Cette offre a déjà " + posts.size() + " postulation(s).\n\n" +
+                    "Voulez-vous supprimer les postulations et l'offre ?"
+                );
+                message.setStyle(
+                    "-fx-font-size: 14px;" +
+                    "-fx-text-fill: #374151;" +
+                    "-fx-wrap-text: true;"
+                );
+                message.setWrapText(true);
+
+                content.getChildren().addAll(icon, title, message);
+                content.setAlignment(Pos.CENTER);
+
+                confirm.getDialogPane().setContent(content);
+
+                // Style dialog pane
+                confirm.getDialogPane().setStyle(
+                    "-fx-background-color: white;" +
+                    "-fx-background-radius: 20;" +
+                    "-fx-border-color: #fecaca;" +
+                    "-fx-border-radius: 20;" +
+                    "-fx-border-width: 2;" +
+                    "-fx-effect: dropshadow(gaussian, rgba(220,38,38,0.2), 20, 0, 0, 8);"
+                );
 
                 ButtonType btnOui = new ButtonType("Oui, supprimer tout", ButtonBar.ButtonData.OK_DONE);
                 ButtonType btnNon = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
                 confirm.getButtonTypes().setAll(btnOui, btnNon);
+
+                // Style buttons
+                confirm.getDialogPane().lookupButton(btnOui).setStyle(
+                    "-fx-background-color: #dc2626;" +
+                    "-fx-text-fill: white;" +
+                    "-fx-font-weight: bold;" +
+                    "-fx-padding: 10 24;" +
+                    "-fx-background-radius: 10;" +
+                    "-fx-cursor: hand;" +
+                    "-fx-font-size: 14px;"
+                );
+
+                confirm.getDialogPane().lookupButton(btnNon).setStyle(
+                    "-fx-background-color: #f3f4f6;" +
+                    "-fx-text-fill: #6b7280;" +
+                    "-fx-font-weight: bold;" +
+                    "-fx-padding: 10 24;" +
+                    "-fx-background-radius: 10;" +
+                    "-fx-cursor: hand;" +
+                    "-fx-font-size: 14px;"
+                );
 
                 Optional<ButtonType> res = confirm.showAndWait();
                 if (res.isEmpty() || res.get() != btnOui) return;
@@ -451,9 +536,71 @@ public class OffresTableController {
                 }
             } else {
                 Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-                confirm.setTitle("Confirmation");
-                confirm.setHeaderText("Supprimer cette offre ?");
-                confirm.setContentText("Titre : " + safe(offre.getTitre()) + "\nEntreprise : " + safe(offre.getEntreprise()));
+                confirm.setTitle("Confirmation de suppression");
+                confirm.setHeaderText(null);
+
+                // Custom content with styled layout
+                VBox content = new VBox(16);
+                content.setPadding(new Insets(20));
+                content.setStyle("-fx-background-color: white;");
+
+                Label icon = new Label("🗑️");
+                icon.setStyle("-fx-font-size: 48px;");
+
+                Label title = new Label("Supprimer cette offre ?");
+                title.setStyle(
+                    "-fx-font-size: 18px;" +
+                    "-fx-font-weight: bold;" +
+                    "-fx-text-fill: #1e1133;"
+                );
+
+                Label message = new Label(
+                    "Titre : " + safe(offre.getTitre()) + "\n" +
+                    "Entreprise : " + safe(offre.getEntreprise())
+                );
+                message.setStyle(
+                    "-fx-font-size: 14px;" +
+                    "-fx-text-fill: #6b7280;" +
+                    "-fx-wrap-text: true;"
+                );
+                message.setWrapText(true);
+
+                content.getChildren().addAll(icon, title, message);
+                content.setAlignment(Pos.CENTER);
+
+                confirm.getDialogPane().setContent(content);
+
+                // Style dialog pane
+                confirm.getDialogPane().setStyle(
+                    "-fx-background-color: white;" +
+                    "-fx-background-radius: 20;" +
+                    "-fx-border-color: #e0d4f5;" +
+                    "-fx-border-radius: 20;" +
+                    "-fx-border-width: 2;" +
+                    "-fx-effect: dropshadow(gaussian, rgba(124,58,237,0.2), 20, 0, 0, 8);"
+                );
+
+                // Style default buttons
+                confirm.getDialogPane().lookupButton(ButtonType.OK).setStyle(
+                    "-fx-background-color: #7c3aed;" +
+                    "-fx-text-fill: white;" +
+                    "-fx-font-weight: bold;" +
+                    "-fx-padding: 10 24;" +
+                    "-fx-background-radius: 10;" +
+                    "-fx-cursor: hand;" +
+                    "-fx-font-size: 14px;"
+                );
+
+                confirm.getDialogPane().lookupButton(ButtonType.CANCEL).setStyle(
+                    "-fx-background-color: #f3f4f6;" +
+                    "-fx-text-fill: #6b7280;" +
+                    "-fx-font-weight: bold;" +
+                    "-fx-padding: 10 24;" +
+                    "-fx-background-radius: 10;" +
+                    "-fx-cursor: hand;" +
+                    "-fx-font-size: 14px;"
+                );
+
                 Optional<ButtonType> res = confirm.showAndWait();
                 if (res.isEmpty() || res.get() != ButtonType.OK) return;
             }
@@ -474,57 +621,280 @@ public class OffresTableController {
         dialog.setTitle("Modifier l'offre");
         dialog.setHeaderText(null);
 
+        // Make dialog resizable
+        dialog.setResizable(true);
+
+        // Apply custom styling to dialog
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.setStyle(
+            "-fx-background-color: white;" +
+            "-fx-background-radius: 20;" +
+            "-fx-border-color: #e0d4f5;" +
+            "-fx-border-radius: 20;" +
+            "-fx-border-width: 2;" +
+            "-fx-effect: dropshadow(gaussian, rgba(124,58,237,0.2), 20, 0, 0, 8);"
+        );
+
+        // Set preferred and min dimensions for responsiveness
+        dialogPane.setPrefSize(700, 650);
+        dialogPane.setMinSize(600, 500);
+
         ButtonType saveBtn = new ButtonType("Enregistrer", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(saveBtn, ButtonType.CANCEL);
 
+        // Style buttons
+        dialogPane.lookupButton(saveBtn).setStyle(
+            "-fx-background-color: #7c3aed;" +
+            "-fx-text-fill: white;" +
+            "-fx-font-weight: bold;" +
+            "-fx-padding: 10 24;" +
+            "-fx-background-radius: 10;" +
+            "-fx-cursor: hand;" +
+            "-fx-font-size: 14px;"
+        );
+
+        dialogPane.lookupButton(ButtonType.CANCEL).setStyle(
+            "-fx-background-color: #f3f4f6;" +
+            "-fx-text-fill: #6b7280;" +
+            "-fx-font-weight: bold;" +
+            "-fx-padding: 10 24;" +
+            "-fx-background-radius: 10;" +
+            "-fx-cursor: hand;" +
+            "-fx-font-size: 14px;"
+        );
+
+        // Create GridPane inside ScrollPane for scrollable content
         GridPane grid = new GridPane();
-        grid.setHgap(12);
-        grid.setVgap(12);
-        grid.setPadding(new Insets(18));
+        grid.setHgap(16);
+        grid.setVgap(14);
+        grid.setPadding(new Insets(24));
+        grid.setStyle("-fx-background-color: white;");
+
+        // Wrap grid in ScrollPane
+        ScrollPane scrollPane = new ScrollPane(grid);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle(
+            "-fx-background: white;" +
+            "-fx-background-color: white;" +
+            "-fx-border-color: transparent;"
+        );
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
+        // Style for labels
+        String labelStyle = "-fx-font-weight: bold; -fx-text-fill: #1a1225; -fx-font-size: 13px;";
+
+        // Style for input fields
+        String inputStyle =
+            "-fx-background-color: white;" +
+            "-fx-border-color: #e0d4f5;" +
+            "-fx-border-radius: 10;" +
+            "-fx-background-radius: 10;" +
+            "-fx-padding: 10 14;" +
+            "-fx-font-size: 13px;";
+
+        // Style for error labels
+        String errorLabelStyle =
+            "-fx-font-size: 12px;" +
+            "-fx-text-fill: #dc2626;" +
+            "-fx-font-weight: 600;" +
+            "-fx-padding: 4 0 0 0;";
+
+        // Create error labels
+        Label errTitre = new Label();
+        errTitre.setStyle(errorLabelStyle);
+        errTitre.setVisible(false);
+        errTitre.setManaged(false);
+
+        Label errDescription = new Label();
+        errDescription.setStyle(errorLabelStyle);
+        errDescription.setVisible(false);
+        errDescription.setManaged(false);
+
+        Label errSalaire = new Label();
+        errSalaire.setStyle(errorLabelStyle);
+        errSalaire.setVisible(false);
+        errSalaire.setManaged(false);
+
+        Label errTypeContrat = new Label();
+        errTypeContrat.setStyle(errorLabelStyle);
+        errTypeContrat.setVisible(false);
+        errTypeContrat.setManaged(false);
+
+        Label errLocalisation = new Label();
+        errLocalisation.setStyle(errorLabelStyle);
+        errLocalisation.setVisible(false);
+        errLocalisation.setManaged(false);
+
+        Label errExpiration = new Label();
+        errExpiration.setStyle(errorLabelStyle);
+        errExpiration.setVisible(false);
+        errExpiration.setManaged(false);
+
+        Label errContact = new Label();
+        errContact.setStyle(errorLabelStyle);
+        errContact.setVisible(false);
+        errContact.setManaged(false);
 
         TextField titre = new TextField(safe(offre.getTitre()));
+        titre.setStyle(inputStyle);
+        titre.setPromptText("Ex: Développeur Java Senior");
+        titre.setPrefWidth(400);
+
         TextArea desc = new TextArea(safe(offre.getDescription()));
-        desc.setPrefRowCount(4);
+        desc.setPrefRowCount(3);
+        desc.setWrapText(true);
+        desc.setStyle(inputStyle);
+        desc.setPromptText("Description détaillée du poste...");
+        desc.setPrefWidth(400);
 
         TextField salaire = new TextField(offre.getSalaire() == 0 ? "" : String.valueOf((int) offre.getSalaire()));
+        salaire.setStyle(inputStyle);
+        salaire.setPromptText("Ex: 2500");
+        salaire.setPrefWidth(400);
+
         TextField localisation = new TextField(safe(offre.getLocalisation()));
+        localisation.setStyle(inputStyle);
+        localisation.setPromptText("Ex: Tunis, Ariana");
+        localisation.setPrefWidth(400);
+
         TextField entreprise = new TextField(safe(offre.getEntreprise()));
+        entreprise.setStyle(inputStyle);
+        entreprise.setPromptText("Nom de l'entreprise");
+        entreprise.setPrefWidth(400);
+
         TextField contact = new TextField(safe(offre.getContactRecruteur()));
+        contact.setStyle(inputStyle);
+        contact.setPromptText("email@entreprise.tn");
+        contact.setPrefWidth(400);
 
         ComboBox<String> typeContrat = new ComboBox<>();
         typeContrat.getItems().setAll("CDI", "CDD", "Stage", "Freelance", "Alternance");
         typeContrat.setValue(safe(offre.getTypeContrat()).isEmpty() ? null : offre.getTypeContrat());
+        typeContrat.setStyle(inputStyle);
+        typeContrat.setPromptText("Sélectionnez...");
+        typeContrat.setPrefWidth(400);
+        typeContrat.setMaxWidth(Double.MAX_VALUE);
 
         TextField niveau = new TextField(safe(offre.getNiveauQualification()));
+        niveau.setStyle(inputStyle);
+        niveau.setPromptText("Ex: Bac+5");
+        niveau.setPrefWidth(400);
+
         TextField experience = new TextField(safe(offre.getExperienceRequise()));
+        experience.setStyle(inputStyle);
+        experience.setPromptText("Ex: 2-4 ans");
+        experience.setPrefWidth(400);
+
         TextField competences = new TextField(safe(offre.getCompetencesRequises()));
+        competences.setStyle(inputStyle);
+        competences.setPromptText("Java, Spring, SQL...");
+        competences.setPrefWidth(400);
+
         TextField secteur = new TextField(safe(offre.getSecteurActivite()));
+        secteur.setStyle(inputStyle);
+        secteur.setPromptText("Ex: Informatique");
+        secteur.setPrefWidth(400);
 
         DatePicker pubDate = new DatePicker(
                 offre.getDatePublication() == null ? LocalDate.now() : offre.getDatePublication().toLocalDate()
         );
+        pubDate.setStyle(inputStyle);
+        pubDate.setPrefWidth(400);
+
         DatePicker expDate = new DatePicker(
                 offre.getDateExpiration() == null ? LocalDate.now().plusDays(7) : offre.getDateExpiration().toLocalDate()
         );
+        expDate.setStyle(inputStyle);
+        expDate.setPrefWidth(400);
 
-        grid.addRow(0, new Label("Titre"), titre);
-        grid.addRow(1, new Label("Description"), desc);
-        grid.addRow(2, new Label("Salaire (DT)"), salaire);
-        grid.addRow(3, new Label("Type contrat"), typeContrat);
-        grid.addRow(4, new Label("Localisation"), localisation);
+        // Add header section
+        Label headerLabel = new Label("✏️ Modifier l'offre d'emploi");
+        headerLabel.setStyle(
+            "-fx-font-size: 20px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-text-fill: #1e1133;" +
+            "-fx-padding: 0 0 12 0;"
+        );
+        grid.add(headerLabel, 0, 0, 2, 1);
 
-        grid.addRow(5, new Label("Publication"), pubDate);
-        grid.addRow(6, new Label("Expiration"), expDate);
+        int row = 1;
 
-        grid.addRow(7, new Label("Niveau"), niveau);
-        grid.addRow(8, new Label("Expérience"), experience);
-        grid.addRow(9, new Label("Compétences"), competences);
-        grid.addRow(10, new Label("Secteur"), secteur);
+        // Add fields with styled labels and error labels
+        Label lblTitre = new Label("Titre");
+        lblTitre.setStyle(labelStyle);
+        VBox vboxTitre = new VBox(6, titre, errTitre);
+        grid.add(lblTitre, 0, row);
+        grid.add(vboxTitre, 1, row++);
 
-        grid.addRow(11, new Label("Entreprise"), entreprise);
-        grid.addRow(12, new Label("Contact (email)"), contact);
+        Label lblDesc = new Label("Description");
+        lblDesc.setStyle(labelStyle);
+        VBox vboxDesc = new VBox(6, desc, errDescription);
+        grid.add(lblDesc, 0, row);
+        grid.add(vboxDesc, 1, row++);
 
-        dialog.getDialogPane().setContent(grid);
+        Label lblSalaire = new Label("Salaire (DT)");
+        lblSalaire.setStyle(labelStyle);
+        VBox vboxSalaire = new VBox(6, salaire, errSalaire);
+        grid.add(lblSalaire, 0, row);
+        grid.add(vboxSalaire, 1, row++);
+
+        Label lblType = new Label("Type contrat");
+        lblType.setStyle(labelStyle);
+        VBox vboxType = new VBox(6, typeContrat, errTypeContrat);
+        grid.add(lblType, 0, row);
+        grid.add(vboxType, 1, row++);
+
+        Label lblLoc = new Label("Localisation");
+        lblLoc.setStyle(labelStyle);
+        VBox vboxLoc = new VBox(6, localisation, errLocalisation);
+        grid.add(lblLoc, 0, row);
+        grid.add(vboxLoc, 1, row++);
+
+        Label lblPub = new Label("Publication");
+        lblPub.setStyle(labelStyle);
+        grid.add(lblPub, 0, row);
+        grid.add(pubDate, 1, row++);
+
+        Label lblExp = new Label("Expiration");
+        lblExp.setStyle(labelStyle);
+        VBox vboxExp = new VBox(6, expDate, errExpiration);
+        grid.add(lblExp, 0, row);
+        grid.add(vboxExp, 1, row++);
+
+        Label lblNiveau = new Label("Niveau");
+        lblNiveau.setStyle(labelStyle);
+        grid.add(lblNiveau, 0, row);
+        grid.add(niveau, 1, row++);
+
+        Label lblExperience = new Label("Expérience");
+        lblExperience.setStyle(labelStyle);
+        grid.add(lblExperience, 0, row);
+        grid.add(experience, 1, row++);
+
+        Label lblComp = new Label("Compétences");
+        lblComp.setStyle(labelStyle);
+        grid.add(lblComp, 0, row);
+        grid.add(competences, 1, row++);
+
+        Label lblSecteur = new Label("Secteur");
+        lblSecteur.setStyle(labelStyle);
+        grid.add(lblSecteur, 0, row);
+        grid.add(secteur, 1, row++);
+
+        Label lblEntreprise = new Label("Entreprise");
+        lblEntreprise.setStyle(labelStyle);
+        grid.add(lblEntreprise, 0, row);
+        grid.add(entreprise, 1, row++);
+
+        Label lblContact = new Label("Contact (email)");
+        lblContact.setStyle(labelStyle);
+        VBox vboxContact = new VBox(6, contact, errContact);
+        grid.add(lblContact, 0, row);
+        grid.add(vboxContact, 1, row++);
+
+        // Set scrollPane as content
+        dialog.getDialogPane().setContent(scrollPane);
 
         Node okBtn = dialog.getDialogPane().lookupButton(saveBtn);
         okBtn.setDisable(titre.getText().trim().isEmpty());
@@ -533,27 +903,135 @@ public class OffresTableController {
         dialog.setResultConverter(btn -> {
             if (btn != saveBtn) return null;
 
-            if (safe(titre.getText()).isEmpty()) { showAlert(Alert.AlertType.ERROR, "Erreur", "Le titre est obligatoire."); return null; }
-            if (safe(desc.getText()).isEmpty())  { showAlert(Alert.AlertType.ERROR, "Erreur", "La description est obligatoire."); return null; }
+            // Clear all errors first
+            errTitre.setVisible(false);
+            errTitre.setManaged(false);
+            errDescription.setVisible(false);
+            errDescription.setManaged(false);
+            errSalaire.setVisible(false);
+            errSalaire.setManaged(false);
+            errTypeContrat.setVisible(false);
+            errTypeContrat.setManaged(false);
+            errLocalisation.setVisible(false);
+            errLocalisation.setManaged(false);
+            errExpiration.setVisible(false);
+            errExpiration.setManaged(false);
+            errContact.setVisible(false);
+            errContact.setManaged(false);
+
+            boolean hasError = false;
+
+            // Validate titre
+            if (safe(titre.getText()).isEmpty()) {
+                errTitre.setText("Le titre est obligatoire.");
+                errTitre.setVisible(true);
+                errTitre.setManaged(true);
+                titre.setStyle(inputErrorStyle);
+                hasError = true;
+            } else {
+                titre.setStyle(inputStyle);
+            }
+
+            // Validate description
+            if (safe(desc.getText()).isEmpty()) {
+                errDescription.setText("La description est obligatoire.");
+                errDescription.setVisible(true);
+                errDescription.setManaged(true);
+                desc.setStyle(inputErrorStyle);
+                hasError = true;
+            } else {
+                desc.setStyle(inputStyle);
+            }
+
+            // Validate type contrat
             if (typeContrat.getValue() == null || safe(typeContrat.getValue()).isEmpty()) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Le type de contrat est obligatoire."); return null;
-            }
-            if (!isValidEmail(safe(contact.getText()))) { showAlert(Alert.AlertType.ERROR, "Erreur", "Email invalide."); return null; }
-
-            double sal;
-            try {
-                sal = Double.parseDouble(safe(salaire.getText()));
-                if (sal <= 0) throw new RuntimeException();
-            } catch (Exception ex) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Salaire invalide (ex: 2500).");
-                return null;
+                errTypeContrat.setText("Le type de contrat est obligatoire.");
+                errTypeContrat.setVisible(true);
+                errTypeContrat.setManaged(true);
+                typeContrat.setStyle(inputErrorStyle);
+                hasError = true;
+            } else {
+                typeContrat.setStyle(inputStyle);
             }
 
+            // Validate localisation
+            if (safe(localisation.getText()).isEmpty()) {
+                errLocalisation.setText("La localisation est obligatoire.");
+                errLocalisation.setVisible(true);
+                errLocalisation.setManaged(true);
+                localisation.setStyle(inputErrorStyle);
+                hasError = true;
+            } else {
+                localisation.setStyle(inputStyle);
+            }
+
+            // Validate contact email
+            if (safe(contact.getText()).isEmpty()) {
+                errContact.setText("Le contact est obligatoire.");
+                errContact.setVisible(true);
+                errContact.setManaged(true);
+                contact.setStyle(inputErrorStyle);
+                hasError = true;
+            } else if (!isValidEmail(safe(contact.getText()))) {
+                errContact.setText("Email invalide (ex: recrutement@entreprise.tn).");
+                errContact.setVisible(true);
+                errContact.setManaged(true);
+                contact.setStyle(inputErrorStyle);
+                hasError = true;
+            } else {
+                contact.setStyle(inputStyle);
+            }
+
+            // Validate salaire
+            double sal = 0;
+            if (safe(salaire.getText()).isEmpty()) {
+                errSalaire.setText("Le salaire est obligatoire.");
+                errSalaire.setVisible(true);
+                errSalaire.setManaged(true);
+                salaire.setStyle(inputErrorStyle);
+                hasError = true;
+            } else {
+                try {
+                    sal = Double.parseDouble(safe(salaire.getText()));
+                    if (sal <= 0) {
+                        errSalaire.setText("Le salaire doit être > 0 (ex: 2500).");
+                        errSalaire.setVisible(true);
+                        errSalaire.setManaged(true);
+                        salaire.setStyle(inputErrorStyle);
+                        hasError = true;
+                    } else {
+                        salaire.setStyle(inputStyle);
+                    }
+                } catch (Exception ex) {
+                    errSalaire.setText("Le salaire doit être un nombre valide (ex: 2500).");
+                    errSalaire.setVisible(true);
+                    errSalaire.setManaged(true);
+                    salaire.setStyle(inputErrorStyle);
+                    hasError = true;
+                }
+            }
+
+            // Validate dates
             if (pubDate.getValue() == null || expDate.getValue() == null) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Publication et expiration sont obligatoires."); return null;
+                errExpiration.setText("Les dates de publication et expiration sont obligatoires.");
+                errExpiration.setVisible(true);
+                errExpiration.setManaged(true);
+                if (expDate.getValue() == null) {
+                    expDate.setStyle(inputErrorStyle);
+                }
+                hasError = true;
+            } else if (expDate.getValue().isBefore(pubDate.getValue())) {
+                errExpiration.setText("L'expiration doit être après la publication.");
+                errExpiration.setVisible(true);
+                errExpiration.setManaged(true);
+                expDate.setStyle(inputErrorStyle);
+                hasError = true;
+            } else {
+                expDate.setStyle(inputStyle);
             }
-            if (expDate.getValue().isBefore(pubDate.getValue())) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Expiration doit être après publication."); return null;
+
+            if (hasError) {
+                return null;
             }
 
             LocalDateTime pub = pubDate.getValue().atTime(0, 0);
@@ -605,7 +1083,90 @@ public class OffresTableController {
         Alert a = new Alert(type);
         a.setTitle(title);
         a.setHeaderText(null);
-        a.setContentText(msg);
+
+        // Custom content with styled layout
+        VBox content = new VBox(16);
+        content.setPadding(new Insets(20));
+        content.setStyle("-fx-background-color: white;");
+
+        // Icon based on alert type
+        String icon = switch (type) {
+            case ERROR -> "❌";
+            case WARNING -> "⚠️";
+            case INFORMATION -> "✅";
+            case CONFIRMATION -> "❓";
+            default -> "ℹ️";
+        };
+
+        Label iconLabel = new Label(icon);
+        iconLabel.setStyle("-fx-font-size: 48px;");
+
+        Label titleLabel = new Label(title);
+        String titleColor = switch (type) {
+            case ERROR -> "#dc2626";
+            case WARNING -> "#f59e0b";
+            case INFORMATION -> "#10b981";
+            case CONFIRMATION -> "#7c3aed";
+            default -> "#6b7280";
+        };
+        titleLabel.setStyle(
+            "-fx-font-size: 18px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-text-fill: " + titleColor + ";"
+        );
+
+        Label message = new Label(msg);
+        message.setStyle(
+            "-fx-font-size: 14px;" +
+            "-fx-text-fill: #374151;" +
+            "-fx-wrap-text: true;"
+        );
+        message.setWrapText(true);
+        message.setMaxWidth(400);
+
+        content.getChildren().addAll(iconLabel, titleLabel, message);
+        content.setAlignment(Pos.CENTER);
+
+        a.getDialogPane().setContent(content);
+
+        // Style dialog pane with border color based on type
+        String borderColor = switch (type) {
+            case ERROR -> "#fecaca";
+            case WARNING -> "#fef3c7";
+            case INFORMATION -> "#d1fae5";
+            case CONFIRMATION -> "#e0d4f5";
+            default -> "#e5e7eb";
+        };
+
+        a.getDialogPane().setStyle(
+            "-fx-background-color: white;" +
+            "-fx-background-radius: 20;" +
+            "-fx-border-color: " + borderColor + ";" +
+            "-fx-border-radius: 20;" +
+            "-fx-border-width: 2;" +
+            "-fx-effect: dropshadow(gaussian, rgba(124,58,237,0.2), 20, 0, 0, 8);"
+        );
+
+        // Style OK button
+        Node okButton = a.getDialogPane().lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            String buttonColor = switch (type) {
+                case ERROR -> "#dc2626";
+                case WARNING -> "#f59e0b";
+                case INFORMATION -> "#10b981";
+                default -> "#7c3aed";
+            };
+            okButton.setStyle(
+                "-fx-background-color: " + buttonColor + ";" +
+                "-fx-text-fill: white;" +
+                "-fx-font-weight: bold;" +
+                "-fx-padding: 10 24;" +
+                "-fx-background-radius: 10;" +
+                "-fx-cursor: hand;" +
+                "-fx-font-size: 14px;"
+            );
+        }
+
         a.showAndWait();
     }
 

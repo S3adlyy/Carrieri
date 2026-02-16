@@ -16,12 +16,12 @@
         <VBox alignment="CENTER" spacing="16" styleClass="header-gradient" prefHeight="220">
             <padding><Insets top="60" bottom="40"/></padding>
 
-            <StackPane prefWidth="90" prefHeight="90" styleClass="header-icon-circle">
-                <Label text="📋" style="-fx-font-size: 64; -fx-text-fill: white;"/>
+            <StackPane styleClass="header-icon-circle-large">
+                <Label text="📋"/>
             </StackPane>
 
             <Label text="Liste des Offres " styleClass="header-title-big"/>
-            <Label text="Consultez, Modifiez ou Suuprimez les offres" styleClass="header-subtitle"/>
+            <Label text="Consultez, Editez, Modifiez ou Suuprimez les offres" styleClass="header-subtitle"/>
         </VBox>
 
         <!-- Search & Controls -->
@@ -30,7 +30,7 @@
                 <TextField fx:id="txtSearch"
                            promptText="Rechercher par titre, entreprise, localisation, secteur, compétences..."
                            styleClass="search-input" HBox.hgrow="ALWAYS"/>
-                <Button text="Rafraîchir" onAction="#handleRefresh" styleClass="btn-secondary"/>
+                <Button text="➕ Ajouter Offre" onAction="#handleGoToAddOffre" styleClass="btn-primary, btn-add-offre"/>
             </HBox>
 
             <Label fx:id="lblStatus" text="0 offres trouvées" styleClass="status-text"/>
@@ -56,7 +56,7 @@
                     <TableColumn fx:id="colEntreprise" text="Entreprise" prefWidth="140"/>
                     <TableColumn fx:id="colContact" text="Contact" prefWidth="170"/>
 
-                    <TableColumn fx:id="colActions" text="Actions" prefWidth="170"/>
+                    <TableColumn fx:id="colActions" text="Actions" prefWidth="200"/>
                 </columns>
 
             </TableView>

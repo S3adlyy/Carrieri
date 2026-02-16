@@ -32,12 +32,51 @@
             <HBox spacing="20" alignment="CENTER_LEFT">
                 <TextField fx:id="txtSearch" promptText="Rechercher par titre, entreprise, localisation, compétences, secteur..."
                            styleClass="search-input" HBox.hgrow="ALWAYS"/>
-                <Button text="Filtrer" styleClass="btn-filter">
+                <Button fx:id="btnFilter" text="Filtrer" onAction="#toggleFilterPanel" styleClass="btn-filter">
                     <graphic>
                         <Label text="▼" style="-fx-font-size: 13; -fx-text-fill: #7c3aed;"/>
                     </graphic>
                 </Button>
             </HBox>
+
+            <!-- ==================== FILTER PANEL (COLLAPSIBLE) ==================== -->
+            <VBox fx:id="filterPanel" spacing="20" styleClass="filter-panel"
+                  style="-fx-background-color: white; -fx-padding: 24; -fx-background-radius: 16; -fx-border-color: #e0d4f5; -fx-border-radius: 16; -fx-border-width: 2;">
+
+                <Label text="🔍 Filtres avancés" style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #1e1133;"/>
+
+                <GridPane hgap="20" vgap="16">
+                    <!-- Type de contrat -->
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Type de contrat" styleClass="field-label"/>
+                        <ComboBox fx:id="comboFilterTypeContrat" maxWidth="Infinity" styleClass="field-combo" prefWidth="250"/>
+                    </VBox>
+
+                    <!-- Niveau de qualification -->
+                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Niveau de qualification" styleClass="field-label"/>
+                        <ComboBox fx:id="comboFilterNiveau" maxWidth="Infinity" styleClass="field-combo" prefWidth="250"/>
+                    </VBox>
+
+                    <!-- Salaire minimum -->
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <Label text="Salaire minimum (DT)" styleClass="field-label"/>
+                        <TextField fx:id="txtFilterSalaireMin" promptText="Ex: 1500" styleClass="field-input"/>
+                    </VBox>
+
+                    <!-- Salaire maximum -->
+                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <Label text="Salaire maximum (DT)" styleClass="field-label"/>
+                        <TextField fx:id="txtFilterSalaireMax" promptText="Ex: 5000" styleClass="field-input"/>
+                    </VBox>
+                </GridPane>
+
+                <!-- Boutons d'action -->
+                <HBox spacing="16" alignment="CENTER_RIGHT">
+                    <Button fx:id="btnResetFilters" text="Réinitialiser" onAction="#handleResetFilters" styleClass="btn-secondary" prefWidth="150"/>
+                    <Button fx:id="btnApplyFilters" text="Appliquer" onAction="#handleApplyFilters" styleClass="btn-primary" prefWidth="150"/>
+                </HBox>
+            </VBox>
 
             <Label fx:id="lblStatus" text="0 offres trouvées" styleClass="status-label"/>
         </VBox>

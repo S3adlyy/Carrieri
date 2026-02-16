@@ -40,7 +40,7 @@
                     <!-- Titre -->
                     <VBox spacing="10" HBox.hgrow="ALWAYS">
                         <Label text="Titre de l'offre" styleClass="field-label"/>
-                        <TextField fx:id="txtTitre" promptText="Ex: Développeur Full Stack React/Node"
+                        <TextField fx:id="txtTitre" promptText="Ex: Développeur Full Stack Java"
                                    styleClass="input-elegant"/>
                         <Label fx:id="errTitre" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>

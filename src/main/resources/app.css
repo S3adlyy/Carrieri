@@ -1600,3 +1600,29 @@
     -fx-font-size: 20;
     -fx-padding: 0 8 0 0;
 }
+
+/* =========================================================
+   TABLE VIEW SPECIFIC STYLES
+   ========================================================= */
+
+/* Large header icon circle for table view */
+.header-icon-circle-large {
+    -fx-background-color: #1a1225;
+    -fx-background-radius: 100;
+    -fx-pref-width: 90;
+    -fx-pref-height: 90;
+    -fx-alignment: center;
+}
+
+.header-icon-circle-large .label {
+    -fx-font-size: 64;
+    -fx-text-fill: white;
+}
+
+/* Add offer button styling */
+.btn-add-offre {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+}
+
