@@ -549,15 +549,6 @@
 }
 
 /* === DatePicker – modern & aesthetic style === */
-/* ===== FINAL FIX: force month/year text visible (must be last in file) ===== */
-.date-picker-popup .month-year-pane .spinner .text-field {
-    -fx-background-color: white;   /* overrides .spinner .text-field */
-    -fx-text-fill: #111827;        /* month/year text color */
-}
-
-.date-picker-popup .month-year-pane .spinner .text-field .text {
-    -fx-fill: #111827;             /* some skins draw text with -fx-fill */
-}
 .date-picker-elegant {
     -fx-background-color: #ffffff;
     -fx-background-radius: 16;
@@ -601,29 +592,100 @@
     -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.18), 20, 0, 0, 8);
 }
 
+/* Header avec mois et année */
 .date-picker-popup > .month-year-pane {
     -fx-background-color: linear-gradient(to bottom, #7c3aed, #a78bfa);
-    -fx-text-fill: #111827;
-    -fx-font-weight: bold;
+    -fx-padding: 12;
 }
 
-.date-picker-popup > .calendar-grid {
+/* Boutons de navigation (flèches) */
+.date-picker-popup .month-year-pane .spinner {
     -fx-background-color: transparent;
 }
 
-.date-picker-popup .day-cell {
+.date-picker-popup .month-year-pane .button {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-radius: 8;
+    -fx-text-fill: white;
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-padding: 4 8;
+}
+
+.date-picker-popup .month-year-pane .button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Texte du mois et de l'année - VISIBLE EN BLANC */
+.date-picker-popup .month-year-pane .spinner .label {
+    -fx-text-fill: white !important;
+    -fx-font-size: 15;
+    -fx-font-weight: 700;
+}
+
+.date-picker-popup .month-year-pane .spinner .text-field {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-border-color: transparent;
+    -fx-padding: 6 14;
     -fx-font-size: 14;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1e1133 !important;
+}
+
+.date-picker-popup .month-year-pane .spinner .text-field .text {
+    -fx-fill: #1e1133 !important;
+}
+
+/* Grille du calendrier */
+.date-picker-popup > .calendar-grid {
+    -fx-background-color: transparent;
     -fx-padding: 8;
+}
+
+/* Noms des jours de la semaine */
+.date-picker-popup .week-number-cell,
+.date-picker-popup .day-name-cell {
+    -fx-font-size: 13;
+    -fx-font-weight: 600;
+    -fx-text-fill: #7c3aed;
+    -fx-padding: 8;
+}
+
+/* Cellules des jours */
+.date-picker-popup .day-cell {
+    -fx-background-color: transparent;
+    -fx-font-size: 14;
+    -fx-font-weight: 500;
+    -fx-text-fill: #374151;
+    -fx-padding: 8;
+    -fx-background-radius: 8;
 }
 
 .date-picker-popup .day-cell:hover {
     -fx-background-color: #f3e8ff;
+    -fx-text-fill: #7c3aed;
 }
 
-.date-picker-popup .selected {
+/* Jour sélectionné */
+.date-picker-popup .day-cell.selected {
     -fx-background-color: #7c3aed !important;
-    -fx-text-fill: #111827 !important;
-    -fx-font-weight: bold;
+    -fx-text-fill: white !important;
+    -fx-font-weight: 700;
+}
+
+/* Jour d'aujourd'hui */
+.date-picker-popup .day-cell.today {
+    -fx-border-color: #7c3aed;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+}
+
+/* Jours du mois précédent/suivant */
+.date-picker-popup .day-cell.previous-month,
+.date-picker-popup .day-cell.next-month {
+    -fx-text-fill: #9ca3af;
 }
 
 /* Focus effect on the whole DatePicker */
@@ -632,22 +694,6 @@
     -fx-effect: dropshadow(gaussian, #c4b5fd66, 12, 0, 0, 4);
 }
 
-/* ===== FIX REAL: month/year are inside spinner text-fields ===== */
-.date-picker-popup .month-year-pane .spinner .text-field {
-    -fx-text-fill: #111827;          /* visible text */
-    -fx-background-color: white;     /* keep the white capsule */
-    -fx-background-radius: 999;
-    -fx-border-radius: 999;
-    -fx-border-color: rgba(255,255,255,0.65);
-    -fx-padding: 4 10;
-    -fx-font-size: 13px;
-    -fx-font-weight: 700;
-}
-
-/* in some skins, the actual text node is ".text" */
-.date-picker-popup .month-year-pane .spinner .text-field .text {
-    -fx-fill: #111827;
-}
 
 /* Spinner for time – make it match your elegant inputs */
 .spinner {

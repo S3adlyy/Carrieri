@@ -332,7 +332,14 @@ public class OffreAddController {
             handleReset();
             showInfo("✅ Offre ajoutée avec succès !");
         } catch (SQLException e) {
-            showErrorPopup("Erreur base de données : " + e.getMessage());
+            // Vérifier si c'est une erreur d'unicité du titre
+            if (e.getMessage().contains("existe déjà")) {
+                showError(errTitre, e.getMessage());
+                markError(txtTitre, true);
+                txtTitre.requestFocus();
+            } else {
+                showErrorPopup("Erreur base de données : " + e.getMessage());
+            }
         }
     }
 

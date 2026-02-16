@@ -19,6 +19,11 @@ public class OffreEmploiService implements IOffreEmploiService {
     //  CREATE
     @Override
     public void ajouter(OffreEmploi o) throws SQLException {
+        // Vérifier l'unicité du titre
+        if (existsByTitre(o.getTitre())) {
+            throw new SQLException("Une offre avec le titre \"" + o.getTitre() + "\" existe déjà. Veuillez choisir un titre différent.");
+        }
+
         String sql = "INSERT INTO offre_emploi " +
                 "(titre, description, salaire, type_contrat, localisation, date_publication, date_expiration, " +
                 "niveau_qualification, experience_requise, competences_requises, secteur_activite, entreprise, contact_recruteur) " +
@@ -43,6 +48,18 @@ public class OffreEmploiService implements IOffreEmploiService {
         ps.setString(13, o.getContactRecruteur());
 
         ps.executeUpdate();
+    }
+
+    // Méthode pour vérifier si une offre avec le même titre existe déjà
+    private boolean existsByTitre(String titre) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM offre_emploi WHERE LOWER(titre) = LOWER(?)";
+        PreparedStatement ps = cnx.prepareStatement(sql);
+        ps.setString(1, titre.trim());
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+        return false;
     }
 
     //  READ (IService requires read())
