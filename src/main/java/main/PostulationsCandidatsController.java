@@ -182,33 +182,11 @@ public class PostulationsCandidatsController {
         card.setAlignment(Pos.TOP_CENTER);
         card.setMaxWidth(360);
 
-        // Title: Postulation ID avec candidat info
-        HBox headerRow = new HBox(12);
-        headerRow.setAlignment(Pos.CENTER);
-
+        // Title: Postulation ID uniquement
         Label title = new Label("Postulation ID: " + p.getId());
         title.getStyleClass().add("offer-title");
         title.setStyle("-fx-font-size: 18; -fx-font-weight: 700;");
 
-        /*Label candidatBadge = new Label("Candidat: " + candidatId);
-        candidatBadge.setStyle(
-            "-fx-background-color: #e0d4f5; " +
-            "-fx-text-fill: #4c1d95; " +
-            "-fx-font-size: 12; " +
-            "-fx-font-weight: 700; " +
-            "-fx-padding: 4 10; " +
-            "-fx-background-radius: 12;"
-        );
-
-        headerRow.getChildren().addAll(title, candidatBadge);
-
-        // Sous-titre avec nombre de postulations pour ce candidat
-        Label candidatInfo = new Label(totalForCandidat + " postulation(s) pour le candidat " + candidatId);
-        candidatInfo.setStyle(
-            "-fx-font-size: 13; " +
-            "-fx-text-fill: #6b7280; " +
-            "-fx-font-weight: 600;"
-        );*/
 
         // Récupérer l'offre pour afficher titre et entreprise
         try {
@@ -307,7 +285,7 @@ public class PostulationsCandidatsController {
 
                 // Assemble card
                 card.getChildren().addAll(
-                    headerRow,
+                    title,
                     offreRow,
                     entrepriseRow,
                     dateRow,
@@ -320,13 +298,13 @@ public class PostulationsCandidatsController {
                 // Si l'offre n'existe plus
                 Label errorLabel = new Label("⚠ Offre introuvable (ID: " + p.getOffreId() + ")");
                 errorLabel.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: 600;");
-                card.getChildren().addAll(headerRow, errorLabel);
+                card.getChildren().addAll(title, errorLabel);
             }
 
         } catch (SQLException e) {
             Label errorLabel = new Label("⚠ Erreur lors du chargement de l'offre");
             errorLabel.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: 600;");
-            card.getChildren().addAll(headerRow, errorLabel);
+            card.getChildren().addAll(title, errorLabel);
         }
 
         // Hover animation
