@@ -142,10 +142,13 @@
     -fx-border-insets: 0 0 10 0;
 }
 
+/* ========================================================================
+   FORM GRID
+   ======================================================================== */
 .form-grid {
     -fx-padding: 15 0 5 0;
     -fx-hgap: 15;
-    -fx-vgap: 12;
+    -fx-vgap: 15; /* Increased for validation labels */
 }
 
 .form-label {
@@ -176,6 +179,79 @@
     -fx-border-color: #94a3b8;
 }
 
+/* ========================================================================
+   VALIDATION STYLES
+   ======================================================================== */
+
+.validation-field {
+    -fx-transition: all 0.2s ease;
+}
+
+.validation-field-error {
+    -fx-border-color: #ef4444 !important;
+    -fx-background-color: #fef2f2 !important;
+    -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.2), 8, 0, 0, 2);
+}
+
+.validation-field-valid {
+    -fx-border-color: #10b981 !important;
+    -fx-background-color: #f0fdf4 !important;
+}
+
+/* Error labels */
+.error-label {
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-padding: 4px 0 0 5px;
+    -fx-graphic-text-gap: 4;
+    -fx-background-color: rgba(239,68,68,0.05);
+    -fx-background-radius: 4;
+    -fx-padding: 4 8;
+}
+
+/* Success message */
+.success-label {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-padding: 4px 0 0 5px;
+    -fx-background-color: rgba(16,185,129,0.05);
+    -fx-background-radius: 4;
+    -fx-padding: 4 8;
+}
+
+/* Info label for character count */
+.info-label {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+    -fx-font-style: italic;
+}
+
+/* Validation icons */
+.validation-icon-error {
+    -fx-font-family: 'Segoe UI Emoji';
+    -fx-font-size: 12px;
+}
+
+/* Add spacing for validation labels */
+.form-grid {
+    -fx-vgap: 15;
+}
+
+/* Add padding for validation messages */
+.form-field, .form-combo {
+    -fx-padding: 10 14 10 14;
+}
+
+/* Validation container for each field */
+.validation-container {
+    -fx-spacing: 2;
+}
+
+/* ========================================================================
+   DETAILS BOX
+   ======================================================================== */
 .details-box {
     -fx-background-color: linear-gradient(135deg, #f8fafc, #f1f5f9);
     -fx-background-radius: 18;
@@ -201,6 +277,9 @@
     -fx-font-family: 'Segoe UI', sans-serif;
 }
 
+/* ========================================================================
+   TIMER PROGRESS
+   ======================================================================== */
 .timer-progress-box {
     -fx-background-color: linear-gradient(135deg, #f8fafc, #f1f5f9);
     -fx-background-radius: 18;
@@ -229,6 +308,9 @@
     -fx-text-fill: #059669;
 }
 
+/* ========================================================================
+   SUBMIT BUTTON
+   ======================================================================== */
 .submit-button {
     -fx-background-color: linear-gradient(135deg, #4776E6, #8E54E9);
     -fx-text-fill: white;
@@ -253,11 +335,19 @@
     -fx-scale-y: 0.98;
 }
 
+.submit-button:disabled {
+    -fx-opacity: 0.6;
+    -fx-cursor: not-allowed;
+}
+
 .processing-label {
     -fx-text-fill: #64748b;
     -fx-font-style: italic;
 }
 
+/* ========================================================================
+   CONSOLE
+   ======================================================================== */
 .console-box {
     -fx-background-color: #0f172a;
     -fx-background-radius: 18;
@@ -329,6 +419,9 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
 }
 
+/* ========================================================================
+   EDITOR
+   ======================================================================== */
 .editor-container {
     -fx-background-color: #0f172a;
     -fx-background-radius: 18;
@@ -405,6 +498,9 @@
 .code-editor .text:contains("from") { -fx-fill: #c792ea; }
 .code-editor .text:contains("class") { -fx-fill: #c792ea; }
 
+/* ========================================================================
+   STATUS BAR
+   ======================================================================== */
 .status-bar {
     -fx-background-color: #f8fafc;
     -fx-background-radius: 14;

@@ -12,6 +12,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.animation.Timeline;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import javafx.event.ActionEvent;
 import services.RenduMissionService;
@@ -30,6 +31,13 @@ public class RenduAddController implements Initializable {
     @FXML private ProgressIndicator progress;
     @FXML private Label lblResultat;
     @FXML private TextArea lblMissionDescription;
+    @FXML private Label lblProcessing;
+
+    // Validation labels
+    @FXML private Label lblCandidatIdError;
+    @FXML private Label lblMissionIdError;
+    @FXML private Label lblCodeError;
+    @FXML private Label lblMissionTypeError;
 
     // Timer components
     @FXML private VBox timerContainer;
@@ -81,6 +89,9 @@ public class RenduAddController implements Initializable {
         lblMissionDescription.setEditable(false);
         lblMissionDescription.setWrapText(true);
 
+        // Setup input validation
+        setupInputValidation();
+
         // Setup code editor security features
         setupCodeEditorSecurity();
 
@@ -103,11 +114,239 @@ public class RenduAddController implements Initializable {
             fullScreenEditorOverlay.setVisible(false);
             fullScreenEditorOverlay.setManaged(false);
         }
+
+        // Initialize validation labels as invisible
+        if (lblCandidatIdError != null) {
+            lblCandidatIdError.setVisible(false);
+            lblCandidatIdError.setManaged(false);
+        }
+        if (lblMissionIdError != null) {
+            lblMissionIdError.setVisible(false);
+            lblMissionIdError.setManaged(false);
+        }
+        if (lblCodeError != null) {
+            lblCodeError.setVisible(false);
+            lblCodeError.setManaged(false);
+        }
+        if (lblMissionTypeError != null) {
+            lblMissionTypeError.setVisible(false);
+            lblMissionTypeError.setManaged(false);
+        }
     }
 
-    /**
-     * Setup keyboard shortcuts for full screen mode
-     */
+    // ============================
+    // INPUT VALIDATION METHODS
+    // ============================
+
+    private void setupInputValidation() {
+        // Candidate ID validation (must be a positive integer)
+        txtCandidatId.textProperty().addListener((observable, oldValue, newValue) -> {
+            validateCandidatId();
+        });
+
+        txtCandidatId.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) { // Lost focus
+                validateCandidatId();
+            }
+        });
+
+        // Mission ID validation (must be a positive integer)
+        txtMissionId.textProperty().addListener((observable, oldValue, newValue) -> {
+            validateMissionId();
+        });
+
+        txtMissionId.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) { // Lost focus
+                validateMissionId();
+            }
+        });
+
+        // Code validation (cannot be empty)
+        txtCode.textProperty().addListener((observable, oldValue, newValue) -> {
+            validateCode();
+        });
+
+        txtCode.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) { // Lost focus
+                validateCode();
+            }
+        });
+
+        // Mission Type validation
+        comboMissionType.valueProperty().addListener((observable, oldValue, newValue) -> {
+            validateMissionType();
+        });
+
+        // Add real-time character counter for code
+        txtCode.textProperty().addListener((observable, oldValue, newValue) -> {
+            updateCodeCharacterCounter();
+        });
+
+        // Restrict Candidate ID to numbers only
+        txtCandidatId.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && !newValue.matches("\\d*")) {
+                txtCandidatId.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+
+        // Restrict Mission ID to numbers only
+        txtMissionId.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && !newValue.matches("\\d*")) {
+                txtMissionId.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+
+        // Add CSS classes for validation styling
+        addValidationStyleClasses();
+    }
+
+    private void addValidationStyleClasses() {
+        txtCandidatId.getStyleClass().add("validation-field");
+        txtMissionId.getStyleClass().add("validation-field");
+        txtCode.getStyleClass().add("validation-field");
+        comboMissionType.getStyleClass().add("validation-field");
+    }
+
+    private boolean validateCandidatId() {
+        String text = txtCandidatId.getText();
+
+        if (text == null || text.trim().isEmpty()) {
+            showFieldError(txtCandidatId, lblCandidatIdError, "Candidate ID is required");
+            return false;
+        }
+
+        try {
+            int id = Integer.parseInt(text);
+            if (id <= 0) {
+                showFieldError(txtCandidatId, lblCandidatIdError, "Candidate ID must be positive");
+                return false;
+            }
+            clearFieldError(txtCandidatId, lblCandidatIdError);
+            return true;
+        } catch (NumberFormatException e) {
+            showFieldError(txtCandidatId, lblCandidatIdError, "Candidate ID must be a number");
+            return false;
+        }
+    }
+
+    private boolean validateMissionId() {
+        String text = txtMissionId.getText();
+
+        if (text == null || text.trim().isEmpty()) {
+            showFieldError(txtMissionId, lblMissionIdError, "Mission ID is required");
+            return false;
+        }
+
+        try {
+            int id = Integer.parseInt(text);
+            if (id <= 0) {
+                showFieldError(txtMissionId, lblMissionIdError, "Mission ID must be positive");
+                return false;
+            }
+            clearFieldError(txtMissionId, lblMissionIdError);
+            return true;
+        } catch (NumberFormatException e) {
+            showFieldError(txtMissionId, lblMissionIdError, "Mission ID must be a number");
+            return false;
+        }
+    }
+
+    private boolean validateCode() {
+        String text = txtCode.getText();
+
+        if (text == null || text.trim().isEmpty()) {
+            showFieldError(txtCode, lblCodeError, "Python code is required");
+            return false;
+        }
+
+        if (text.trim().length() < 10) {
+            showFieldError(txtCode, lblCodeError, "Code must be at least 10 characters");
+            return false;
+        }
+
+        clearFieldError(txtCode, lblCodeError);
+        return true;
+    }
+
+    private boolean validateMissionType() {
+        String type = comboMissionType.getValue();
+
+        if (type == null || type.trim().isEmpty()) {
+            showFieldError(comboMissionType, lblMissionTypeError, "Mission type is required");
+            return false;
+        }
+
+        clearFieldError(comboMissionType, lblMissionTypeError);
+        return true;
+    }
+
+    private boolean validateAllFields() {
+        boolean isValid = true;
+
+        isValid &= validateCandidatId();
+        isValid &= validateMissionId();
+        isValid &= validateCode();
+        isValid &= validateMissionType();
+
+        return isValid;
+    }
+
+    private void showFieldError(Control field, Label errorLabel, String message) {
+        field.getStyleClass().remove("validation-field-valid");
+        field.getStyleClass().add("validation-field-error");
+
+        if (errorLabel != null) {
+            errorLabel.setText("⚠ " + message);
+            errorLabel.setVisible(true);
+            errorLabel.setManaged(true);
+            errorLabel.getStyleClass().remove("success-label");
+            errorLabel.getStyleClass().add("error-label");
+        }
+    }
+
+    private void clearFieldError(Control field, Label errorLabel) {
+        field.getStyleClass().remove("validation-field-error");
+        field.getStyleClass().add("validation-field-valid");
+
+        if (errorLabel != null) {
+            errorLabel.setVisible(false);
+            errorLabel.setManaged(false);
+        }
+    }
+
+    private void updateCodeCharacterCounter() {
+        if (lblCodeError != null && txtCode.getText() != null) {
+            int length = txtCode.getText().length();
+            if (length > 0 && !validateCode()) {
+                lblCodeError.setText("⚠ " + length + " characters (minimum 10)");
+                lblCodeError.setVisible(true);
+                lblCodeError.setManaged(true);
+                lblCodeError.getStyleClass().remove("success-label");
+                lblCodeError.getStyleClass().add("error-label");
+            } else if (length > 0) {
+                lblCodeError.setText("✅ " + length + " characters");
+                lblCodeError.setVisible(true);
+                lblCodeError.setManaged(true);
+                lblCodeError.getStyleClass().remove("error-label");
+                lblCodeError.getStyleClass().add("success-label");
+
+                // Schedule to hide after 2 seconds
+                PauseTransition pause = new PauseTransition(Duration.seconds(2));
+                pause.setOnFinished(e -> {
+                    if (validateCode()) {
+                        lblCodeError.setVisible(false);
+                        lblCodeError.setManaged(false);
+                    }
+                });
+                pause.play();
+            }
+        }
+    }
+
+    // ============================
+    // KEYBOARD SHORTCUTS
+    // ============================
+
     private void setupKeyboardShortcuts() {
         if (txtCode != null) {
             // F11 to toggle full screen
@@ -122,6 +361,12 @@ public class RenduAddController implements Initializable {
                     event.consume();
                     exitFullScreen();
                 }
+
+                // Ctrl+Enter to submit
+                if (event.isControlDown() && event.getCode() == KeyCode.ENTER) {
+                    event.consume();
+                    evaluer();
+                }
             });
         }
 
@@ -132,13 +377,18 @@ public class RenduAddController implements Initializable {
                     event.consume();
                     exitFullScreen();
                 }
+                if (event.isControlDown() && event.getCode() == KeyCode.ENTER) {
+                    event.consume();
+                    evaluateFromFullScreen();
+                }
             });
         }
     }
 
-    /**
-     * Toggle full screen mode for code editor
-     */
+    // ============================
+    // FULL SCREEN METHODS
+    // ============================
+
     @FXML
     private void toggleFullScreen() {
         if (isFullScreenMode) {
@@ -148,9 +398,6 @@ public class RenduAddController implements Initializable {
         }
     }
 
-    /**
-     * Enter full screen mode
-     */
     private void enterFullScreen() {
         if (fullScreenEditorOverlay == null || fullScreenCodeEditor == null || txtCode == null) return;
 
@@ -168,10 +415,10 @@ public class RenduAddController implements Initializable {
             fullScreenTimer.setStyle(lblTimer.getStyle());
         }
 
-        // Show full screen overlay (direct child of StackPane)
+        // Show full screen overlay
         fullScreenEditorOverlay.setVisible(true);
         fullScreenEditorOverlay.setManaged(true);
-        fullScreenEditorOverlay.toFront(); // Bring to front
+        fullScreenEditorOverlay.toFront();
 
         // Focus on full screen editor
         Platform.runLater(() -> {
@@ -185,9 +432,6 @@ public class RenduAddController implements Initializable {
         setupFullScreenSecurity();
     }
 
-    /**
-     * Exit full screen mode
-     */
     @FXML
     private void exitFullScreen() {
         if (fullScreenEditorOverlay == null || txtCode == null) return;
@@ -202,9 +446,6 @@ public class RenduAddController implements Initializable {
         isFullScreenMode = false;
     }
 
-    /**
-     * Setup security for full screen editor
-     */
     private void setupFullScreenSecurity() {
         if (fullScreenCodeEditor == null) return;
 
@@ -235,9 +476,6 @@ public class RenduAddController implements Initializable {
         });
     }
 
-    /**
-     * Evaluate code from full screen mode
-     */
     @FXML
     private void evaluateFromFullScreen() {
         if (fullScreenCodeEditor != null && txtCode != null) {
@@ -252,10 +490,14 @@ public class RenduAddController implements Initializable {
         }
     }
 
-    // Update this method to also set mission description and start timer
+    // ============================
+    // MISSION SETUP
+    // ============================
+
     public void setMissionId(int missionId) {
         Platform.runLater(() -> {
             txtMissionId.setText(String.valueOf(missionId));
+            validateMissionId();
 
             // Load and display mission description
             try {
@@ -466,6 +708,23 @@ public class RenduAddController implements Initializable {
         }
     }
 
+    @FXML
+    private void resetTimer() {
+        if (timerTimeline != null) {
+            timerTimeline.stop();
+        }
+        startTimer(DEFAULT_TIMER_MINUTES * 60);
+        if (txtCode != null) {
+            txtCode.setEditable(true);
+            txtCode.setDisable(false);
+        }
+        if (fullScreenCodeEditor != null) {
+            fullScreenCodeEditor.setEditable(true);
+            fullScreenCodeEditor.setDisable(false);
+        }
+        isTimerFinished = false;
+    }
+
     // ============================
     // SECURITY FEATURES
     // ============================
@@ -515,7 +774,7 @@ public class RenduAddController implements Initializable {
         securityWarningContainer.setManaged(true);
         lblSecurityWarning.setText("⚠️ " + message);
 
-        // Auto-hide after 3 seconds using Timeline (JavaFX way)
+        // Auto-hide after 3 seconds
         Timeline hideTimeline = new Timeline(
                 new KeyFrame(Duration.seconds(3), e -> {
                     securityWarningContainer.setVisible(false);
@@ -527,23 +786,32 @@ public class RenduAddController implements Initializable {
     }
 
     // ============================
-    // EXTENDED EVALUATION METHOD
+    // EVALUATION METHOD
     // ============================
 
     @FXML
     private void evaluer() {
+        // Validate all fields before proceeding
+        if (!validateAllFields()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Validation Error");
+            alert.setHeaderText("Please fix the following errors:");
+
+            StringBuilder errors = new StringBuilder();
+            if (!validateCandidatId()) errors.append("• Invalid Candidate ID\n");
+            if (!validateMissionId()) errors.append("• Invalid Mission ID\n");
+            if (!validateCode()) errors.append("• Invalid Python code\n");
+            if (!validateMissionType()) errors.append("• Mission type required\n");
+
+            alert.setContentText(errors.toString());
+            alert.showAndWait();
+            return;
+        }
+
         // Stop the timer if it's still running
         if (timerTimeline != null && !isTimerFinished) {
             timerTimeline.stop();
             isTimerFinished = true;
-        }
-
-        if (txtCode.getText().trim().isEmpty()) {
-            alert("Error", "Please enter your Python code");
-            if (!isTimerFinished) {
-                startTimer(remainingSeconds > 0 ? remainingSeconds : DEFAULT_TIMER_MINUTES * 60);
-            }
-            return;
         }
 
         int missionId, candidatId;
@@ -559,6 +827,9 @@ public class RenduAddController implements Initializable {
         }
 
         progress.setVisible(true);
+        if (lblProcessing != null) {
+            lblProcessing.setVisible(true);
+        }
         lblResultat.setText("Evaluating code with AI system...");
 
         Button evalButton = getEvaluateButton();
@@ -577,6 +848,9 @@ public class RenduAddController implements Initializable {
 
                 Platform.runLater(() -> {
                     progress.setVisible(false);
+                    if (lblProcessing != null) {
+                        lblProcessing.setVisible(false);
+                    }
 
                     if (evalButton != null) {
                         evalButton.setDisable(false);
@@ -614,6 +888,9 @@ public class RenduAddController implements Initializable {
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     progress.setVisible(false);
+                    if (lblProcessing != null) {
+                        lblProcessing.setVisible(false);
+                    }
 
                     if (evalButton != null) {
                         evalButton.setDisable(false);
@@ -654,23 +931,6 @@ public class RenduAddController implements Initializable {
 
     public void setAutoSubmitEnabled(boolean enabled) {
         this.isAutoSubmitEnabled = enabled;
-    }
-
-    @FXML
-    private void resetTimer() {
-        if (timerTimeline != null) {
-            timerTimeline.stop();
-        }
-        startTimer(DEFAULT_TIMER_MINUTES * 60);
-        if (txtCode != null) {
-            txtCode.setEditable(true);
-            txtCode.setDisable(false);
-        }
-        if (fullScreenCodeEditor != null) {
-            fullScreenCodeEditor.setEditable(true);
-            fullScreenCodeEditor.setDisable(false);
-        }
-        isTimerFinished = false;
     }
 
     private void alert(String title, String message) {

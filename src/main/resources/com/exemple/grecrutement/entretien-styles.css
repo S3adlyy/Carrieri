@@ -1,0 +1,636 @@
+/* ========================================================================
+   ENTRETIEN CREATE - MODERN PURPLE THEME - FIXED CONTRAST
+   ======================================================================== */
+
+.root-container {
+    -fx-background-color: linear-gradient(135deg, #f8f7fc 0%, #f0ecf9 100%);
+}
+
+/* ========================================================================
+   SCROLLPANE
+   ======================================================================== */
+.main-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.main-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.content-wrapper {
+    -fx-background-color: transparent;
+    -fx-padding: 40px 40px 60px 40px;
+    -fx-spacing: 30px;
+}
+
+/* ========================================================================
+   HEADER SECTION
+   ======================================================================== */
+.header-section {
+    -fx-padding: 0 0 20px 0;
+}
+
+.icon-glow-container {
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(248,188,255,0.5), 30, 0.5, 0, 0);
+}
+
+.icon-pulse-ring {
+    -fx-fill: transparent;
+    -fx-stroke: #f8bcff;
+    -fx-stroke-width: 2;
+    -fx-stroke-dash-array: 6 6;
+    -fx-effect: dropshadow(gaussian, #f8bcff, 20, 0.4, 0, 0);
+}
+
+.icon-bg-gradient {
+    -fx-fill: linear-gradient(135deg, #231942, #5E548E, #9F86C0);
+    -fx-effect: dropshadow(gaussian, rgba(248,188,255,0.6), 25, 0.5, 2, 2);
+}
+
+.icon-main {
+    -fx-font-size: 38px;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, white, 15, 0.5, 0, 0);
+}
+
+.main-title-gradient {
+    -fx-font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
+    -fx-font-size: 48px;
+    -fx-font-weight: 900;
+    -fx-text-fill: linear-gradient(135deg,
+    #231942 0%,
+    #5E548E 40%,
+    #9F86C0 70%,
+    #f8bcff 100%);
+    -fx-effect:
+            dropshadow(gaussian, rgba(255,255,255,0.8), 20, 0.4, -3, -3)
+            , dropshadow(gaussian, rgba(248,188,255,0.5), 25, 0.4, 3, 3)
+            , dropshadow(gaussian, rgba(200,150,255,0.3), 30, 0.3, 6, 6);
+    -fx-letter-spacing: -0.5px;
+}
+
+.subtitle-text {
+    -fx-font-family: 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 18px;
+    -fx-text-fill: #5a4a7a;
+    -fx-font-weight: 500;
+    -fx-opacity: 0.9;
+    -fx-padding: 0 30px;
+}
+
+.divider-container {
+    -fx-padding: 15px 0 5px 0;
+}
+
+.divider-line {
+    -fx-background-color: linear-gradient(to right, transparent, #f8bcff, #9F86C0, #f8bcff, transparent);
+    -fx-min-height: 2px;
+    -fx-pref-width: 250px;
+    -fx-opacity: 0.6;
+}
+
+/* ========================================================================
+   FORM CARD
+   ======================================================================== */
+.form-card {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 32px;
+    -fx-padding: 40px 50px;
+    -fx-spacing: 30px;
+    -fx-border-color: rgba(248,188,255,0.3);
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 32px;
+    -fx-effect:
+            dropshadow(gaussian, rgba(255,255,255,0.9), 25, 0.5, -5, -5)
+            , dropshadow(gaussian, rgba(248,188,255,0.4), 30, 0.4, 5, 5)
+            , dropshadow(gaussian, rgba(159,134,192,0.2), 35, 0.3, 10, 10);
+}
+
+.form-section {
+    -fx-spacing: 20px;
+}
+
+/* ========================================================================
+   SECTION HEADERS
+   ======================================================================== */
+.section-header {
+    -fx-padding: 0 0 10px 0;
+    -fx-border-color: linear-gradient(to right, #f8bcff, transparent);
+    -fx-border-width: 0 0 2px 0;
+}
+
+.section-icon {
+    -fx-font-size: 24px;
+    -fx-background-color: linear-gradient(135deg, #231942, #5E548E);
+    -fx-background-radius: 12px;
+    -fx-padding: 8px;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, #f8bcff, 12, 0.4, 2, 2);
+}
+
+.section-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+    -fx-font-family: 'Segoe UI', 'Inter', sans-serif;
+}
+
+.selection-badge {
+    -fx-background-color: rgba(248,188,255,0.15);
+    -fx-background-radius: 20px;
+    -fx-padding: 5px 15px;
+    -fx-text-fill: #5E548E;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-border-color: #f8bcff;
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+}
+
+.required-hint {
+    -fx-text-fill: #a58eb5;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-font-style: italic;
+    -fx-padding: 0 0 0 20px;
+}
+
+/* ========================================================================
+   FORM GRID & FIELDS
+   ======================================================================== */
+.form-grid {
+    -fx-padding: 10px 0 0 0;
+}
+
+.field-label {
+    -fx-text-fill: #4a3a6a;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-padding: 0 0 5px 0;
+}
+
+.field-title {
+    -fx-text-fill: #231942;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+}
+
+.required-star {
+    -fx-text-fill: #dc2626;
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+}
+
+.field-input {
+    -fx-background-color: white;
+    -fx-background-radius: 12px;
+    -fx-border-color: #c4b5e0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 12px 15px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #231942;
+    -fx-transition: all 0.2s ease;
+}
+
+.field-input:focused {
+    -fx-border-color: #f8bcff;
+    -fx-effect: dropshadow(gaussian, #f8bcff, 12, 0.3, 0, 0);
+    -fx-background-color: white;
+}
+
+.field-disabled {
+    -fx-background-color: #f0ecf9;
+    -fx-background-radius: 12px;
+    -fx-border-color: #c4b5e0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 12px 15px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: 600;
+    -fx-opacity: 0.8;
+}
+
+.field-hint {
+    -fx-text-fill: #6b5b8e;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+}
+
+/* ========================================================================
+   DATE PICKER - FIXED CONTRAST
+   ======================================================================== */
+.date-picker {
+    -fx-background-color: white;
+    -fx-background-radius: 12px;
+    -fx-border-color: #c4b5e0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1.5px;
+}
+
+.date-picker > .text-field {
+    -fx-background-color: white;
+    -fx-background-radius: 12px 0 0 12px;
+    -fx-text-fill: #231942;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 12px 15px;
+}
+
+.date-picker > .arrow-button {
+    -fx-background-color: linear-gradient(135deg, #231942, #5E548E);
+    -fx-background-radius: 0 12px 12px 0;
+    -fx-padding: 0 15px;
+}
+
+.date-picker > .arrow-button > .arrow {
+    -fx-background-color: white;
+}
+
+.date-picker:focused {
+    -fx-border-color: #f8bcff;
+    -fx-effect: dropshadow(gaussian, #f8bcff, 12, 0.4, 0, 0);
+}
+
+/* Date picker popup */
+.date-picker-popup {
+    -fx-background-color: white;
+    -fx-background-radius: 16px;
+    -fx-border-color: #f8bcff;
+    -fx-border-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(248,188,255,0.3), 20, 0.3, 4, 8);
+}
+
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: linear-gradient(135deg, #231942, #5E548E);
+    -fx-background-radius: 16px 16px 0 0;
+    -fx-text-fill: white;
+}
+
+.date-picker-popup > .month-year-pane .label {
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+}
+
+.date-picker-popup > .calendar-grid {
+    -fx-background-color: white;
+    -fx-padding: 10px;
+}
+
+.date-picker-popup .cell {
+    -fx-background-color: white;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 600;
+}
+
+.date-picker-popup .cell:hover {
+    -fx-background-color: rgba(248,188,255,0.3);
+}
+
+.date-picker-popup .cell:selected {
+    -fx-background-color: #f8bcff;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 700;
+}
+
+.date-picker-popup .today {
+    -fx-border-color: #5E548E;
+}
+
+/* ========================================================================
+   TIME SELECTOR - FIXED CONTRAST
+   ======================================================================== */
+.time-selector {
+    -fx-background-color: white;
+    -fx-background-radius: 16px;
+    -fx-padding: 15px 20px;
+    -fx-border-color: #d8b4ff;
+    -fx-border-radius: 16px;
+    -fx-border-width: 1.5px;
+    -fx-effect: dropshadow(gaussian, rgba(248,188,255,0.2), 8, 0.2, 0, 2);
+}
+
+.time-label {
+    -fx-text-fill: #231942;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-padding: 0 0 0 5px;
+}
+
+.time-combo {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-border-color: #c4b5e0;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 10px 12px;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #231942;
+    -fx-prompt-text-fill: #a58eb5;
+}
+
+.time-combo:focused {
+    -fx-border-color: #f8bcff;
+    -fx-effect: dropshadow(gaussian, #f8bcff, 12, 0.4, 0, 0);
+    -fx-background-color: white;
+}
+
+.time-combo .list-cell {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 600;
+    -fx-background-color: white;
+}
+
+.time-combo .list-cell:hover {
+    -fx-background-color: rgba(248,188,255,0.2);
+}
+
+.time-combo .list-cell:selected {
+    -fx-background-color: #f8bcff;
+    -fx-text-fill: #231942;
+}
+
+.time-combo .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.time-combo .arrow {
+    -fx-background-color: #5E548E;
+}
+
+.time-separator {
+    -fx-font-size: 32px;
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: 900;
+    -fx-padding: 20px 5px 0 5px;
+    -fx-effect: dropshadow(gaussian, #f8bcff, 8, 0.3, 0, 0);
+}
+
+/* Dropdown popup styling */
+.time-combo .list-view {
+    -fx-background-color: white;
+    -fx-background-radius: 12px;
+    -fx-border-color: #f8bcff;
+    -fx-border-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(248,188,255,0.3), 15, 0.3, 2, 4);
+}
+
+.time-combo .list-view .list-cell {
+    -fx-padding: 10px 15px;
+    -fx-text-fill: #231942;
+}
+
+.time-combo .list-view .list-cell:odd {
+    -fx-background-color: #fcfaff;
+}
+
+.time-combo .list-view .list-cell:even {
+    -fx-background-color: white;
+}
+
+.time-combo .list-view .list-cell:hover {
+    -fx-background-color: rgba(248,188,255,0.3);
+}
+
+.time-combo .list-view .list-cell:selected {
+    -fx-background-color: #f8bcff;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 700;
+}
+
+/* ========================================================================
+   TYPE COMBOBOX - FIXED CONTRAST
+   ======================================================================== */
+.type-combo {
+    -fx-background-color: white;
+    -fx-background-radius: 12px;
+    -fx-border-color: #c4b5e0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 12px 15px;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #231942;
+}
+
+.type-combo:focused {
+    -fx-border-color: #f8bcff;
+    -fx-effect: dropshadow(gaussian, #f8bcff, 12, 0.4, 0, 0);
+}
+
+.type-combo .list-cell {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 600;
+    -fx-background-color: white;
+}
+
+.type-combo .list-cell:hover {
+    -fx-background-color: rgba(248,188,255,0.2);
+}
+
+.type-combo .list-cell:selected {
+    -fx-background-color: #f8bcff;
+    -fx-text-fill: #231942;
+}
+
+.type-combo .list-view {
+    -fx-background-color: white;
+    -fx-background-radius: 12px;
+    -fx-border-color: #f8bcff;
+    -fx-border-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(248,188,255,0.3), 15, 0.3, 2, 4);
+}
+
+.type-combo .list-view .list-cell {
+    -fx-padding: 10px 15px;
+}
+
+.type-combo .list-view .list-cell:hover {
+    -fx-background-color: rgba(248,188,255,0.3);
+}
+
+/* ========================================================================
+   NOTES AREA
+   ======================================================================== */
+.notes-area {
+    -fx-background-color: white;
+    -fx-background-radius: 16px;
+    -fx-border-color: #c4b5e0;
+    -fx-border-radius: 16px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 15px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #231942;
+}
+
+.notes-area .content {
+    -fx-background-color: white;
+    -fx-background-radius: 12px;
+}
+
+.notes-area:focused {
+    -fx-border-color: #f8bcff;
+    -fx-effect: dropshadow(gaussian, #f8bcff, 12, 0.3, 0, 0);
+}
+
+.optional-badge {
+    -fx-background-color: rgba(248,188,255,0.15);
+    -fx-background-radius: 12px;
+    -fx-padding: 3px 10px;
+    -fx-text-fill: #5E548E;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+}
+
+.note-hint {
+    -fx-text-fill: #8a7aa5;
+    -fx-font-size: 12px;
+    -fx-font-style: italic;
+}
+
+/* ========================================================================
+   DIVIDER
+   ======================================================================== */
+.divider-light {
+    -fx-background-color: linear-gradient(to right, transparent, rgba(248,188,255,0.3), transparent);
+    -fx-min-height: 1.5px;
+    -fx-pref-width: 100%;
+    -fx-padding: 10px 0;
+}
+
+/* ========================================================================
+   STATUS
+   ======================================================================== */
+.status-container {
+    -fx-padding: 10px 0;
+}
+
+.status-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 8px 20px;
+    -fx-background-radius: 25px;
+}
+
+.status-label:success {
+    -fx-background-color: rgba(16,185,129,0.1);
+    -fx-text-fill: #059669;
+}
+
+.status-label:error {
+    -fx-background-color: rgba(220,38,38,0.1);
+    -fx-text-fill: #b91c1c;
+}
+
+/* ========================================================================
+   ACTION BUTTONS
+   ======================================================================== */
+.action-section {
+    -fx-padding: 20px 0 0 0;
+}
+
+.action-divider {
+    -fx-background-color: linear-gradient(to right, transparent, #f8bcff, #9F86C0, #f8bcff, transparent);
+    -fx-min-height: 2px;
+    -fx-pref-width: 350px;
+    -fx-opacity: 0.5;
+}
+
+.schedule-button {
+    -fx-background-color: linear-gradient(135deg, #059669, #10b981);
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+    -fx-padding: 16px 45px;
+    -fx-background-radius: 40px;
+    -fx-min-width: 250px;
+    -fx-cursor: hand;
+    -fx-effect:
+            dropshadow(gaussian, rgba(255,255,255,0.7), 15, 0.4, -3, -3)
+            , dropshadow(gaussian, rgba(16,185,129,0.4), 25, 0.4, 5, 5);
+    -fx-transition: all 0.2s ease;
+}
+
+.schedule-button:hover {
+    -fx-background-color: linear-gradient(135deg, #10b981, #34d399);
+    -fx-effect:
+            dropshadow(gaussian, white, 20, 0.5, -4, -4)
+            , dropshadow(gaussian, rgba(16,185,129,0.6), 30, 0.5, 6, 6);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.cancel-button {
+    -fx-background-color: linear-gradient(135deg, #6b7280, #4b5563);
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+    -fx-padding: 16px 35px;
+    -fx-background-radius: 40px;
+    -fx-min-width: 180px;
+    -fx-cursor: hand;
+    -fx-effect:
+            dropshadow(gaussian, rgba(255,255,255,0.5), 15, 0.3, -3, -3)
+            , dropshadow(gaussian, rgba(107,114,128,0.3), 20, 0.3, 4, 4);
+}
+
+.cancel-button:hover {
+    -fx-background-color: linear-gradient(135deg, #4b5563, #374151);
+    -fx-effect:
+            dropshadow(gaussian, white, 18, 0.4, -4, -4)
+            , dropshadow(gaussian, rgba(107,114,128,0.5), 25, 0.4, 5, 5);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* ========================================================================
+   NOTIFICATION BAR
+   ======================================================================== */
+.notification-bar {
+    -fx-background-color: rgba(248,188,255,0.1);
+    -fx-background-radius: 50px;
+    -fx-padding: 15px 30px;
+    -fx-border-color: rgba(248,188,255,0.3);
+    -fx-border-radius: 50px;
+}
+
+.notification-icon {
+    -fx-font-size: 16px;
+    -fx-effect: dropshadow(gaussian, #f8bcff, 8, 0.3, 0, 0);
+}
+
+.notification-text {
+    -fx-text-fill: #4a3a6a;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+}
+
+.notification-dot {
+    -fx-text-fill: #f8bcff;
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+}
+
+/* ========================================================================
+   SCROLLBAR
+   ======================================================================== */
+.scroll-bar:vertical .thumb,
+.scroll-bar:horizontal .thumb {
+    -fx-background-color: linear-gradient(135deg, #f8bcff, #d8b4ff);
+    -fx-background-radius: 10px;
+}
+
+.scroll-bar:vertical .track,
+.scroll-bar:horizontal .track {
+    -fx-background-color: rgba(248,188,255,0.1);
+    -fx-background-radius: 10px;
+}
+
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+}
