@@ -168,6 +168,15 @@
     -fx-font-family: "Courier New";
 }
 
+/* Error label styles */
+.error-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #dc2626;
+    -fx-font-weight: 600;
+    -fx-font-family: "Segoe UI";
+    -fx-padding: 4 0 0 0;
+}
+
 /* =========================================================
    PREVIEW CARD
    ========================================================= */
@@ -1404,6 +1413,7 @@
     -fx-font-size: 12;
     -fx-padding: 6 12;
     -fx-background-radius: 999;
+    -fx-alignment: top-right;
 }
 
 .c-company {

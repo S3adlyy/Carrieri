@@ -42,6 +42,7 @@
                         <Label text="Titre de l'offre" styleClass="field-label"/>
                         <TextField fx:id="txtTitre" promptText="Ex: Développeur Full Stack React/Node"
                                    styleClass="input-elegant"/>
+                        <Label fx:id="errTitre" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>
 
                     <!-- Type de contrat -->
@@ -49,6 +50,7 @@
                         <Label text="Type de contrat" styleClass="field-label"/>
                         <ComboBox fx:id="comboTypeContrat" promptText="CDI, CDD, Stage..."
                                   styleClass="combo-elegant" maxWidth="Infinity"/>
+                        <Label fx:id="errTypeContrat" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>
 
                     <!-- Entreprise -->
@@ -56,6 +58,7 @@
                         <Label text="Entreprise" styleClass="field-label"/>
                         <TextField fx:id="txtEntreprise" promptText="Nom de l'entreprise"
                                    styleClass="input-elegant"/>
+                        <Label fx:id="errEntreprise" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>
                 </HBox>
             </VBox>
@@ -69,6 +72,7 @@
                 <TextArea fx:id="txtDescription" prefRowCount="8" wrapText="true"
                           promptText="Décrivez le poste, les missions, l'équipe, les technologies utilisées..."
                           styleClass="textarea-elegant"/>
+                <Label fx:id="errDescription" styleClass="error-label" managed="false" visible="false"/>
                 <HBox alignment="CENTER_RIGHT" spacing="12">
                     <Label fx:id="lblCharCount" text="0/2000" styleClass="char-counter"/>
                 </HBox>
@@ -85,18 +89,21 @@
                     <VBox spacing="10" HBox.hgrow="ALWAYS">
                         <Label text="Salaire mensuel (DT)" styleClass="field-label"/>
                         <TextField fx:id="txtSalaire" promptText="Ex: 2800" styleClass="input-elegant"/>
+                        <Label fx:id="errSalaire" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>
 
                     <VBox spacing="10" HBox.hgrow="ALWAYS">
                         <Label text="Localisation" styleClass="field-label"/>
                         <TextField fx:id="txtLocalisation" promptText="Ex: Tunis, Ariana, Sfax..."
                                    styleClass="input-elegant"/>
+                        <Label fx:id="errLocalisation" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>
 
                     <VBox spacing="10" HBox.hgrow="ALWAYS">
                         <Label text="Secteur d'activité" styleClass="field-label"/>
                         <TextField fx:id="txtSecteur" promptText="Ex: IT, Banque, Industrie..."
                                    styleClass="input-elegant"/>
+                        <Label fx:id="errSecteur" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>
                 </HBox>
 
@@ -105,17 +112,20 @@
                         <Label text="Niveau de qualification" styleClass="field-label"/>
                         <ComboBox fx:id="comboQualification" promptText="Bac+3, Bac+5..."
                                   styleClass="combo-elegant" maxWidth="Infinity"/>
+                        <Label fx:id="errQualification" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>
 
                     <VBox spacing="10" HBox.hgrow="ALWAYS">
                         <Label text="Expérience requise" styleClass="field-label"/>
                         <TextField fx:id="txtExperience" promptText="Ex: 2-4 ans" styleClass="input-elegant"/>
+                        <Label fx:id="errExperience" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>
 
                     <VBox spacing="10" HBox.hgrow="ALWAYS">
                         <Label text="Compétences clés" styleClass="field-label"/>
                         <TextField fx:id="txtCompetences" promptText="Java, Spring Boot, React, SQL..."
                                    styleClass="input-elegant"/>
+                        <Label fx:id="errCompetences" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>
                 </HBox>
             </VBox>
@@ -132,6 +142,7 @@
                         <Label text="Contact recruteur (email)" styleClass="field-label"/>
                         <TextField fx:id="txtContact" promptText="recrutement@entreprise.tn"
                                    styleClass="input-elegant"/>
+                        <Label fx:id="errContact" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>
 
                     <!-- Date d'expiration – modern & aesthetic DateTimePicker -->
@@ -161,7 +172,7 @@
                                 </valueFactory>
                             </Spinner>
                         </HBox>
-
+                        <Label fx:id="errExpiration" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>
 
                 </HBox>

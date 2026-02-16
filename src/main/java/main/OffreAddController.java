@@ -8,8 +8,6 @@ import services.OffreEmploiService;
 import javafx.util.StringConverter;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Locale;
-
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -44,6 +42,20 @@ public class OffreAddController {
     @FXML private DatePicker dpExpirationDate;
     @FXML private Spinner<Integer> spExpirationTime;      // 0-23
     @FXML private Spinner<Integer> spExpirationMinute;    // 0-59
+
+    // Labels d'erreur
+    @FXML private Label errTitre;
+    @FXML private Label errDescription;
+    @FXML private Label errTypeContrat;
+    @FXML private Label errEntreprise;
+    @FXML private Label errSalaire;
+    @FXML private Label errLocalisation;
+    @FXML private Label errSecteur;
+    @FXML private Label errQualification;
+    @FXML private Label errExperience;
+    @FXML private Label errCompetences;
+    @FXML private Label errContact;
+    @FXML private Label errExpiration;
 
     private final OffreEmploiService service = new OffreEmploiService();
 
@@ -100,7 +112,7 @@ public class OffreAddController {
             }
         });
 
-// Si l’utilisateur tape au clavier, vérifier quand il quitte le champ
+// Si l'utilisateur tape au clavier, vérifier quand il quitte le champ
         dpExpirationDate.getEditor().focusedProperty().addListener((obs, was, isNow) -> {
             if (!isNow) {
                 LocalDate parsed = dpExpirationDate.getConverter().fromString(dpExpirationDate.getEditor().getText());
@@ -108,9 +120,12 @@ public class OffreAddController {
                     // date invalide -> reset + erreur
                     dpExpirationDate.setValue(null);
                     dpExpirationDate.getEditor().clear();
-                    fail(dpExpirationDate, "Date invalide. Format attendu : jj/mm/aaaa (ex: 23/02/2026).");
+                    showError(errExpiration, "Date invalide. Format attendu : jj/mm/aaaa (ex: 23/02/2026).");
+                    markError(dpExpirationDate, true);
                 } else {
                     dpExpirationDate.setValue(parsed);
+                    hideError(errExpiration);
+                    markError(dpExpirationDate, false);
                 }
             }
         });
@@ -160,55 +175,134 @@ public class OffreAddController {
         Integer hours = spExpirationTime.getValue();
         Integer minutes = spExpirationMinute.getValue();
 
-        // ====== validations (precise + popups + highlight field) ======
-        if (titre.isEmpty())          { fail(txtTitre, "Le titre est obligatoire."); return; }
-        if (description.isEmpty())    { fail(txtDescription, "La description est obligatoire."); return; }
-        if (typeContrat.isEmpty())    { fail(comboTypeContrat, "Le type de contrat est obligatoire."); return; }
-        if (entreprise.isEmpty())     { fail(txtEntreprise, "Le nom de l'entreprise est obligatoire."); return; }
+        // ====== validations (precise + labels rouges) ======
+        boolean hasError = false;
 
-        if (localisation.isEmpty())   { fail(txtLocalisation, "La localisation est obligatoire."); return; }
-        if (secteur.isEmpty())        { fail(txtSecteur, "Le secteur d'activité est obligatoire."); return; }
-        if (niveau.isEmpty())         { fail(comboQualification, "Le niveau de qualification est obligatoire."); return; }
-
-        if (experience.isEmpty())     { fail(txtExperience, "L'expérience requise est obligatoire."); return; }
-        if (!experience.matches("^\\d+(\\s*ans)?$|^\\d+\\s*-\\s*\\d+(\\s*ans)?$")) {
-            fail(txtExperience, "Expérience invalide (ex: 2, 2-5, 3 ans).");
-            return;
+        if (titre.isEmpty()) {
+            showError(errTitre, "Le titre est obligatoire.");
+            markError(txtTitre, true);
+            hasError = true;
         }
 
-        if (competences.isEmpty())    { fail(txtCompetences, "Les compétences sont obligatoires."); return; }
-        if (!competences.contains(",")) {
-            fail(txtCompetences, "Sépare les compétences par des virgules (ex: Java, SQL, React).");
-            return;
+        if (description.isEmpty()) {
+            showError(errDescription, "La description est obligatoire.");
+            markError(txtDescription, true);
+            hasError = true;
         }
 
-        if (contact.isEmpty())        { fail(txtContact, "Le contact recruteur est obligatoire."); return; }
-        if (!isValidEmail(contact))   { fail(txtContact, "Email invalide (ex: recrutement@entreprise.tn)."); return; }
+        if (typeContrat.isEmpty()) {
+            showError(errTypeContrat, "Le type de contrat est obligatoire.");
+            markError(comboTypeContrat, true);
+            hasError = true;
+        }
 
-        if (safe(txtSalaire.getText()).isEmpty()) { fail(txtSalaire, "Le salaire est obligatoire."); return; }
+        if (entreprise.isEmpty()) {
+            showError(errEntreprise, "Le nom de l'entreprise est obligatoire.");
+            markError(txtEntreprise, true);
+            hasError = true;
+        }
 
-        double salaire;
-        try {
-            salaire = Double.parseDouble(safe(txtSalaire.getText()));
-            if (salaire <= 0) {
-                fail(txtSalaire, "Le salaire doit être > 0 (ex: 2500).");
-                return;
+        if (localisation.isEmpty()) {
+            showError(errLocalisation, "La localisation est obligatoire.");
+            markError(txtLocalisation, true);
+            hasError = true;
+        }
+
+        if (secteur.isEmpty()) {
+            showError(errSecteur, "Le secteur d'activité est obligatoire.");
+            markError(txtSecteur, true);
+            hasError = true;
+        }
+
+        if (niveau.isEmpty()) {
+            showError(errQualification, "Le niveau de qualification est obligatoire.");
+            markError(comboQualification, true);
+            hasError = true;
+        }
+
+        if (experience.isEmpty()) {
+            showError(errExperience, "L'expérience requise est obligatoire.");
+            markError(txtExperience, true);
+            hasError = true;
+        } else if (!experience.matches("^\\d+(\\s*ans)?$|^\\d+\\s*-\\s*\\d+(\\s*ans)?$")) {
+            showError(errExperience, "Expérience invalide (ex: 2, 2-5, 3 ans).");
+            markError(txtExperience, true);
+            hasError = true;
+        }
+
+        if (competences.isEmpty()) {
+            showError(errCompetences, "Les compétences sont obligatoires.");
+            markError(txtCompetences, true);
+            hasError = true;
+        } else if (!competences.contains(",")) {
+            showError(errCompetences, "Séparez les compétences par des virgules (ex: Java, SQL, React).");
+            markError(txtCompetences, true);
+            hasError = true;
+        }
+
+        if (contact.isEmpty()) {
+            showError(errContact, "Le contact recruteur est obligatoire.");
+            markError(txtContact, true);
+            hasError = true;
+        } else if (!isValidEmail(contact)) {
+            showError(errContact, "Email invalide (ex: recrutement@entreprise.tn).");
+            markError(txtContact, true);
+            hasError = true;
+        }
+
+        if (safe(txtSalaire.getText()).isEmpty()) {
+            showError(errSalaire, "Le salaire est obligatoire.");
+            markError(txtSalaire, true);
+            hasError = true;
+        } else {
+            try {
+                double salaire = Double.parseDouble(safe(txtSalaire.getText()));
+                if (salaire <= 0) {
+                    showError(errSalaire, "Le salaire doit être > 0 (ex: 2500).");
+                    markError(txtSalaire, true);
+                    hasError = true;
+                }
+            } catch (Exception e) {
+                showError(errSalaire, "Le salaire doit être un nombre valide (ex: 2500).");
+                markError(txtSalaire, true);
+                hasError = true;
             }
-        } catch (Exception e) {
-            fail(txtSalaire, "Le salaire doit être un nombre valide (ex: 2500).");
+        }
+
+        if (datePart == null) {
+            showError(errExpiration, "La date d'expiration est obligatoire.");
+            markError(dpExpirationDate, true);
+            hasError = true;
+        } else if (datePart.isBefore(LocalDate.now())) {
+            showError(errExpiration, "La date d'expiration doit être dans le futur.");
+            markError(dpExpirationDate, true);
+            hasError = true;
+        } else if (hours == null || minutes == null) {
+            showError(errExpiration, "Heure/minute d'expiration invalide.");
+            hasError = true;
+        } else {
+            LocalDateTime expirationDateTime = LocalDateTime.of(
+                    datePart.getYear(),
+                    datePart.getMonthValue(),
+                    datePart.getDayOfMonth(),
+                    hours,
+                    minutes
+            );
+
+            if (datePart.equals(LocalDate.now()) && expirationDateTime.isBefore(LocalDateTime.now())) {
+                showError(errExpiration, "L'expiration doit être dans le futur (date + heure).");
+                markError(dpExpirationDate, true);
+                hasError = true;
+            }
+        }
+
+        // Si au moins une erreur, on arrête
+        if (hasError) {
             return;
         }
 
-        if (datePart == null) { fail(dpExpirationDate, "La date d'expiration est obligatoire."); return; }
-        if (datePart.isBefore(LocalDate.now())) {
-            fail(dpExpirationDate, "La date d'expiration doit être dans le futur.");
-            return;
-        }
-        if (hours == null || minutes == null) {
-            showErrorPopup("Heure/minute d'expiration invalide.");
-            return;
-        }
-
+        // ====== create + insert ======
+        double salaire = Double.parseDouble(safe(txtSalaire.getText()));
         LocalDateTime expirationDateTime = LocalDateTime.of(
                 datePart.getYear(),
                 datePart.getMonthValue(),
@@ -217,13 +311,6 @@ public class OffreAddController {
                 minutes
         );
 
-        // (Optionnel mais clean) : si même jour, empêcher une heure déjà passée
-        if (datePart.equals(LocalDate.now()) && expirationDateTime.isBefore(LocalDateTime.now())) {
-            fail(dpExpirationDate, "L'expiration doit être dans le futur (date + heure).");
-            return;
-        }
-
-        // ====== create + insert ======
         OffreEmploi offre = new OffreEmploi(
                 titre,
                 description,
@@ -241,7 +328,7 @@ public class OffreAddController {
         );
 
         try {
-            service.ajouter(offre); // insert SQL ok :contentReference[oaicite:1]{index=1}
+            service.ajouter(offre);
             handleReset();
             showInfo("✅ Offre ajoutée avec succès !");
         } catch (SQLException e) {
@@ -277,10 +364,20 @@ public class OffreAddController {
 
     // ==================== helpers ====================
 
-    private void fail(Control field, String message) {
-        markError(field, true);
-        showErrorPopup(message);
-        field.requestFocus();
+    private void showError(Label errorLabel, String message) {
+        if (errorLabel != null) {
+            errorLabel.setText(message);
+            errorLabel.setVisible(true);
+            errorLabel.setManaged(true);
+        }
+    }
+
+    private void hideError(Label errorLabel) {
+        if (errorLabel != null) {
+            errorLabel.setText("");
+            errorLabel.setVisible(false);
+            errorLabel.setManaged(false);
+        }
     }
 
     private void markError(Control c, boolean on) {
@@ -288,6 +385,21 @@ public class OffreAddController {
     }
 
     private void clearErrors() {
+        // Clear all error labels
+        hideError(errTitre);
+        hideError(errDescription);
+        hideError(errTypeContrat);
+        hideError(errEntreprise);
+        hideError(errSalaire);
+        hideError(errLocalisation);
+        hideError(errSecteur);
+        hideError(errQualification);
+        hideError(errExperience);
+        hideError(errCompetences);
+        hideError(errContact);
+        hideError(errExpiration);
+
+        // Clear pseudo-class states
         List<Control> all = new ArrayList<>();
         all.add(txtTitre);
         all.add(txtDescription);

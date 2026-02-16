@@ -65,7 +65,12 @@ public class OffresListController {
                             safe(o.getEntreprise()).toLowerCase().contains(q) ||
                             safe(o.getLocalisation()).toLowerCase().contains(q) ||
                             safe(o.getSecteurActivite()).toLowerCase().contains(q) ||
-                            safe(o.getCompetencesRequises()).toLowerCase().contains(q)
+                            safe(o.getCompetencesRequises()).toLowerCase().contains(q) ||
+                            safe(o.getDescription()).toLowerCase().contains(q) ||
+                            safe(o.getTypeContrat()).toLowerCase().contains(q) ||
+                            safe(o.getNiveauQualification()).toLowerCase().contains(q) ||
+                            safe(o.getExperienceRequise()).toLowerCase().contains(q) ||
+                            safe(o.getContactRecruteur()).toLowerCase().contains(q)
             ));
         }
 
@@ -117,10 +122,12 @@ public class OffresListController {
 
         // Header
         HBox header = new HBox(12);
-        header.setAlignment(Pos.CENTER_LEFT);
+        header.setAlignment(Pos.TOP_LEFT);
 
         Label title = new Label(emptyAsDash(offre.getTitre()));
         title.getStyleClass().add("c-title");
+        title.setMaxWidth(380); // Limite la largeur pour laisser place au badge
+        title.setWrapText(true);
         HBox.setHgrow(title, Priority.ALWAYS);
 
         Label badge = new Label(emptyAsDash(offre.getTypeContrat()));
@@ -180,24 +187,12 @@ public class OffresListController {
 
         Button btnPostuler = new Button("Postuler");
         btnPostuler.getStyleClass().add("c-btn");
+        btnPostuler.setPrefWidth(140);
+        btnPostuler.setPrefHeight(45);
+        btnPostuler.setStyle("-fx-font-size: 15px; -fx-font-weight: bold;");
         btnPostuler.setOnAction(e -> openPostulerPopup(offre)); // ✅ popup + insert postulation
 
-        Button btnEdit = new Button();
-        btnEdit.getStyleClass().addAll("c-iconbtn", "c-iconbtn-edit");
-        btnEdit.setGraphic(new Label("✎"));
-        btnEdit.setTooltip(new Tooltip("Modifier"));
-        btnEdit.setOnAction(e -> openEditDialog(offre));
-
-        Button btnDelete = new Button();
-        btnDelete.getStyleClass().addAll("c-iconbtn", "c-iconbtn-delete");
-        btnDelete.setGraphic(new Label("🗑"));
-        btnDelete.setTooltip(new Tooltip("Supprimer"));
-        btnDelete.setOnAction(e -> handleDelete(offre));
-
-        HBox actions = new HBox(10, btnPostuler, btnEdit, btnDelete);
-        actions.setAlignment(Pos.CENTER_RIGHT);
-
-        footer.getChildren().addAll(salary, spacer, actions);
+        footer.getChildren().addAll(salary, spacer, btnPostuler);
 
         card.getChildren().addAll(header, companyRow, desc, meta, details, sep, footer);
         return card;

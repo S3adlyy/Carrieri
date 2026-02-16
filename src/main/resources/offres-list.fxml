@@ -30,7 +30,7 @@
         <VBox spacing="28" style="-fx-padding: 40 80 30 80; -fx-background-color: #faf7ff;">
 
             <HBox spacing="20" alignment="CENTER_LEFT">
-                <TextField fx:id="txtSearch" promptText="Rechercher par titre, entreprise ou localisation..."
+                <TextField fx:id="txtSearch" promptText="Rechercher par titre, entreprise, localisation, compétences, secteur..."
                            styleClass="search-input" HBox.hgrow="ALWAYS"/>
                 <Button text="Filtrer" styleClass="btn-filter">
                     <graphic>
