@@ -25,43 +25,47 @@
         </HBox>
 
         <!-- Nav Buttons -->
-        <Button fx:id="btnOffreAdd" text="Ajouter Offre" onAction="#showOffreAdd"
-                styleClass="nav-btn" maxWidth="Infinity">
-            <graphic>
-                <Region styleClass="icon-plus" prefWidth="16" prefHeight="16"/>
-            </graphic>
-        </Button>
-
         <VBox spacing="4" styleClass="nav-section">
             <padding><Insets top="8"/></padding>
 
-            <Button fx:id="btnOffresList" text="Liste des Offres (pour candidat)" onAction="#showOffresList"
+            <!-- Section pour Candidat -->
+            <Label text="Candidat" style="-fx-text-fill: #9ca3af; -fx-font-size: 11; -fx-font-weight: 700; -fx-padding: 20 0 8 0;"/>
+
+            <Button fx:id="btnOffresList" text="Liste des Offres" onAction="#showOffresList"
                     styleClass="nav-btn" maxWidth="Infinity">
                 <graphic>
-                    <Region styleClass="icon-list" prefWidth="16" prefHeight="16"/>
+                    <Label text="👁️" style="-fx-font-size: 16; -fx-text-fill: currentColor;"/>
                 </graphic>
             </Button>
 
-            <Button fx:id="btnOffresTable" text="Liste des Offres (pour recruteur)" onAction="#showOffresTable"
+            <Button fx:id="btnPostulationsCandidats" text="Liste des Postulations" onAction="#showPostulationsCandidats"
                     styleClass="nav-btn" maxWidth="Infinity">
                 <graphic>
-                    <Region styleClass="icon-table" prefWidth="16" prefHeight="16"/>
+                    <Label text="👤" style="-fx-font-size: 16; -fx-text-fill: currentColor;"/>
                 </graphic>
             </Button>
 
-            <!-- <Button fx:id="btnPostulationsList" text="Postulations par Offre" onAction="#showPostulationsList"
-                    styleClass="nav-btn" maxWidth="Infinity">
-                <graphic>
-                    <Region styleClass="icon-list" prefWidth="16" prefHeight="16"/>
-                </graphic>
-            </Button> -->
 
-            <Button fx:id="btnPostulationsCandidats" text="Postulations par Candidat" onAction="#showPostulationsCandidats"
+            <!-- Section pour Recruteur -->
+            <Label text="Recruteur" style="-fx-text-fill: #9ca3af; -fx-font-size: 11; -fx-font-weight: 700; -fx-padding: 12 0 8 0;"/>
+
+            <Button fx:id="btnOffreAdd" text="Ajouter une Offre" onAction="#showOffreAdd"
                     styleClass="nav-btn" maxWidth="Infinity">
                 <graphic>
-                    <Region styleClass="icon-list" prefWidth="16" prefHeight="16"/>
+                    <Label text="➕" style="-fx-font-size: 16; -fx-text-fill: currentColor;"/>
                 </graphic>
             </Button>
+
+            <Button fx:id="btnOffresTable" text="Gérer les Offres" onAction="#showOffresTable"
+                    styleClass="nav-btn" maxWidth="Infinity">
+                <graphic>
+                    <Label text="⚙️" style="-fx-font-size: 16; -fx-text-fill: currentColor;"/>
+                </graphic>
+            </Button>
+
+            <!-- Section pour Admin -->
+            <Label text="Admin (Super User)" style="-fx-text-fill: #9ca3af; -fx-font-size: 11; -fx-font-weight: 700; -fx-padding: 12 0 8 0;"/>
+
 
         </VBox>
 
@@ -81,7 +85,7 @@
 
             <Button text="Logout" styleClass="nav-btn, logout-btn" maxWidth="Infinity">
                 <graphic>
-                    <Region styleClass="icon-logout" prefWidth="16" prefHeight="16"/>
+                    <Label text="🚪" style="-fx-font-size: 16; -fx-text-fill: #ef4444;"/>
                 </graphic>
             </Button>
         </VBox>

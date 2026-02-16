@@ -38,8 +38,8 @@ public class OffresShellController {
     @FXML
     public void initialize() {
         navNameLabel.setText("Ons Nagara");
-        showOffreAdd();           // default view when app starts
-        setActiveButton(btnOffreAdd);
+        showOffresList();           // default view when app starts - Gérer les Offres
+        setActiveButton(btnOffresList);
     }
 
     @FXML
