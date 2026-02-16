@@ -382,6 +382,38 @@
     -fx-padding: 0 8 0 0;
 }
 
+/* ===== COLUMN WIDTH MANAGEMENT - FIX POUR ÉLIMINER LES ESPACES ===== */
+.rendu-table .table-column {
+    -fx-alignment: center-left;
+}
+
+/* Distribution proportionnelle des colonnes */
+.rendu-table .table-column:first-of-type {
+    -fx-pref-width: 120px;
+}
+
+.rendu-table .table-column:nth-of-type(2) {
+    -fx-pref-width: 120px;
+}
+
+.rendu-table .table-column:nth-of-type(3) {
+    -fx-pref-width: 200px;
+}
+
+.rendu-table .table-column:nth-of-type(4) {
+    -fx-pref-width: 200px;
+}
+
+.rendu-table .table-column:last-of-type {
+    -fx-pref-width: 150px;
+}
+
+/* Force le remplissage de l'espace disponible */
+.rendu-table .column-header,
+.rendu-table .table-cell {
+    -fx-padding: 8px 12px;
+}
+
 /* Table Rows - Clean & Modern */
 .rendu-table .table-row-cell {
     -fx-background-color: white;
@@ -409,7 +441,7 @@
     -fx-text-fill: #34304d;
     -fx-font-size: 14px;
     -fx-font-weight: 500;
-    -fx-padding: 12 12;
+    -fx-padding: 12px 12px;
     -fx-border-color: rgba(106, 90, 205, 0.06);
     -fx-border-width: 0 0 1 0;
     -fx-alignment: center-left;

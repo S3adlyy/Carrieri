@@ -13,21 +13,22 @@
             fx:id="rootBorderPane">
 
     <top>
-        <!-- Header avec Timer -->
+        <!-- Header Premium avec Timer -->
         <HBox styleClass="header" spacing="10" alignment="CENTER_LEFT">
             <padding>
                 <Insets top="15" right="20" bottom="15" left="20"/>
             </padding>
-            <Label text="🤖" styleClass="header-icon"/>
+            <Label text="⚡" styleClass="header-icon"/>
             <VBox spacing="2">
-                <Label text="AI Code Submission" styleClass="header-title"/>
-                <Label text="Submit Python code for AI evaluation" styleClass="header-subtitle"/>
+                <Label text="AI Code Submission Platform" styleClass="header-title"/>
+                <Label text="Professional Python code evaluation" styleClass="header-subtitle"/>
             </VBox>
             <Region HBox.hgrow="ALWAYS"/>
             <HBox styleClass="timer-box" spacing="10" alignment="CENTER">
                 <Label text="⏱️" styleClass="timer-icon"/>
                 <Label fx:id="lblTimer" text="20:00" styleClass="timer-display"/>
                 <Label text="remaining" styleClass="timer-label"/>
+                <Circle radius="6" styleClass="timer-pulse"/>
             </HBox>
         </HBox>
     </top>
@@ -39,92 +40,133 @@
                     <Insets top="0" right="20" bottom="20" left="20"/>
                 </padding>
 
-                <!-- Deux colonnes -->
-                <HBox spacing="20" styleClass="columns">
-                    <!-- Colonne gauche - Formulaire -->
-                    <VBox spacing="15" styleClass="left-column" HBox.hgrow="ALWAYS">
+                <!-- Deux colonnes premium -->
+                <HBox spacing="20" styleClass="columns" VBox.vgrow="ALWAYS">
+                    <!-- Colonne gauche - Formulaire Premium -->
+                    <VBox spacing="15" styleClass="left-column" HBox.hgrow="ALWAYS" VBox.vgrow="NEVER">
 
-                        <Label text="📝 Submission Form" styleClass="section-title"/>
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label text="📋" styleClass="section-icon"/>
+                            <Label text="Submission Form" styleClass="section-title"/>
+                            <Label text="• New submission" styleClass="section-badge"/>
+                        </HBox>
 
-                        <!-- Grille formulaire -->
-                        <GridPane hgap="10" vgap="10" styleClass="form-grid">
-                            <Label text="Candidate ID:" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                            <Label text="Mission ID:" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                        <!-- Grille formulaire premium -->
+                        <GridPane hgap="15" vgap="12" styleClass="form-grid">
+                            <Label text="Candidate ID" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                            <Label text="Mission ID" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-                            <TextField fx:id="txtCandidatId" promptText="Enter ID" styleClass="form-field"
+                            <TextField fx:id="txtCandidatId" promptText="Enter candidate ID" styleClass="form-field"
                                        GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                            <TextField fx:id="txtMissionId" promptText="Auto-filled" styleClass="form-field"
+                            <TextField fx:id="txtMissionId" promptText="Auto-filled from selection" styleClass="form-field"
                                        GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-                            <Label text="Mission Type:" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                            <ComboBox fx:id="comboMissionType" promptText="Select type" styleClass="form-combo"
+                            <Label text="Mission Type" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                            <ComboBox fx:id="comboMissionType" promptText="Select mission type" styleClass="form-combo"
                                       GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+
+                            <Label text="Difficulty" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                            <HBox spacing="5" GridPane.rowIndex="3" GridPane.columnIndex="1" alignment="CENTER_LEFT">
+                                <Label text="●" styleClass="difficulty-easy"/>
+                                <Label text="Easy" styleClass="difficulty-label"/>
+                            </HBox>
                         </GridPane>
 
-                        <!-- Mission Details -->
+                        <!-- Mission Details Premium -->
                         <VBox spacing="8" styleClass="details-box">
-                            <Label text="📄 Mission Details" styleClass="details-title"/>
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label text="📄" styleClass="details-icon"/>
+                                <Label text="Mission Details" styleClass="details-title"/>
+                            </HBox>
                             <TextArea fx:id="lblMissionDescription" editable="false" wrapText="true"
-                                      prefHeight="80" styleClass="details-text"/>
+                                      prefHeight="80" styleClass="details-text"
+                                      text="Write a function that adds two numbers and returns the result. The input will be provided via standard input."/>
                         </VBox>
 
-                        <!-- Timer Progress -->
+                        <!-- Timer Progress Premium -->
                         <VBox spacing="5" styleClass="timer-progress-box">
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label text="⏳" styleClass="progress-icon"/>
+                                <Label text="Time Remaining" styleClass="progress-title"/>
+                            </HBox>
                             <HBox spacing="10" alignment="CENTER_LEFT">
                                 <ProgressBar fx:id="timerProgressBar" prefWidth="200" progress="1.0" styleClass="progress-bar"/>
                                 <Label fx:id="lblTimerProgress" text="100%" styleClass="progress-label"/>
+                                <Label text="• 20:00 total" styleClass="progress-total"/>
                             </HBox>
                         </VBox>
 
-                        <!-- Bouton Submit -->
+                        <!-- Bouton Submit Premium -->
                         <HBox spacing="10" alignment="CENTER_LEFT">
-                            <Button text="🚀 Submit Code" onAction="#evaluer" styleClass="submit-button"/>
-                            <ProgressIndicator fx:id="progress" visible="false" prefWidth="20" prefHeight="20"/>
+                            <Button text="▶ Execute &amp; Submit" onAction="#evaluer" styleClass="submit-button"/>
+                            <ProgressIndicator fx:id="progress" visible="false" prefWidth="24" prefHeight="24" styleClass="custom-progress"/>
                             <Label fx:id="lblProcessing" text="Processing..." visible="false" styleClass="processing-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="⌨️ Ctrl+Enter" styleClass="shortcut-hint"/>
                         </HBox>
 
-                        <!-- Console -->
-                        <VBox spacing="5" styleClass="console-box">
-                            <Label text="📟 Output Console" styleClass="console-title"/>
-                            <Label fx:id="lblResultat" text="Waiting for code submission..."
+                        <!-- Console Premium -->
+                        <VBox spacing="5" styleClass="console-box" VBox.vgrow="NEVER">
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label text="📟" styleClass="console-icon"/>
+                                <Label text="Output Console" styleClass="console-title"/>
+                                <Label text="• Ready" styleClass="console-status"/>
+                            </HBox>
+                            <Label fx:id="lblResultat" text="✓ System ready. Click 'Execute &amp; Submit' to run your code."
                                    styleClass="console-output" wrapText="true" prefHeight="60"/>
                         </VBox>
                     </VBox>
 
-                    <!-- Colonne droite - Éditeur -->
-                    <VBox spacing="10" styleClass="right-column" HBox.hgrow="ALWAYS">
+                    <!-- Colonne droite - Éditeur Premium - MODIFIÉ POUR PRENDRE TOUTE LA HAUTEUR -->
+                    <VBox spacing="10" styleClass="right-column" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
 
-                        <!-- En-tête éditeur -->
+                        <!-- En-tête éditeur premium -->
                         <HBox spacing="10" alignment="CENTER_LEFT">
-                            <Label text="💻" styleClass="editor-icon"/>
+                            <Label text="⌨️" styleClass="editor-icon"/>
                             <Label text="Python Editor" styleClass="section-title"/>
+                            <Label text="• solution.py" styleClass="editor-filename"/>
                             <Region HBox.hgrow="ALWAYS"/>
                             <Button fx:id="btnFullScreen" text="⛶" onAction="#toggleFullScreen" styleClass="fullscreen-btn"/>
                             <HBox styleClass="security-badge" spacing="5">
-                                <Label text="🔒"/>
+                                <Label text="🛡️"/>
                                 <Label text="Secure Mode"/>
                             </HBox>
                         </HBox>
 
-                        <!-- Éditeur de code -->
-                        <VBox styleClass="editor-container">
+                        <!-- Éditeur de code premium - MODIFIÉ POUR PRENDRE TOUTE LA HAUTEUR DISPONIBLE -->
+                        <VBox styleClass="editor-container" VBox.vgrow="ALWAYS">
                             <HBox styleClass="editor-header" spacing="10">
-                                <Label text="📁 solution.py" styleClass="file-name"/>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Circle radius="6" styleClass="window-control-red"/>
+                                    <Circle radius="6" styleClass="window-control-yellow"/>
+                                    <Circle radius="6" styleClass="window-control-green"/>
+                                </HBox>
+                                <Label text="solution.py - Python 3" styleClass="file-name"/>
                                 <Region HBox.hgrow="ALWAYS"/>
-                                <Label text="Python 3" styleClass="lang-tag"/>
-                                <Label text="No Copy/Paste" styleClass="restriction-tag"/>
+                                <Label text="🐍 Python 3.11" styleClass="lang-tag"/>
+                                <Label text="🚫 Copy/Paste disabled" styleClass="restriction-tag"/>
                             </HBox>
-                            <TextArea fx:id="txtCode" styleClass="code-editor" prefHeight="300" wrapText="false"
+                            <TextArea fx:id="txtCode" styleClass="code-editor" wrapText="false" VBox.vgrow="ALWAYS"
                                       promptText="# Write your Python solution here&#10;def add(a, b):&#10;    return a + b&#10;&#10;if __name__ == '__main__':&#10;    num1 = int(input())&#10;    num2 = int(input())&#10;    print(add(num1, num2))"/>
+
+                            <!-- Ligne de statut de l'éditeur -->
+                            <HBox styleClass="editor-status-line" spacing="15">
+                                <Label text="Ln 1, Col 1" styleClass="editor-position"/>
+                                <Label text="UTF-8" styleClass="editor-encoding"/>
+                                <Label text="Python" styleClass="editor-language"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Label text="Modified" styleClass="editor-modified" visible="false"/>
+                            </HBox>
                         </VBox>
 
-                        <!-- Status bar -->
+                        <!-- Status bar premium -->
                         <HBox spacing="15" styleClass="status-bar">
-                            <Label text="🐍 Python 3"/>
-                            <Label text="🔒 No Copy/Paste"/>
-                            <Label text="⏱️ Auto-submit"/>
+                            <Label text="🐍 Python 3.11" styleClass="status-item"/>
+                            <Label text="🛡️ Secure environment" styleClass="status-item"/>
+                            <Label text="⚡ Live execution" styleClass="status-item"/>
+                            <Label text="⏱️ Auto-submit: 20:00" styleClass="status-item"/>
                             <Region HBox.hgrow="ALWAYS"/>
-                            <Label text="F11" styleClass="shortcut"/>
+                            <Label text="F11 fullscreen" styleClass="shortcut"/>
                         </HBox>
                     </VBox>
                 </HBox>
@@ -133,13 +175,20 @@
     </center>
 
     <bottom>
-        <!-- Footer -->
+        <!-- Footer Premium -->
         <HBox styleClass="footer" alignment="CENTER">
             <padding>
                 <Insets top="10" right="20" bottom="10" left="20"/>
             </padding>
-            <Label text="Double-click a mission to auto-fill • Timer: 20:00 • Secure Environment"
-                   styleClass="footer-text"/>
+            <HBox spacing="20" alignment="CENTER">
+                <Label text="⚡ Double-click a mission to auto-fill" styleClass="footer-text"/>
+                <Circle radius="3" styleClass="footer-separator"/>
+                <Label text="⏱️ Timer: 20:00" styleClass="footer-text"/>
+                <Circle radius="3" styleClass="footer-separator"/>
+                <Label text="🛡️ Secure Environment" styleClass="footer-text"/>
+                <Circle radius="3" styleClass="footer-separator"/>
+                <Label text="v2.0.1" styleClass="footer-version"/>
+            </HBox>
         </HBox>
     </bottom>
 

@@ -376,10 +376,11 @@
 }
 
 /* ========================================================================
-   COLONNE DROITE AMÉLIORÉE
+   COLONNE DROITE AMÉLIORÉE - MODIFIÉ POUR PRENDRE TOUTE LA HAUTEUR
    ======================================================================== */
 .right-column {
     -fx-pref-width: 500;
+    -fx-max-height: Infinity;
 }
 
 .editor-icon {
@@ -420,7 +421,7 @@
 }
 
 /* ========================================================================
-   EDITOR
+   EDITOR - MODIFIÉ POUR PRENDRE TOUTE LA HAUTEUR
    ======================================================================== */
 .editor-container {
     -fx-background-color: #0f172a;
@@ -429,6 +430,7 @@
     -fx-border-radius: 18;
     -fx-border-width: 1;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 8);
+    -fx-max-height: Infinity;
 }
 
 .editor-header {
@@ -477,6 +479,7 @@
     -fx-prompt-text-fill: #64748b;
     -fx-padding: 16;
     -fx-line-spacing: 4;
+    -fx-max-height: Infinity;
 }
 
 .code-editor .content {
@@ -674,4 +677,108 @@
     .right-column {
         -fx-pref-width: 450;
     }
+}
+
+.window-control-red {
+    -fx-fill: #ef4444;
+    -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.3), 4, 0, 0, 1);
+}
+
+.window-control-yellow {
+    -fx-fill: #f59e0b;
+    -fx-effect: dropshadow(gaussian, rgba(245,158,11,0.3), 4, 0, 0, 1);
+}
+
+.window-control-green {
+    -fx-fill: #10b981;
+    -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.3), 4, 0, 0, 1);
+}
+
+/* ========================================================================
+   ÉDITEUR DE CODE - HAUTEUR MAXIMALE
+   ======================================================================== */
+.editor-status-line {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 0 0 18 18;
+    -fx-padding: 10 18;
+    -fx-border-color: #334155;
+    -fx-border-width: 1 0 0 0;
+}
+
+.editor-position {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 11px;
+    -fx-font-family: monospace;
+}
+
+.editor-encoding, .editor-language {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+}
+
+.editor-modified {
+    -fx-text-fill: #f59e0b;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+}
+
+.status-item {
+    -fx-padding: 4 8;
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 30;
+    -fx-font-weight: 500;
+}
+
+.custom-progress {
+    -fx-progress-color: #2563eb;
+}
+
+.shortcut-hint {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 30;
+    -fx-padding: 6 14;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #475569;
+}
+
+.difficulty-easy {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 16px;
+}
+
+.difficulty-label {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}
+
+.progress-total {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 12px;
+}
+
+.timer-pulse {
+    -fx-fill: #059669;
+    -fx-effect: dropshadow(gaussian, #059669, 8, 0.5, 0, 0);
+    -fx-opacity: 0.8;
+}
+
+.footer-separator {
+    -fx-fill: #cbd5e1;
+}
+
+.footer-version {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 12px;
+    -fx-font-family: monospace;
+}
+
+.editor-filename {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 30;
+    -fx-padding: 4 14;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #2563eb;
 }
