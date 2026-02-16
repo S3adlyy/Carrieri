@@ -9,10 +9,10 @@
 <HBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="main.OffresShellController"
       stylesheets="@navbar.css, @app.css"
-      prefWidth="1200" prefHeight="720">
+      prefWidth="1280" prefHeight="900">
 
     <!-- ========== LEFT SIDEBAR ========== -->
-    <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="220" spacing="0">
+    <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="260" minWidth="260" spacing="0">
         <padding><Insets top="20" right="16" bottom="16" left="16"/></padding>
 
         <!-- Logo Row -->
