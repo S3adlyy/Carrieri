@@ -288,17 +288,22 @@ public class PostulationsCandidatsController {
 
                 motivationRow.getChildren().addAll(motivationIcon, motivation);
 
-                // Actions: delete button
+                // Actions: delete button + details button
                 HBox actions = new HBox(20);
                 actions.setAlignment(Pos.CENTER);
                 actions.getStyleClass().add("offer-actions");
+
+                Button btnDetails = new Button();
+                btnDetails.getStyleClass().add("btn-icon-edit");
+                btnDetails.setGraphic(new Label("ℹ️"));
+                btnDetails.setOnAction(e -> showOffreDetails(offre));
 
                 Button btnDelete = new Button();
                 btnDelete.getStyleClass().add("btn-icon-delete");
                 btnDelete.setGraphic(new Label("🗑"));
                 btnDelete.setOnAction(e -> handleDelete(p));
 
-                actions.getChildren().add(btnDelete);
+                actions.getChildren().addAll(btnDetails, btnDelete);
 
                 // Assemble card
                 card.getChildren().addAll(
@@ -347,6 +352,164 @@ public class PostulationsCandidatsController {
             case "refusée": return "#ef4444";
             default: return "#6b7280";
         }
+    }
+
+    private void showOffreDetails(OffreEmploi offre) {
+        // Créer un dialog personnalisé
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Détails de l'Offre");
+        dialog.setHeaderText(null);
+
+        // Créer le contenu du dialog
+        VBox content = new VBox(16);
+        content.setPadding(new javafx.geometry.Insets(20));
+        content.setStyle("-fx-background-color: #faf7ff;");
+        content.setMaxWidth(600);
+
+        // Titre de l'offre
+        Label titleLabel = new Label(offre.getTitre());
+        titleLabel.setStyle(
+            "-fx-font-size: 24; " +
+            "-fx-font-weight: 800; " +
+            "-fx-text-fill: #1e1133;"
+        );
+
+        // Entreprise
+        HBox entrepriseBox = createDetailRow("🏢 Entreprise", offre.getEntreprise());
+
+        // Type de contrat badge
+        Label typeContratLabel = new Label(offre.getTypeContrat());
+        typeContratLabel.setStyle(
+            "-fx-background-color: #f3e8ff; " +
+            "-fx-text-fill: #7c3aed; " +
+            "-fx-font-size: 14; " +
+            "-fx-font-weight: 700; " +
+            "-fx-padding: 8 16; " +
+            "-fx-background-radius: 12;"
+        );
+
+        // Salaire
+        HBox salaireBox = createDetailRow("💰 Salaire", offre.getSalaire() + " TND");
+
+        // Localisation
+        HBox localisationBox = createDetailRow("📍 Localisation", offre.getLocalisation());
+
+        // Description
+        VBox descBox = new VBox(8);
+        Label descTitle = new Label("📄 Description");
+        descTitle.setStyle("-fx-font-size: 15; -fx-font-weight: 700; -fx-text-fill: #4c1d95;");
+
+        Label descContent = new Label(offre.getDescription());
+        descContent.setWrapText(true);
+        descContent.setStyle("-fx-font-size: 14; -fx-text-fill: #374151; -fx-line-spacing: 4;");
+
+        descBox.getChildren().addAll(descTitle, descContent);
+
+        // Dates
+        HBox datePublicationBox = createDetailRow("📅 Date de publication",
+            offre.getDatePublication() != null ? dateFmt.format(offre.getDatePublication()) : "N/A");
+        HBox dateExpirationBox = createDetailRow("⏰ Date d'expiration",
+            offre.getDateExpiration() != null ? dateFmt.format(offre.getDateExpiration()) : "N/A");
+
+        // Qualification
+        HBox qualificationBox = createDetailRow("🎓 Niveau de qualification", offre.getNiveauQualification());
+
+        // Expérience
+        HBox experienceBox = createDetailRow("💼 Expérience requise", offre.getExperienceRequise());
+
+        // Compétences
+        VBox competencesBox = new VBox(8);
+        Label compTitle = new Label("⚡ Compétences requises");
+        compTitle.setStyle("-fx-font-size: 15; -fx-font-weight: 700; -fx-text-fill: #4c1d95;");
+
+        Label compContent = new Label(offre.getCompetencesRequises());
+        compContent.setWrapText(true);
+        compContent.setStyle("-fx-font-size: 14; -fx-text-fill: #374151;");
+
+        competencesBox.getChildren().addAll(compTitle, compContent);
+
+        // Secteur d'activité
+        HBox secteurBox = createDetailRow("🏭 Secteur d'activité", offre.getSecteurActivite());
+
+        // Contact recruteur
+        HBox contactBox = createDetailRow("📧 Contact recruteur", offre.getContactRecruteur());
+
+        // Séparateur
+        javafx.scene.control.Separator separator1 = new javafx.scene.control.Separator();
+        separator1.setStyle("-fx-opacity: 0.3;");
+
+        javafx.scene.control.Separator separator2 = new javafx.scene.control.Separator();
+        separator2.setStyle("-fx-opacity: 0.3;");
+
+        javafx.scene.control.Separator separator3 = new javafx.scene.control.Separator();
+        separator3.setStyle("-fx-opacity: 0.3;");
+
+        // Assembler tout le contenu
+        content.getChildren().addAll(
+            titleLabel,
+            typeContratLabel,
+            entrepriseBox,
+            salaireBox,
+            localisationBox,
+            separator1,
+            descBox,
+            separator2,
+            datePublicationBox,
+            dateExpirationBox,
+            qualificationBox,
+            experienceBox,
+            separator3,
+            competencesBox,
+            secteurBox,
+            contactBox
+        );
+
+        // ScrollPane pour le contenu
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollPane.setPrefHeight(500);
+
+        dialog.getDialogPane().setContent(scrollPane);
+
+        // Bouton fermer
+        ButtonType closeButton = new ButtonType("Fermer", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().add(closeButton);
+
+        // Styliser le dialog
+        dialog.getDialogPane().setStyle(
+            "-fx-background-color: #faf7ff; " +
+            "-fx-border-color: #e0d4f5; " +
+            "-fx-border-width: 2; " +
+            "-fx-border-radius: 20; " +
+            "-fx-background-radius: 20;"
+        );
+
+        dialog.showAndWait();
+    }
+
+    private HBox createDetailRow(String label, String value) {
+        HBox row = new HBox(10);
+        row.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelNode = new Label(label);
+        labelNode.setStyle(
+            "-fx-font-size: 14; " +
+            "-fx-font-weight: 700; " +
+            "-fx-text-fill: #4c1d95; " +
+            "-fx-min-width: 200;"
+        );
+
+        Label valueNode = new Label(value);
+        valueNode.setStyle(
+            "-fx-font-size: 14; " +
+            "-fx-text-fill: #374151; " +
+            "-fx-wrap-text: true;"
+        );
+        valueNode.setWrapText(true);
+
+        row.getChildren().addAll(labelNode, valueNode);
+        return row;
     }
 
     private void handleDelete(Postulation p) {

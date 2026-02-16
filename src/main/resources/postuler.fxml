@@ -34,8 +34,9 @@
             </HBox>
             <TextArea fx:id="txtMotivation" promptText="Expliquez pourquoi vous êtes le candidat idéal pour ce poste..."
                       prefRowCount="8" wrapText="true" styleClass="textarea-elegant"/>
+            <Label fx:id="lblMotivationError" text="" styleClass="error-label" wrapText="true" managed="false" visible="false"/>
             <HBox alignment="CENTER_RIGHT">
-                <Label fx:id="lblCharCount" text="0/1500" styleClass="char-counter"/>
+                <Label fx:id="lblCharCount" text="0/1500 | 0 mots" styleClass="char-counter"/>
             </HBox>
         </VBox>
     </VBox>
