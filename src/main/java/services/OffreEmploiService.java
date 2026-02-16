@@ -51,7 +51,7 @@ public class OffreEmploiService implements IOffreEmploiService {
     }
 
     // Méthode pour vérifier si une offre avec le même titre existe déjà
-    private boolean existsByTitre(String titre) throws SQLException {
+    public boolean existsByTitre(String titre) throws SQLException {
         String sql = "SELECT COUNT(*) FROM offre_emploi WHERE LOWER(titre) = LOWER(?)";
         PreparedStatement ps = cnx.prepareStatement(sql);
         ps.setString(1, titre.trim());

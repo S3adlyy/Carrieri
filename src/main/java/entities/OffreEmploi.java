@@ -76,6 +76,19 @@ public class OffreEmploi {
 
     // Setters
     public void setId(int id) { this.id = id; }
+    public void setTitre(String titre) { this.titre = titre; }
+    public void setDescription(String description) { this.description = description; }
+    public void setSalaire(double salaire) { this.salaire = salaire; }
+    public void setTypeContrat(String typeContrat) { this.typeContrat = typeContrat; }
+    public void setLocalisation(String localisation) { this.localisation = localisation; }
+    public void setDatePublication(LocalDateTime datePublication) { this.datePublication = datePublication; }
+    public void setDateExpiration(LocalDateTime dateExpiration) { this.dateExpiration = dateExpiration; }
+    public void setNiveauQualification(String niveauQualification) { this.niveauQualification = niveauQualification; }
+    public void setExperienceRequise(String experienceRequise) { this.experienceRequise = experienceRequise; }
+    public void setCompetencesRequises(String competencesRequises) { this.competencesRequises = competencesRequises; }
+    public void setSecteurActivite(String secteurActivite) { this.secteurActivite = secteurActivite; }
+    public void setEntreprise(String entreprise) { this.entreprise = entreprise; }
+    public void setContactRecruteur(String contactRecruteur) { this.contactRecruteur = contactRecruteur; }
 
 
     @Override
