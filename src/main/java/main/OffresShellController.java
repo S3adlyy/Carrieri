@@ -17,8 +17,8 @@ public class OffresShellController {
     @FXML private StackPane contentPane;
 
     @FXML private Button btnOffresList;
-    @FXML private Button btnOffreAdd;
     @FXML private Button btnOffresTable;
+    @FXML private Button btnOffreAdd;
     @FXML private Button btnPostulationsList;
 
     @FXML private Circle navAvatar;
@@ -41,12 +41,16 @@ public class OffresShellController {
         setActiveButton(btnOffreAdd);
     }
 
-
-
     @FXML
     public void showOffresTable() {
         loadViewWithFade("offres-table.fxml");   // ← new FXML we'll create
         setActiveButton(btnOffresTable);
+    }
+
+    @FXML
+    public void showOffresList() {
+        loadViewWithFade("offres-list.fxml");
+        setActiveButton(btnOffresList);
     }
 
     @FXML
@@ -61,23 +65,17 @@ public class OffresShellController {
         setActiveButton(btnPostulationsList);
     }
 
-    @FXML
-    public void showOffresList() {
-        loadViewWithFade("offres-list.fxml");
-        setActiveButton(btnOffresList);
-    }
-
-    //  used by OffresTableController to show postulations of ONE offer
+    //  ADDED: load postulations-list and pass selected offreId to filter
     public void showPostulationsForOffre(int offreId, String offreTitre) {
         loadViewWithFadeAndInit("/postulations-list.fxml", controller -> {
             if (controller instanceof PostulationsListController plc) {
                 plc.setOffreFilter(offreId, offreTitre);
             }
         });
-
-        // optional: highlight navbar postulations button
         setActiveButton(btnPostulationsList);
     }
+
+
 
     /**
      * Called from OffresListController when user clicks "Postuler" on a row
@@ -148,21 +146,4 @@ public class OffresShellController {
             button.getStyleClass().add("liquid-btn-active");
         }
     }
-
-    public void showPostulationsForOffre(int offreId, String offreTitre) {
-        loadViewWithFadeAndInit("/postulations-list.fxml", controller -> {
-            try {
-                // Call setOffreFilter(offreId, offreTitre) if it exists
-                controller.getClass()
-                        .getMethod("setOffreFilter", int.class, String.class)
-                        .invoke(controller, offreId, offreTitre);
-            } catch (Exception ignored) {
-                System.out.println("Postulations controller has no setOffreFilter(int,String).");
-            }
-        });
-        setActiveButton(btnPostulationsList);
-    }
-    
-
-
 }
