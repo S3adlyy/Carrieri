@@ -1301,6 +1301,139 @@
 }
 
 
+.main-title-gradient-large {
+    -fx-font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
+    -fx-font-size: 58px; /* Bigger size */
+    -fx-font-weight: 900;
+    -fx-font-style: normal;
+    -fx-text-fill: linear-gradient(135deg,
+    #ffffff 0%,
+    #f8f0ff 25%,
+    #f0e0ff 50%,
+    #e8d0ff 75%,
+    #ffffff 100%);
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.8), 20, 0.4, 0, 0) /* White shadow */
+    , dropshadow(gaussian, rgba(248, 188, 255, 0.7), 25, 0.5, 3, 5) /* Princess purple shadow */
+    , dropshadow(gaussian, rgba(200, 150, 255, 0.5), 30, 0.3, 6, 10) /* Medium purple shadow */
+    , dropshadow(gaussian, rgba(150, 100, 255, 0.3), 35, 0.2, 9, 15); /* Deep purple shadow */
+    -fx-transition: all 0.3s ease;
+    -fx-padding: 10 0;
+    -fx-letter-spacing: 1px;
+}
+
+/* Hover effect - even more dramatic */
+.main-title-gradient-large:hover {
+    -fx-font-size: 60px; /* Slightly bigger on hover */
+    -fx-text-fill: linear-gradient(135deg,
+    #ffffff 0%,
+    #ffe0ff 30%,
+    #ffc0ff 60%,
+    #ffffff 100%);
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 1), 25, 0.5, 0, 0)
+    , dropshadow(gaussian, #f8bcff, 30, 0.6, 4, 7)
+    , dropshadow(gaussian, #d8a0ff, 35, 0.4, 8, 14)
+    , dropshadow(gaussian, #b880ff, 40, 0.3, 12, 20);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+    -fx-cursor: default;
+}
+
+/* Alternative: Text with outline and shadow */
+.main-title-outline-large {
+    -fx-font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
+    -fx-font-size: 56px;
+    -fx-font-weight: 900;
+    -fx-text-fill: transparent;
+    -fx-stroke: white;
+    -fx-stroke-width: 2;
+    -fx-effect: dropshadow(gaussian, #f8bcff, 25, 0.6, 3, 5)
+    , dropshadow(gaussian, #a880ff, 30, 0.4, 6, 10)
+    , dropshadow(gaussian, #6840ff, 35, 0.2, 9, 15);
+}
+
+/* Alternative: Glowing text effect */
+.main-title-glow-large {
+    -fx-font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
+    -fx-font-size: 60px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, #f8bcff, 30, 0.7, 0, 0)
+    , dropshadow(gaussian, #c084fc, 40, 0.5, 0, 0)
+    , dropshadow(gaussian, #8b5cf6, 50, 0.3, 0, 0)
+    , dropshadow(gaussian, white, 20, 0.8, 0, 0);
+}
+
+/* Animation for the gradient title */
+@keyframes gradientShift {
+    0% { -fx-text-fill: linear-gradient(135deg, #ffffff, #f8bcff, #d8a0ff, #b880ff, #ffffff); }
+    25% { -fx-text-fill: linear-gradient(135deg, #f8bcff, #d8a0ff, #b880ff, #ffffff, #f8bcff); }
+    50% { -fx-text-fill: linear-gradient(135deg, #d8a0ff, #b880ff, #ffffff, #f8bcff, #d8a0ff); }
+    75% { -fx-text-fill: linear-gradient(135deg, #b880ff, #ffffff, #f8bcff, #d8a0ff, #b880ff); }
+    100% { -fx-text-fill: linear-gradient(135deg, #ffffff, #f8bcff, #d8a0ff, #b880ff, #ffffff); }
+}
+
+.main-title-animated-large {
+    -fx-font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
+    -fx-font-size: 58px;
+    -fx-font-weight: 900;
+    -fx-animation: gradientShift 8s infinite;
+    -fx-effect: dropshadow(gaussian, white, 20, 0.5, 0, 0)
+    , dropshadow(gaussian, #f8bcff, 25, 0.6, 3, 5)
+    , dropshadow(gaussian, #a880ff, 30, 0.4, 6, 10);
+}
+
+/* Ensure the subtitle complements the bigger title */
+.subtitle-large {
+    -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
+    -fx-font-size: 18px;
+    -fx-text-fill: #5a4a7a;
+    -fx-font-weight: 500;
+    -fx-opacity: 0.9;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.3), 5, 0.2, 0, 1);
+    -fx-padding: 0 30;
+}
+
+/* Keep the icon in sync with bigger title */
+.icon-symbol-large {
+    -fx-font-size: 48px;
+    -fx-text-fill: linear-gradient(135deg, #f8bcff, #ffffff);
+    -fx-effect: dropshadow(gaussian, #f8bcff, 25, 0.6, 0, 0)
+    , dropshadow(gaussian, white, 20, 0.4, 0, 0);
+}
+
+.icon-container-large {
+    -fx-effect: dropshadow(gaussian, rgba(248,188,255,0.5), 30, 0.5, 0, 5)
+    , dropshadow(gaussian, rgba(255,255,255,0.8), 25, 0.4, 0, 0);
+}
+
+.icon-bg-large {
+    -fx-fill: linear-gradient(135deg, #231942, #5E548E);
+    -fx-effect: dropshadow(gaussian, #f8bcff, 25, 0.5, 0, 3);
+}
+
+.icon-pulse-large {
+    -fx-fill: transparent;
+    -fx-stroke: #f8bcff;
+    -fx-stroke-width: 3;
+    -fx-stroke-dash-array: 12 12;
+}
+
+
+/* 3D extruded text effect */
+.main-title-3d-large {
+    -fx-font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
+    -fx-font-size: 64px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, #f8bcff, 5, 0.8, 2, 2)
+    , dropshadow(gaussian, #d8a0ff, 5, 0.7, 4, 4)
+    , dropshadow(gaussian, #b880ff, 5, 0.6, 6, 6)
+    , dropshadow(gaussian, #9860ff, 5, 0.5, 8, 8)
+    , dropshadow(gaussian, #7840ff, 5, 0.4, 10, 10)
+    , dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0.3, 12, 12);
+}
+
+
 
 
 

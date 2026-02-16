@@ -37,10 +37,8 @@
                 </StackPane>
 
                 <VBox spacing="20" alignment="CENTER">
-                    <Label text="Mission Control" styleClass="main-title-large"/>
-                    <Label text="Définissez les paramètres de votre mission avec précision"
-                           styleClass="subtitle-large"
-                           wrapText="true"/>
+                    <Label text="Mission Control"
+                           styleClass="main-title-gradient-large"/>
                 </VBox>
             </VBox>
 
