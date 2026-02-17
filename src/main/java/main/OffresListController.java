@@ -2,6 +2,7 @@ package main;
 
 import entities.OffreEmploi;
 import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -272,6 +273,19 @@ public class OffresListController {
         footer.getChildren().addAll(salary, spacer, btnPostuler);
 
         card.getChildren().addAll(header, companyRow, desc, meta, details, sep, footer);
+
+        // ===== HOVER ANIMATION =====
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(220), card);
+        scaleUp.setToX(1.04);
+        scaleUp.setToY(1.04);
+
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(220), card);
+        scaleDown.setToX(1.0);
+        scaleDown.setToY(1.0);
+
+        card.setOnMouseEntered(e -> scaleUp.playFromStart());
+        card.setOnMouseExited(e -> scaleDown.playFromStart());
+
         return card;
     }
 
