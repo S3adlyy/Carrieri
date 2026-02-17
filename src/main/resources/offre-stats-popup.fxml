@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+
+<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="main.OffreStatsPopupController"
+           styleClass="dialog-overlay" prefWidth="900" prefHeight="650">
+
+    <!-- Card principal avec effet -->
+    <VBox styleClass="stats-popup-card" spacing="0" maxWidth="880" maxHeight="630">
+
+        <!-- Header -->
+        <HBox styleClass="stats-header" alignment="CENTER" spacing="16">
+            <padding><Insets top="24" right="32" bottom="24" left="32"/></padding>
+
+            <StackPane prefWidth="70" prefHeight="70" styleClass="stats-icon-circle">
+                <Label text="📊" style="-fx-font-size: 48; -fx-text-fill: white;"/>
+            </StackPane>
+
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblOffreTitre" text="Statistiques de l'offre"
+                       styleClass="stats-title"/>
+                <Label fx:id="lblOffreInfo" text="Entreprise • Type • Localisation"
+                       styleClass="stats-subtitle"/>
+            </VBox>
+
+            <Button text="✕" onAction="#handleClose" styleClass="btn-close-stats"/>
+        </HBox>
+
+        <!-- Content -->
+        <ScrollPane fitToWidth="true" styleClass="stats-scroll" VBox.vgrow="ALWAYS">
+            <VBox spacing="24" style="-fx-padding: 32;">
+
+                <!-- KPI Cards Row -->
+                <HBox spacing="20" alignment="CENTER">
+
+                    <!-- Card 1: Total Postulations -->
+                    <VBox styleClass="kpi-card" alignment="CENTER" spacing="12"
+                          prefWidth="200" prefHeight="140">
+                        <Label text="👥" style="-fx-font-size: 42;"/>
+                        <Label fx:id="lblTotalPostulations" text="0" styleClass="kpi-value"/>
+                        <Label text="Postulations" styleClass="kpi-label"/>
+                    </VBox>
+
+                    <!-- Card 2: En Attente -->
+                    <VBox styleClass="kpi-card kpi-pending" alignment="CENTER" spacing="12"
+                          prefWidth="200" prefHeight="140">
+                        <Label text="⏳" style="-fx-font-size: 42;"/>
+                        <Label fx:id="lblEnAttente" text="0" styleClass="kpi-value"/>
+                        <Label text="En Attente" styleClass="kpi-label"/>
+                    </VBox>
+
+                    <!-- Card 3: Acceptées -->
+                    <VBox styleClass="kpi-card kpi-accepted" alignment="CENTER" spacing="12"
+                          prefWidth="200" prefHeight="140">
+                        <Label text="✅" style="-fx-font-size: 42;"/>
+                        <Label fx:id="lblAcceptees" text="0" styleClass="kpi-value"/>
+                        <Label text="Acceptées" styleClass="kpi-label"/>
+                    </VBox>
+
+                    <!-- Card 4: Taux d'acceptation -->
+                    <VBox styleClass="kpi-card kpi-rate" alignment="CENTER" spacing="12"
+                          prefWidth="200" prefHeight="140">
+                        <Label text="📈" style="-fx-font-size: 42;"/>
+                        <Label fx:id="lblTauxAcceptation" text="0%" styleClass="kpi-value"/>
+                        <Label text="Taux d'acceptation" styleClass="kpi-label"/>
+                    </VBox>
+
+                </HBox>
+
+                <!-- Charts Row -->
+                <HBox spacing="24" alignment="CENTER">
+
+                    <!-- Pie Chart: Répartition par statut -->
+                    <VBox styleClass="chart-card" spacing="16" prefWidth="400" prefHeight="350">
+                        <Label text="📊 Répartition par Statut" styleClass="chart-title"/>
+                        <PieChart fx:id="pieChartStatuts" legendVisible="true"
+                                  prefHeight="280" styleClass="stats-pie-chart"/>
+                    </VBox>
+
+                    <!-- Bar Chart: Évolution temporelle -->
+                    <VBox styleClass="chart-card" spacing="16" prefWidth="400" prefHeight="350">
+                        <Label text="📈 Postulations par Mois" styleClass="chart-title"/>
+                        <BarChart fx:id="barChartEvolution" legendVisible="false"
+                                  prefHeight="280" styleClass="stats-bar-chart">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM" fx:id="xAxis"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis side="LEFT" fx:id="yAxis"/>
+                            </yAxis>
+                        </BarChart>
+                    </VBox>
+
+                </HBox>
+
+                <!-- Liste des postulations récentes -->
+                <VBox styleClass="recent-list-card" spacing="16">
+                    <Label text="🕒 Postulations Récentes (5 dernières)" styleClass="chart-title"/>
+
+                    <VBox fx:id="vboxRecentPostulations" spacing="12">
+                        <!-- Dynamic content -->
+                    </VBox>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+
+    </VBox>
+
+</StackPane>
+

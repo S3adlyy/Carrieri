@@ -5,16 +5,22 @@ import entities.Postulation;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 import services.OffreEmploiService;
 import services.PostulationService;
@@ -98,25 +104,32 @@ public class OffresTableController {
         // ===== Inline editing (cell factories + commit => DB update) =====
         enableInlineEditing();
 
-        // ===== Actions (3 icons) =====
+        // ===== Actions (4 icons) =====
         colActions.setCellFactory(col -> new TableCell<>() {
             private final Button btnPosts = iconBtn("👥", "Voir postulations");
+            private final Button btnStats = iconBtn("📊", "Statistiques");
             private final Button btnEdit  = iconBtn("✏", "Modifier (dialog)");
             private final Button btnDel   = iconBtn("🗑", "Supprimer");
 
-            private final HBox box = new HBox(20, btnPosts, btnEdit, btnDel);
+            private final HBox box = new HBox(20, btnPosts, btnStats, btnEdit, btnDel);
 
             {
                 box.setAlignment(Pos.CENTER);
                 box.setPadding(new Insets(6, 12, 6, 12));
 
                 btnPosts.getStyleClass().addAll("icon-btn", "icon-btn-neutral");
+                btnStats.getStyleClass().addAll("icon-btn", "icon-btn-stats");
                 btnEdit.getStyleClass().addAll("icon-btn", "icon-btn-edit");
                 btnDel.getStyleClass().addAll("icon-btn", "icon-btn-delete");
 
                 btnPosts.setOnAction(e -> {
                     OffreEmploi o = getTableView().getItems().get(getIndex());
                     goToPostulations(o);
+                });
+
+                btnStats.setOnAction(e -> {
+                    OffreEmploi o = getTableView().getItems().get(getIndex());
+                    showStatsPopup(o);
                 });
 
                 btnEdit.setOnAction(e -> {
@@ -1195,6 +1208,36 @@ public class OffresTableController {
         b.setPrefHeight(32);
         return b;
     }
+
+    // ===================== SHOW STATS POPUP =====================
+
+    private void showStatsPopup(OffreEmploi offre) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/offre-stats-popup.fxml"));
+            StackPane popupRoot = loader.load();
+
+            OffreStatsPopupController controller = loader.getController();
+            controller.setOffre(offre);
+
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            popupStage.initStyle(StageStyle.TRANSPARENT);
+            popupStage.setTitle("Statistiques - " + offre.getTitre());
+
+            Scene scene = new Scene(popupRoot);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            scene.getStylesheets().add(getClass().getResource("/app.css").toExternalForm());
+
+            popupStage.setScene(scene);
+            popupStage.showAndWait();
+
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir les statistiques : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // ===================== ALERTS =====================
 
     private void showAlert(Alert.AlertType type, String title, String msg) {
         Alert a = new Alert(type);
