@@ -173,118 +173,242 @@ public class PostulationsListController {
     }
 
     private VBox createPostulationCard(Postulation p) {
-        VBox card = new VBox(14);
-        card.getStyleClass().add("offer-card");  // Reuse offer-card style for consistency
-        card.setAlignment(Pos.TOP_CENTER);
-        card.setMaxWidth(360);
+        VBox card = new VBox(0);
+        card.getStyleClass().add("postulation-card");
+        card.setMaxWidth(380);
+        card.setMinWidth(380);
 
-        // Title: "Postulation ID: X"
-        Label title = new Label("Postulation ID: " + p.getId());
-        title.getStyleClass().add("offer-title");
+        // === HEADER SECTION avec dégradé ===
+        HBox header = new HBox(16);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setStyle(
+            "-fx-background-color: linear-gradient(to right, #7c3aed, #a78bfa);" +
+            "-fx-background-radius: 18 18 0 0;" +
+            "-fx-padding: 20 24;"
+        );
 
-        // Offre + icon
-        HBox offreRow = new HBox(10);
-        offreRow.setAlignment(Pos.CENTER);
+        // Icon postulation
+        StackPane iconCircle = new StackPane();
+        iconCircle.setStyle(
+            "-fx-background-color: rgba(255, 255, 255, 0.25);" +
+            "-fx-background-radius: 50%;" +
+            "-fx-min-width: 50; -fx-min-height: 50;" +
+            "-fx-max-width: 50; -fx-max-height: 50;"
+        );
+        Label icon = new Label("📋");
+        icon.setStyle("-fx-font-size: 28;");
+        iconCircle.getChildren().add(icon);
 
-        Label offreIcon = new Label("📄");
-        offreIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #7c3aed;");
+        // Titre et ID
+        VBox headerText = new VBox(4);
+        HBox.setHgrow(headerText, Priority.ALWAYS);
 
-        Label offreLabel = new Label("Offre ID: " + p.getOffreId());  // Or fetch titre if needed
-        offreLabel.getStyleClass().add("offer-description");
+        Label idLabel = new Label("Postulation #" + p.getId());
+        idLabel.setStyle("-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: white;");
 
-        offreRow.getChildren().addAll(offreIcon, offreLabel);
+        Label dateLabel = new Label("📅 " + dateFmt.format(p.getDatePostulation()));
+        dateLabel.setStyle("-fx-font-size: 13; -fx-text-fill: rgba(255,255,255,0.9);");
 
-        // Candidat + icon
-        HBox candidatRow = new HBox(10);
-        candidatRow.setAlignment(Pos.CENTER);
+        headerText.getChildren().addAll(idLabel, dateLabel);
+        header.getChildren().addAll(iconCircle, headerText);
+
+        // === BODY SECTION ===
+        VBox body = new VBox(16);
+        body.setStyle("-fx-padding: 24; -fx-background-color: white; -fx-background-radius: 0 0 18 18;");
+
+        // Offre info avec style amélioré
+        HBox offreBox = new HBox(12);
+        offreBox.setAlignment(Pos.CENTER_LEFT);
+        offreBox.setStyle(
+            "-fx-background-color: #f9f5ff;" +
+            "-fx-background-radius: 12;" +
+            "-fx-padding: 14 16;" +
+            "-fx-border-color: #e0d4f5;" +
+            "-fx-border-radius: 12;" +
+            "-fx-border-width: 1;"
+        );
+
+        Label offreIcon = new Label("💼");
+        offreIcon.setStyle("-fx-font-size: 22;");
+
+        VBox offreInfo = new VBox(3);
+        HBox.setHgrow(offreInfo, Priority.ALWAYS);
+        Label offreTitleLabel = new Label("Offre d'Emploi");
+        offreTitleLabel.setStyle("-fx-font-size: 11; -fx-font-weight: 700; -fx-text-fill: #9ca3af;");
+        Label offreIdLabel = new Label("ID: " + p.getOffreId());
+        offreIdLabel.setStyle("-fx-font-size: 15; -fx-font-weight: 700; -fx-text-fill: #1e1133;");
+        offreInfo.getChildren().addAll(offreTitleLabel, offreIdLabel);
+
+        offreBox.getChildren().addAll(offreIcon, offreInfo);
+
+        // Candidat info
+        HBox candidatBox = new HBox(12);
+        candidatBox.setAlignment(Pos.CENTER_LEFT);
+        candidatBox.setStyle(
+            "-fx-background-color: #faf5ff;" +
+            "-fx-background-radius: 12;" +
+            "-fx-padding: 14 16;" +
+            "-fx-border-color: #e9d5ff;" +
+            "-fx-border-radius: 12;" +
+            "-fx-border-width: 1;"
+        );
 
         Label candidatIcon = new Label("👤");
-        candidatIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #4c1d95;");
+        candidatIcon.setStyle("-fx-font-size: 22;");
 
-        Label candidatLabel = new Label("Candidat ID: " + p.getCandidatId());
-        candidatLabel.getStyleClass().add("offer-info");
+        VBox candidatInfo = new VBox(3);
+        HBox.setHgrow(candidatInfo, Priority.ALWAYS);
+        Label candidatTitleLabel = new Label("Candidat");
+        candidatTitleLabel.setStyle("-fx-font-size: 11; -fx-font-weight: 700; -fx-text-fill: #9ca3af;");
+        Label candidatIdLabel = new Label("ID: " + p.getCandidatId());
+        candidatIdLabel.setStyle("-fx-font-size: 15; -fx-font-weight: 700; -fx-text-fill: #1e1133;");
+        candidatInfo.getChildren().addAll(candidatTitleLabel, candidatIdLabel);
 
-        candidatRow.getChildren().addAll(candidatIcon, candidatLabel);
+        candidatBox.getChildren().addAll(candidatIcon, candidatInfo);
 
-        // Date + icon
-        HBox dateRow = new HBox(10);
-        dateRow.setAlignment(Pos.CENTER);
+        // Statut avec ComboBox stylé
+        VBox statutBox = new VBox(8);
+        Label statutTitle = new Label("Statut de la postulation");
+        statutTitle.setStyle("-fx-font-size: 12; -fx-font-weight: 700; -fx-text-fill: #6b7280;");
 
-        Label dateIcon = new Label("📅");
-        dateIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #6b7280;");
-
-        Label dateLabel = new Label(dateFmt.format(p.getDatePostulation()));
-        dateLabel.getStyleClass().add("offer-info");
-
-        dateRow.getChildren().addAll(dateIcon, dateLabel);
-
-        // Statut with badge + modifier combo
-        HBox statutRow = new HBox(12);
-        statutRow.setAlignment(Pos.CENTER);
-
-        Label statutIcon = new Label("🔖");
-        statutIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #7c3aed;");
-
-        ComboBox<String> comboStatut = new ComboBox<>(FXCollections.observableArrayList("En attente", "En cours", "Acceptée", "Refusée"));
+        ComboBox<String> comboStatut = new ComboBox<>(FXCollections.observableArrayList(
+            "En attente", "En cours", "Acceptée", "Refusée"
+        ));
         comboStatut.setValue(p.getStatut());
-        comboStatut.getStyleClass().add("combo-elegant");
-        comboStatut.setPrefWidth(200);
+        comboStatut.setMaxWidth(Double.MAX_VALUE);
+        comboStatut.setStyle(
+            "-fx-background-color: white;" +
+            "-fx-border-color: #d1c4e9;" +
+            "-fx-border-radius: 12;" +
+            "-fx-background-radius: 12;" +
+            "-fx-border-width: 2;" +
+            "-fx-padding: 10 16;" +
+            "-fx-font-size: 14;" +
+            "-fx-font-weight: 600;"
+        );
 
         comboStatut.setOnAction(e -> {
             String newStatut = comboStatut.getValue();
             try {
                 service.changerStatut(p.getId(), newStatut);
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Statut mis à jour.");
+                showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Statut mis à jour avec succès !");
+                refreshTable();
             } catch (SQLException ex) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", ex.getMessage());
-                comboStatut.setValue(p.getStatut());  // Revert on error
+                showAlert(Alert.AlertType.ERROR, "❌ Erreur", ex.getMessage());
+                comboStatut.setValue(p.getStatut());
             }
         });
 
-        statutRow.getChildren().addAll(statutIcon, comboStatut);
+        statutBox.getChildren().addAll(statutTitle, comboStatut);
 
-        // Motivation snippet + icon
-        HBox motivationRow = new HBox(10);
-        motivationRow.setAlignment(Pos.CENTER);
+        // Motivation avec style amélioré
+        VBox motivationBox = new VBox(8);
+        Label motivationTitle = new Label("💬 Lettre de motivation");
+        motivationTitle.setStyle("-fx-font-size: 12; -fx-font-weight: 700; -fx-text-fill: #6b7280;");
 
-        Label motivationIcon = new Label("📝");
-        motivationIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #374151;");
-
-        String motivSnippet = p.getMotivationCandidature().length() > 80
-                ? p.getMotivationCandidature().substring(0, 80) + "..."
+        String motivSnippet = p.getMotivationCandidature().length() > 120
+                ? p.getMotivationCandidature().substring(0, 120) + "..."
                 : p.getMotivationCandidature();
+
         Label motivation = new Label(motivSnippet);
-        motivation.getStyleClass().add("offer-description");
         motivation.setWrapText(true);
+        motivation.setStyle(
+            "-fx-font-size: 13;" +
+            "-fx-text-fill: #374151;" +
+            "-fx-line-spacing: 4;" +
+            "-fx-padding: 12;" +
+            "-fx-background-color: #fafafa;" +
+            "-fx-background-radius: 10;" +
+            "-fx-border-color: #e5e7eb;" +
+            "-fx-border-radius: 10;" +
+            "-fx-border-width: 1;"
+        );
 
-        motivationRow.getChildren().addAll(motivationIcon, motivation);
+        motivationBox.getChildren().addAll(motivationTitle, motivation);
 
-        // Actions: only delete (as it's a postulation)
-        HBox actions = new HBox(20);
+        // Separator
+        Separator sep = new Separator();
+        sep.setStyle("-fx-opacity: 0.3;");
+
+        // Actions avec bouton supprimer stylé
+        HBox actions = new HBox(12);
         actions.setAlignment(Pos.CENTER);
-        actions.getStyleClass().add("offer-actions");
+        actions.setStyle("-fx-padding: 8 0 0 0;");
 
-        Button btnDelete = new Button();
-        btnDelete.getStyleClass().add("btn-icon-delete");
+        Button btnDelete = new Button("Supprimer");
         btnDelete.setGraphic(new Label("🗑"));
+        btnDelete.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(btnDelete, Priority.ALWAYS);
+        btnDelete.setStyle(
+            "-fx-background-color: #fef2f2;" +
+            "-fx-text-fill: #dc2626;" +
+            "-fx-font-size: 14;" +
+            "-fx-font-weight: 700;" +
+            "-fx-background-radius: 12;" +
+            "-fx-border-color: #fecaca;" +
+            "-fx-border-radius: 12;" +
+            "-fx-border-width: 1.5;" +
+            "-fx-padding: 10 20;" +
+            "-fx-cursor: hand;"
+        );
+
+        btnDelete.setOnMouseEntered(e -> btnDelete.setStyle(
+            "-fx-background-color: #fee2e2;" +
+            "-fx-text-fill: #dc2626;" +
+            "-fx-font-size: 14;" +
+            "-fx-font-weight: 700;" +
+            "-fx-background-radius: 12;" +
+            "-fx-border-color: #fca5a5;" +
+            "-fx-border-radius: 12;" +
+            "-fx-border-width: 2;" +
+            "-fx-padding: 10 20;" +
+            "-fx-cursor: hand;" +
+            "-fx-effect: dropshadow(gaussian, rgba(220,38,38,0.25), 8, 0, 0, 2);"
+        ));
+
+        btnDelete.setOnMouseExited(e -> btnDelete.setStyle(
+            "-fx-background-color: #fef2f2;" +
+            "-fx-text-fill: #dc2626;" +
+            "-fx-font-size: 14;" +
+            "-fx-font-weight: 700;" +
+            "-fx-background-radius: 12;" +
+            "-fx-border-color: #fecaca;" +
+            "-fx-border-radius: 12;" +
+            "-fx-border-width: 1.5;" +
+            "-fx-padding: 10 20;" +
+            "-fx-cursor: hand;"
+        ));
+
         btnDelete.setOnAction(e -> handleDelete(p));
 
         actions.getChildren().add(btnDelete);
 
-        // Assemble card
-        card.getChildren().addAll(title, offreRow, candidatRow, dateRow, statutRow, motivationRow, actions);
+        // Assembler le body
+        body.getChildren().addAll(offreBox, candidatBox, statutBox, motivationBox, sep, actions);
 
-        // Hover animation
-        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(220), card);
-        scaleUp.setToX(1.04);
-        scaleUp.setToY(1.04);
+        // Assembler la card
+        card.getChildren().addAll(header, body);
 
-        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(220), card);
+        // Animation hover
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(200), card);
+        scaleUp.setToX(1.03);
+        scaleUp.setToY(1.03);
+
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(200), card);
         scaleDown.setToX(1.0);
         scaleDown.setToY(1.0);
 
-        card.setOnMouseEntered(e -> scaleUp.playFromStart());
-        card.setOnMouseExited(e -> scaleDown.playFromStart());
+        card.setOnMouseEntered(e -> {
+            scaleUp.playFromStart();
+            card.setStyle(
+                "-fx-effect: dropshadow(gaussian, rgba(124,58,237,0.3), 25, 0, 0, 10);"
+            );
+        });
+
+        card.setOnMouseExited(e -> {
+            scaleDown.playFromStart();
+            card.setStyle("");
+        });
 
         return card;
     }

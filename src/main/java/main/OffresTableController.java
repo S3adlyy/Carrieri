@@ -111,11 +111,11 @@ public class OffresTableController {
             private final Button btnEdit  = iconBtn("✏", "Modifier (dialog)");
             private final Button btnDel   = iconBtn("🗑", "Supprimer");
 
-            private final HBox box = new HBox(20, btnPosts, btnStats, btnEdit, btnDel);
+            private final HBox box = new HBox(12, btnPosts, btnStats, btnEdit, btnDel);
 
             {
                 box.setAlignment(Pos.CENTER);
-                box.setPadding(new Insets(6, 12, 6, 12));
+                box.setPadding(new Insets(8, 16, 8, 16));
 
                 btnPosts.getStyleClass().addAll("icon-btn", "icon-btn-neutral");
                 btnStats.getStyleClass().addAll("icon-btn", "icon-btn-stats");

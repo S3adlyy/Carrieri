@@ -1020,31 +1020,42 @@
 /* ===== Round aesthetic icon buttons ===== */
 .icon-btn {
     -fx-background-color: #ffffff;
-    -fx-background-radius: 999;
-    -fx-border-radius: 999;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
     -fx-border-color: #e0d4f5;
     -fx-border-width: 1.5;
-    -fx-padding: 7 10;
+    -fx-padding: 8 12;
     -fx-cursor: hand;
+    -fx-min-width: 45;
+    -fx-min-height: 38;
 }
 
 .icon-btn:hover {
     -fx-background-color: #f3e8ff;
     -fx-border-color: #c4b5fd;
-    -fx-scale-x: 1.06;
-    -fx-scale-y: 1.06;
+    -fx-scale-x: 1.08;
+    -fx-scale-y: 1.08;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.2), 8, 0, 0, 2);
 }
 
 .icon-btn .label {
-    -fx-font-size: 15;
+    -fx-font-size: 16;
+}
+
+.icon-btn-neutral .label {
+    -fx-text-fill: #7c3aed;
 }
 
 .icon-btn-edit .label {
-    -fx-text-fill: #6d28d9;
+    -fx-text-fill: #3b82f6;
+}
+
+.icon-btn-stats .label {
+    -fx-text-fill: #8b5cf6;
 }
 
 .icon-btn-delete .label {
-    -fx-text-fill: #dc2626;
+    -fx-text-fill: #ef4444;
 }
 
 /* ===== Compact card style (screenshot 2 look) ===== */
@@ -1858,5 +1869,20 @@
     -fx-background-color: rgba(124, 58, 237, 0.2);
     -fx-scale-x: 1.1;
     -fx-scale-y: 1.1;
+}
+
+
+/* =========================================================
+   POSTULATION CARDS - NEW DESIGN
+   ========================================================= */
+
+.postulation-card {
+    -fx-background-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.15), 20, 0, 0, 8);
+    -fx-background-radius: 18;
+}
+
+.postulation-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.3), 25, 0, 0, 10);
 }
 
