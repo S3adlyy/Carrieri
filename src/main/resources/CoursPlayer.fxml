@@ -1,43 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.web.WebView?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="main.CoursPlayerController">
+            fx:controller="main.CoursPlayerController"
+            stylesheets="/css/candidat-theme.css"
+            styleClass="candidat-root"
+            prefWidth="1200" prefHeight="800">
 
     <top>
-        <Label fx:id="lblCoursTitre"
-               style="-fx-font-size:20px; -fx-font-weight:bold; -fx-padding:10;"/>
+        <VBox styleClass="header-gradient" spacing="10" alignment="CENTER_LEFT">
+            <padding><Insets top="15" bottom="15" left="20" right="20"/></padding>
+            <Label fx:id="lblCoursTitre" styleClass="header-title"/>
+            <Label fx:id="lblProgression" text="0%" styleClass="header-subtitle"/>
+        </VBox>
     </top>
 
     <left>
-        <ScrollPane fitToWidth="true" prefWidth="250">
-            <VBox fx:id="boxModules" spacing="5" style="-fx-padding:10;"/>
+        <ScrollPane fitToWidth="true" prefWidth="300"
+                    style="-fx-background-color: transparent; -fx-border-color: transparent;">
+            <VBox fx:id="boxModules" spacing="10" style="-fx-padding: 15;">
+                <!-- Les modules seront ajoutés dynamiquement -->
+            </VBox>
         </ScrollPane>
     </left>
 
     <center>
-        <VBox spacing="10" style="-fx-padding:20;">
+        <VBox spacing="15" style="-fx-padding: 20;">
             <Label fx:id="lblLeconTitre"
-                   style="-fx-font-size:18px; -fx-font-weight:bold;"/>
+                   style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: #231942;"/>
 
-            <!-- WebView pour afficher le contenu -->
-            <WebView fx:id="webViewContenu" prefHeight="400"/>
+            <WebView fx:id="webViewContenu" prefHeight="500"
+                     style="-fx-background-radius: 16; -fx-border-radius: 16;"/>
 
             <Button fx:id="btnTerminer"
-                    text="Terminer la leçon"
-                    visible="false"/>
-            <Label fx:id="lblStatus"/>
+                    text="✅ Marquer comme terminée"
+                    styleClass="quiz-terminer-button"
+                    visible="false"
+                    maxWidth="300" alignment="CENTER"/>
+
+            <Label fx:id="lblStatus"
+                   style="-fx-text-fill: #6b7280; -fx-font-size: 14px; -fx-font-style: italic;"/>
         </VBox>
     </center>
 
     <bottom>
-        <HBox spacing="10" style="-fx-padding:10;">
-            <Label text="Progression :"/>
-            <ProgressBar fx:id="progressBar" prefWidth="400"/>
-            <Label fx:id="lblProgression"/>
+        <HBox spacing="15" style="-fx-padding: 15; -fx-background-color: white; -fx-border-color: #f3e8ff; -fx-border-width: 1 0 0 0;" alignment="CENTER_LEFT">
+            <Label text="Progression globale :" style="-fx-font-weight: 700; -fx-text-fill: #231942;"/>
+            <ProgressBar fx:id="progressBar" prefWidth="400"
+                         style="-fx-accent: #5E548E; -fx-background-radius: 10;"/>
+            <Label fx:id="lblProgressionValue" text="0%"
+                   style="-fx-font-weight: 700; -fx-text-fill: #5E548E; -fx-font-size: 16px;"/>
         </HBox>
     </bottom>
 

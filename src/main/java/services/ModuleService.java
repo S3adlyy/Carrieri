@@ -11,6 +11,7 @@ public class ModuleService implements IModuleService {  // ← AJOUTER implement
 
     private Connection con = MyDatabase.getInstance().getConnection();
 
+
     @Override  // ← AJOUTER @Override
     public void ajouter(Module module) {
         validateModule(module);

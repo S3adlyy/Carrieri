@@ -49,7 +49,7 @@ public class CoursController {
     @FXML private Label lblCount;
     @FXML private Label lblStatus;
     @FXML private TextField txtSearch;
-    @FXML private ScrollPane formPane;
+    @FXML private VBox formPane;
     @FXML private VBox tablePane;
     @FXML private Button btnToggleForm;
 
@@ -73,6 +73,15 @@ public class CoursController {
     @FXML private Label lblImageNom;
     @FXML private ImageView imageViewForm;
     @FXML private VBox card;
+    @FXML private Label charCountLabel;
+
+    // ✅ LABELS D'ERREUR
+    @FXML private Label errorTitre;
+    @FXML private Label errorNiveau;
+    @FXML private Label errorDuree;
+    @FXML private Label errorCompetences;
+    @FXML private Label errorDescription;
+    @FXML private Label errorImage;
 
     private CoursService coursService;
     private ModuleService moduleService;
@@ -99,10 +108,24 @@ public class CoursController {
         setupImageChooser();
         setupNumericFieldsOnly();
 
-        btnModifier.setVisible(false);
-        btnModifier.setManaged(false);
-        btnSupprimer.setVisible(false);
-        btnSupprimer.setManaged(false);
+        // ✅ VALIDATION EN TEMPS RÉEL
+        setupValidation();
+
+        // ✅ LISTENER POUR LE COMPTEUR DE CARACTÈRES
+        txtDescription.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (charCountLabel != null) {
+                int length = newVal != null ? newVal.length() : 0;
+                charCountLabel.setText(length + "/1000");
+
+                if (length > 900) {
+                    charCountLabel.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: 600; -fx-background-color: #f3e8ff; -fx-padding: 4 10; -fx-background-radius: 20;");
+                } else if (length >= 1000) {
+                    charCountLabel.setStyle("-fx-text-fill: #ff6b6b; -fx-font-weight: 600; -fx-background-color: #fee2e2; -fx-padding: 4 10; -fx-background-radius: 20;");
+                } else {
+                    charCountLabel.setStyle("-fx-text-fill: #9ca3af; -fx-font-weight: 600; -fx-background-color: #f3e8ff; -fx-padding: 4 10; -fx-background-radius: 20;");
+                }
+            }
+        });
 
         // Start with table visible and form hidden
         setFormVisible(false);
@@ -110,12 +133,143 @@ public class CoursController {
 
         loadCours();
 
-        // Remove focus from search field on startup
+        if (tablePane != null && formPane != null) {
+            tablePane.setVisible(true);
+            tablePane.setManaged(true);
+            formPane.setVisible(false);
+            formPane.setManaged(false);
+            System.out.println("✅ État initial: table visible, formulaire caché");
+        }
+
+        tableCours.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                coursSelectionne = newSelection;
+                // ✅ Mettre à jour le cours actif dans le shell
+                MainShellController.getInstance().setCurrentCours(newSelection.getId(), newSelection.getTitre());
+                chargerCoursFormulaire(newSelection);
+            } else {
+                coursSelectionne = null;
+            }
+        });
+
         javafx.application.Platform.runLater(() -> {
             if (tablePane != null) {
                 tablePane.requestFocus();
             }
         });
+    }
+
+    // ✅ NOUVELLE MÉTHODE POUR LA VALIDATION EN TEMPS RÉEL
+    private void setupValidation() {
+        // Validation du titre en temps réel
+        txtTitre.textProperty().addListener((obs, oldVal, newVal) -> {
+            String titre = newVal != null ? newVal.trim() : "";
+            if (titre.isEmpty()) {
+                showError(errorTitre, "Le titre est obligatoire");
+            } else if (titre.length() < 3) {
+                showError(errorTitre, "Le titre doit contenir au moins 3 caractères");
+            } else if (titre.length() > 200) {
+                showError(errorTitre, "Le titre ne peut pas dépasser 200 caractères");
+            } else if (isOnlyDigits(titre)) {
+                showError(errorTitre, "Le titre ne peut pas être composé uniquement de chiffres");
+            } else {
+                hideError(errorTitre);
+            }
+        });
+
+        // Validation du niveau
+        comboNiveau.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal == null) {
+                showError(errorNiveau, "Le niveau est obligatoire");
+            } else {
+                hideError(errorNiveau);
+            }
+        });
+
+        // Validation de la durée
+        txtDuree.textProperty().addListener((obs, oldVal, newVal) -> {
+            String dureeStr = newVal != null ? newVal.trim() : "";
+            if (dureeStr.isEmpty()) {
+                showError(errorDuree, "La durée est obligatoire");
+            } else {
+                try {
+                    int duree = Integer.parseInt(dureeStr);
+                    if (duree <= 0) {
+                        showError(errorDuree, "La durée doit être un nombre positif");
+                    } else if (duree > 1000) {
+                        showError(errorDuree, "La durée ne peut pas dépasser 1000 heures");
+                    } else {
+                        hideError(errorDuree);
+                    }
+                } catch (NumberFormatException e) {
+                    showError(errorDuree, "La durée doit être un nombre entier");
+                }
+            }
+        });
+
+        // Validation des compétences
+        txtCompetences.textProperty().addListener((obs, oldVal, newVal) -> {
+            String competences = newVal != null ? newVal.trim() : "";
+            if (!competences.isEmpty() && competences.length() > 500) {
+                showError(errorCompetences, "Les compétences ne peuvent pas dépasser 500 caractères");
+            } else if (!competences.isEmpty() && isOnlyDigits(competences)) {
+                showError(errorCompetences, "Les compétences ne peuvent pas être composées uniquement de chiffres");
+            } else {
+                hideError(errorCompetences);
+            }
+        });
+
+        // Validation de la description
+        txtDescription.textProperty().addListener((obs, oldVal, newVal) -> {
+            String desc = newVal != null ? newVal.trim() : "";
+            if (desc.isEmpty()) {
+                showError(errorDescription, "La description est obligatoire");
+            } else if (desc.length() < 10) {
+                showError(errorDescription, "La description doit contenir au moins 10 caractères");
+            } else if (desc.length() > 1000) {
+                showError(errorDescription, "La description ne peut pas dépasser 1000 caractères");
+            } else if (isOnlyDigits(desc)) {
+                showError(errorDescription, "La description ne peut pas être composée uniquement de chiffres");
+            } else {
+                hideError(errorDescription);
+            }
+        });
+        btnChoisirImage.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg")
+            );
+            File file = fileChooser.showOpenDialog(btnChoisirImage.getScene().getWindow());
+            if (file != null) {
+                try {
+                    imageBytesSelected = Files.readAllBytes(file.toPath());
+                    Image image = new Image(new FileInputStream(file));
+                    imageViewForm.setImage(image);
+                    lblImageNom.setText(file.getName());
+                    hideError(errorImage); // ✅ Cacher l'erreur quand une image est choisie
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+    }
+
+    // ✅ MÉTHODES UTILITAIRES POUR LES ERREURS
+    private void showError(Label errorLabel, String message) {
+        errorLabel.setText(message);
+        errorLabel.setVisible(true);
+        errorLabel.setManaged(true);
+    }
+
+    private void hideError(Label errorLabel) {
+        errorLabel.setVisible(false);
+        errorLabel.setManaged(false);
+    }
+
+    private boolean isOnlyDigits(String text) {
+        if (text == null || text.isEmpty()) return false;
+        String textWithoutSpaces = text.replaceAll("\\s+", "");
+        return textWithoutSpaces.matches("\\d+");
     }
 
     private void setupImageChooser() {
@@ -131,6 +285,7 @@ public class CoursController {
                     Image image = new Image(new FileInputStream(file));
                     imageViewForm.setImage(image);
                     lblImageNom.setText(file.getName());
+                    hideError(errorImage); // ✅ Cacher l'erreur quand une image est choisie
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -178,24 +333,34 @@ public class CoursController {
             private final Button btnLecons = new Button("📖");
             private final Button btnDelete = new Button("🗑️");
             private final HBox actions = new HBox(6, btnModules, btnLecons, btnDelete);
+
             {
                 actions.setAlignment(javafx.geometry.Pos.CENTER);
-                btnModules.setStyle("-fx-background-color: #5E548E; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5;");
-                btnLecons.setStyle("-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5;");
-                btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5;");
 
+                // Styles des boutons
+                btnModules.setStyle("-fx-background-color: #5E548E; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5; -fx-cursor: hand;");
+                btnLecons.setStyle("-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5; -fx-cursor: hand;");
+                btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5; -fx-cursor: hand;");
+
+                // Dans colActions, pour le bouton Modules
                 btnModules.setOnAction(event -> {
                     Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
                     if (cours != null) {
-                        ouvrirGestionModules(cours);
+                        // Le cours est déjà sélectionné via le listener
+                        MainShellController.getInstance().showModulesViewWithCours(cours.getId(), cours.getTitre());
                     }
                 });
+
+// Pour le bouton Leçons
                 btnLecons.setOnAction(event -> {
                     Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
                     if (cours != null) {
-                        ouvrirGestionLecons(cours);
+                        // Le cours est déjà sélectionné via le listener
+                        MainShellController.getInstance().showLeconsViewWithCours(cours.getId(), cours.getTitre());
                     }
                 });
+
+                // Action pour Supprimer
                 btnDelete.setOnAction(event -> {
                     Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
                     if (cours != null) {
@@ -203,6 +368,7 @@ public class CoursController {
                     }
                 });
             }
+
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
@@ -235,6 +401,7 @@ public class CoursController {
             imageViewForm.setImage(new Image(new ByteArrayInputStream(cours.getImageCouverture())));
             imageBytesSelected = cours.getImageCouverture();
             lblImageNom.setText("Image chargée");
+            hideError(errorImage);
         }
     }
 
@@ -245,7 +412,9 @@ public class CoursController {
     private void setupCheckBoxListener() {
         chkObligatoire.selectedProperty().addListener((observable, oldValue, newValue) -> {
             lblObligatoire.setText(newValue ? "Obligatoire" : "Optionnel");
-            lblObligatoire.setStyle(newValue ? "-fx-text-fill: #10b981; -fx-font-weight: bold;" : "-fx-text-fill: #718096;");
+            lblObligatoire.setStyle(newValue ?
+                    "-fx-background-color: #10b981; -fx-text-fill: white; -fx-padding: 4 12; -fx-background-radius: 20; -fx-font-size: 12px;" :
+                    "-fx-background-color: #f3e8ff; -fx-text-fill: #5E548E; -fx-padding: 4 12; -fx-background-radius: 20; -fx-font-size: 12px;");
         });
     }
 
@@ -297,8 +466,33 @@ public class CoursController {
             loadCours();
             clearForm();
 
+            tablePane.setVisible(true);
+            tablePane.setManaged(true);
+            formPane.setVisible(false);
+            formPane.setManaged(false);
+
+        } catch (IllegalArgumentException e) {
+            // ✅ Capturer les erreurs de validation du service et les afficher dans l'interface
+            String message = e.getMessage();
+            if (message.contains("titre")) {
+                showError(errorTitre, message);
+            } else if (message.contains("description")) {
+                showError(errorDescription, message);
+            } else if (message.contains("niveau")) {
+                showError(errorNiveau, message);
+            } else if (message.contains("durée") || message.contains("duree")) {
+                showError(errorDuree, message);
+            } else if (message.contains("compétences") || message.contains("competences")) {
+                showError(errorCompetences, message);
+            } else if (message.contains("image")) {
+                showError(errorImage, message);
+            } else {
+                showAlert(Alert.AlertType.WARNING, "⚠️ Validation", message);
+            }
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur base de données: " + e.getMessage());
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "❌ Erreur", e.getMessage());
         }
     }
 
@@ -361,6 +555,12 @@ public class CoursController {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 coursService.supprimer(cours.getId());
+
+                // ✅ Réinitialiser le cours actif si c'était celui-ci
+                if (coursSelectionne != null && coursSelectionne.getId() == cours.getId()) {
+                    MainShellController.getInstance().resetCurrentCours();
+                }
+
                 showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Cours supprimé !");
                 loadCours();
                 clearForm();
@@ -415,6 +615,7 @@ public class CoursController {
             Stage stage = new Stage();
             stage.setTitle("Gestion des modules - " + cours.getTitre());
             stage.setScene(new Scene(root));
+            stage.setMaximized(true);
             stage.show();
 
             System.out.println("✅ Fenêtre modules ouverte avec succès");
@@ -438,6 +639,7 @@ public class CoursController {
             Stage stage = new Stage();
             stage.setTitle("Gestion des leçons - " + cours.getTitre());
             stage.setScene(new Scene(root));
+            stage.setMaximized(true);
             stage.show();
 
             System.out.println("✅ Fenêtre leçons ouverte avec succès");
@@ -518,40 +720,65 @@ public class CoursController {
         String titre = txtTitre.getText().trim();
         if (titre.isEmpty()) {
             errors.append("• Le titre est obligatoire\n");
+            showError(errorTitre, "Le titre est obligatoire");
         } else if (titre.length() < 3) {
             errors.append("• Le titre doit contenir au moins 3 caractères\n");
+            showError(errorTitre, "Le titre doit contenir au moins 3 caractères");
         } else if (titre.length() > 200) {
             errors.append("• Le titre ne peut pas dépasser 200 caractères\n");
+            showError(errorTitre, "Le titre ne peut pas dépasser 200 caractères");
+        } else if (isOnlyDigits(titre)) {
+            errors.append("• Le titre ne peut pas être composé uniquement de chiffres\n");
+            showError(errorTitre, "Le titre ne peut pas être composé uniquement de chiffres");
+        } else {
+            hideError(errorTitre);
         }
 
         // Validation de la description
         String description = txtDescription.getText().trim();
         if (description.isEmpty()) {
             errors.append("• La description est obligatoire\n");
+            showError(errorDescription, "La description est obligatoire");
         } else if (description.length() < 10) {
             errors.append("• La description doit contenir au moins 10 caractères\n");
+            showError(errorDescription, "La description doit contenir au moins 10 caractères");
         } else if (description.length() > 1000) {
             errors.append("• La description ne peut pas dépasser 1000 caractères\n");
+            showError(errorDescription, "La description ne peut pas dépasser 1000 caractères");
+        } else if (isOnlyDigits(description)) {
+            errors.append("• La description ne peut pas être composée uniquement de chiffres\n");
+            showError(errorDescription, "La description ne peut pas être composée uniquement de chiffres");
+        } else {
+            hideError(errorDescription);
         }
 
         // Validation du niveau
         if (comboNiveau.getValue() == null) {
             errors.append("• Le niveau est obligatoire\n");
+            showError(errorNiveau, "Le niveau est obligatoire");
+        } else {
+            hideError(errorNiveau);
         }
 
         // Validation de la durée
         if (txtDuree.getText().trim().isEmpty()) {
             errors.append("• La durée est obligatoire\n");
+            showError(errorDuree, "La durée est obligatoire");
         } else {
             try {
                 int duree = Integer.parseInt(txtDuree.getText().trim());
                 if (duree <= 0) {
                     errors.append("• La durée doit être un nombre positif\n");
+                    showError(errorDuree, "La durée doit être un nombre positif");
                 } else if (duree > 1000) {
                     errors.append("• La durée ne peut pas dépasser 1000 heures\n");
+                    showError(errorDuree, "La durée ne peut pas dépasser 1000 heures");
+                } else {
+                    hideError(errorDuree);
                 }
             } catch (NumberFormatException e) {
                 errors.append("• La durée doit être un nombre entier valide\n");
+                showError(errorDuree, "La durée doit être un nombre entier valide");
             }
         }
 
@@ -559,20 +786,26 @@ public class CoursController {
         String competences = txtCompetences.getText().trim();
         if (!competences.isEmpty() && competences.length() > 500) {
             errors.append("• Les compétences ne peuvent pas dépasser 500 caractères\n");
+            showError(errorCompetences, "Les compétences ne peuvent pas dépasser 500 caractères");
+        } else if (!competences.isEmpty() && isOnlyDigits(competences)) {
+            errors.append("• Les compétences ne peuvent pas être composées uniquement de chiffres\n");
+            showError(errorCompetences, "Les compétences ne peuvent pas être composées uniquement de chiffres");
+        } else {
+            hideError(errorCompetences);
         }
 
         // Validation de l'image
         if (coursSelectionne == null && imageBytesSelected == null) {
             errors.append("• L'image du cours est obligatoire\n");
+            showError(errorImage, "L'image du cours est obligatoire");
+        } else {
+            hideError(errorImage);
         }
 
-        if (errors.length() > 0) {
-            showAlert(Alert.AlertType.WARNING, "⚠️ Validation", "Veuillez corriger :\n\n" + errors);
-            return false;
-        }
-        return true;
+        return errors.length() == 0;
     }
 
+    @FXML
     private void clearForm() {
         txtTitre.clear();
         txtDescription.clear();
@@ -585,8 +818,20 @@ public class CoursController {
         lblImageNom.setText("Aucune image");
         coursSelectionne = null;
         tableCours.getSelectionModel().clearSelection();
-        setFormVisible(false);
-        setTableVisible(true);
+
+        // ✅ Cacher toutes les erreurs
+        hideError(errorTitre);
+        hideError(errorNiveau);
+        hideError(errorDuree);
+        hideError(errorCompetences);
+        hideError(errorDescription);
+        hideError(errorImage);
+
+        // Réinitialiser le compteur
+        if (charCountLabel != null) {
+            charCountLabel.setText("0/1000");
+            charCountLabel.setStyle("-fx-text-fill: #9ca3af; -fx-font-weight: 600; -fx-background-color: #f3e8ff; -fx-padding: 4 10; -fx-background-radius: 20;");
+        }
     }
 
     private void updateCount() {
@@ -607,8 +852,8 @@ public class CoursController {
         if (btnToggleForm != null) {
             btnToggleForm.setText(visible ? "✖️" : "➕");
             btnToggleForm.setStyle(visible ?
-                "-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 16px; -fx-padding: 8 12;" :
-                "-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 16px; -fx-padding: 8 12;");
+                    "-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 16px; -fx-padding: 8 12;" :
+                    "-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 16px; -fx-padding: 8 12;");
         }
     }
 
@@ -621,18 +866,32 @@ public class CoursController {
 
     @FXML
     private void toggleForm() {
-        boolean isVisible = formPane != null && formPane.isVisible();
-        if (!isVisible) {
-            // Show form for adding, hide table
-            clearForm();
-            coursSelectionne = null;
-            tableCours.getSelectionModel().clearSelection();
-            setTableVisible(false);
-            setFormVisible(true);
+        System.out.println("🔄 toggleForm appelé - table visible: " + (tablePane != null ? tablePane.isVisible() : "null"));
+
+        if (tablePane != null && formPane != null) {
+            boolean isTableVisible = tablePane.isVisible();
+
+            if (isTableVisible) {
+                // Cacher la table, afficher le formulaire
+                tablePane.setVisible(false);
+                tablePane.setManaged(false);
+                formPane.setVisible(true);
+                formPane.setManaged(true);
+
+                // Réinitialiser le formulaire
+                clearForm();
+
+                System.out.println("📝 Formulaire affiché");
+            } else {
+                // Afficher la table, cacher le formulaire
+                tablePane.setVisible(true);
+                tablePane.setManaged(true);
+                formPane.setVisible(false);
+                formPane.setManaged(false);
+                System.out.println("📋 Table affichée");
+            }
         } else {
-            // Hide form, show table
-            setFormVisible(false);
-            setTableVisible(true);
+            System.err.println("❌ tablePane ou formPane est null!");
         }
     }
 

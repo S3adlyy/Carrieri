@@ -67,7 +67,7 @@ public class ProgressionLeconService implements IProgressionLeconService {
 
     @Override
     public double getProgressionCours(int candidatId, int coursId) {
-        System.out.println("SERVICE: Calcul progression COMPLETE cours " + coursId + " pour candidat " + candidatId);
+        System.out.println("🔍 Calcul progression cours " + coursId + " pour candidat " + candidatId);
 
         List<Module> modules = new ModuleService().getModulesByCours(coursId);
 
@@ -75,42 +75,49 @@ public class ProgressionLeconService implements IProgressionLeconService {
         int elementsTermines = 0;
 
         for (Module m : modules) {
-            // ✅ 1. Compter les leçons
+            // ✅ Compter les leçons
             List<Lecon> lecons = new LeconService().getLeconsByModule(m.getId());
             totalElements += lecons.size();
 
             for (Lecon l : lecons) {
                 if (isLeconTerminee(candidatId, l.getId())) {
                     elementsTermines++;
+                    System.out.println("   ✅ Leçon terminée: " + l.getTitre());
                 }
             }
 
-            // ✅ 2. Compter le quiz du module (1 élément)
+            // ✅ Compter le quiz du module
             if (aDesQuestionsQuiz(m.getId())) {
-                totalElements += 1; // Le quiz compte comme 1 élément
+                totalElements += 1;
                 if (isModuleReussi(candidatId, m.getId())) {
                     elementsTermines++;
+                    System.out.println("   ✅ Quiz réussi pour module: " + m.getTitre());
                 }
             }
         }
 
-        // ✅ 3. Compter le test final du cours (1 élément)
+        // ✅ Compter le test final
         if (aDesQuestionsTest(coursId)) {
             totalElements += 1;
             if (isTestFinalReussi(candidatId, coursId)) {
                 elementsTermines++;
+                System.out.println("   ✅ Test final réussi");
             }
         }
 
-        System.out.println("   Total éléments: " + totalElements + " | Terminés: " + elementsTermines);
+        System.out.println("   📊 Total éléments: " + totalElements + " | Terminés: " + elementsTermines);
 
-        if (totalElements == 0) return 0;
+        if (totalElements == 0) {
+            System.out.println("   ⚠️ Aucun élément trouvé pour ce cours");
+            return 0;
+        }
 
         double progression = ((double) elementsTermines / totalElements) * 100;
-        System.out.println("   Progression COMPLETE: " + progression + "%");
+        System.out.println("   📈 Progression calculée: " + progression + "%");
 
         return progression;
     }
+
     // ✅ Vérifier si un module a des questions de quiz
     private boolean aDesQuestionsQuiz(int moduleId) {
         String sql = "SELECT COUNT(*) FROM question_quiz WHERE module_id = ?";

@@ -35,6 +35,7 @@ public class CoursPlayerController {
     @FXML private Label lblProgression;
     @FXML private Button btnTerminer;
     @FXML private Label lblStatus;
+    @FXML private Label lblProgressionValue;  // Pour l'affichage en bas
 
     // SERVICES
     private ModuleService moduleService = new ModuleService();
@@ -61,6 +62,21 @@ public class CoursPlayerController {
         System.out.println("DEBUG: CoursPlayerController initialisé");
         btnTerminer.setOnAction(e -> terminerLecon());
         configurerWebView();
+
+        // ✅ Initialiser la progression à 0
+        if (progressBar != null) {
+            progressBar.setProgress(0);
+        }
+        if (lblProgressionValue != null) {
+            lblProgressionValue.setText("0%");
+        }
+    }
+
+
+    // ✅ NOUVELLE MÉTHODE
+    public void setCandidatId(int candidatId) {
+        this.candidatId = candidatId;
+        System.out.println("✅ Candidat ID défini: " + candidatId);
     }
 
     private void configurerWebView() {
@@ -109,6 +125,8 @@ public class CoursPlayerController {
         this.coursActuel = cours;
         lblCoursTitre.setText(cours.getTitre());
         chargerModules();
+
+        // ✅ Mettre à jour la progression immédiatement
         mettreAJourProgression();
     }
 
@@ -146,6 +164,7 @@ public class CoursPlayerController {
         }
 
         verifierEtatCours();
+        mettreAJourProgression();
     }
 
     // ============================================
@@ -187,23 +206,7 @@ public class CoursPlayerController {
     }
 
     private void lancerQuizModule(int moduleId, String titreModule) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/QuizModulePlayer.fxml"));
-            Parent root = loader.load();
-            QuizModulePlayerController controller = loader.getController();
-            controller.setModuleId(moduleId, candidatId);
-            Stage stage = new Stage();
-            stage.setTitle("Quiz - " + titreModule);
-            stage.setScene(new Scene(root));
-            stage.setOnHiding(e -> {
-                chargerModules();
-                mettreAJourProgression();
-            });
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("❌ Erreur", "Impossible de lancer le quiz");
-        }
+        CandidatShellController.getInstance().openQuiz(moduleId, titreModule);
     }
 
     // ============================================
@@ -266,36 +269,14 @@ public class CoursPlayerController {
     }
 
     private void lancerTestFinal() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/TestFinalPlayer.fxml"));
-            Parent root = loader.load();
-            TestFinalPlayerController controller = loader.getController();
-            controller.setCoursId(coursActuel.getId(), candidatId);
-            Stage stage = new Stage();
-            stage.setTitle("Test final - " + coursActuel.getTitre());
-            stage.setScene(new Scene(root));
-            stage.setOnHiding(e -> {
-                chargerModules();
-                mettreAJourProgression();
-                if (testCoursService.isCoursReussi(candidatId, coursActuel.getId())) {
-                    try {
-                        progressionCoursService.ajouterOuUpdate(candidatId, coursActuel.getId(), 100);
-                        mettreAJourProgression();
-                        showAlert("🎓 FÉLICITATIONS !",
-                                "Vous avez réussi le test final du cours !\n\n" +
-                                        "Vous pouvez maintenant générer votre certificat.");
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("❌ Erreur", "Impossible de lancer le test final");
-        }
+        CandidatShellController.getInstance().openTestFinal(coursActuel.getId());
     }
 
+    // Ajoutez un bouton retour
+    @FXML
+    private void retourAuCatalogue() {
+        CandidatShellController.getInstance().showCatalogue();
+    }
     // ============================================
     // GESTION DU CERTIFICAT
     // ============================================
@@ -678,16 +659,35 @@ public class CoursPlayerController {
     }
 
     private void mettreAJourProgression() {
-        // ✅ Utiliser la nouvelle méthode qui inclut quiz et test
+        // ✅ Calculer la progression via le service
         double prog = progressionLeconService.getProgressionCours(candidatId, coursActuel.getId());
 
-        progressBar.setProgress(prog / 100);
-        lblProgression.setText(String.format("%.0f%%", prog));
+        // ✅ Arrondir pour l'affichage
+        int progArrondie = (int) Math.round(prog);
 
+        System.out.println("📊 Progression calculée: " + prog + "% -> Arrondie: " + progArrondie + "%");
+
+        // ✅ Mettre à jour la barre de progression
+        if (progressBar != null) {
+            progressBar.setProgress(prog / 100);
+        }
+
+        // ✅ Mettre à jour le label en bas
+        if (lblProgressionValue != null) {
+            lblProgressionValue.setText(progArrondie + "%");
+        }
+
+        // ✅ Mettre à jour le label en haut si vous l'avez
+        if (lblProgression != null) {
+            lblProgression.setText(progArrondie + "%");
+        }
+
+        // ✅ Enregistrer en base
         try {
-            progressionCoursService.ajouterOuUpdate(candidatId, coursActuel.getId(), (int) prog);
-            System.out.println("📊 Progression enregistrée: " + prog + "%");
+            progressionCoursService.ajouterOuUpdate(candidatId, coursActuel.getId(), progArrondie);
+            System.out.println("✅ Progression enregistrée en base: " + progArrondie + "%");
         } catch (Exception e) {
+            System.err.println("❌ Erreur enregistrement progression: " + e.getMessage());
             e.printStackTrace();
         }
     }

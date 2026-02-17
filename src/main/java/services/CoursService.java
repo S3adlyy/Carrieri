@@ -12,7 +12,29 @@ public class CoursService implements ICoursService {
     public CoursService() {
         this.connection = MyDatabase.getInstance().getConnection();
     }
-
+    // ✅ AJOUTER CETTE MÉTHODE
+    public Cours getById(int id) throws SQLException {
+        String sql = "SELECT * FROM cours WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Cours(
+                            rs.getInt("id"),
+                            rs.getString("titre"),
+                            rs.getString("description"),
+                            rs.getInt("duree"),
+                            rs.getString("niveau"),
+                            rs.getString("competences_visees"),
+                            rs.getBoolean("est_obligatoire"),
+                            rs.getInt("created_by"),
+                            rs.getBytes("image_couverture")
+                    );
+                }
+            }
+        }
+        return null;
+    }
     @Override
     public void ajouter(Cours cours) throws SQLException {
         validateCours(cours);
