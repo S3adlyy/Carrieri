@@ -14,8 +14,10 @@ public final class SceneManager {
 
     public static void init(Stage primaryStage) {
         stage = primaryStage;
-        stage.setMinWidth(1100);
-        stage.setMinHeight(700);
+       // stage.setMinWidth(1100);
+        //stage.setMinHeight(700);
+        stage.setMaximized(true);
+
     }
 
     public static void switchTo(String fxml, String title) {
@@ -25,6 +27,7 @@ public final class SceneManager {
             scene.getStylesheets().add(Objects.requireNonNull(SceneManager.class.getResource("/com/example/guser/app.css")).toExternalForm());
             stage.setTitle(title);
             stage.setScene(scene);
+            stage.setMaximized(true);
             stage.show();
         } catch (Exception e) {
             throw new RuntimeException("Error loading view " + fxml + " : " + e.getMessage(), e);

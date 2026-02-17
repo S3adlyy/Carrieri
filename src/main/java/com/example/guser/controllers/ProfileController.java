@@ -3,6 +3,8 @@ package com.example.guser.controllers;
 import com.example.guser.SceneManager;
 import entities.User;
 import javafx.event.ActionEvent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import services.ProfileService;
 import session.ProfileViewContext;
 import session.SessionContext;
@@ -165,29 +167,37 @@ public class ProfileController {
     // Workspace
     @FXML private Label workspaceHintLabel;
     @FXML private WorkspaceController workspaceSectionController;
+    @FXML private VBox workspaceSection;
+
+    @FXML private VBox userLanguage;
+
+
+
 
 
     @FXML
     public void initialize() {
         hideError();
 
+
         if (!SessionContext.isLoggedIn()) {
             SceneManager.switchTo("/com/example/guser/login.fxml", "Carrieri • Sign in");
+
             return;
         }
 
         // Navbar setup (customizable per page)
-        if (appNavController != null) {
+        /*if (appNavController != null) {
             appNavController.setActive(AppNavController.Route.PROFILE);
-            appNavController.setBackVisible(true);
-            appNavController.setSearchVisible(true);
-            appNavController.setBackAction(() -> {
+            //appNavController.setBackVisible(true);
+            //appNavController.setSearchVisible(true);
+            //appNavController.setBackAction(() -> {
                 // Back goes to my profile (or you can implement a stack later)
                 int me = SessionContext.getCurrentUser().getId();
                 ProfileViewContext.viewUser(me);
                 SceneManager.switchTo("/com/example/guser/profile.fxml", "Carrieri • Profile");
             });
-        }
+        }*/
 
         int me = SessionContext.getCurrentUser().getId();
         Integer targetId = ProfileViewContext.getTargetUserId();
@@ -281,6 +291,7 @@ public class ProfileController {
                     workspaceSectionController.initContext(candidateId, viewerId, ownerMode);
                 }
             }
+            setVisibleManaged(workspaceSection, isCandidate);
 
 
 
@@ -301,6 +312,7 @@ public class ProfileController {
 
 
 
+
             refreshHeaderTexts();
 
             String key = isRecruiter ? u.getLogourl() : u.getProfilepic();
@@ -308,6 +320,8 @@ public class ProfileController {
             Platform.runLater(() -> renderAvatarFromS3Key(key));
 
             loadPeopleSuggestions();
+
+            setVisibleManaged(userLanguage, targetUser.getId() == SessionContext.getCurrentUser().getId());
 
         } catch (Exception e) {
             showError(e.getMessage());

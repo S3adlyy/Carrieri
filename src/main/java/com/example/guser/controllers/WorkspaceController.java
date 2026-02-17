@@ -24,6 +24,7 @@ import javafx.scene.layout.HBox;
 
 public class WorkspaceController {
 
+
     @FXML private Button newTrackBtn;
 
     @FXML private VBox tracksListPane;

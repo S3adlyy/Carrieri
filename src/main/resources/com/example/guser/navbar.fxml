@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.image.ImageView?>
+
+
+        <VBox styleClass="sidebar" spacing="0" xmlns="http://javafx.com/javafx/17"
+              xmlns:fx="http://javafx.com/fxml/1"
+              fx:controller="com.example.guser.controllers.AppNavController"
+              stylesheets="@navbar.css">
+
+            <HBox styleClass="sidebar-brand" alignment="CENTER_LEFT" spacing="12">
+                <ImageView fx:id="brandLogo" styleClass="brand-logo"
+                           fitWidth="36" fitHeight="36" preserveRatio="true"/>
+                <Label text="Carrieri" styleClass="brandText"/>
+            </HBox>
+
+            <VBox styleClass="nav-links-container" spacing="4">
+                <Button fx:id="btnFeed" text="Feed" onAction="#onFeed"
+                        styleClass="nav-link" maxWidth="Infinity">
+                    <graphic><Label text="➕" styleClass="nav-icon-black"/></graphic>
+                </Button>
+
+                <Button fx:id="btnJobs" text="Jobs" onAction="#onJobs"
+                        styleClass="nav-link" maxWidth="Infinity">
+                    <graphic><Label text="📋" styleClass="nav-icon-black"/></graphic>
+                </Button>
+
+                <Button fx:id="btnConnect" text="Connect" onAction="#onConnect"
+                        styleClass="nav-link" maxWidth="Infinity">
+                    <graphic><Label text="🤖" styleClass="nav-icon-black"/></graphic>
+                </Button>
+
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+
+            <VBox styleClass="user-section" spacing="12">
+                <Separator styleClass="sidebar-separator"/>
+
+                <!-- Clickable profile block -->
+                <Button fx:id="btnUserProfile" onAction="#onProfile"
+                        styleClass="user-profile-btn" maxWidth="Infinity">
+                    <graphic>
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <Circle fx:id="navAvatar" radius="18" styleClass="user-avatar"/>
+                            <VBox spacing="2">
+                                <Label fx:id="navNameLabel" text="User Name" styleClass="user-name"/>
+                                <Label fx:id="navRoleLabel" text="Role" styleClass="user-role"/>
+                            </VBox>
+                        </HBox>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="logoutBtn" text="Logout" onAction="#onLogout"
+                        styleClass="logout-btn" maxWidth="Infinity">
+                    <graphic><Label text="🚪" styleClass="nav-icon-black"/></graphic>
+                </Button>
+            </VBox>
+        </VBox>
+

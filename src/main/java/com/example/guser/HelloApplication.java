@@ -13,6 +13,7 @@ public class HelloApplication extends Application {
         SceneManager.init(stage);
         AppHostServices.init(getHostServices());
         SceneManager.switchTo("/com/example/guser/login.fxml", "Carrieri • Sign in");
+        stage.setMaximized(true);
 
     }
 }

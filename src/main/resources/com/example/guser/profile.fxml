@@ -10,10 +10,15 @@
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.guser.controllers.ProfileController"
             stylesheets="@app.css">
-
+    <!-- OLD NAVBAR
     <top>
         <fx:include fx:id="appNav" source="app_nav.fxml"/>
     </top>
+    -->
+    <left>
+        <fx:include fx:id="appNav" source="navbar.fxml"/>
+    </left>
+
 
     <center>
         <StackPane>
@@ -125,10 +130,10 @@
                                     </VBox>
                                 </VBox>
 
-                                <!-- SIDE (RIGHT) -->
+                                <!-- SIDE (RIGHT) hide side card userlanguage if not current user owns the profile-->
                                 <VBox GridPane.columnIndex="1" spacing="14" alignment="TOP_LEFT">
 
-                                    <VBox styleClass="prf-card prf-sideCard" spacing="10">
+                                    <VBox styleClass="prf-card prf-sideCard" spacing="10" fx:id="userLanguage">
                                         <HBox alignment="CENTER_LEFT">
                                             <Label text="Profile language" styleClass="prf-cardTitle"/>
                                             <Region HBox.hgrow="ALWAYS"/>

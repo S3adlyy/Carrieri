@@ -17,5 +17,6 @@ module com.example.guser {
     opens com.example.guser to javafx.fxml;
     opens com.example.guser.controllers to javafx.fxml;
 
+
     exports com.example.guser;
 }

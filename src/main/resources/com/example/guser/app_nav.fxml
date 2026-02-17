@@ -1,10 +1,11 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.SVGPath?>
-
+<!--
 <HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.example.guser.controllers.AppNavController"
       styleClass="navBar" spacing="12" alignment="CENTER_LEFT">
@@ -36,3 +37,5 @@
         <Button fx:id="logoutBtn" text="Logout" onAction="#onLogout" styleClass="navLogoutBtn"/>
     </HBox>
 </HBox>
+
+-->

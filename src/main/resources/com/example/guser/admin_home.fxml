@@ -5,12 +5,12 @@
 <?import javafx.scene.text.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.guser.controllers.CandidateHomeController"
+            fx:controller="com.example.guser.controllers.AdminHomeController"
             stylesheets="@app.css">
     <center>
         <VBox spacing="12">
             <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
-            <Text text="Candidate Home (next: Workspace + Tracks)" styleClass="h1"/>
+            <Text text="Admin Home" styleClass="h1"/>
             <Button text="Logout" onAction="#logout" styleClass="btn-primary" maxWidth="200"/>
         </VBox>
     </center>

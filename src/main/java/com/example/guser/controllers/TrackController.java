@@ -1463,7 +1463,7 @@ private enum ViewMode { CURRENT, PROGRESS }
 
         // Optional: apply your dialog stylesheet (same pattern you use elsewhere)
         choice.getDialogPane().getStylesheets().add(
-                getClass().getResource("/workspace.css").toExternalForm()
+                getClass().getResource("/com/example/guser/workspace.css").toExternalForm()
         );
         choice.getDialogPane().getStyleClass().add("wsp-dialog");
 
