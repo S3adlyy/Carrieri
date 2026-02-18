@@ -3,34 +3,47 @@ package com.exemple.grecrutement;
 import entities.RenduMission;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.chart.*;
+import javafx.geometry.Pos;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.image.WritableImage;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
+import javafx.util.Callback;
 import services.RenduMissionService;
 
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.PieChart;
-import javafx.scene.chart.LineChart;
+// PDF Export Imports
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Text;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class RenduStatsController implements Initializable {
@@ -357,6 +370,238 @@ public class RenduStatsController implements Initializable {
         MissionShellController.getInstance().showRenduList();
     }
 
+    // ============ NEW PDF EXPORT METHOD ============
+
+    @FXML
+    private void exportAsPDF() {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Statistics as PDF");
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("PDF File", "*.pdf")
+            );
+            fileChooser.setInitialFileName("rendu-stats-report-" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()) + ".pdf");
+
+            File file = fileChooser.showSaveDialog(lblTotalSubmissions.getScene().getWindow());
+            if (file != null) {
+                generatePDFReport(file);
+                showSuccessAlert("PDF Generated",
+                        "✓ PDF report exported successfully to:\n" + file.getAbsolutePath());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorAlert("PDF Export Failed", "Failed to generate PDF: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Generate PDF report with statistics
+     */
+    private void generatePDFReport(File file) throws Exception {
+        try (FileOutputStream fos = new FileOutputStream(file);
+             PdfWriter writer = new PdfWriter(fos);
+             PdfDocument pdf = new PdfDocument(writer);
+             Document document = new Document(pdf)) {
+
+            // Add title
+            Paragraph title = new Paragraph("Rendu Submission Statistics Report")
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setFontSize(24)
+                    .setBold()
+                    .setMarginBottom(20);
+            document.add(title);
+
+            // Add generation timestamp
+            Paragraph timestamp = new Paragraph("Generated on: " +
+                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setFontSize(10)
+                    .setMarginBottom(30);
+            document.add(timestamp);
+
+            // ============ SUMMARY CARDS ============
+            Paragraph summaryTitle = new Paragraph("Summary Statistics")
+                    .setFontSize(18)
+                    .setBold()
+                    .setMarginBottom(10);
+            document.add(summaryTitle);
+
+            // Create summary table
+            float[] columnWidths = {1, 1, 1, 1};
+            Table summaryTable = new Table(UnitValue.createPercentArray(columnWidths));
+            summaryTable.setWidth(UnitValue.createPercentValue(100));
+
+            // Add header row
+            addCell(summaryTable, "Total Submissions", true);
+            addCell(summaryTable, "Success Rate", true);
+            addCell(summaryTable, "Average Score", true);
+            addCell(summaryTable, "Top Performer", true);
+
+            // Add data row
+            addCell(summaryTable, lblTotalSubmissions.getText(), false);
+            addCell(summaryTable, lblSuccessRate.getText(), false);
+            addCell(summaryTable, lblAvgScore.getText(), false);
+            addCell(summaryTable, lblTopPerformer.getText() + " (" + lblTopScore.getText() + ")", false);
+
+            document.add(summaryTable);
+            document.add(new Paragraph("\n"));
+
+            // ============ DETAILED METRICS ============
+            Paragraph detailedTitle = new Paragraph("Detailed Performance Metrics")
+                    .setFontSize(18)
+                    .setBold()
+                    .setMarginBottom(10);
+            document.add(detailedTitle);
+
+            // Create detailed metrics table
+            float[] detailedWidths = {2, 1, 1, 1};
+            Table detailedTable = new Table(UnitValue.createPercentArray(detailedWidths));
+            detailedTable.setWidth(UnitValue.createPercentValue(100));
+
+            // Add header
+            addCell(detailedTable, "Metric", true);
+            addCell(detailedTable, "Value", true);
+            addCell(detailedTable, "Min", true);
+            addCell(detailedTable, "Max", true);
+
+            // Add data rows
+            addMetricRow(detailedTable, "Overall Score",
+                    lblOverallScore.getText(), lblMinScore.getText(), lblMaxScore.getText());
+            addMetricRow(detailedTable, "Submissions",
+                    lblSubmissionCount.getText(),
+                    "Accepted: " + lblAcceptedCount.getText(),
+                    "Rejected: " + lblRejectedCount.getText());
+            addMetricRow(detailedTable, "Evaluation Time",
+                    lblAvgEvalTime.getText(), lblFastestEval.getText(), lblSlowestEval.getText());
+
+            document.add(detailedTable);
+            document.add(new Paragraph("\n"));
+
+            // ============ SCORE DISTRIBUTION ============
+            Paragraph scoreTitle = new Paragraph("Score Distribution")
+                    .setFontSize(18)
+                    .setBold()
+                    .setMarginBottom(10);
+            document.add(scoreTitle);
+
+            Table scoreTable = new Table(UnitValue.createPercentArray(new float[]{1, 1}));
+            scoreTable.setWidth(UnitValue.createPercentValue(50));
+
+            addCell(scoreTable, "Score Range", true);
+            addCell(scoreTable, "Count", true);
+
+            for (XYChart.Data<String, Number> data : scoreDistributionChart.getData().get(0).getData()) {
+                addCell(scoreTable, data.getXValue(), false);
+                addCell(scoreTable, String.valueOf(data.getYValue()), false);
+            }
+
+            document.add(scoreTable);
+            document.add(new Paragraph("\n"));
+
+            // ============ STATUS DISTRIBUTION ============
+            Paragraph statusTitle = new Paragraph("Status Distribution")
+                    .setFontSize(18)
+                    .setBold()
+                    .setMarginBottom(10);
+            document.add(statusTitle);
+
+            Table statusTable = new Table(UnitValue.createPercentArray(new float[]{1, 1, 1}));
+            statusTable.setWidth(UnitValue.createPercentValue(75));
+
+            addCell(statusTable, "Status", true);
+            addCell(statusTable, "Count", true);
+            addCell(statusTable, "Percentage", true);
+
+            int total = Integer.parseInt(lblTotalSubmissions.getText());
+            for (PieChart.Data data : statusPieChart.getData()) {
+                double percentage = total > 0 ? (data.getPieValue() / total) * 100 : 0;
+                addCell(statusTable, data.getName(), false);
+                addCell(statusTable, String.valueOf((int) data.getPieValue()), false);
+                addCell(statusTable, String.format("%.1f%%", percentage), false);
+            }
+
+            document.add(statusTable);
+            document.add(new Paragraph("\n"));
+
+            // ============ MISSION PERFORMANCE ============
+            Paragraph missionTitle = new Paragraph("Mission Performance (Top 10)")
+                    .setFontSize(18)
+                    .setBold()
+                    .setMarginBottom(10);
+            document.add(missionTitle);
+
+            Table missionTable = new Table(UnitValue.createPercentArray(new float[]{1, 1}));
+            missionTable.setWidth(UnitValue.createPercentValue(50));
+
+            addCell(missionTable, "Mission", true);
+            addCell(missionTable, "Average Score", true);
+
+            for (XYChart.Data<String, Number> data : missionPerformanceChart.getData().get(0).getData()) {
+                addCell(missionTable, data.getXValue(), false);
+                addCell(missionTable, String.format("%.1f%%", data.getYValue().doubleValue()), false);
+            }
+
+            document.add(missionTable);
+            document.add(new Paragraph("\n"));
+
+            // ============ TIMELINE ============
+            Paragraph timelineTitle = new Paragraph("Submission Timeline (Last 7 Days)")
+                    .setFontSize(18)
+                    .setBold()
+                    .setMarginBottom(10);
+            document.add(timelineTitle);
+
+            Table timelineTable = new Table(UnitValue.createPercentArray(new float[]{1, 1}));
+            timelineTable.setWidth(UnitValue.createPercentValue(50));
+
+            addCell(timelineTable, "Date", true);
+            addCell(timelineTable, "Submissions", true);
+
+            for (XYChart.Data<String, Number> data : timelineChart.getData().get(0).getData()) {
+                addCell(timelineTable, data.getXValue(), false);
+                addCell(timelineTable, String.valueOf(data.getYValue()), false);
+            }
+
+            document.add(timelineTable);
+            document.add(new Paragraph("\n"));
+
+            // ============ FOOTER ============
+            Paragraph footer = new Paragraph("Report generated by AI Code Submission System")
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setFontSize(10)
+                    .setMarginTop(30);
+            document.add(footer);
+        }
+    }
+
+    /**
+     * Helper method to add a cell to PDF table
+     */
+    private void addCell(Table table, String content, boolean isHeader) {
+        Cell cell = new Cell();
+        cell.add(new Paragraph(content));
+
+        if (isHeader) {
+            cell.setBackgroundColor(ColorConstants.LIGHT_GRAY);
+            cell.setBold();
+            cell.setTextAlignment(TextAlignment.CENTER);
+        } else {
+            cell.setTextAlignment(TextAlignment.CENTER);
+        }
+
+        table.addCell(cell);
+    }
+
+    /**
+     * Helper method to add metric row to detailed table
+     */
+    private void addMetricRow(Table table, String metric, String value, String min, String max) {
+        addCell(table, metric, false);
+        addCell(table, value, false);
+        addCell(table, min, false);
+        addCell(table, max, false);
+    }
+
     // ============ UPDATED EXPORT METHODS WITH STYLED ALERTS ============
 
     @FXML
@@ -367,7 +612,7 @@ public class RenduStatsController implements Initializable {
             infoAlert.setTitle("Feature Unavailable");
             infoAlert.setHeaderText("📷 PNG Export Currently Unavailable");
             infoAlert.setContentText("The PNG export feature requires additional dependencies.\n\n" +
-                    "Would you like to export as CSV instead?");
+                    "Would you like to export as PDF or CSV instead?");
 
             // Apply styling
             DialogPane infoPane = infoAlert.getDialogPane();
@@ -388,16 +633,23 @@ public class RenduStatsController implements Initializable {
             // Show and check response
             Optional<ButtonType> result = infoAlert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                // Ask for CSV export confirmation
+                // Show export options
                 Alert choiceAlert = new Alert(Alert.AlertType.CONFIRMATION);
-                choiceAlert.setTitle("Export as CSV");
-                choiceAlert.setHeaderText("📊 Export as CSV?");
-                choiceAlert.setContentText("Would you like to export the statistics data as CSV instead?");
+                choiceAlert.setTitle("Export Options");
+                choiceAlert.setHeaderText("📊 Choose Export Format");
+                choiceAlert.setContentText("Select the format you want to export:");
 
                 // Apply styling
                 DialogPane choicePane = choiceAlert.getDialogPane();
                 choicePane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
                 choicePane.getStyleClass().add("confirmation");
+
+                // Create custom buttons
+                ButtonType pdfButton = new ButtonType("PDF");
+                ButtonType csvButton = new ButtonType("CSV");
+                ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                choiceAlert.getButtonTypes().setAll(pdfButton, csvButton, cancelButton);
 
                 // Style buttons
                 ButtonBar buttonBar = (ButtonBar) choicePane.lookup(".button-bar");
@@ -405,7 +657,15 @@ public class RenduStatsController implements Initializable {
                     buttonBar.getButtons().forEach(button -> {
                         if (button instanceof Button) {
                             Button btn = (Button) button;
-                            if (btn.getText().equals("OK") || btn.getText().equals("Yes")) {
+                            if (btn.getText().equals("PDF")) {
+                                btn.setStyle(
+                                        "-fx-background-color: #ef4444;" +
+                                                "-fx-text-fill: white;" +
+                                                "-fx-font-weight: bold;" +
+                                                "-fx-background-radius: 8;" +
+                                                "-fx-padding: 10 25;"
+                                );
+                            } else if (btn.getText().equals("CSV")) {
                                 btn.setStyle(
                                         "-fx-background-color: #10b981;" +
                                                 "-fx-text-fill: white;" +
@@ -428,8 +688,13 @@ public class RenduStatsController implements Initializable {
                     });
                 }
 
-                if (choiceAlert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-                    exportAsCSV();
+                Optional<ButtonType> choice = choiceAlert.showAndWait();
+                if (choice.isPresent()) {
+                    if (choice.get() == pdfButton) {
+                        exportAsPDF();
+                    } else if (choice.get() == csvButton) {
+                        exportAsCSV();
+                    }
                 }
             }
 

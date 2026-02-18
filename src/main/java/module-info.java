@@ -8,7 +8,9 @@ module com.exemple.grecrutement {
     requires com.fasterxml.jackson.core;
     requires java.desktop;
     requires mysql.connector.j;
-    requires java.mail; // Required for ImageIO and BufferedImage
+    requires java.mail;
+    requires kernel;
+    requires layout; // Required for ImageIO and BufferedImage
 
     // Open ALL packages to Jackson and JavaFX
     opens com.exemple.grecrutement to javafx.fxml;

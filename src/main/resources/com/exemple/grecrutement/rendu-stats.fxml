@@ -173,9 +173,7 @@
 
                     <!-- Export Buttons -->
                     <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0;">
-                        <Button text="📊 Export as PNG" onAction="#exportAsPNG"
-                                style="-fx-background-color: transparent; -fx-border-color: #5E548E; -fx-text-fill: #5E548E; -fx-font-weight: bold; -fx-padding: 8 16;"/>
-                        <Button text="📈 Export as CSV" onAction="#exportAsCSV"
+                        <Button text="📊 Export as PNG | CSV " onAction="#exportAsPNG"
                                 style="-fx-background-color: transparent; -fx-border-color: #5E548E; -fx-text-fill: #5E548E; -fx-font-weight: bold; -fx-padding: 8 16;"/>
                         <Button text="📋 Full Report" onAction="#exportReport"
                                 style="-fx-background-color: #5E548E; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20;"/>
