@@ -100,7 +100,7 @@ public class EntretienCreateController implements Initializable {
                         rendu.getResultat()
                 ));
 
-                showAlert(Alert.AlertType.WARNING, "Attention",
+                showWarningAlert("Attention",
                         "Informations du candidat générées automatiquement. Veuillez vérifier et modifier si nécessaire.");
             }
 
@@ -119,7 +119,7 @@ public class EntretienCreateController implements Initializable {
                     rendu.getResultat()
             ));
 
-            showAlert(Alert.AlertType.ERROR, "Erreur",
+            showErrorAlert("Erreur",
                     "Erreur lors de la récupération des informations: " + e.getMessage() +
                             "\n\nDes informations par défaut ont été générées.");
         }
@@ -159,7 +159,7 @@ public class EntretienCreateController implements Initializable {
 
             // Check if date is in the past
             if (dateTime.isBefore(LocalDateTime.now())) {
-                showAlert(Alert.AlertType.WARNING, "Date invalide",
+                showWarningAlert("Date invalide",
                         "La date de l'entretien ne peut pas être dans le passé.");
                 return;
             }
@@ -187,7 +187,7 @@ public class EntretienCreateController implements Initializable {
             lblStatus.setText("✅ Entretien programmé avec succès! Email envoyé.");
             lblStatus.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
 
-            showAlert(Alert.AlertType.INFORMATION, "Succès",
+            showSuccessAlert("Succès",
                     String.format("L'entretien a été programmé pour le %s à %02d:%02d\n\n" +
                                     "Un email de confirmation a été envoyé à: %s",
                             selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
@@ -207,7 +207,7 @@ public class EntretienCreateController implements Initializable {
             e.printStackTrace();
             lblStatus.setText("❌ Erreur lors de la création");
             lblStatus.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
-            showAlert(Alert.AlertType.ERROR, "Erreur",
+            showErrorAlert("Erreur",
                     "Erreur lors de la création de l'entretien: " + e.getMessage());
         } finally {
             btnSchedule.setDisable(false);
@@ -219,31 +219,31 @@ public class EntretienCreateController implements Initializable {
      */
     private boolean validateInputs() {
         if (txtCandidatEmail.getText().trim().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Champ requis",
+            showWarningAlert("Champ requis",
                     "Veuillez saisir l'email du candidat.");
             return false;
         }
 
         if (txtCandidatName.getText().trim().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Champ requis",
+            showWarningAlert("Champ requis",
                     "Veuillez saisir le nom du candidat.");
             return false;
         }
 
         if (datePicker.getValue() == null) {
-            showAlert(Alert.AlertType.WARNING, "Champ requis",
+            showWarningAlert("Champ requis",
                     "Veuillez sélectionner une date.");
             return false;
         }
 
         if (comboHour.getValue() == null || comboMinute.getValue() == null) {
-            showAlert(Alert.AlertType.WARNING, "Champ requis",
+            showWarningAlert("Champ requis",
                     "Veuillez sélectionner l'heure de l'entretien.");
             return false;
         }
 
         if (comboType.getValue() == null || comboType.getValue().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Champ requis",
+            showWarningAlert("Champ requis",
                     "Veuillez sélectionner le type d'entretien.");
             return false;
         }
@@ -251,7 +251,7 @@ public class EntretienCreateController implements Initializable {
         // Validate email format
         String email = txtCandidatEmail.getText().trim();
         if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            showAlert(Alert.AlertType.WARNING, "Email invalide",
+            showWarningAlert("Email invalide",
                     "Veuillez saisir un email valide.");
             return false;
         }
@@ -280,14 +280,174 @@ public class EntretienCreateController implements Initializable {
         MissionShellController.getInstance().showRenduList();
     }
 
+    // ============ STYLED ALERT METHODS ============
+
     /**
-     * Show alert dialog
+     * Show styled success alert
+     */
+    private void showSuccessAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText("✅ " + title);
+        alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("information");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #10b981;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    /**
+     * Show styled warning alert
+     */
+    private void showWarningAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText("⚠️ " + title);
+        alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("warning");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #f59e0b;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    /**
+     * Show styled error alert
+     */
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText("❌ " + title);
+        alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("error");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #ef4444;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    /**
+     * Show styled info alert
+     */
+    private void showInfoAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText("ℹ️ " + title);
+        alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("information");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #3b82f6;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    /**
+     * Legacy showAlert method - updated to use styled alerts
      */
     private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        switch (type) {
+            case ERROR:
+                showErrorAlert(title, message);
+                break;
+            case WARNING:
+                showWarningAlert(title, message);
+                break;
+            case INFORMATION:
+                showInfoAlert(title, message);
+                break;
+            case CONFIRMATION:
+                // For confirmation, we'll use info style with a different button
+                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                confirm.setTitle(title);
+                confirm.setHeaderText("❓ " + title);
+                confirm.setContentText(message);
+
+                DialogPane dialogPane = confirm.getDialogPane();
+                dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+                dialogPane.getStyleClass().add("information");
+
+                ButtonBar buttonBar = (ButtonBar) dialogPane.lookup(".button-bar");
+                if (buttonBar != null) {
+                    buttonBar.getButtons().forEach(button -> {
+                        if (button instanceof Button) {
+                            Button btn = (Button) button;
+                            if (btn.getText().equals("OK") || btn.getText().equals("Yes")) {
+                                btn.setStyle(
+                                        "-fx-background-color: #3b82f6;" +
+                                                "-fx-text-fill: white;" +
+                                                "-fx-font-weight: bold;" +
+                                                "-fx-background-radius: 8;" +
+                                                "-fx-padding: 10 25;"
+                                );
+                            } else {
+                                btn.setStyle(
+                                        "-fx-background-color: transparent;" +
+                                                "-fx-text-fill: #6b7280;" +
+                                                "-fx-border-color: #e2e8f0;" +
+                                                "-fx-border-width: 1;" +
+                                                "-fx-border-radius: 8;" +
+                                                "-fx-background-radius: 8;" +
+                                                "-fx-padding: 10 25;"
+                                );
+                            }
+                        }
+                    });
+                }
+
+                confirm.showAndWait();
+                break;
+            default:
+                showInfoAlert(title, message);
+                break;
+        }
     }
 }
