@@ -10,7 +10,9 @@ module com.exemple.grecrutement {
     requires mysql.connector.j;
     requires java.mail;
     requires kernel;
-    requires layout; // Required for ImageIO and BufferedImage
+    requires layout;
+    requires com.google.gson;
+    requires jeromq; // Required for ImageIO and BufferedImage
 
     // Open ALL packages to Jackson and JavaFX
     opens com.exemple.grecrutement to javafx.fxml;

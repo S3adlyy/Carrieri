@@ -15,12 +15,17 @@ import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import javafx.event.ActionEvent;
+import javafx.stage.Stage;
 import services.RenduMissionService;
 import services.MissionService;
 import entities.Mission;
+import utils.SimplePythonKernel;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.io.IOException;
 
 public class RenduAddController implements Initializable {
 
@@ -32,6 +37,16 @@ public class RenduAddController implements Initializable {
     @FXML private Label lblResultat;
     @FXML private TextArea lblMissionDescription;
     @FXML private Label lblProcessing;
+
+    // Jupyter Kernel components
+    @FXML private TextArea consoleOutput;
+    @FXML private Label lblKernelStatus;
+    @FXML private ListView<String> variableListView;
+    @FXML private Button btnExecute;
+    @FXML private Button btnProfile;
+    @FXML private Button btnRestartKernel;
+    @FXML private Button btnClearConsole;
+    @FXML private Button btnInspectVariable;
 
     // Validation labels
     @FXML private Label lblCandidatIdError;
@@ -60,6 +75,8 @@ public class RenduAddController implements Initializable {
 
     private RenduMissionService service;
     private MissionService missionService;
+    private SimplePythonKernel pythonKernel;
+    private StringBuilder currentOutput = new StringBuilder();
 
     // Timer variables
     private Timeline timerTimeline;
@@ -98,6 +115,22 @@ public class RenduAddController implements Initializable {
         // Setup keyboard shortcuts for full screen
         setupKeyboardShortcuts();
 
+        // Show initial kernel status
+        if (lblKernelStatus != null) {
+            lblKernelStatus.setText("⏳ Loading kernel...");
+            lblKernelStatus.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
+        }
+
+        if (consoleOutput != null) {
+            consoleOutput.setText("🐍 Initializing Python kernel in background...\n");
+        }
+
+        // Setup Python kernel in background
+        setupPythonKernel();
+
+        // Setup variable list handlers
+        setupVariableListHandlers();
+
         // Timer is not started until mission is selected
         if (timerContainer != null) {
             timerContainer.setVisible(false);
@@ -131,6 +164,337 @@ public class RenduAddController implements Initializable {
         if (lblMissionTypeError != null) {
             lblMissionTypeError.setVisible(false);
             lblMissionTypeError.setManaged(false);
+        }
+
+        // Add shutdown hook
+        Platform.runLater(() -> {
+            Stage stage = (Stage) txtCode.getScene().getWindow();
+            stage.setOnCloseRequest(event -> {
+                if (pythonKernel != null) {
+                    pythonKernel.shutdown();
+                }
+            });
+        });
+    }
+
+    // ============================
+    // PYTHON KERNEL SETUP
+    // ============================
+
+    private void setupPythonKernel() {
+        new Thread(() -> {
+            try {
+                pythonKernel = new SimplePythonKernel();
+
+                // Set up listeners
+                pythonKernel.setOnOutput(output -> {
+                    Platform.runLater(() -> appendToConsole(output, "#e0e0e0"));
+                });
+
+                pythonKernel.setOnError(error -> {
+                    Platform.runLater(() -> {
+                        appendToConsole("❌ " + error, "#ef4444");
+                        updateKernelStatus("❌ Kernel error", "#ef4444");
+                    });
+                });
+
+                pythonKernel.setOnResult(result -> {
+                    Platform.runLater(() -> {
+                        if (result.contains("===VARIABLES_START===")) {
+                            // Start of variable list - ignore
+                        } else if (result.contains("===VARIABLES_END===")) {
+                            // End of variable list - ignore
+                        } else {
+                            appendToConsole(result, "#10b981");
+                        }
+                    });
+                });
+
+                Platform.runLater(() -> {
+                    updateKernelStatus("⏳ Starting Python kernel...", "#f59e0b");
+                    appendToConsole("🐍 Initializing Python kernel...", "#8b5cf6");
+                });
+
+                pythonKernel.start();
+
+                Platform.runLater(() -> {
+                    updateKernelStatus("✅ Python kernel ready", "#10b981");
+                    appendToConsole("✅ Kernel ready! Python " + getPythonVersionSimple(), "#10b981");
+
+                    // Test kernel with simple command
+                    try {
+                        pythonKernel.executeCode("print('✓ Kernel test successful')");
+                        Thread.sleep(200);
+                        pythonKernel.getVariables();
+                    } catch (Exception e) {
+                        appendToConsole("Test warning: " + e.getMessage(), "#f59e0b");
+                    }
+
+                    if (btnExecute != null) btnExecute.setDisable(false);
+                    if (btnProfile != null) btnProfile.setDisable(false);
+                    if (btnRestartKernel != null) btnRestartKernel.setDisable(false);
+                });
+
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    updateKernelStatus("❌ Kernel failed", "#ef4444");
+                    appendToConsole("❌ Failed to start kernel: " + e.getMessage(), "#ef4444");
+                    appendToConsole("\n💡 Make sure Python is installed and in your PATH", "#f59e0b");
+                    e.printStackTrace();
+                });
+            }
+        }).start();
+    }
+
+    private String getPythonVersionSimple() {
+        try {
+            Process process = Runtime.getRuntime().exec("python --version");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = reader.readLine();
+            if (line != null && line.contains("Python")) {
+                return line.replace("Python", "").trim();
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        return "3.x";
+    }
+
+    private void setupVariableListHandlers() {
+        if (variableListView != null) {
+            variableListView.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2) {
+                    inspectSelectedVariable();
+                }
+            });
+        }
+    }
+
+    private void appendToConsole(String text, String color) {
+        if (consoleOutput != null) {
+            currentOutput.append(text).append("\n");
+            consoleOutput.appendText(text + "\n");
+
+            // Auto-scroll to bottom
+            consoleOutput.setScrollTop(Double.MAX_VALUE);
+        }
+    }
+
+    private void updateKernelStatus(String status, String color) {
+        if (lblKernelStatus != null) {
+            lblKernelStatus.setText(status);
+            lblKernelStatus.setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
+        }
+    }
+
+    private void parseAndUpdateVariables(String output) {
+        if (variableListView == null) return;
+
+        // Clear the list first
+        variableListView.getItems().clear();
+
+        // Split the output and look for variable sections
+        String[] lines = output.split("\n");
+        boolean inVars = false;
+
+        for (String line : lines) {
+            if (line.contains("===VARS_START===")) {
+                inVars = true;
+                continue;
+            }
+            if (line.contains("===VARS_END===")) {
+                break;
+            }
+            if (inVars && !line.trim().isEmpty()) {
+                variableListView.getItems().add(line.trim());
+            }
+        }
+    }
+
+    // ============================
+    // PYTHON KERNEL ACTIONS
+    // ============================
+
+    @FXML
+    private void executeWithKernel() {
+        String code = txtCode.getText();
+
+        if (code == null || code.trim().isEmpty()) {
+            appendToConsole("⚠️ No code to execute", "#f59e0b");
+            return;
+        }
+
+        // Clear console
+        if (consoleOutput != null) {
+            consoleOutput.clear();
+            currentOutput.setLength(0);
+        }
+
+        // Add clean separators
+        appendToConsole("─".repeat(50), "#5b21b6");
+        appendToConsole("🚀 Executing code...", "#f59e0b");
+        appendToConsole("─".repeat(50), "#5b21b6");
+
+        updateKernelStatus("🔄 Executing...", "#f59e0b");
+
+        if (pythonKernel != null && pythonKernel.isRunning()) {
+            try {
+                pythonKernel.executeCode(code);
+
+                // Refresh variables after execution
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(500);
+                        pythonKernel.getVariables();
+                        updateKernelStatus("✅ Kernel ready", "#10b981");
+                    } catch (Exception e) {}
+                }).start();
+
+            } catch (IOException e) {
+                appendToConsole("❌ Execution failed: " + e.getMessage(), "#ef4444");
+                updateKernelStatus("❌ Execution failed", "#ef4444");
+            }
+        } else {
+            appendToConsole("❌ Kernel not available. Using fallback evaluation.", "#ef4444");
+            evaluer();
+        }
+    }
+
+    @FXML
+    private void runCodeWithProfiling() {
+        String code = txtCode.getText();
+
+        if (code == null || code.trim().isEmpty()) {
+            appendToConsole("⚠️ No code to profile", "#f59e0b");
+            return;
+        }
+
+        if (consoleOutput != null) {
+            consoleOutput.clear();
+            currentOutput.setLength(0);
+        }
+
+        appendToConsole("=".repeat(60), "#5b21b6");
+        appendToConsole("📊 Running with profiling...", "#8b5cf6");
+        appendToConsole("=".repeat(60), "#5b21b6");
+
+        String profiledCode =
+                "import time\n" +
+                        "import sys\n" +
+                        "from io import StringIO\n" +
+                        "import contextlib\n" +
+                        "\n" +
+                        "# Start timing\n" +
+                        "start_time = time.time()\n" +
+                        "\n" +
+                        "# Capture output\n" +
+                        "output_buffer = StringIO()\n" +
+                        "with contextlib.redirect_stdout(output_buffer):\n" +
+                        "    try:\n" +
+                        "        " + code.replace("\n", "\n        ") + "\n" +
+                        "    except Exception as e:\n" +
+                        "        print(f'Error: {e}')\n" +
+                        "        import traceback\n" +
+                        "        traceback.print_exc()\n" +
+                        "\n" +
+                        "# Calculate time\n" +
+                        "execution_time = time.time() - start_time\n" +
+                        "\n" +
+                        "# Print results\n" +
+                        "print('\\n' + '='*50)\n" +
+                        "print('📊 EXECUTION RESULTS')\n" +
+                        "print('='*50)\n" +
+                        "print(output_buffer.getvalue())\n" +
+                        "print('\\n' + '='*50)\n" +
+                        "print('⏱️ PERFORMANCE METRICS')\n" +
+                        "print('='*50)\n" +
+                        "print(f'Execution time: {execution_time*1000:.2f} ms')\n";
+
+        try {
+            pythonKernel.executeCode(profiledCode);
+        } catch (IOException e) {
+            appendToConsole("❌ Profiling failed: " + e.getMessage(), "#ef4444");
+        }
+    }
+
+    @FXML
+    private void restartKernel() {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Restart Kernel");
+        confirm.setHeaderText("🔄 Restart Python Kernel");
+        confirm.setContentText("Are you sure you want to restart the kernel?\nAll variables will be lost.");
+
+        DialogPane dialogPane = confirm.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("confirmation");
+
+        if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            appendToConsole("🔄 Restarting kernel...", "#f59e0b");
+
+            if (pythonKernel != null) {
+                pythonKernel.shutdown();
+            }
+
+            // Clear console and variables
+            if (consoleOutput != null) {
+                consoleOutput.clear();
+                currentOutput.setLength(0);
+            }
+
+            if (variableListView != null) {
+                variableListView.getItems().clear();
+            }
+
+            // Restart kernel
+            setupPythonKernel();
+        }
+    }
+
+    @FXML
+    private void clearConsole() {
+        if (consoleOutput != null) {
+            consoleOutput.clear();
+            currentOutput.setLength(0);
+            appendToConsole("🧹 Console cleared", "#6b7280");
+        }
+    }
+
+    @FXML
+    private void inspectSelectedVariable() {
+        String selected = variableListView.getSelectionModel().getSelectedItem();
+        if (selected != null && pythonKernel != null && pythonKernel.isRunning()) {
+            // Extract variable name from the display string
+            String varName = selected.split(" ")[0];
+
+            appendToConsole("=".repeat(40), "#5b21b6");
+            appendToConsole("🔍 Inspecting variable: " + varName, "#8b5cf6");
+            appendToConsole("=".repeat(40), "#5b21b6");
+
+            String inspectCode =
+                    "import pprint\n" +
+                            "var = " + varName + "\n" +
+                            "print(f'📌 Variable: {var_name}')\n" +
+                            "print(f'🔤 Type: {type(var).__name__}')\n" +
+                            "print(f'📋 Value:')\n" +
+                            "pprint.pprint(var)\n";
+
+            try {
+                pythonKernel.executeCode(inspectCode);
+            } catch (IOException e) {
+                appendToConsole("❌ Inspection failed: " + e.getMessage(), "#ef4444");
+            }
+        }
+    }
+
+    @FXML
+    private void listAllVariables() {
+        if (pythonKernel != null && pythonKernel.isRunning()) {
+            try {
+                appendToConsole("📊 Refreshing variable list...", "#8b5cf6");
+                pythonKernel.getVariables();
+            } catch (IOException e) {
+                appendToConsole("❌ Failed to list variables: " + e.getMessage(), "#ef4444");
+            }
         }
     }
 
@@ -362,10 +726,22 @@ public class RenduAddController implements Initializable {
                     exitFullScreen();
                 }
 
-                // Ctrl+Enter to submit
+                // Ctrl+Enter to execute with kernel
                 if (event.isControlDown() && event.getCode() == KeyCode.ENTER) {
                     event.consume();
-                    evaluer();
+                    if (pythonKernel != null && pythonKernel.isRunning()) {
+                        executeWithKernel();
+                    } else {
+                        evaluer();
+                    }
+                }
+
+                // Ctrl+Shift+Enter for profiling
+                if (event.isControlDown() && event.isShiftDown() && event.getCode() == KeyCode.ENTER) {
+                    event.consume();
+                    if (pythonKernel != null && pythonKernel.isRunning()) {
+                        runCodeWithProfiling();
+                    }
                 }
             });
         }
@@ -486,7 +862,11 @@ public class RenduAddController implements Initializable {
             exitFullScreen();
 
             // Evaluate
-            evaluer();
+            if (pythonKernel != null && pythonKernel.isRunning()) {
+                executeWithKernel();
+            } else {
+                evaluer();
+            }
         }
     }
 
@@ -700,12 +1080,7 @@ public class RenduAddController implements Initializable {
                 lblResultat.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
             }
 
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Time's Up");
-            alert.setHeaderText("⏰ Submission Time Expired");
-            alert.setContentText("You didn't submit any code before the timer ended.");
-            styleAlert(alert, "warning");
-            alert.showAndWait();
+            showWarningAlert("Time's Up", "You didn't submit any code before the timer ended.");
         }
     }
 
@@ -787,52 +1162,20 @@ public class RenduAddController implements Initializable {
     }
 
     // ============================
-    // HELPER METHOD FOR STYLING ALERTS
-    // ============================
-
-    private void styleAlert(Alert alert, String alertType) {
-        DialogPane dialogPane = alert.getDialogPane();
-
-        // Add Alert.css from resources folder
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-
-        // Add style class based on alert type
-        dialogPane.getStyleClass().add(alertType);
-
-        // Style the OK button
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.getStyleClass().add("ok-button");
-        }
-
-        // Style Cancel button if present
-        Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
-        if (cancelButton != null) {
-            cancelButton.getStyleClass().add("cancel-button");
-        }
-    }
-
-    // ============================
-    // EVALUATION METHOD
+    // EVALUATION METHOD (Legacy)
     // ============================
 
     @FXML
     private void evaluer() {
         // Validate all fields before proceeding
         if (!validateAllFields()) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Validation Error");
-            alert.setHeaderText("⚠️ Please fix the following errors:");
-
             StringBuilder errors = new StringBuilder();
             if (!validateCandidatId()) errors.append("• Invalid Candidate ID\n");
             if (!validateMissionId()) errors.append("• Invalid Mission ID\n");
             if (!validateCode()) errors.append("• Invalid Python code\n");
             if (!validateMissionType()) errors.append("• Mission type required\n");
 
-            alert.setContentText(errors.toString());
-            styleAlert(alert, "warning");
-            alert.showAndWait();
+            showWarningAlert("Validation Error", errors.toString());
             return;
         }
 
@@ -847,13 +1190,7 @@ public class RenduAddController implements Initializable {
             missionId = Integer.parseInt(txtMissionId.getText());
             candidatId = Integer.parseInt(txtCandidatId.getText());
         } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Invalid Input");
-            alert.setHeaderText("❌ Invalid IDs");
-            alert.setContentText("Please enter valid numbers for Mission ID and Candidate ID");
-            styleAlert(alert, "error");
-            alert.showAndWait();
-
+            showErrorAlert("Invalid IDs", "Please enter valid numbers for Mission ID and Candidate ID");
             if (!isTimerFinished) {
                 startTimer(remainingSeconds > 0 ? remainingSeconds : DEFAULT_TIMER_MINUTES * 60);
             }
@@ -900,23 +1237,15 @@ public class RenduAddController implements Initializable {
                         resultText += "✅ ACCEPTED! (Score meets minimum requirement)";
                         lblResultat.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold; -fx-font-size: 14px;");
 
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Success");
-                        alert.setHeaderText("✅ Congratulations!");
-                        alert.setContentText("Your code has been accepted with a score of " + r.getScore() + "%!");
-                        styleAlert(alert, "information");
-                        alert.showAndWait();
+                        showSuccessAlert("Code Accepted",
+                                "Your code has been accepted with a score of " + r.getScore() + "%!");
 
                     } else {
                         resultText += "❌ REJECTED (Score below minimum requirement)";
                         lblResultat.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 14px;");
 
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Code Rejected");
-                        alert.setHeaderText("❌ Code Rejected");
-                        alert.setContentText("Your code scored " + r.getScore() + "%, which is below the minimum requirement.");
-                        styleAlert(alert, "warning");
-                        alert.showAndWait();
+                        showWarningAlert("Code Rejected",
+                                "Your code scored " + r.getScore() + "%, which is below the minimum requirement.");
                     }
 
                     lblResultat.setText(resultText);
@@ -943,12 +1272,7 @@ public class RenduAddController implements Initializable {
                     lblResultat.setText("❌ Error: " + e.getMessage());
                     lblResultat.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
 
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Evaluation Error");
-                    alert.setHeaderText("❌ Failed to evaluate code");
-                    alert.setContentText(e.getMessage());
-                    styleAlert(alert, "error");
-                    alert.showAndWait();
+                    showErrorAlert("Evaluation Error", e.getMessage());
                 });
             }
         }).start();
@@ -970,12 +1294,107 @@ public class RenduAddController implements Initializable {
         this.isAutoSubmitEnabled = enabled;
     }
 
-    private void alert(String title, String message) {
+    // ============================
+    // STYLED ALERT METHODS
+    // ============================
+
+    private void showSuccessAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText("✅ " + title);
+        alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("information");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #10b981;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    private void showWarningAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);
         alert.setHeaderText("⚠️ " + title);
         alert.setContentText(message);
-        styleAlert(alert, "warning");
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("warning");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #f59e0b;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
         alert.showAndWait();
+    }
+
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText("❌ " + title);
+        alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("error");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #ef4444;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    private void showInfoAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText("ℹ️ " + title);
+        alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("information");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #3b82f6;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    private void alert(String title, String message) {
+        showInfoAlert(title, message);
     }
 }

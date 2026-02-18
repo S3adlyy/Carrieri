@@ -1,0 +1,352 @@
+Jupyter Kernel Gateway Installation : 
+1 ) Architecture Overview:
+[JavaFX App] ←→ [Jupyter Kernel Gateway] ←→ [IPython Kernel]
+     ↑                      ↑
+     └── [ZeroMQ] ←───←───←┘
+
+
+2)First, you need to install Jupyter and the Kernel Gateway on your system : 
+Open PowerSheel As Adminstrator and put : 
+# Install Jupyter and kernel gateway
+pip install jupyter jupyter_kernel_gateway
+
+# Verify installation
+jupyter kernelspec list
+
+3) After that add this Dependency into the pom.fxml and reload the Maven : 
+<dependency>
+    <groupId>org.zeromq</groupId>
+    <artifactId>jeromq</artifactId>
+    <version>0.5.3</version>
+</dependency>
+
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.10.1</version>
+</dependency>
+
+
+4) on the Utils Package add JupyterKernelManager class and add this code : 
+package com.exemple.grecrutement.util;
+
+import com.google.gson.*;
+import org.zeromq.*;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.regex.*;
+
+public class JupyterKernelManager {
+    
+    private Process kernelProcess;
+    private ZContext context;
+    private ZMQ.Socket shellSocket;
+    private ZMQ.Socket iopubSocket;
+    private String kernelId;
+    private String connectionFile;
+    
+    private final Map<String, CompletableFuture<JsonObject>> pendingRequests = new ConcurrentHashMap<>();
+    private final List<ExecutionResultListener> listeners = new CopyOnWriteArrayList<>();
+    
+    private static final Pattern UUID_PATTERN = 
+        Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
+    
+    public interface ExecutionResultListener {
+        void onResult(ExecutionResult result);
+        void onError(String error);
+        void onStream(String output);
+    }
+    
+    public static class ExecutionResult {
+        public final String text;
+        public final Map<String, String> data;
+        public final Map<String, String> metadata;
+        
+        public ExecutionResult(String text, Map<String, String> data, Map<String, String> metadata) {
+            this.text = text;
+            this.data = data;
+            this.metadata = metadata;
+        }
+    }
+    
+    /**
+     * Start a new Jupyter kernel
+     */
+    public void startKernel() throws IOException {
+        // Create temporary connection file
+        connectionFile = File.createTempFile("kernel-", ".json").getAbsolutePath();
+        
+        // Start kernel process
+        ProcessBuilder pb = new ProcessBuilder(
+            "jupyter", "kernel", 
+            "--kernel", "python3",
+            "--connection-file", connectionFile
+        );
+        pb.redirectErrorStream(true);
+        kernelProcess = pb.start();
+        
+        // Monitor kernel output for debugging
+        new Thread(() -> {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(kernelProcess.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println("[Kernel] " + line);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+        
+        // Wait for connection file to be written
+        waitForConnectionFile();
+        
+        // Parse connection info
+        JsonObject connectionInfo = parseConnectionFile();
+        
+        // Connect to kernel sockets
+        connectToKernel(connectionInfo);
+        
+        // Start listener for IOPub messages (output, results)
+        startIOPubListener();
+        
+        // Send kernel info request to initialize
+        sendKernelInfoRequest();
+    }
+    
+    private void waitForConnectionFile() throws IOException {
+        long start = System.currentTimeMillis();
+        long timeout = 30000; // 30 seconds
+        
+        while (System.currentTimeMillis() - start < timeout) {
+            File file = new File(connectionFile);
+            if (file.exists() && file.length() > 0) {
+                try { Thread.sleep(500); } catch (InterruptedException e) {}
+                return;
+            }
+            try { Thread.sleep(100); } catch (InterruptedException e) {}
+        }
+        throw new IOException("Timeout waiting for kernel connection file");
+    }
+    
+    private JsonObject parseConnectionFile() throws IOException {
+        try (FileReader reader = new FileReader(connectionFile)) {
+            return JsonParser.parseReader(reader).getAsJsonObject();
+        }
+    }
+    
+    private void connectToKernel(JsonObject connectionInfo) {
+        context = new ZContext();
+        
+        String transport = connectionInfo.get("transport").getAsString();
+        String ip = connectionInfo.get("ip").getAsString();
+        int shellPort = connectionInfo.get("shell_port").getAsInt();
+        int iopubPort = connectionInfo.get("iopub_port").getAsInt();
+        
+        // Connect shell socket (for sending code)
+        shellSocket = context.createSocket(SocketType.DEALER);
+        shellSocket.connect(String.format("%s://%s:%d", transport, ip, shellPort));
+        
+        // Connect IOPub socket (for receiving output)
+        iopubSocket = context.createSocket(SocketType.SUB);
+        iopubSocket.connect(String.format("%s://%s:%d", transport, ip, iopubPort));
+        iopubSocket.subscribe("".getBytes()); // Subscribe to all topics
+        
+        kernelId = UUID.randomUUID().toString();
+    }
+    
+    private void startIOPubListener() {
+        Thread listener = new Thread(() -> {
+            ZMQ.Poller poller = context.createPoller(1);
+            poller.register(iopubSocket, ZMQ.Poller.POLLIN);
+            
+            while (!Thread.currentThread().isInterrupted()) {
+                if (poller.poll(100) > 0) {
+                    byte[] message = iopubSocket.recv(0);
+                    processIOPubMessage(message);
+                }
+            }
+        });
+        listener.setDaemon(true);
+        listener.start();
+    }
+    
+    private void processIOPubMessage(byte[] message) {
+        try {
+            String msgStr = new String(message);
+            JsonObject msg = JsonParser.parseString(msgStr).getAsJsonObject();
+            
+            String msgType = msg.get("msg_type").getAsString();
+            JsonObject content = msg.getAsJsonObject("content");
+            
+            switch (msgType) {
+                case "stream":
+                    String streamName = content.get("name").getAsString();
+                    String streamText = content.get("text").getAsString();
+                    for (ExecutionResultListener l : listeners) {
+                        l.onStream(streamText);
+                    }
+                    break;
+                    
+                case "execute_result":
+                case "display_data":
+                    JsonObject data = content.getAsJsonObject("data");
+                    JsonObject metadata = content.getAsJsonObject("metadata");
+                    
+                    // Extract text/plain representation
+                    String text = data.has("text/plain") ? 
+                        data.get("text/plain").getAsString() : "";
+                    
+                    // Convert data to Map
+                    Map<String, String> dataMap = new HashMap<>();
+                    for (String key : data.keySet()) {
+                        dataMap.put(key, data.get(key).toString());
+                    }
+                    
+                    // Convert metadata to Map
+                    Map<String, String> metadataMap = new HashMap<>();
+                    for (String key : metadata.keySet()) {
+                        metadataMap.put(key, metadata.get(key).toString());
+                    }
+                    
+                    ExecutionResult result = new ExecutionResult(text, dataMap, metadataMap);
+                    for (ExecutionResultListener l : listeners) {
+                        l.onResult(result);
+                    }
+                    break;
+                    
+                case "error":
+                    String ename = content.get("ename").getAsString();
+                    String evalue = content.get("evalue").getAsString();
+                    JsonArray traceback = content.getAsJsonArray("traceback");
+                    
+                    StringBuilder error = new StringBuilder();
+                    error.append(ename).append(": ").append(evalue).append("\n");
+                    for (JsonElement line : traceback) {
+                        error.append(line.getAsString()).append("\n");
+                    }
+                    
+                    for (ExecutionResultListener l : listeners) {
+                        l.onError(error.toString());
+                    }
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void sendKernelInfoRequest() {
+        JsonObject request = createMessage("kernel_info_request");
+        sendShellMessage(request);
+    }
+    
+    private JsonObject createMessage(String msgType) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("msg_id", UUID.randomUUID().toString());
+        msg.addProperty("username", "user");
+        msg.addProperty("session", kernelId);
+        msg.addProperty("msg_type", msgType);
+        msg.addProperty("version", "5.3");
+        
+        JsonObject metadata = new JsonObject();
+        msg.add("metadata", metadata);
+        
+        JsonObject content = new JsonObject();
+        msg.add("content", content);
+        
+        return msg;
+    }
+    
+    private void sendShellMessage(JsonObject message) {
+        String msgId = message.get("msg_id").getAsString();
+        CompletableFuture<JsonObject> future = new CompletableFuture<>();
+        pendingRequests.put(msgId, future);
+        
+        String msgStr = message.toString();
+        shellSocket.send(msgStr.getBytes(), 0);
+    }
+    
+    /**
+     * Execute Python code in the kernel
+     */
+    public void executeCode(String code) {
+        JsonObject request = createMessage("execute_request");
+        JsonObject content = request.getAsJsonObject("content");
+        content.addProperty("code", code);
+        content.addProperty("silent", false);
+        content.addProperty("store_history", true);
+        content.addProperty("user_expressions", "{}");
+        content.addProperty("allow_stdin", false);
+        
+        JsonObject metadata = request.getAsJsonObject("metadata");
+        metadata.addProperty("silent", false);
+        
+        sendShellMessage(request);
+    }
+    
+    /**
+     * Get variable value from kernel
+     */
+    public void inspectVariable(String name) {
+        String code = String.format("print(repr(%s))", name);
+        executeCode(code);
+    }
+    
+    /**
+     * Get all variables in current scope
+     */
+    public void listVariables() {
+        String code = "print([var for var in dir() if not var.startswith('_')])";
+        executeCode(code);
+    }
+    
+    /**
+     * Add listener for execution results
+     */
+    public void addListener(ExecutionResultListener listener) {
+        listeners.add(listener);
+    }
+    
+    /**
+     * Remove listener
+     */
+    public void removeListener(ExecutionResultListener listener) {
+        listeners.remove(listener);
+    }
+    
+    /**
+     * Shutdown kernel
+     */
+    public void shutdown() {
+        if (shellSocket != null) {
+            JsonObject request = createMessage("shutdown_request");
+            JsonObject content = request.getAsJsonObject("content");
+            content.addProperty("restart", false);
+            sendShellMessage(request);
+            
+            try { Thread.sleep(500); } catch (InterruptedException e) {}
+        }
+        
+        if (context != null) {
+            context.close();
+        }
+        
+        if (kernelProcess != null) {
+            kernelProcess.destroyForcibly();
+        }
+        
+        // Clean up connection file
+        if (connectionFile != null) {
+            new File(connectionFile).delete();
+        }
+    }
+}
+
+
+
+
+
+
+

@@ -61,12 +61,19 @@
                             <TextField fx:id="txtMissionId" promptText="Auto-filled from selection" styleClass="form-field"
                                        GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-                            <Label text="Mission Type" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                            <ComboBox fx:id="comboMissionType" promptText="Select mission type" styleClass="form-combo"
-                                      GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                            <Label fx:id="lblCandidatIdError" styleClass="field-error"
+                                   GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                            <Label fx:id="lblMissionIdError" styleClass="field-error"
+                                   GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-                            <Label text="Difficulty" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-                            <HBox spacing="5" GridPane.rowIndex="3" GridPane.columnIndex="1" alignment="CENTER_LEFT">
+                            <Label text="Mission Type" styleClass="form-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                            <ComboBox fx:id="comboMissionType" promptText="Select mission type" styleClass="form-combo"
+                                      GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                            <Label fx:id="lblMissionTypeError" styleClass="field-error"
+                                   GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+
+                            <Label text="Difficulty" styleClass="form-label" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                            <HBox spacing="5" GridPane.rowIndex="4" GridPane.columnIndex="1" alignment="CENTER_LEFT">
                                 <Label text="●" styleClass="difficulty-easy"/>
                                 <Label text="Easy" styleClass="difficulty-label"/>
                             </HBox>
@@ -80,7 +87,7 @@
                             </HBox>
                             <TextArea fx:id="lblMissionDescription" editable="false" wrapText="true"
                                       prefHeight="80" styleClass="details-text"
-                                      text="Write a function that adds two numbers and returns the result. The input will be provided via standard input."/>
+                                      text="Select a mission to see its description"/>
                         </VBox>
 
                         <!-- Timer Progress Premium -->
@@ -94,30 +101,16 @@
                                 <Label fx:id="lblTimerProgress" text="100%" styleClass="progress-label"/>
                                 <Label text="• 20:00 total" styleClass="progress-total"/>
                             </HBox>
+                            <Label fx:id="lblTimerWarning" styleClass="timer-warning" managed="false" visible="false"/>
                         </VBox>
 
-                        <!-- Bouton Submit Premium -->
-                        <HBox spacing="10" alignment="CENTER_LEFT">
-                            <Button text="▶ Execute &amp; Submit" onAction="#evaluer" styleClass="submit-button"/>
-                            <ProgressIndicator fx:id="progress" visible="false" prefWidth="24" prefHeight="24" styleClass="custom-progress"/>
-                            <Label fx:id="lblProcessing" text="Processing..." visible="false" styleClass="processing-label"/>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <Label text="⌨️ Ctrl+Enter" styleClass="shortcut-hint"/>
-                        </HBox>
-
-                        <!-- Console Premium -->
-                        <VBox spacing="5" styleClass="console-box" VBox.vgrow="NEVER">
-                            <HBox alignment="CENTER_LEFT" spacing="8">
-                                <Label text="📟" styleClass="console-icon"/>
-                                <Label text="Output Console" styleClass="console-title"/>
-                                <Label text="• Ready" styleClass="console-status"/>
-                            </HBox>
-                            <Label fx:id="lblResultat" text="✓ System ready. Click 'Execute &amp; Submit' to run your code."
-                                   styleClass="console-output" wrapText="true" prefHeight="60"/>
+                        <!-- Security Warning -->
+                        <VBox fx:id="securityWarningContainer" styleClass="security-warning" managed="false" visible="false">
+                            <Label fx:id="lblSecurityWarning" text="⚠️ Security Warning" styleClass="security-warning-text"/>
                         </VBox>
                     </VBox>
 
-                    <!-- Colonne droite - Éditeur Premium - MODIFIÉ POUR PRENDRE TOUTE LA HAUTEUR -->
+                    <!-- Colonne droite - Éditeur Premium et Console -->
                     <VBox spacing="10" styleClass="right-column" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
 
                         <!-- En-tête éditeur premium -->
@@ -133,7 +126,7 @@
                             </HBox>
                         </HBox>
 
-                        <!-- Éditeur de code premium - MODIFIÉ POUR PRENDRE TOUTE LA HAUTEUR DISPONIBLE -->
+                        <!-- Éditeur de code premium -->
                         <VBox styleClass="editor-container" VBox.vgrow="ALWAYS">
                             <HBox styleClass="editor-header" spacing="10">
                                 <HBox spacing="8" alignment="CENTER_LEFT">
@@ -159,6 +152,45 @@
                             </HBox>
                         </VBox>
 
+                        <!-- ========== JUPYTER KERNEL CONSOLE SECTION - REDESIGNED ========== -->
+                        <VBox styleClass="jupyter-console-section" spacing="12" VBox.vgrow="ALWAYS">
+
+                            <!-- Console Header avec Kernel Status -->
+                            <HBox spacing="12" alignment="CENTER_LEFT">
+                                <Label text="📟" styleClass="console-icon"/>
+                                <Label text="Kernel Console" styleClass="console-title"/>
+                                <Label fx:id="lblKernelStatus" text="⏳ Starting kernel..." styleClass="kernel-status"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+
+                                <!-- Kernel Control Buttons - Redesigned -->
+                                <Button fx:id="btnExecute" text="▶ Execute" onAction="#executeWithKernel"
+                                        styleClass="console-btn-execute" disable="true"/>
+                                <Button fx:id="btnClearConsole" text="✕ Clear" onAction="#clearConsole"
+                                        styleClass="console-btn-clear"/>
+                            </HBox>
+
+                            <!-- Console Output Area -->
+                            <TextArea fx:id="consoleOutput"
+                                      editable="false"
+                                      wrapText="true"
+                                      prefHeight="180"
+                                      styleClass="console-output"
+                                      promptText="Output will appear here..."/>
+                        </VBox>
+
+                        <!-- Bouton Submit et Status -->
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Button text="▶ Submit " onAction="#evaluer" styleClass="submit-button-large"/>
+                            <ProgressIndicator fx:id="progress" visible="false" prefWidth="24" prefHeight="24" styleClass="custom-progress"/>
+                            <Label fx:id="lblProcessing" text="Processing..." visible="false" styleClass="processing-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="⌨️ Ctrl+Enter (Kernel) | Ctrl+Shift+Enter (Profile)" styleClass="shortcut-hint"/>
+                        </HBox>
+
+                        <!-- Result Label -->
+                        <Label fx:id="lblResultat" text="✓ System ready. Click 'Execute' to run your code."
+                               styleClass="result-label" wrapText="true"/>
+
                         <!-- Status bar premium -->
                         <HBox spacing="15" styleClass="status-bar">
                             <Label text="🐍 Python 3.11" styleClass="status-item"/>
@@ -166,7 +198,7 @@
                             <Label text="⚡ Live execution" styleClass="status-item"/>
                             <Label text="⏱️ Auto-submit: 20:00" styleClass="status-item"/>
                             <Region HBox.hgrow="ALWAYS"/>
-                            <Label text="F11 fullscreen" styleClass="shortcut"/>
+                            <Label text="F11 fullscreen • Kernel ready" styleClass="shortcut"/>
                         </HBox>
                     </VBox>
                 </HBox>
@@ -191,5 +223,19 @@
             </HBox>
         </HBox>
     </bottom>
+
+    <!-- Full Screen Editor Overlay -->
+    <VBox fx:id="fullScreenEditorOverlay" styleClass="fullscreen-overlay" visible="false" managed="false">
+        <HBox styleClass="fullscreen-header">
+            <Label text="🚀 Full Screen Editor" styleClass="fullscreen-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="fullScreenTimer" text="20:00" styleClass="fullscreen-timer"/>
+            <Button text="✕ Close (ESC)" onAction="#exitFullScreen" styleClass="close-fullscreen-btn"/>
+        </HBox>
+        <TextArea fx:id="fullScreenCodeEditor" styleClass="fullscreen-editor" VBox.vgrow="ALWAYS"/>
+        <HBox styleClass="fullscreen-footer" alignment="CENTER">
+            <Button text="🚀 Execute (Ctrl+Enter)" onAction="#evaluateFromFullScreen" styleClass="submit-button-large"/>
+        </HBox>
+    </VBox>
 
 </BorderPane>
