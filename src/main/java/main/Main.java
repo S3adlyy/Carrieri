@@ -1,18 +1,30 @@
 package main;
 
 import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.SequentialTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+
+import java.util.prefs.Preferences;
 
 public class Main extends Application {
 
@@ -21,156 +33,209 @@ public class Main extends Application {
     private ProgressBar progressBar;
     private Label statusLabel;
 
+    private static final String PREFS_DARK_MODE = "darkMode";
+    private static Preferences prefs;
+
+    // Chemins des fichiers CSS
+    private static final String CSS_LIGHT = "/css/theme-unified.css";
+    private static final String CSS_DARK = "/css/theme-dark.css";
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
 
-        // Afficher le splash screen
+        prefs = Preferences.userNodeForPackage(Main.class);
+
         createSplashScreen();
 
-        // Charger l'application en arrière-plan
-        new Thread(() -> {
-            try {
-                // Étape 1: Initialisation
-                updateProgress(0.2, "🎓 Chargement de l'application...");
-                Thread.sleep(400);
-
-                // Étape 2: Chargement du CSS
-                updateProgress(0.4, "🎨 Chargement des styles...");
-                Thread.sleep(400);
-
-                // Étape 3: Connexion à la base de données
-                updateProgress(0.6, "💾 Connexion à la base de données...");
-                Thread.sleep(400);
-
-                // Étape 4: Chargement du shell principal
-                updateProgress(0.8, "⚙️ Préparation de l'interface...");
-                Parent root = FXMLLoader.load(getClass().getResource("/main-shell.fxml"));
-
-                // Étape 5: Finalisation
-                updateProgress(1.0, "🚀 Démarrage...");
-                Thread.sleep(300);
-
-                Platform.runLater(() -> {
-                    // Fermer le splash
-                    closeSplashScreen();
-
-                    // Afficher l'application principale
-                    Scene scene = new Scene(root, 1400, 900);
-                    primaryStage.setScene(scene);
-                    primaryStage.setTitle("Carrieri");
-
-                    // Ajouter l'icône à la fenêtre principale
-                    try {
-                        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
-                    } catch (Exception e) {
-                        System.err.println("Logo non trouvé dans /images/logo.png");
-                    }
-
-                    primaryStage.setMaximized(true);
-                    primaryStage.show();
-
-                    // Animation de fondu
-                    FadeTransition fadeIn = new FadeTransition(Duration.millis(400), root);
-                    fadeIn.setFromValue(0);
-                    fadeIn.setToValue(1);
-                    fadeIn.play();
-                });
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Platform.runLater(() -> {
-                    closeSplashScreen();
-                    primaryStage.show();
-                });
-            }
-        }).start();
+        new Thread(this::loadApplication).start();
     }
+
+    private void loadApplication() {
+        try {
+            updateProgress(0.2, "🎓 Chargement de l'application...");
+            Thread.sleep(400);
+
+            updateProgress(0.4, "🎨 Chargement des styles...");
+            Thread.sleep(400);
+
+            updateProgress(0.6, "💾 Connexion à la base de données...");
+            Thread.sleep(400);
+
+            updateProgress(0.8, "⚙️ Préparation de l'interface...");
+            Parent root = FXMLLoader.load(getClass().getResource("/main-shell.fxml"));
+
+            updateProgress(1.0, "🚀 Démarrage...");
+            Thread.sleep(300);
+
+            Platform.runLater(() -> {
+                closeSplashScreen();
+
+                Scene scene = new Scene(root, 1400, 900);
+
+                // ✅ Charger le CSS du thème clair (toujours présent)
+                try {
+                    scene.getStylesheets().add(getClass().getResource(CSS_LIGHT).toExternalForm());
+                } catch (Exception e) {
+                    System.err.println("⚠️ CSS clair non trouvé: " + CSS_LIGHT);
+                }
+
+                // ✅ Ajouter le CSS sombre et la classe dark si nécessaire
+                if (isDarkMode()) {
+                    try {
+                        scene.getStylesheets().add(getClass().getResource(CSS_DARK).toExternalForm());
+                    } catch (Exception e) {
+                        System.err.println("⚠️ CSS sombre non trouvé: " + CSS_DARK);
+                    }
+                    scene.getRoot().getStyleClass().add("dark");
+                }
+
+                primaryStage.setScene(scene);
+                primaryStage.setTitle("Carrieri");
+
+                try {
+                    primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
+                } catch (Exception e) {
+                    System.err.println("Logo non trouvé");
+                }
+
+                primaryStage.setMaximized(true);
+                primaryStage.show();
+
+                FadeTransition fadeIn = new FadeTransition(Duration.millis(400), root);
+                fadeIn.setFromValue(0);
+                fadeIn.setToValue(1);
+                fadeIn.play();
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Platform.runLater(() -> {
+                closeSplashScreen();
+                primaryStage.show();
+            });
+        }
+    }
+
+    // ============================================
+    // SPLASH SCREEN CORRIGÉ
+    // ============================================
 
     private void createSplashScreen() {
         splashStage = new Stage();
-        splashStage.initStyle(StageStyle.UNDECORATED);
+        splashStage.initStyle(StageStyle.TRANSPARENT);
 
-        VBox splashLayout = new VBox(25);
-        splashLayout.setStyle(
-                "-fx-background-color: linear-gradient(to bottom right, #231942, #5E548E);" +
-                        "-fx-padding: 40;" +
-                        "-fx-alignment: center;"
-        );
+        Rectangle background = new Rectangle(600, 400);
+        background.setArcWidth(30);
+        background.setArcHeight(30);
+        background.setFill(Color.web("#231942"));
 
-        // Logo avec effet de glow - VERSION IMAGE
-        javafx.scene.image.ImageView logoView = new javafx.scene.image.ImageView();
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setColor(Color.rgb(0, 0, 0, 0.3));
+        dropShadow.setRadius(20);
+        dropShadow.setOffsetY(5);
+        background.setEffect(dropShadow);
+
+        Node logoNode;
         try {
             Image logoImage = new Image(getClass().getResourceAsStream("/images/logo.png"));
-            logoView.setImage(logoImage);
-            logoView.setFitWidth(100);
-            logoView.setFitHeight(100);
+            ImageView logoView = new ImageView(logoImage);
+            logoView.setFitWidth(120);
+            logoView.setFitHeight(120);
             logoView.setPreserveRatio(true);
-            logoView.setStyle(
-                    "-fx-effect: dropshadow(gaussian, rgba(255,255,255,0.5), 20, 0, 0, 5);"
-            );
+
+            Glow glow = new Glow();
+            glow.setLevel(0.3);
+            logoView.setEffect(glow);
+
+            logoNode = logoView;
         } catch (Exception e) {
-            // Fallback si l'image n'existe pas
             Label fallbackLogo = new Label("🎓");
             fallbackLogo.setStyle(
-                    "-fx-font-size: 72px;" +
-                            "-fx-background-color: white;" +
-                            "-fx-background-radius: 50;" +
-                            "-fx-padding: 25;" +
-                            "-fx-text-fill: #231942;" +
-                            "-fx-effect: dropshadow(gaussian, rgba(255,255,255,0.5), 20, 0, 0, 5);"
+                    "-fx-font-size: 80px;" +
+                            "-fx-text-fill: white;"
             );
-            splashLayout.getChildren().add(fallbackLogo);
+            logoNode = fallbackLogo;
         }
 
-        // Titre
         Label titleLabel = new Label("Carrieri");
         titleLabel.setStyle(
-                "-fx-font-size: 28px;" +
+                "-fx-font-size: 36px;" +
                         "-fx-font-weight: 900;" +
                         "-fx-text-fill: white;" +
-                        "-fx-letter-spacing: -0.5px;"
+                        "-fx-font-family: 'Segoe UI', 'System';" +
+                        "-fx-letter-spacing: 1px;"
         );
 
-        // Sous-titre
-        Label subtitleLabel = new Label("Gestion des Etudes");
+        Label subtitleLabel = new Label("Gestion des Études");
         subtitleLabel.setStyle(
-                "-fx-font-size: 14px;" +
-                        "-fx-text-fill: rgba(255,255,255,0.7);"
+                "-fx-font-size: 16px;" +
+                        "-fx-text-fill: rgba(255,255,255,0.8);" +
+                        "-fx-font-weight: 500;" +
+                        "-fx-letter-spacing: 0.5px;"
         );
 
-        // Barre de progression
+        Rectangle separator = new Rectangle(200, 2);
+        separator.setFill(Color.web("#E0B1CB"));
+        separator.setOpacity(0.5);
+
         progressBar = new ProgressBar(0);
-        progressBar.setPrefWidth(350);
-        progressBar.setPrefHeight(8);
+        progressBar.setPrefWidth(400);
+        progressBar.setPrefHeight(10);
         progressBar.setStyle(
                 "-fx-accent: #E0B1CB;" +
-                        "-fx-control-inner-background: rgba(255,255,255,0.2);"
+                        "-fx-control-inner-background: rgba(255,255,255,0.15);" +
+                        "-fx-background-radius: 20;" +
+                        "-fx-border-radius: 20;"
         );
 
-        // Label de statut
         statusLabel = new Label("Initialisation...");
         statusLabel.setStyle(
                 "-fx-text-fill: rgba(255,255,255,0.9);" +
-                        "-fx-font-size: 13px;" +
+                        "-fx-font-size: 14px;" +
                         "-fx-font-weight: 600;"
         );
 
-        // Ajout des éléments
-        splashLayout.getChildren().addAll(
-                logoView,
-                titleLabel,
-                subtitleLabel,
-                progressBar,
-                statusLabel
+        Label versionLabel = new Label("Version 1.0.0");
+        versionLabel.setStyle(
+                "-fx-text-fill: rgba(255,255,255,0.5);" +
+                        "-fx-font-size: 11px;"
         );
 
-        // Création de la scène
-        Scene splashScene = new Scene(splashLayout, 550, 450);
+        VBox content = new VBox(20);
+        content.setAlignment(Pos.CENTER);
+        content.setMaxWidth(500);
+        content.getChildren().addAll(
+                logoNode,
+                titleLabel,
+                subtitleLabel,
+                separator,
+                progressBar,
+                statusLabel,
+                versionLabel
+        );
+
+        StackPane splashLayout = new StackPane();
+        splashLayout.getChildren().addAll(background, content);
+        StackPane.setAlignment(content, Pos.CENTER);
+
+        ScaleTransition scaleIn = new ScaleTransition(Duration.millis(400), splashLayout);
+        scaleIn.setFromX(0.8);
+        scaleIn.setFromY(0.8);
+        scaleIn.setToX(1);
+        scaleIn.setToY(1);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(400), splashLayout);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        SequentialTransition entranceAnimation = new SequentialTransition(fadeIn, scaleIn);
+
+        Scene splashScene = new Scene(splashLayout, 600, 400);
+        splashScene.setFill(Color.TRANSPARENT);
         splashStage.setScene(splashScene);
         splashStage.centerOnScreen();
 
-        // Ajouter l'icône au splash screen
         try {
             splashStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
         } catch (Exception e) {
@@ -178,33 +243,68 @@ public class Main extends Application {
         }
 
         splashStage.show();
+        entranceAnimation.play();
     }
+
+    // ============================================
+    // GESTION DU THÈME
+    // ============================================
+
+    public static boolean isDarkMode() {
+        return prefs.getBoolean(PREFS_DARK_MODE, false);
+    }
+
+    public static void setDarkMode(boolean darkMode) {
+        prefs.putBoolean(PREFS_DARK_MODE, darkMode);
+    }
+
+    public static void toggleTheme() {
+        boolean newMode = !isDarkMode();
+        setDarkMode(newMode);
+        applyThemeToAllStages();
+    }
+
+    private static void applyThemeToAllStages() {
+        Platform.runLater(() -> {
+            for (Stage stage : Stage.getWindows().stream()
+                    .filter(w -> w instanceof Stage)
+                    .map(w -> (Stage) w)
+                    .toList()) {
+                Scene scene = stage.getScene();
+                if (scene != null && scene.getRoot() != null) {
+                    if (isDarkMode()) {
+                        // ✅ Ajouter le CSS sombre s'il n'est pas déjà présent
+                        String darkCssPath = Main.class.getResource(CSS_DARK).toExternalForm();
+                        if (!scene.getStylesheets().contains(darkCssPath)) {
+                            scene.getStylesheets().add(darkCssPath);
+                        }
+                        scene.getRoot().getStyleClass().add("dark");
+                    } else {
+                        // ✅ Retirer le CSS sombre
+                        String darkCssPath = Main.class.getResource(CSS_DARK).toExternalForm();
+                        scene.getStylesheets().remove(darkCssPath);
+                        scene.getRoot().getStyleClass().remove("dark");
+                    }
+                }
+            }
+        });
+    }
+
+    // ============================================
+    // MÉTHODES DU SPLASH
+    // ============================================
 
     private void updateProgress(double value, String status) {
         Platform.runLater(() -> {
             progressBar.setProgress(value);
             statusLabel.setText(status);
-
-            if (value >= 1.0) {
-                statusLabel.setStyle(
-                        "-fx-text-fill: #10b981;" +
-                                "-fx-font-size: 13px;" +
-                                "-fx-font-weight: 600;"
-                );
-            }
         });
     }
 
     private void closeSplashScreen() {
         if (splashStage != null) {
-            FadeTransition fadeOut = new FadeTransition(Duration.millis(200), splashStage.getScene().getRoot());
-            fadeOut.setFromValue(1);
-            fadeOut.setToValue(0);
-            fadeOut.setOnFinished(e -> {
-                splashStage.close();
-                splashStage = null;
-            });
-            fadeOut.play();
+            splashStage.close();
+            splashStage = null;
         }
     }
 

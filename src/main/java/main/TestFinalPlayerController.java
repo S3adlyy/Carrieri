@@ -160,6 +160,13 @@ public class TestFinalPlayerController {
             lblMessage.setText("❌ Test non réussi. Minimum 70% requis.");
             lblMessage.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
         }
+        lblMessage.getStyleClass().removeAll("message-success", "message-error");
+
+        if (reussite) {
+            lblMessage.getStyleClass().add("message-success");
+        } else {
+            lblMessage.getStyleClass().add("message-error");
+        }
     }
 
     private void mettreAJourProgression() {

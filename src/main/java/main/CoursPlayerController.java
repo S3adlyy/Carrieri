@@ -717,25 +717,6 @@ public class CoursPlayerController {
     // UTILITAIRES
     // ============================================
 
-    private void showAlert(String title, String message) {
-        AlertUtils.showInfo(title, message);
-    }
 
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        switch (type) {
-            case INFORMATION:
-                AlertUtils.showInfo(title, message);
-                break;
-            case WARNING:
-                AlertUtils.showWarning(title, message);
-                break;
-            case ERROR:
-                AlertUtils.showError(title, message);
-                break;
-            case CONFIRMATION:
-                // Ne pas utiliser cette méthode pour les confirmations
-                break;
-        }
-    }
 }
 

@@ -80,6 +80,7 @@
             </VBox>
 
             <Region VBox.vgrow="ALWAYS"/>
+            <Button fx:id="btnTheme" styleClass="theme-toggle" text="🌙"/>
 
             <!-- User section -->
             <!-- User section -->

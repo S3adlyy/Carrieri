@@ -40,7 +40,7 @@ public class CandidatShellController implements Initializable {
     @FXML private Label userName;
     @FXML private Label userRole;
     @FXML private Circle userAvatar;
-
+    @FXML private Button btnTheme;
     private Button activeButton = null;
     private static CandidatShellController instance;
 
@@ -143,7 +143,7 @@ public class CandidatShellController implements Initializable {
         // ✅ Installer le tooltip sur l'avatar
         Tooltip candidatTooltip = new Tooltip("Cliquer pour basculer en mode Admin");
         Tooltip.install(userAvatar, candidatTooltip);
-
+        setupThemeButton();
         showCatalogue();
         setActiveButton(btnCatalogue);
 
@@ -155,6 +155,24 @@ public class CandidatShellController implements Initializable {
         fadeIn.setFromValue(0);
         fadeIn.setToValue(1);
         fadeIn.play();
+    }
+    // ✅ AJOUTER CES MÉTHODES
+    private void setupThemeButton() {
+        updateThemeIcon();
+        btnTheme.setOnAction(e -> toggleTheme());
+    }
+
+    private void toggleTheme() {
+        Main.toggleTheme();
+        updateThemeIcon();
+    }
+
+    private void updateThemeIcon() {
+        if (Main.isDarkMode()) {
+            btnTheme.setText("☀");
+        } else {
+            btnTheme.setText("🌙");
+        }
     }
 
     private void setupAnimations() {

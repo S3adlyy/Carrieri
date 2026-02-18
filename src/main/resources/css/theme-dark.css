@@ -1,0 +1,1579 @@
+/* ============================================
+   THÈME SOMBRE - CARRIERI - VERSION FINALE
+   TOUS LES ÉLÉMENTS SONT VISIBLES EN MODE SOMBRE
+   Couleurs: #E0B1CB (rose), #9F86C0 (violet clair),
+            #5E548E (violet), #1a1a2e (fond)
+   ============================================ */
+
+/* ========== ROOT ========== */
+.root.dark {
+    /* Couleurs de fond */
+    -fx-base: #1a1a2e;
+    -fx-background: #16213e;
+
+    /* Couleurs des composants */
+    -sidebar-bg: linear-gradient(to bottom, #0f0f1f, #1a1a2e, #16213e);
+    -content-bg: #1a1a2e;
+    -card-bg: #2d2d44;
+
+    /* Couleurs des textes */
+    -text-primary: #E0B1CB;      /* Rose pour titres principaux */
+    -text-secondary: #9F86C0;     /* Violet clair pour sous-titres */
+    -text-muted: #a0a0c0;         /* Gris clair pour textes secondaires */
+    -text-white: #e0e0e0;         /* Blanc cassé pour textes normaux */
+    -text-dark: #1a1a2e;          /* Fond pour textes sur fond clair */
+
+    /* Couleurs des boutons */
+    -button-primary: linear-gradient(to right, #2d2a4e, #5E548E);
+    -button-primary-hover: linear-gradient(to right, #3a3559, #7a6ba5);
+    -button-danger: #ff8a8a;
+    -button-danger-hover: #ff6b6b;
+
+    /* Couleurs des tableaux */
+    -table-header-bg: linear-gradient(from 0% 0% to 100% 100%, #1a1a2e 0%, #2d2d44 100%);
+    -table-row-bg: #2d2d44;
+    -table-row-odd: #35354f;
+    -table-row-hover: #40405c;
+    -table-row-selected: #4a4a6a;
+    -table-border: #5E548E;
+
+    /* Couleurs des formulaires */
+    -input-bg: #35354f;
+    -input-border: #5E548E;
+    -input-focus-border: #E0B1CB;
+    -input-text: #ffffff;
+    -input-prompt: rgba(255, 255, 255, 0.5);
+
+    /* Couleurs des badges */
+    -badge-obligatoire: #34d399;
+    -badge-optionnel: #9ca3af;
+
+    /* Bordures */
+    -border-color: #5E548E;
+    -border-light: rgba(224, 177, 203, 0.3);
+
+    /* Effets */
+    -shadow-color: rgba(0, 0, 0, 0.5);
+    -glow-color: rgba(224, 177, 203, 0.3);
+}
+
+/* ============================================
+   BACKGROUNDS
+   ============================================ */
+.root.dark .mission-bg {
+    -fx-background-color: #1a1a2e;
+}
+
+.root.dark .shell-root {
+    -fx-background-color: #16213e;
+}
+
+.root.dark .content-area {
+    -fx-background-color: #1a1a2e;
+    -fx-padding: 20;
+}
+
+/* ============================================
+   BULLES DÉCORATIVES
+   ============================================ */
+.root.dark .bg-orb {
+    -fx-fill: rgba(224, 177, 203, 0.08);
+}
+
+.root.dark .bg-orb-purple {
+    -fx-fill: rgba(159, 134, 192, 0.06);
+}
+
+.root.dark .bg-orb-pink {
+    -fx-fill: rgba(224, 177, 203, 0.05);
+}
+
+/* ============================================
+   SCROLLPANE
+   ============================================ */
+.root.dark .main-scroll,
+.root.dark .main-scroll .viewport,
+.root.dark .scroll-pane,
+.root.dark .scroll-pane .viewport {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
+.root.dark .sidebar-animated {
+    -fx-background-color: -sidebar-bg;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 20, 0, 4, 0);
+    -fx-background-radius: 0 20 20 0;
+    -fx-padding: 20 0 20 0;
+    -fx-spacing: 30;
+}
+
+.root.dark .brand-container {
+    -fx-spacing: 5;
+    -fx-alignment: center;
+    -fx-padding: 0 0 20 0;
+}
+
+.root.dark .brand-icon {
+    -fx-background-color: rgba(224, 177, 203, 0.2);
+    -fx-background-radius: 15;
+    -fx-padding: 10;
+    -fx-cursor: hand;
+}
+
+.root.dark .brand-icon:hover {
+    -fx-background-color: rgba(224, 177, 203, 0.3);
+}
+
+.root.dark .brand-text,
+.root.dark .brand-subtext {
+    -fx-text-fill: #E0B1CB;
+}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+.root.dark .nav-container {
+    -fx-spacing: 5;
+    -fx-padding: 0 0 20 0;
+    -fx-alignment: center;
+}
+
+.root.dark .nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: transparent;
+    -fx-padding: 10 15;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+    -fx-min-width: 250;
+    -fx-background-radius: 0 30 30 0;
+}
+
+.root.dark .nav-button:hover {
+    -fx-background-color: rgba(224, 177, 203, 0.15);
+}
+
+.root.dark .nav-icon {
+    -fx-font-size: 24px;
+    -fx-text-fill: #E0B1CB;
+    -fx-min-width: 40;
+    -fx-alignment: center;
+}
+
+.root.dark .nav-button:hover .nav-icon {
+    -fx-text-fill: #f5e6f0;
+}
+
+.root.dark .nav-text {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #E0B1CB;
+    -fx-opacity: 0;
+    -fx-translate-x: -10px;
+    -fx-transition: all 0.4s cubic-bezier(0.25, 0.1, 0.15, 1.2);
+}
+
+.root.dark .sidebar-animated:hover .nav-text {
+    -fx-opacity: 1;
+    -fx-translate-x: 0;
+}
+
+.root.dark .nav-button-active {
+    -fx-background-color: rgba(224, 177, 203, 0.25);
+    -fx-border-color: transparent transparent transparent #E0B1CB;
+    -fx-border-width: 0 0 0 3;
+}
+
+.root.dark .nav-button-active .nav-icon {
+    -fx-text-fill: #f5e6f0;
+}
+
+/* ============================================
+   USER SECTION
+   ============================================ */
+.root.dark .user-container {
+    -fx-spacing: 8;
+    -fx-alignment: center;
+    -fx-padding: 20 0 0 0;
+    -fx-border-color: rgba(224, 177, 203, 0.2);
+    -fx-border-width: 1 0 0 0;
+}
+
+.root.dark .user-avatar-glow {
+    -fx-fill: linear-gradient(to bottom right, #E0B1CB, #9F86C0);
+    -fx-stroke: #2d2d44;
+    -fx-stroke-width: 2;
+    -fx-cursor: hand;
+}
+
+.root.dark .user-name {
+    -fx-text-fill: #E0B1CB;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.root.dark .user-role {
+    -fx-text-fill: rgba(224, 177, 203, 0.7);
+    -fx-font-size: 11px;
+}
+
+.root.dark .logout-button {
+    -fx-background-color: rgba(255, 138, 138, 0.2);
+    -fx-text-fill: #ff8a8a;
+    -fx-font-size: 20px;
+    -fx-padding: 8 15;
+    -fx-background-radius: 20;
+    -fx-border-color: rgba(255, 138, 138, 0.3);
+    -fx-border-radius: 20;
+    -fx-cursor: hand;
+}
+
+.root.dark .logout-button:hover {
+    -fx-background-color: rgba(255, 138, 138, 0.3);
+    -fx-border-color: #ff8a8a;
+}
+
+/* ============================================
+   HEADERS
+   ============================================ */
+.root.dark .header-section {
+    -fx-padding: 0 0 25 0;
+}
+
+.root.dark .header-icon-container {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #1a1a2e 0%, #2d2d44 100%);
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(224, 177, 203, 0.2), 25, 0.25, 0, 10);
+}
+
+.root.dark .header-icon {
+    -fx-font-size: 36px;
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .header-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #E0B1CB;
+    -fx-letter-spacing: -0.5px;
+}
+
+.root.dark .header-subtitle {
+    -fx-font-size: 15px;
+    -fx-text-fill: #a0a0c0;
+    -fx-font-weight: 500;
+}
+
+.root.dark .section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .section-title-small {
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #9F86C0;
+}
+
+/* ============================================
+   BUTTONS GÉNÉRAUX
+   ============================================ */
+.root.dark .btn-primary {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #1a1a2e 0%, #2d2d44 100%);
+    -fx-text-fill: #E0B1CB;
+    -fx-border-color: #E0B1CB;
+    -fx-border-width: 1;
+    -fx-font-weight: 800;
+    -fx-font-size: 14px;
+    -fx-padding: 14 28;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+}
+
+.root.dark .btn-primary:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #2d2d44 0%, #35354f 100%);
+    -fx-border-color: #f5e6f0;
+    -fx-effect: dropshadow(gaussian, rgba(224, 177, 203, 0.4), 20, 0.25, 0, 8);
+    -fx-translate-y: -2;
+}
+
+.root.dark .btn-secondary {
+    -fx-background-color: #2d2d44;
+    -fx-text-fill: #E0B1CB;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+    -fx-font-weight: 700;
+    -fx-font-size: 14px;
+    -fx-padding: 12 24;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+}
+
+.root.dark .btn-secondary:hover {
+    -fx-background-color: #35354f;
+    -fx-border-color: #E0B1CB;
+}
+
+.root.dark .btn-danger {
+    -fx-background-color: #4a2a2a;
+    -fx-text-fill: #ffb3b3;
+    -fx-font-weight: 700;
+    -fx-font-size: 14px;
+    -fx-padding: 12 24;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+}
+
+.root.dark .btn-danger:hover {
+    -fx-background-color: #5a3535;
+}
+
+.root.dark .btn-success {
+    -fx-background-color: #1a4030;
+    -fx-text-fill: #a3e0c0;
+    -fx-font-weight: 700;
+    -fx-font-size: 14px;
+    -fx-padding: 12 24;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+}
+
+.root.dark .btn-success:hover {
+    -fx-background-color: #22553e;
+}
+
+.root.dark .btn-icon {
+    -fx-background-color: #2d2d44;
+    -fx-text-fill: #E0B1CB;
+    -fx-border-color: #5E548E;
+    -fx-font-size: 14px;
+    -fx-padding: 8 12;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.root.dark .btn-icon:hover {
+    -fx-background-color: #35354f;
+}
+
+.root.dark .btn-toggle {
+    -fx-background-radius: 50px;
+    -fx-font-size: 18px;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.root.dark .btn-toggle-add {
+    -fx-background-color: #1a4030;
+    -fx-text-fill: #a3e0c0;
+}
+
+.root.dark .btn-toggle-add:hover {
+    -fx-background-color: #22553e;
+}
+
+.root.dark .btn-toggle-close {
+    -fx-background-color: #4a2a2a;
+    -fx-text-fill: #ffb3b3;
+}
+
+.root.dark .btn-toggle-close:hover {
+    -fx-background-color: #5a3535;
+}
+
+.root.dark .btn-primary-glow {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #1a1a2e 0%, #2d2d44 100%);
+    -fx-text-fill: #E0B1CB;
+    -fx-border-color: rgba(224, 177, 203, 0.3);
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+    -fx-padding: 16 40;
+    -fx-background-radius: 50;
+    -fx-cursor: hand;
+}
+
+.root.dark .btn-primary-glow:hover {
+    -fx-effect: dropshadow(gaussian, rgba(224, 177, 203, 0.4), 35, 0.25, 0, 15);
+}
+
+.root.dark .btn-outline {
+    -fx-background-color: transparent;
+    -fx-text-fill: #E0B1CB;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-padding: 10 18;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-cursor: hand;
+}
+
+.root.dark .btn-outline:hover {
+    -fx-background-color: rgba(224, 177, 203, 0.1);
+    -fx-border-color: #E0B1CB;
+}
+
+/* ============================================
+   BOUTONS SPÉCIAUX
+   ============================================ */
+.root.dark .btn-add-course {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #231942 0%, #5E548E 100%);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+    -fx-padding: 8 20;
+    -fx-background-radius: 50;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.4), 20, 0.2, 0, 8);
+}
+
+.root.dark .btn-add-course:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #2d2a4e 0%, #7a6ba5 100%);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.6), 25, 0.25, 0, 10);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.root.dark .btn-generate-test {
+    -fx-background-color: #8b5cf6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.root.dark .btn-generate-test:hover {
+    -fx-background-color: #7c3aed;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.4), 10, 0, 0, 3);
+}
+
+.root.dark .btn-generate-quiz {
+    -fx-background-color: #8b5cf6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.root.dark .btn-generate-quiz:hover {
+    -fx-background-color: #7c3aed;
+}
+
+/* ============================================
+   TABLEAUX
+   ============================================ */
+.root.dark .table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: -table-border;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+}
+
+.root.dark .table-view .column-header-background {
+    -fx-background-color: -table-header-bg;
+    -fx-background-radius: 16 16 0 0;
+    -fx-padding: 8 0 8 0;
+}
+
+.root.dark .table-view .column-header .label {
+    -fx-text-fill: #E0B1CB;
+    -fx-font-weight: 800;
+    -fx-font-size: 13px;
+    -fx-alignment: center;
+}
+
+.root.dark .table-row-cell {
+    -fx-background-color: -table-row-bg;
+    -fx-border-color: transparent transparent #40405c transparent;
+}
+
+.root.dark .table-row-cell:odd {
+    -fx-background-color: -table-row-odd;
+}
+
+.root.dark .table-row-cell:selected {
+    -fx-background-color: -table-row-selected;
+}
+
+.root.dark .table-row-cell:hover {
+    -fx-background-color: -table-row-hover;
+}
+
+.root.dark .table-cell {
+    -fx-padding: 12 10 12 10;
+    -fx-font-size: 13px;
+    -fx-text-fill: #e0e0e0;
+}
+
+.root.dark .cours-table {
+    -fx-border-color: #5E548E;
+}
+
+.root.dark .table-pane {
+    -fx-background-color: rgba(45, 45, 68, 0.95);
+    -fx-background-radius: 24;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 30, 0.1, 0, 10);
+    -fx-spacing: 15;
+}
+
+.root.dark .table-title {
+    -fx-text-fill: #E0B1CB;
+    -fx-font-size: 20px;
+    -fx-font-weight: 800;
+}
+
+.root.dark .count-badge {
+    -fx-background-color: #35354f;
+    -fx-text-fill: #E0B1CB;
+    -fx-padding: 4 12;
+    -fx-background-radius: 20;
+    -fx-font-size: 12px;
+}
+
+.root.dark .table-toolbar {
+    -fx-background-color: transparent;
+    -fx-spacing: 15;
+    -fx-alignment: center-left;
+}
+
+/* ============================================
+   FORMULAIRES
+   ============================================ */
+.root.dark .form-pane {
+    -fx-spacing: 25;
+}
+
+.root.dark .form-columns {
+    -fx-spacing: 30;
+    -fx-alignment: top-center;
+}
+
+.root.dark .form-container {
+    -fx-background-color: #2d2d44;
+    -fx-background-radius: 24;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 1;
+    -fx-border-radius: 24;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 20, 0, 0, 5);
+}
+
+.root.dark .form-title {
+    -fx-text-fill: #E0B1CB;
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+    -fx-padding: 0 0 15 0;
+}
+
+.root.dark .form-field {
+    -fx-spacing: 5;
+}
+
+.root.dark .field-label {
+    -fx-text-fill: #9F86C0;
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+}
+
+.root.dark .text-field,
+.root.dark .text-area,
+.root.dark .combo-box,
+.root.dark .password-field {
+    -fx-background-color: -input-bg;
+    -fx-border-color: -input-border;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 12 16;
+    -fx-font-size: 14px;
+    -fx-text-fill: #ffffff !important;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.5);
+}
+
+.root.dark .text-field:focused,
+.root.dark .text-area:focused,
+.root.dark .combo-box:focused,
+.root.dark .password-field:focused {
+    -fx-border-color: -input-focus-border;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(224, 177, 203, 0.2), 10, 0, 0, 2);
+}
+
+.root.dark .search-field {
+    -fx-background-color: -input-bg;
+    -fx-border-color: -input-border;
+    -fx-border-radius: 50px;
+    -fx-background-radius: 50px;
+    -fx-padding: 8 20;
+    -fx-text-fill: white !important;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.5) !important;
+}
+
+.root.dark .search-field:focused {
+    -fx-border-color: -input-focus-border;
+}
+
+.root.dark .field-hint {
+    -fx-text-fill: #a0a0c0;
+    -fx-font-size: 12px;
+    -fx-padding: 0 0 0 8;
+    -fx-font-style: italic;
+}
+
+.root.dark .char-counter {
+    -fx-text-fill: #a0a0c0;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-padding: 5 10;
+    -fx-background-color: rgba(45, 45, 68, 0.5);
+    -fx-background-radius: 20;
+}
+
+.root.dark .error-label {
+    -fx-text-fill: #ff8a8a;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-padding: 2 0 0 0;
+}
+
+.root.dark .status-label {
+    -fx-background-color: #2d2d44;
+    -fx-border-color: #5E548E;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 8 15;
+    -fx-text-fill: #E0B1CB;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+}
+
+/* ============================================
+   GLASS CARDS
+   ============================================ */
+.root.dark .glass-card {
+    -fx-background-color: rgba(45, 45, 68, 0.95);
+    -fx-border-color: rgba(224, 177, 203, 0.3);
+    -fx-effect: dropshadow(gaussian, -shadow-color, 30, 0.1, 0, 10);
+}
+
+.root.dark .glass-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(224, 177, 203, 0.2), 35, 0.15, 0, 15);
+    -fx-border-color: rgba(224, 177, 203, 0.5);
+}
+
+.root.dark .glass-card .label {
+    -fx-text-fill: #9F86C0;
+}
+
+.root.dark .glass-card-light {
+    -fx-background-color: rgba(45, 45, 68, 0.8);
+    -fx-border-color: rgba(224, 177, 203, 0.2);
+}
+
+.root.dark .glass-card-purple {
+    -fx-background-color: rgba(53, 53, 79, 0.8);
+    -fx-border-color: rgba(224, 177, 203, 0.3);
+}
+
+/* ============================================
+   TIPS SECTIONS
+   ============================================ */
+.root.dark .tips-section {
+    -fx-background-color: rgba(224, 177, 203, 0.1);
+    -fx-border-color: #5E548E;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-padding: 20;
+}
+
+.root.dark .tips-title {
+    -fx-text-fill: #E0B1CB;
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+    -fx-padding: 0 0 10 0;
+}
+
+.root.dark .tips-list {
+    -fx-spacing: 8;
+}
+
+.root.dark .tips-item {
+    -fx-text-fill: #E0B1CB;
+    -fx-font-size: 13px;
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+.root.dark .badge {
+    -fx-padding: 4 12;
+    -fx-background-radius: 50px;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.root.dark .badge-creator {
+    -fx-background-color: #35354f;
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .badge-required {
+    -fx-background-color: rgba(220, 38, 38, 0.2);
+    -fx-text-fill: #ffb3b3;
+}
+
+.root.dark .badge-verified {
+    -fx-background-color: rgba(6, 95, 70, 0.3);
+    -fx-text-fill: #a3e0c0;
+}
+
+.root.dark .badge-tracking {
+    -fx-background-color: rgba(224, 177, 203, 0.2);
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .level-badge {
+    -fx-text-fill: #ffffff !important;
+}
+
+.root.dark .level-debutant {
+    -fx-text-fill: #a3e0c0 !important;
+}
+
+.root.dark .level-intermediaire {
+    -fx-text-fill: #ffb86b !important;
+}
+
+.root.dark .level-avance {
+    -fx-text-fill: #ffb3b3 !important;
+}
+
+.root.dark .level-expert {
+    -fx-text-fill: #E0B1CB !important;
+}
+
+.root.dark .level-master {
+    -fx-text-fill: #E0B1CB !important;
+}
+
+.root.dark .status-badge {
+    -fx-background-color: #35354f;
+    -fx-text-fill: #E0B1CB;
+    -fx-padding: 4 12;
+    -fx-background-radius: 20;
+    -fx-font-size: 12px;
+}
+
+.root.dark .status-obligatoire {
+    -fx-background-color: #1a4030;
+    -fx-text-fill: #a3e0c0;
+}
+
+.root.dark .status-optionnel {
+    -fx-background-color: #35354f;
+    -fx-text-fill: #E0B1CB;
+}
+
+/* ============================================
+   CHECKBOX
+   ============================================ */
+.root.dark .check-box {
+    -fx-text-fill: #e0e0e0;
+}
+
+.root.dark .check-box .box {
+    -fx-background-color: #35354f;
+    -fx-border-color: #5E548E;
+}
+
+.root.dark .check-box:selected .box {
+    -fx-background-color: #E0B1CB;
+}
+
+.root.dark .check-box:selected .mark {
+    -fx-background-color: #1a1a2e;
+}
+
+/* ============================================
+   SCROLLBARS
+   ============================================ */
+.root.dark .scroll-bar:vertical {
+    -fx-background-color: #2d2d44;
+    -fx-pref-width: 12;
+}
+
+.root.dark .scroll-bar .thumb {
+    -fx-background-color: #5E548E;
+    -fx-background-radius: 10;
+}
+
+.root.dark .scroll-bar .thumb:hover {
+    -fx-background-color: #E0B1CB;
+}
+
+.root.dark .scroll-bar .track {
+    -fx-background-color: transparent;
+}
+
+/* ============================================
+   TOOLTIPS
+   ============================================ */
+.root.dark .tooltip {
+    -fx-background-color: #1a1a2e;
+    -fx-text-fill: #E0B1CB;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 1;
+    -fx-background-radius: 8;
+    -fx-font-size: 12px;
+    -fx-padding: 8 12;
+}
+
+/* ============================================
+   PROGRESS BAR
+   ============================================ */
+.root.dark .progress-bar {
+    -fx-background-radius: 4;
+}
+
+.root.dark .progress-bar .track {
+    -fx-background-color: #40405c;
+    -fx-background-radius: 4;
+}
+
+.root.dark .progress-bar .bar {
+    -fx-background-color: #E0B1CB;
+    -fx-background-radius: 4;
+}
+
+/* ============================================
+   STATS CARDS
+   ============================================ */
+.root.dark .stat-card {
+    -fx-background-color: #2d2d44;
+    -fx-border-color: #5E548E;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 15, 0, 0, 5);
+}
+
+.root.dark .stat-value {
+    -fx-font-size: 36px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .stat-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #a0a0c0;
+    -fx-font-weight: 600;
+}
+
+/* ============================================
+   LABELS GÉNÉRAUX
+   ============================================ */
+.root.dark .label {
+    -fx-text-fill: #e0e0e0;
+}
+
+.root.dark .label.header-title,
+.root.dark .label.section-title,
+.root.dark .label.card-title {
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .label.secondary-text,
+.root.dark .label.muted-text {
+    -fx-text-fill: #a0a0c0;
+}
+
+.root.dark .text-primary {
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .text-secondary {
+    -fx-text-fill: #9F86C0;
+}
+
+.root.dark .text-muted {
+    -fx-text-fill: #a0a0c0;
+}
+
+.root.dark .text-success {
+    -fx-text-fill: #a3e0c0;
+}
+
+.root.dark .text-danger {
+    -fx-text-fill: #ff8a8a;
+}
+
+/* ============================================
+   BOUTONS D'ACTION
+   ============================================ */
+.root.dark .action-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .action-button:hover {
+    -fx-background-color: rgba(224, 177, 203, 0.2);
+}
+
+.root.dark .btn-delete {
+    -fx-background-color: #ff8a8a;
+    -fx-text-fill: #1a1a2e;
+    -fx-font-weight: bold;
+}
+
+.root.dark .btn-delete:hover {
+    -fx-background-color: #ff6b6b;
+}
+
+.root.dark .btn-delete-gradient-light {
+    -fx-background-color: linear-gradient(to right, #5E548E, #9F86C0);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.root.dark .btn-delete-gradient-light:hover {
+    -fx-background-color: linear-gradient(to right, #7a6ba5, #b8a3d3);
+}
+
+/* ============================================
+   BOUTON DE THÈME
+   ============================================ */
+.root.dark .theme-button {
+    -fx-border-color: #E0B1CB;
+    -fx-text-fill: #E0B1CB;
+    -fx-background-color: transparent;
+}
+
+.root.dark .theme-button:hover {
+    -fx-background-color: rgba(224, 177, 203, 0.1);
+}
+
+.root.dark .theme-toggle {
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .theme-toggle:hover {
+    -fx-background-color: rgba(224, 177, 203, 0.2);
+}
+
+.root.dark .theme-switch-button {
+    -fx-background-color: rgba(224, 177, 203, 0.2);
+}
+
+.root.dark .theme-switch-button .theme-icon-light {
+    -fx-opacity: 0;
+}
+
+.root.dark .theme-switch-button .theme-icon-dark {
+    -fx-opacity: 1;
+}
+
+/* ============================================
+   ÉLÉMENTS SPÉCIFIQUES
+   ============================================ */
+.root.dark #tablePane {
+    -fx-background-color: rgba(45, 45, 68, 0.95);
+}
+
+.root.dark #lblStatus {
+    -fx-background-color: #35354f;
+    -fx-text-fill: #E0B1CB;
+    -fx-border-color: #5E548E;
+}
+
+.root.dark #lblCount {
+    -fx-background-color: #35354f;
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark #lblTotalCours {
+    -fx-text-fill: #a0a0c0 !important;
+}
+
+/* ============================================
+   PARTIE CANDIDAT - CATALOGUE COMPLET
+   ============================================ */
+.root.dark .cours-candidat-root {
+    -fx-background-color: #1a1a2e;
+}
+
+/* TITRES */
+.root.dark .catalog-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #E0B1CB !important;
+}
+
+.root.dark .catalog-subtitle,
+.root.dark .header-subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: #a0a0c0 !important;
+}
+
+/* FILTRES - DOMAINE ET NIVEAU */
+.root.dark .filter-box,
+.root.dark .glass-card.filters {
+    -fx-background-color: #2d2d44 !important;
+    -fx-border-color: #5E548E !important;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+}
+
+.root.dark .filter-box .label,
+.root.dark .filter-label {
+    -fx-text-fill: #9F86C0 !important;
+    -fx-font-weight: 700;
+    -fx-font-size: 13px;
+}
+
+.root.dark .filter-box .combo-box,
+.root.dark .filter-combo,
+.root.dark #comboDomaine,
+.root.dark #comboNiveau {
+    -fx-background-color: #35354f !important;
+    -fx-border-color: #5E548E !important;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 8 16;
+    -fx-text-fill: white !important;
+}
+/* Couleurs spécifiques pour les niveaux en mode sombre */
+.root.dark .filter-combo .list-cell[text="Débutant"] {
+    -fx-text-fill: #a3e0c0;
+}
+
+.root.dark .filter-combo .list-cell[text="Intermédiaire"] {
+    -fx-text-fill: #ffb86b;
+}
+
+.root.dark .filter-combo .list-cell[text="Avancé"] {
+    -fx-text-fill: #ffb3b3;
+}
+
+.root.dark .filter-combo .list-cell[text="Expert"] {
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .filter-combo .list-cell[text="Master"] {
+    -fx-text-fill: #f5b0d5;
+}
+.root.dark .filter-box .combo-box .list-cell,
+.root.dark .filter-combo .list-cell {
+    -fx-text-fill: white !important;
+    -fx-background-color: #35354f !important;
+}
+
+.root.dark .filter-box .combo-box .list-cell:hover,
+.root.dark .filter-combo .list-cell:hover {
+    -fx-background-color: #4a4a6a !important;
+}
+
+.root.dark .filter-box .combo-box .list-cell:selected,
+.root.dark .filter-combo .list-cell:selected {
+    -fx-background-color: #5E548E !important;
+}
+
+.root.dark .filter-box .combo-box .arrow-button,
+.root.dark .filter-combo .arrow-button {
+    -fx-background-color: transparent;
+}
+
+/* RECHERCHE */
+.root.dark .search-container,
+.root.dark .search-box {
+    -fx-background-color: #35354f !important;
+    -fx-border-color: #5E548E !important;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 50px;
+    -fx-background-radius: 50px;
+    -fx-padding: 5;
+}
+
+.root.dark .search-field,
+.root.dark #txtRecherche {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: white !important;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.5) !important;
+    -fx-border-color: transparent !important;
+}
+
+.root.dark .search-button {
+    -fx-background-color: linear-gradient(to right, #2d2a4e, #5E548E) !important;
+    -fx-text-fill: white !important;
+    -fx-font-weight: bold;
+    -fx-padding: 10 30;
+    -fx-background-radius: 50px;
+    -fx-cursor: hand;
+}
+
+.root.dark .search-button:hover {
+    -fx-effect: dropshadow(gaussian, rgba(224, 177, 203, 0.4), 10, 0, 0, 2);
+}
+
+/* STATISTIQUES */
+.root.dark .stat-box,
+.root.dark .stat-card {
+    -fx-background-color: #2d2d44 !important;
+    -fx-border-color: #5E548E !important;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 25;
+}
+
+.root.dark .stat-value,
+.root.dark #lblTotalCoursStat,
+.root.dark #lblEnCours,
+.root.dark #lblCompletes {
+    -fx-font-size: 36px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #E0B1CB !important;
+}
+
+.root.dark .stat-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #a0a0c0 !important;
+    -fx-font-weight: 600;
+}
+
+/* CARTES DE COURS */
+.root.dark .course-card {
+    -fx-background-color: #2d2d44 !important;
+    -fx-border-color: #5E548E !important;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 10, 0, 0, 3);
+}
+
+.root.dark .course-card:hover {
+    -fx-border-color: #E0B1CB !important;
+    -fx-effect: dropshadow(gaussian, rgba(224, 177, 203, 0.2), 15, 0, 0, 5);
+}
+
+.root.dark .course-card .content {
+    -fx-background-color: #2d2d44 !important;
+    -fx-background-radius: 0 0 20 20;
+}
+
+.root.dark .course-card .label {
+    -fx-text-fill: #e0e0e0 !important;
+}
+
+.root.dark .course-card .title,
+.root.dark .course-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #E0B1CB !important;
+}
+
+.root.dark .course-card .description,
+.root.dark .course-description {
+    -fx-text-fill: #b0b0b0 !important;
+    -fx-font-size: 13px;
+}
+
+.root.dark .course-card .duration {
+    -fx-text-fill: #9F86C0 !important;
+    -fx-font-weight: 600;
+}
+
+.root.dark .course-card .obligatoire {
+    -fx-text-fill: #ff8a8a !important;
+    -fx-font-weight: 600;
+}
+
+.root.dark .course-card .badge,
+.root.dark .level-badge {
+    -fx-text-fill: white !important;
+}
+
+/* BOUTONS DES CARTES */
+.root.dark .course-button,
+.root.dark .btnCommencer {
+    -fx-background-color: linear-gradient(to right, #2d2a4e, #5E548E) !important;
+    -fx-text-fill: white !important;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 50px;
+    -fx-cursor: hand;
+}
+
+.root.dark .course-button:hover,
+.root.dark .btnCommencer:hover {
+    -fx-background-color: linear-gradient(to right, #3a3559, #7a6ba5) !important;
+    -fx-effect: dropshadow(gaussian, rgba(224, 177, 203, 0.3), 10, 0, 0, 2);
+}
+
+.root.dark .course-button-pdf,
+.root.dark .btnPDF {
+    -fx-background-color: #1a4030 !important;
+    -fx-text-fill: #a3e0c0 !important;
+    -fx-font-weight: bold;
+    -fx-padding: 10 15;
+    -fx-background-radius: 50px;
+    -fx-cursor: hand;
+}
+
+.root.dark .course-button-pdf:hover,
+.root.dark .btnPDF:hover {
+    -fx-background-color: #22553e !important;
+}
+
+/* ============================================
+   PARTIE CANDIDAT - PLAYER
+   ============================================ */
+.root.dark .candidat-root {
+    -fx-background-color: #1a1a2e;
+}
+
+.root.dark .header-gradient {
+    -fx-background-color: linear-gradient(to right, #0f0f1f, #1a1a2e);
+    -fx-padding: 20;
+}
+
+.root.dark #boxModules {
+    -fx-background-color: #2d2d44;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-padding: 15;
+}
+
+.root.dark #boxModules .label {
+    -fx-text-fill: #E0B1CB !important;
+    -fx-font-weight: bold;
+}
+
+.root.dark #boxModules .button {
+    -fx-background-color: #35354f;
+    -fx-text-fill: #e0e0e0 !important;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 15;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+}
+
+.root.dark #boxModules .button:hover {
+    -fx-background-color: #40405c;
+    -fx-border-color: #E0B1CB;
+}
+
+.root.dark #boxModules .button[text*="PASSER LE QUIZ"] {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white !important;
+    -fx-font-weight: bold;
+}
+
+.root.dark #boxModules .button[text*="PASSER LE QUIZ"]:hover {
+    -fx-background-color: #7a6ba5;
+}
+
+.root.dark #boxModules .button[text*="TEST FINAL"] {
+    -fx-background-color: #9F86C0;
+    -fx-text-fill: white !important;
+    -fx-font-weight: bold;
+}
+
+.root.dark #boxModules .button[text*="TEST FINAL"]:hover {
+    -fx-background-color: #b8a3d3;
+}
+
+.root.dark .lblLeconTitre {
+    -fx-text-fill: #E0B1CB !important;
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
+}
+
+.root.dark .lblStatus {
+    -fx-text-fill: #a0a0c0 !important;
+    -fx-font-style: italic;
+}
+
+.root.dark .web-view {
+    -fx-background-color: #2d2d44;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+}
+
+/* ============================================
+   PARTIE CANDIDAT - QUIZ
+   ============================================ */
+.root.dark .quiz-container {
+    -fx-background-color: #1a1a2e;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-padding: 30;
+}
+
+.root.dark .quiz-nav-button {
+    -fx-background-color: #2d2d44;
+    -fx-text-fill: #E0B1CB;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.root.dark .quiz-nav-button:hover {
+    -fx-background-color: #35354f;
+    -fx-border-color: #E0B1CB;
+}
+
+.root.dark .quiz-terminer-button {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 12 30;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+}
+
+.root.dark .quiz-terminer-button:hover {
+    -fx-background-color: #7a6ba5;
+}
+
+.root.dark .radio-button {
+    -fx-text-fill: #e0e0e0;
+}
+
+.root.dark .radio-button .radio {
+    -fx-background-color: #35354f;
+    -fx-border-color: #5E548E;
+    -fx-border-radius: 10;
+}
+
+.root.dark .radio-button:selected .radio {
+    -fx-background-color: #E0B1CB;
+    -fx-border-color: #E0B1CB;
+}
+
+.root.dark .radio-button:selected .dot {
+    -fx-background-color: #1a1a2e;
+}
+
+.root.dark #lblQuestion {
+    -fx-text-fill: #E0B1CB !important;
+    -fx-font-size: 20px;
+    -fx-font-weight: 700;
+}
+
+.root.dark #lblPoints {
+    -fx-text-fill: #a3e0c0 !important;
+    -fx-font-weight: bold;
+}
+
+.root.dark #lblProgression {
+    -fx-text-fill: #a0a0c0 !important;
+}
+
+.root.dark #boxResultat {
+    -fx-background-color: #2d2d44;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-padding: 30;
+}
+
+.root.dark #lblScore {
+    -fx-text-fill: #E0B1CB !important;
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
+}
+
+.root.dark .message-success {
+    -fx-text-fill: #a3e0c0 !important;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+}
+
+.root.dark .message-error {
+    -fx-text-fill: #ff8a8a !important;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+}
+
+.root.dark .separator {
+    -fx-background-color: #5E548E;
+}
+/* ============================================
+   STYLES SOMBRES POUR TOUS LES ÉLÉMENTS
+   ============================================ */
+
+/* ===== RECHERCHE ===== */
+.root.dark .search-box {
+    -fx-background-color: #35354f !important;
+    -fx-border-color: #5E548E !important;
+    -fx-border-width: 2;
+    -fx-border-radius: 50px;
+    -fx-background-radius: 50px;
+    -fx-padding: 5;
+}
+
+.root.dark .search-field {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: white !important;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.5) !important;
+    -fx-border-color: transparent !important;
+}
+
+.root.dark .search-button {
+    -fx-background-color: linear-gradient(to right, #2d2a4e, #5E548E) !important;
+    -fx-text-fill: white !important;
+    -fx-font-weight: 900;
+    -fx-padding: 10 30;
+    -fx-background-radius: 50px;
+    -fx-cursor: hand;
+}
+
+.root.dark .search-button:hover {
+    -fx-background-color: linear-gradient(to right, #3a3559, #7a6ba5) !important;
+    -fx-effect: dropshadow(gaussian, rgba(224, 177, 203, 0.4), 10, 0, 0, 2);
+}
+
+/* ===== PROGRESSION BAR (bas du player) ===== */
+.root.dark .progress-bottom {
+    -fx-background-color: #2d2d44 !important;
+    -fx-border-color: #5E548E !important;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 15;
+}
+
+.root.dark .progress-label {
+    -fx-text-fill: #E0B1CB !important;
+    -fx-font-weight: 700;
+}
+
+.root.dark .progress-bar {
+    -fx-accent: #E0B1CB !important;
+    -fx-background-radius: 10;
+}
+
+.root.dark .progress-bar .track {
+    -fx-background-color: #40405c !important;
+    -fx-background-radius: 10;
+}
+
+.root.dark .progress-value {
+    -fx-text-fill: #E0B1CB !important;
+    -fx-font-weight: 700;
+    -fx-font-size: 16px;
+}
+
+/* ===== HEADER GRADIENT (player) ===== */
+.root.dark .header-gradient {
+    -fx-background-color: linear-gradient(to right, #0f0f1f, #1a1a2e) !important;
+}
+
+.root.dark .header-title {
+    -fx-text-fill: #E0B1CB !important;
+}
+
+.root.dark .header-subtitle {
+    -fx-text-fill: #a0a0c0 !important;
+}
+
+/* ===== CENTER CONTENT (player) ===== */
+.root.dark .player-content {
+    -fx-background-color: #1a1a2e !important;
+    -fx-padding: 20;
+}
+
+.root.dark .lecon-title {
+    -fx-text-fill: #E0B1CB !important;
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
+}
+
+.root.dark .web-view {
+    -fx-background-color: #2d2d44 !important;
+    -fx-border-color: #5E548E !important;
+    -fx-border-width: 2;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+}
+
+/* Contenu HTML dans la WebView (via injection) */
+.root.dark .web-view .content {
+    -fx-background-color: #2d2d44 !important;
+}
+
+.root.dark .terminer-button {
+    -fx-background-color: #5E548E !important;
+    -fx-text-fill: white !important;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-max-width: 300;
+}
+
+.root.dark .terminer-button:hover {
+    -fx-background-color: #7a6ba5 !important;
+}
+
+.root.dark .status-text {
+    -fx-text-fill: #a0a0c0 !important;
+    -fx-font-size: 14px;
+    -fx-font-style: italic;
+}
+
+/* ===== TILEPANE (catalogue) ===== */
+.root.dark .course-tile {
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+}
+
+.root.dark .course-tile .tile-pane {
+    -fx-background-color: transparent;
+}
+
+/* ===== POUR LES FXML, AJOUTE CES CLASSES ===== */
+
+/* Pour la recherche */
+.root.dark .HBox.search-container {
+    -fx-background-color: #35354f !important;
+    -fx-border-color: #5E548E !important;
+}
+
+/* Pour la barre de progression en bas */
+.root.dark .HBox.progress-bottom {
+    -fx-background-color: #2d2d44 !important;
+    -fx-border-color: #5E548E !important;
+}
+
+/* Pour le VBox du centre */
+.root.dark .VBox.player-center {
+    -fx-background-color: #1a1a2e !important;
+}
+
+/* Pour le VBox du top */
+.root.dark .VBox.header-gradient {
+    -fx-background-color: linear-gradient(to right, #0f0f1f, #1a1a2e) !important;
+}

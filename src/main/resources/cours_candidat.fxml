@@ -8,12 +8,13 @@
 <StackPane xmlns="http://javafx.com/javafx/21"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="main.CoursCandidatController"
-           style="-fx-background-color: transparent;">
+           stylesheets="/css/theme-unified.css"
+           styleClass="shell-root">
 
     <!-- Background Orbs (optionnel) -->
-    <Circle radius="250" fill="rgba(94,84,142,0.03)" style="-fx-translate-x: -200; -fx-translate-y: -150;"/>
-    <Circle radius="200" fill="rgba(159,134,192,0.02)" style="-fx-translate-x: 300; -fx-translate-y: 200;"/>
-    <Circle radius="150" fill="rgba(224,177,203,0.02)" style="-fx-translate-x: 100; -fx-translate-y: 400;"/>
+    <Circle radius="250" fill="rgba(94,84,142,0.03)" mouseTransparent="true" style="-fx-translate-y: -150; -fx-translate-x: -280;" styleClass="bg-orb"/>
+    <Circle radius="200" fill="rgba(159,134,192,0.02)"  mouseTransparent="true" style="-fx-translate-y: 200; -fx-translate-x: 250;" styleClass="bg-orb"/>
+    <Circle radius="150" fill="rgba(224,177,203,0.02)" mouseTransparent="true" style="-fx-translate-y: -100; -fx-translate-x: 180;" styleClass="bg-orb"/>
 
     <ScrollPane fitToWidth="true" fitToHeight="true"
                 style="-fx-background-color: transparent; -fx-border-color: transparent;">
@@ -34,14 +35,14 @@
                     <!-- Domaine -->
                     <VBox spacing="8">
                         <Label text="Domaine" style="-fx-font-weight: 700; -fx-text-fill: #231942;"/>
-                        <ComboBox fx:id="comboDomaine"
+                        <ComboBox fx:id="comboDomaine" styleClass="filter-combo"
                                   style="-fx-background-color: white; -fx-border-color: #d8c9f0; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 8 16; -fx-min-width: 200;"/>
                     </VBox>
 
                     <!-- Niveau -->
                     <VBox spacing="8">
                         <Label text="Niveau" style="-fx-font-weight: 700; -fx-text-fill: #231942;"/>
-                        <ComboBox fx:id="comboNiveau"
+                        <ComboBox fx:id="comboNiveau" styleClass="filter-combo"
                                   style="-fx-background-color: white; -fx-border-color: #d8c9f0; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 8 16; -fx-min-width: 200;"/>
                     </VBox>
                 </HBox>

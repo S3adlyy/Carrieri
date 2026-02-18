@@ -7,7 +7,7 @@
 <VBox spacing="25" alignment="TOP_CENTER"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="main.QuizModulePlayerController"
-      stylesheets="/css/candidat-theme.css"
+      stylesheets="/css/theme-unified.css"
       styleClass="quiz-container"
       prefWidth="800" prefHeight="600">
 

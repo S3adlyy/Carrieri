@@ -13,112 +13,79 @@
            styleClass="mission-bg"
            prefWidth="1400" prefHeight="900">
 
-    <!-- Background Orbs (bulles) -->
-    <Circle radius="250" fill="rgba(94,84,142,0.03)" style="-fx-translate-y: -150; -fx-translate-x: -280;"/>
-    <Circle radius="200" fill="rgba(159,134,192,0.02)" style="-fx-translate-y: 200; -fx-translate-x: 250;"/>
-    <Circle radius="150" fill="rgba(224,177,203,0.02)" style="-fx-translate-y: -100; -fx-translate-x: 180;"/>
+     <Circle radius="250" fill="rgba(94,84,142,0.03)" mouseTransparent="true" style="-fx-translate-y: -150; -fx-translate-x: -280;" styleClass="bg-orb"/>
+    <Circle radius="200" fill="rgba(159,134,192,0.02)"  mouseTransparent="true" style="-fx-translate-y: 200; -fx-translate-x: 250;" styleClass="bg-orb"/>
+    <Circle radius="150" fill="rgba(224,177,203,0.02)" mouseTransparent="true" style="-fx-translate-y: -100; -fx-translate-x: 180;" styleClass="bg-orb"/>
 
-    <!-- Main Content -->
     <ScrollPane fitToWidth="true" fitToHeight="true"
-                style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                style="-fx-background-color: transparent; -fx-border-color: transparent;"
+                styleClass="main-scroll">
 
         <VBox alignment="TOP_CENTER" spacing="25" style="-fx-padding: 30;">
 
-            <!-- Header avec icône -->
+            <!-- Header -->
             <VBox spacing="20" alignment="CENTER" style="-fx-padding: 0 0 10 0;">
-                <StackPane style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #231942 0%, #5E548E 100%);
-                     -fx-background-radius: 20;
-                     -fx-padding: 20;
-                     -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.3), 25, 0.25, 0, 10);">
-                    <Label text="📖" style="-fx-font-size: 36px; -fx-text-fill: white;"/>
+                <StackPane styleClass="header-icon-container">
+                    <Label text="📖" styleClass="header-icon" style="-fx-font-size: 36px; -fx-text-fill: white;"/>
                 </StackPane>
 
                 <VBox spacing="5" alignment="CENTER">
-                    <Label text="Gestion des Leçons"
-                           style="-fx-font-size: 32px; -fx-font-weight: 900; -fx-text-fill: #231942; -fx-letter-spacing: -0.5px;"/>
-                    <Label fx:id="lblModuleInfo" text="Sélectionnez un module"
-                           style="-fx-font-size: 15px; -fx-text-fill: #6b7280; -fx-wrap-text: true; -fx-alignment: center;
-                      -fx-background-color: #f3e8ff; -fx-padding: 4 12; -fx-background-radius: 20;"/>
+                    <Label text="Gestion des Leçons" styleClass="header-title"/>
+                    <Label fx:id="lblModuleInfo" text="Sélectionnez un module" styleClass="header-subtitle"/>
                 </VBox>
             </VBox>
 
-            <!-- FORMULAIRE (caché par défaut) -->
-            <VBox fx:id="formBox" spacing="25" visible="false" managed="false"
-                  style="-fx-background-color: rgba(255,255,255,0.85); -fx-background-radius: 24; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.15), 30, 0.1, 0, 10);">
+            <!-- FORMULAIRE -->
+            <VBox fx:id="formBox" spacing="25" visible="false" managed="false" styleClass="form-container">
 
-                <Label text="📝 Nouvelle Leçon" style="-fx-font-size: 22px; -fx-font-weight: 800; -fx-text-fill: #231942; -fx-padding: 0 0 10 0;"/>
+                <Label text="📝 Nouvelle Leçon" styleClass="form-title"/>
 
                 <VBox spacing="20">
-
-                    <!-- Sélection du module -->
-                    <VBox spacing="5">
-                        <Label text="Module *"
-                               style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #231942;"/>
-                        <ComboBox fx:id="comboModules" promptText="Sélectionner un module"
-                                  style="-fx-background-color: white; -fx-border-color: #d8c9f0; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 8; -fx-font-size: 14px;"/>
-                        <!-- ✅ LABEL D'ERREUR POUR LE MODULE -->
-                        <Label fx:id="errorModule" text=""
-                               style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px; -fx-padding: 2 0 0 5;"
-                               visible="false" managed="false"/>
+                    <!-- Module -->
+                    <VBox spacing="5" styleClass="form-field">
+                        <Label text="Module *" styleClass="field-label"/>
+                        <ComboBox fx:id="comboModules" promptText="Sélectionner un module" styleClass="form-combo"/>
+                        <Label fx:id="errorModule" text="" styleClass="error-label" visible="false" managed="false"/>
                     </VBox>
 
-                    <!-- Titre de la leçon -->
-                    <VBox spacing="5">
-                        <Label text="Titre de la leçon *"
-                               style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #231942;"/>
-                        <TextField fx:id="txtTitre" promptText="Ex: Introduction"
-                                   style="-fx-background-color: white; -fx-border-color: #d8c9f0; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 12; -fx-font-size: 14px;"/>
-                        <!-- ✅ LABEL D'ERREUR POUR LE TITRE -->
-                        <Label fx:id="errorTitre" text=""
-                               style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px; -fx-padding: 2 0 0 5;"
-                               visible="false" managed="false"/>
+                    <!-- Titre -->
+                    <VBox spacing="5" styleClass="form-field">
+                        <Label text="Titre de la leçon *" styleClass="field-label"/>
+                        <TextField fx:id="txtTitre" promptText="Ex: Introduction" styleClass="form-field"/>
+                        <Label fx:id="errorTitre" text="" styleClass="error-label" visible="false" managed="false"/>
                     </VBox>
 
                     <!-- Contenu -->
-                    <!-- Contenu -->
-                    <VBox spacing="5">
-                        <Label text="Contenu *"
-                               style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #231942;"/>
-                        <TextArea fx:id="txtContenu"
-                                  promptText="Rédigez le contenu de la leçon..."
-                                  wrapText="true"
-                                  prefHeight="150"
-                                  style="-fx-background-color: white; -fx-border-color: #d8c9f0; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 12; -fx-font-size: 14px;"/>
+                    <VBox spacing="5" styleClass="form-field">
+                        <Label text="Contenu *" styleClass="field-label"/>
+                        <TextArea fx:id="txtContenu" promptText="Rédigez le contenu de la leçon..."
+                                  wrapText="true" prefHeight="150" styleClass="form-textarea"/>
 
-                        <!-- ✅ COMPTEUR DE CARACTÈRES -->
                         <HBox alignment="CENTER_RIGHT" spacing="5">
-                            <Label fx:id="charCountLabel" text="0/500"
-                                   style="-fx-text-fill: #9ca3af; -fx-font-size: 12px; -fx-font-weight: 600;
-                      -fx-background-color: #f3e8ff; -fx-padding: 4 10; -fx-background-radius: 20;"/>
-                            <Label text="minimum 500" style="-fx-text-fill: #6b7280; -fx-font-size: 11px;"/>
+                            <Label fx:id="charCountLabel" text="0/500" styleClass="char-counter"/>
+                            <Label text="minimum 500" styleClass="field-hint"/>
                         </HBox>
 
-                        <Label fx:id="errorContenu" text=""
-                               style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px; -fx-padding: 2 0 0 5;"
-                               visible="false" managed="false"/>
+                        <Label fx:id="errorContenu" text="" styleClass="error-label" visible="false" managed="false"/>
                     </VBox>
 
                     <!-- Vidéo -->
-                    <VBox spacing="8">
-                        <Label text="Vidéo (optionnelle)"
-                               style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #231942;"/>
+                    <VBox spacing="8" styleClass="form-field">
+                        <Label text="Vidéo (optionnelle)" styleClass="field-label"/>
                         <HBox spacing="10" alignment="CENTER_LEFT">
-                            <Button fx:id="btnChoisirVideo" text="🎬 Choisir une vidéo MP4"
-                                    style="-fx-background-color: white; -fx-text-fill: #5E548E; -fx-border-color: #9F86C0; -fx-border-width: 2; -fx-padding: 10 15; -fx-background-radius: 12; -fx-border-radius: 12; -fx-cursor: hand;"/>
-                            <Label fx:id="lblVideoNom" text="Aucune vidéo"
-                                   style="-fx-background-color: #f3e8ff; -fx-text-fill: #5E548E; -fx-padding: 4 12; -fx-background-radius: 20; -fx-font-size: 12px;"/>
+                            <Button fx:id="btnChoisirVideo" text="🎬 Choisir une vidéo MP4" styleClass="btn-outline"/>
+                            <Label fx:id="lblVideoNom" text="Aucune vidéo" styleClass="image-name"/>
                         </HBox>
-                        <Label fx:id="lblTailleVideo" text="" style="-fx-text-fill: #27ae60; -fx-font-size: 12px; -fx-padding: 0 0 0 5;"/>
+                        <Label fx:id="lblTailleVideo" text="" styleClass="field-hint"/>
                     </VBox>
 
                     <!-- Conseils -->
-                    <VBox spacing="10" style="-fx-background-color: #f3e8ff; -fx-background-radius: 16; -fx-padding: 15;">
-                        <Label text="📌 Conseils"
-                               style="-fx-font-size: 14px; -fx-font-weight: 800; -fx-text-fill: #5E548E;"/>
-                        <VBox spacing="5">
-                            <Label text="• Titre clair (3-200 caractères)" style="-fx-text-fill: #231942; -fx-font-size: 12px;"/>
-                            <Label text="• Contenu détaillé (10-5000 car.)" style="-fx-text-fill: #231942; -fx-font-size: 12px;"/>
-                            <Label text="• Vidéo optionnelle (max 64MB)" style="-fx-text-fill: #231942; -fx-font-size: 12px;"/>
+                    <VBox spacing="10" styleClass="tips-section">
+                        <Label text="📌 Conseils" styleClass="tips-title"/>
+                        <VBox spacing="5" styleClass="tips-list">
+                            <Label text="• Titre clair (3-200 caractères)" styleClass="tips-item"/>
+                            <Label text="• Contenu détaillé (10-5000 car.)" styleClass="tips-item"/>
+                            <Label text="• Vidéo optionnelle (max 64MB)" styleClass="tips-item"/>
                         </VBox>
                     </VBox>
                 </VBox>
@@ -126,48 +93,29 @@
                 <!-- Bouton AJOUTER -->
                 <HBox spacing="25" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
                     <Button fx:id="btnAjouter" text="AJOUTER LA LEÇON" onAction="#ajouterLecon"
-                            style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #231942 0%, #5E548E 100%);
-                                   -fx-text-fill: white;
-                                   -fx-font-size: 18px;
-                                   -fx-font-weight: 900;
-                                   -fx-padding: 14 60;
-                                   -fx-background-radius: 50;
-                                   -fx-cursor: hand;
-                                   -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.4), 20, 0.2, 0, 8);"
-                            prefWidth="300"/>
+                            styleClass="btn-primary-glow" prefWidth="300"/>
                 </HBox>
             </VBox>
 
-            <!-- TABLE PANEL (visible par défaut) -->
-            <VBox fx:id="tablePane" spacing="15" visible="true" managed="true"
-                  style="-fx-background-color: rgba(255,255,255,0.85); -fx-background-radius: 24; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.15), 30, 0.1, 0, 10);">
+            <!-- TABLE PANEL -->
+            <VBox fx:id="tablePane" spacing="15" visible="true" managed="true" styleClass="table-pane">
 
-                <HBox spacing="15" alignment="CENTER_LEFT">
-                    <Label text="Liste des leçons" style="-fx-font-size: 20px; -fx-font-weight: 800; -fx-text-fill: #231942;"/>
+                <HBox spacing="15" alignment="CENTER_LEFT" styleClass="table-header">
+                    <Label text="Liste des leçons" styleClass="table-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
 
                     <!-- Bouton nouvelle leçon -->
-                    <Button fx:id="btnToggleForm" text="➕" onAction="#toggleForm"
-                            style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #231942 0%, #5E548E 100%);
-                                   -fx-text-fill: white;
-                                   -fx-font-size: 14px;
-                                   -fx-font-weight: 900;
-                                   -fx-padding: 8 20;
-                                   -fx-background-radius: 50;
-                                   -fx-cursor: hand;
-                                   -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.4), 20, 0.2, 0, 8);"
-                            prefWidth="100"/>
+                    <Button fx:id="btnToggleForm" text="➕" onAction="#toggleForm" styleClass="btn-add-course" prefWidth="100"/>
                 </HBox>
 
                 <!-- TABLEAU -->
-                <TableView fx:id="tableLecons" VBox.vgrow="ALWAYS" editable="true"
-                           style="-fx-background-color: transparent; -fx-border-color: rgba(94,84,142,0.15); -fx-border-radius: 16;">
+                <TableView fx:id="tableLecons" VBox.vgrow="ALWAYS" editable="true" styleClass="cours-table">
                     <columns>
-                        <TableColumn fx:id="colTitre" text="TITRE" prefWidth="300"/>
-                        <TableColumn fx:id="colContenu" text="CONTENU" prefWidth="400"/>
-                        <TableColumn fx:id="colVideo" text="VIDÉO" prefWidth="80"/>
-                        <TableColumn fx:id="colOrdre" text="ORDRE" prefWidth="100"/>
-                        <TableColumn fx:id="colActions" text="ACTIONS" prefWidth="100"/>
+                        <TableColumn fx:id="colTitre" text="TITRE" prefWidth="300" styleClass="table-column"/>
+                        <TableColumn fx:id="colContenu" text="CONTENU" prefWidth="400" styleClass="table-column"/>
+                        <TableColumn fx:id="colVideo" text="VIDÉO" prefWidth="80" styleClass="table-column"/>
+                        <TableColumn fx:id="colOrdre" text="ORDRE" prefWidth="100" styleClass="table-column"/>
+                        <TableColumn fx:id="colActions" text="ACTIONS" prefWidth="100" styleClass="table-column"/>
                     </columns>
                 </TableView>
             </VBox>

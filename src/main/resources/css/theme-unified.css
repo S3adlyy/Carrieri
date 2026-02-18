@@ -1,56 +1,112 @@
 /* ============================================
-   THÈME UNIFIÉ - JAVA FX 21.0.2
-   Gestion Académique - Couleurs: #231942, #5E548E, #9F86C0
+   THÈME CLAIR - CARRIERI
+   Version harmonisée avec le thème sombre
+   Couleurs: #231942, #5E548E, #9F86C0, #E0B1CB
    ============================================ */
 
-/* ========== ROOT & VARIABLES ========== */
+/* ========== ROOT ========== */
 .root {
-    -fx-primary-900: #231942;
-    -fx-primary-800: #2d2a4e;
-    -fx-primary-700: #5E548E;
-    -fx-primary-600: #7a6ba5;
-    -fx-primary-500: #9F86C0;
-    -fx-primary-400: #b8a3d3;
-    -fx-primary-300: #d4c2e6;
-    -fx-primary-200: #e8daf5;
-    -fx-primary-100: #f5edfc;
+    /* Couleurs de fond */
+    -fx-base: #f5f3f7;
+    -fx-background: #f5f3f7;
 
-    -fx-accent-success: #10b981;
-    -fx-accent-danger: #ff6b6b;
-    -fx-accent-info: #3498db;
-    -fx-accent-warning: #f59e0b;
+    /* Couleurs des composants */
+    -sidebar-bg: linear-gradient(to bottom, #f8f4ff, #e8daf5, #d4c2e6);
+    -content-bg: #f5f3f7;
+    -card-bg: #ffffff;
 
-    -fx-bg-light: #f8fafc;
-    -fx-text-dark: #231942;
-    -fx-text-light: #6b7280;
-    -fx-border-light: rgba(94, 84, 142, 0.15);
+    /* Couleurs des textes */
+    -text-primary: #231942;
+    -text-secondary: #5E548E;
+    -text-muted: #6b7280;
+    -text-white: #ffffff;
+    -text-dark: #231942;
+
+    /* Couleurs des boutons */
+    -button-primary: linear-gradient(to right, #231942, #5E548E);
+    -button-primary-hover: linear-gradient(to right, #2d2a4e, #7a6ba5);
+    -button-danger: #ff6b6b;
+    -button-danger-hover: #ff5252;
+
+    /* Couleurs des tableaux */
+    -table-header-bg: linear-gradient(from 0% 0% to 100% 100%, #f3e8ff 0%, #e8daf5 100%);
+    -table-row-bg: #ffffff;
+    -table-row-odd: #fcfaff;
+    -table-row-hover: #f8f4ff;
+    -table-row-selected: #f3e8ff;
+    -table-border: rgba(94, 84, 142, 0.15);
+
+    /* Couleurs des formulaires */
+    -input-bg: #ffffff;
+    -input-border: #d8c9f0;
+    -input-focus-border: #5E548E;
+    -input-text: #231942;
+    -input-prompt: rgba(94, 84, 142, 0.4);
+
+    /* Couleurs des badges */
+    -badge-obligatoire: #10b981;
+    -badge-optionnel: #6b7280;
+
+    /* Bordures */
+    -border-color: rgba(94, 84, 142, 0.15);
+    -border-light: rgba(94, 84, 142, 0.1);
+
+    /* Effets */
+    -shadow-color: rgba(94, 84, 142, 0.2);
+    -glow-color: rgba(159, 134, 192, 0.3);
 }
 
-/* ========== BACKGROUNDS ========== */
-.bg-gradient {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #1a1a2e 0%, #231942 50%, #5E548E 100%);
+/* ============================================
+   BACKGROUNDS
+   ============================================ */
+.mission-bg {
+    -fx-background-color: #f5f3f7;
 }
 
 .shell-root {
     -fx-background-color: #f5f3f7;
 }
 
-/* ============================================
-   SIDEBAR - ANIMATIONS FLUIDES
-   ============================================ */
+.content-area {
+    -fx-background-color: #f5f3f7;
+    -fx-padding: 20;
+}
 
+/* ============================================
+   BULLES DÉCORATIVES
+   ============================================ */
+.bg-orb {
+    -fx-fill: rgba(94, 84, 142, 0.2);
+}
+
+.bg-orb-purple {
+    -fx-fill: rgba(159, 134, 192, 0.15);
+}
+
+.bg-orb-pink {
+    -fx-fill: rgba(224, 177, 203, 0.15);
+}
+
+/* ============================================
+   SCROLLPANE
+   ============================================ */
+.main-scroll,
+.main-scroll .viewport,
+.scroll-pane,
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
 .sidebar-animated {
-    -fx-background-color: linear-gradient(to bottom, #231942, #2d2a4e, #1a1a2e);
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 20, 0, 4, 0);
+    -fx-background-color: -sidebar-bg;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 15, 0, 2, 0);
     -fx-background-radius: 0 20 20 0;
     -fx-padding: 20 0 20 0;
     -fx-spacing: 30;
-
-    /* Animation de largeur avec easing */
-    -fx-min-width: 70;
-    -fx-pref-width: 70;
-    -fx-max-width: 70;
-    -fx-transition: all 0.4s cubic-bezier(0.25, 0.1, 0.15, 1.2);
 }
 
 .sidebar-animated:hover {
@@ -59,7 +115,6 @@
     -fx-max-width: 250;
 }
 
-/* ========== BRAND ========== */
 .brand-container {
     -fx-spacing: 5;
     -fx-alignment: center;
@@ -67,12 +122,10 @@
 }
 
 .brand-icon {
-    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-background-color: rgba(94, 84, 142, 0.1);
     -fx-background-radius: 15;
     -fx-padding: 10;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 5);
-    -fx-transition: all 0.3s ease;
 }
 
 .brand-icon:hover {
@@ -82,14 +135,8 @@
     -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 20, 0.3, 0, 0);
 }
 
-.brand-icon .label {
-    -fx-font-size: 28px;
-    -fx-text-fill: white;
-    -fx-transition: all 0.3s ease;
-}
-
 .brand-text {
-    -fx-text-fill: white;
+    -fx-text-fill: #231942;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-opacity: 0;
@@ -98,7 +145,7 @@
 }
 
 .brand-subtext {
-    -fx-text-fill: rgba(255, 255, 255, 0.7);
+    -fx-text-fill: #5E548E;
     -fx-font-size: 10px;
     -fx-opacity: 0;
     -fx-translate-x: -10px;
@@ -111,7 +158,9 @@
     -fx-translate-x: 0;
 }
 
-/* ========== NAVIGATION ========== */
+/* ============================================
+   NAVIGATION
+   ============================================ */
 .nav-container {
     -fx-spacing: 5;
     -fx-padding: 0 0 20 0;
@@ -126,7 +175,6 @@
     -fx-cursor: hand;
     -fx-min-width: 250;
     -fx-background-radius: 0 30 30 0;
-    -fx-transition: all 0.3s ease;
 }
 
 .nav-button:hover {
@@ -135,35 +183,26 @@
     -fx-translate-x: 5px;
 }
 
-.nav-button .hbox {
-    -fx-alignment: center-left;
-}
-
 .nav-icon {
     -fx-font-size: 24px;
-    -fx-text-fill: white;
+    -fx-text-fill: #5E548E;
     -fx-min-width: 40;
     -fx-alignment: center;
-    -fx-opacity: 1;
-    -fx-transition: all 0.3s ease;
 }
 
 .nav-button:hover .nav-icon {
-    -fx-scale-x: 1.1;
-    -fx-scale-y: 1.1;
-    -fx-text-fill: #E0B1CB;
+    -fx-text-fill: #231942;
 }
 
 .nav-text {
     -fx-font-size: 15px;
     -fx-font-weight: 600;
-    -fx-text-fill: white;
+    -fx-text-fill: #231942;
     -fx-opacity: 0;
     -fx-translate-x: -10px;
     -fx-transition: all 0.4s cubic-bezier(0.25, 0.1, 0.15, 1.2);
 }
 
-/* Animation décalée via des classes spécifiques (remplace nth-child) */
 #btnCours .nav-text {
     -fx-transition-delay: 0.05s;
 }
@@ -181,10 +220,9 @@
     -fx-translate-x: 0;
 }
 
-/* Bouton actif */
 .nav-button-active {
-    -fx-background-color: rgba(255, 255, 255, 0.15);
-    -fx-border-color: transparent transparent transparent #E0B1CB;
+    -fx-background-color: rgba(94, 84, 142, 0.15);
+    -fx-border-color: transparent transparent transparent #5E548E;
     -fx-border-width: 0 0 0 3;
 }
 
@@ -192,22 +230,22 @@
     -fx-text-fill: #E0B1CB;
 }
 
-/* ========== USER SECTION ========== */
+/* ============================================
+   USER SECTION
+   ============================================ */
 .user-container {
     -fx-spacing: 8;
     -fx-alignment: center;
     -fx-padding: 20 0 0 0;
-    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-color: rgba(94, 84, 142, 0.2);
     -fx-border-width: 1 0 0 0;
 }
 
 .user-avatar-glow {
-    -fx-fill: linear-gradient(to bottom right, #9F86C0, #E0B1CB);
+    -fx-fill: linear-gradient(to bottom right, #9F86C0, #5E548E);
     -fx-stroke: white;
     -fx-stroke-width: 2;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 15, 0.2, 0, 0);
     -fx-cursor: hand;
-    -fx-transition: all 0.3s ease;
 }
 
 .user-avatar-glow:hover {
@@ -217,20 +255,14 @@
 }
 
 .user-name {
-    -fx-text-fill: white;
+    -fx-text-fill: #231942;
     -fx-font-weight: bold;
     -fx-font-size: 13px;
-    -fx-opacity: 0;
-    -fx-translate-y: -5px;
-    -fx-transition: all 0.4s cubic-bezier(0.25, 0.1, 0.15, 1.2) 0.05s;
 }
 
 .user-role {
-    -fx-text-fill: rgba(255, 255, 255, 0.7);
+    -fx-text-fill: #5E548E;
     -fx-font-size: 11px;
-    -fx-opacity: 0;
-    -fx-translate-y: -5px;
-    -fx-transition: all 0.4s cubic-bezier(0.25, 0.1, 0.15, 1.2) 0.1s;
 }
 
 .sidebar-animated:hover .user-name,
@@ -240,7 +272,7 @@
 }
 
 .logout-button {
-    -fx-background-color: rgba(255, 107, 107, 0.2);
+    -fx-background-color: rgba(255, 107, 107, 0.1);
     -fx-text-fill: #ff6b6b;
     -fx-font-size: 20px;
     -fx-padding: 8 15;
@@ -248,8 +280,6 @@
     -fx-border-color: rgba(255, 107, 107, 0.3);
     -fx-border-radius: 20;
     -fx-cursor: hand;
-    -fx-min-width: 40;
-    -fx-transition: all 0.3s ease;
 }
 
 .logout-button:hover {
@@ -260,42 +290,27 @@
     -fx-effect: dropshadow(gaussian, rgba(255, 107, 107, 0.3), 10, 0, 0, 0);
 }
 
-/* ========== CONTENT AREA ========== */
-.content-area {
-    -fx-background-color: #f5f3f7;
-    -fx-padding: 20;
-}
-
-/* ========== ANIMATIONS SUPPLEMENTAIRES ========== */
-@keyframes glow {
-    0% { -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.2), 10, 0.2, 0, 0); }
-    50% { -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.5), 20, 0.3, 0, 0); }
-    100% { -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.2), 10, 0.2, 0, 0); }
-}
-
-.brand-glow {
-    -fx-animation: glow 3s infinite ease-in-out;
-}
-
-/* ========== HEADERS ========== */
+/* ============================================
+   HEADERS
+   ============================================ */
 .header-section {
     -fx-padding: 0 0 25 0;
 }
 
-.header-icon {
+.header-icon-container {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #231942 0%, #5E548E 100%);
-    -fx-background-radius: 16;
-    -fx-padding: 14;
-    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.3), 15, 0.2, 0, 5);
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.3), 25, 0.25, 0, 10);
 }
 
-.header-icon .label {
-    -fx-font-size: 26px;
+.header-icon {
+    -fx-font-size: 36px;
     -fx-text-fill: white;
 }
 
 .header-title {
-    -fx-font-size: 28px;
+    -fx-font-size: 32px;
     -fx-font-weight: 900;
     -fx-text-fill: #231942;
     -fx-letter-spacing: -0.5px;
@@ -307,7 +322,6 @@
     -fx-font-weight: 500;
 }
 
-/* ========== SECTION TITLES ========== */
 .section-title {
     -fx-font-size: 20px;
     -fx-font-weight: 800;
@@ -320,16 +334,19 @@
     -fx-text-fill: #5E548E;
 }
 
-/* ========== BUTTONS ========== */
+/* ============================================
+   BUTTONS
+   ============================================ */
 .btn-primary {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #231942 0%, #5E548E 100%);
     -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
     -fx-font-weight: 800;
     -fx-font-size: 14px;
-    -fx-padding: 14 28 14 28;
+    -fx-padding: 14 28;
     -fx-background-radius: 12;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.3), 15, 0.2, 0, 5);
 }
 
 .btn-primary:hover {
@@ -341,12 +358,12 @@
 .btn-secondary {
     -fx-background-color: white;
     -fx-text-fill: #5E548E;
-    -fx-font-weight: 700;
-    -fx-font-size: 14px;
-    -fx-padding: 12 24 12 24;
-    -fx-background-radius: 12;
     -fx-border-color: #9F86C0;
     -fx-border-width: 2;
+    -fx-font-weight: 700;
+    -fx-font-size: 14px;
+    -fx-padding: 12 24;
+    -fx-background-radius: 12;
     -fx-cursor: hand;
 }
 
@@ -360,7 +377,7 @@
     -fx-text-fill: white;
     -fx-font-weight: 700;
     -fx-font-size: 14px;
-    -fx-padding: 12 24 12 24;
+    -fx-padding: 12 24;
     -fx-background-radius: 12;
     -fx-cursor: hand;
 }
@@ -376,7 +393,7 @@
     -fx-text-fill: white;
     -fx-font-weight: 700;
     -fx-font-size: 14px;
-    -fx-padding: 12 24 12 24;
+    -fx-padding: 12 24;
     -fx-background-radius: 12;
     -fx-cursor: hand;
 }
@@ -388,11 +405,11 @@
 .btn-icon {
     -fx-background-color: white;
     -fx-text-fill: #5E548E;
-    -fx-font-size: 14px;
-    -fx-padding: 8 12 8 12;
-    -fx-background-radius: 8;
     -fx-border-color: #d8c9f0;
     -fx-border-width: 1;
+    -fx-font-size: 14px;
+    -fx-padding: 8 12;
+    -fx-background-radius: 8;
     -fx-cursor: hand;
 }
 
@@ -403,7 +420,7 @@
 .btn-toggle {
     -fx-background-radius: 50px;
     -fx-font-size: 18px;
-    -fx-padding: 8 16 8 16;
+    -fx-padding: 8 16;
     -fx-cursor: hand;
 }
 
@@ -425,16 +442,103 @@
     -fx-background-color: #ff5252;
 }
 
-/* ========== TABLE STYLES ========== */
+.btn-primary-glow {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #231942 0%, #5E548E 100%);
+    -fx-text-fill: white;
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 1;
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+    -fx-padding: 16 40;
+    -fx-background-radius: 50;
+    -fx-cursor: hand;
+}
+
+.btn-primary-glow:hover {
+    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.6), 35, 0.25, 0, 15);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.btn-outline {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5E548E;
+    -fx-border-color: #9F86C0;
+    -fx-border-width: 2;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-padding: 10 18;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-cursor: hand;
+}
+
+.btn-outline:hover {
+    -fx-background-color: rgba(159, 134, 192, 0.1);
+    -fx-border-color: #5E548E;
+    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.2), 10, 0, 0, 3);
+}
+
+/* ============================================
+   BOUTONS SPÉCIAUX
+   ============================================ */
+.btn-add-course {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #231942 0%, #5E548E 100%);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+    -fx-padding: 8 20;
+    -fx-background-radius: 50;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.4), 20, 0.2, 0, 8);
+}
+
+.btn-add-course:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #2d2a4e 0%, #7a6ba5 100%);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.6), 25, 0.25, 0, 10);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.btn-generate-test {
+    -fx-background-color: #8b5cf6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.btn-generate-test:hover {
+    -fx-background-color: #7c3aed;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.4), 10, 0, 0, 3);
+}
+
+.btn-generate-quiz {
+    -fx-background-color: #8b5cf6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.btn-generate-quiz:hover {
+    -fx-background-color: #7c3aed;
+}
+
+/* ============================================
+   TABLEAUX
+   ============================================ */
 .table-view {
     -fx-background-color: transparent;
-    -fx-border-color: rgba(94, 84, 142, 0.15);
+    -fx-border-color: -table-border;
     -fx-border-radius: 16;
     -fx-background-radius: 16;
 }
 
 .table-view .column-header-background {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #f3e8ff 0%, #e8daf5 100%);
+    -fx-background-color: -table-header-bg;
     -fx-background-radius: 16 16 0 0;
     -fx-padding: 8 0 8 0;
 }
@@ -452,20 +556,20 @@
 }
 
 .table-row-cell {
-    -fx-background-color: white;
-    -fx-border-color: transparent transparent rgba(94, 84, 142, 0.1) transparent;
+    -fx-background-color: -table-row-bg;
+    -fx-border-color: transparent transparent -table-border transparent;
 }
 
 .table-row-cell:odd {
-    -fx-background-color: #fcfaff;
+    -fx-background-color: -table-row-odd;
 }
 
 .table-row-cell:selected {
-    -fx-background-color: #f3e8ff;
+    -fx-background-color: -table-row-selected;
 }
 
 .table-row-cell:hover {
-    -fx-background-color: #f8f4ff;
+    -fx-background-color: -table-row-hover;
 }
 
 .table-cell {
@@ -474,333 +578,114 @@
     -fx-text-fill: #231942;
 }
 
-/* ========== FORM FIELDS ========== */
-.text-field, .text-area, .combo-box {
+.cours-table {
+    -fx-border-color: -table-border;
+}
+
+.table-pane {
+    -fx-background-color: rgba(255, 255, 255, 0.85);
+    -fx-background-radius: 24;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 30, 0.1, 0, 10);
+    -fx-spacing: 15;
+}
+
+.table-title {
+    -fx-text-fill: #231942;
+    -fx-font-size: 20px;
+    -fx-font-weight: 800;
+}
+
+.count-badge {
+    -fx-background-color: #f3e8ff;
+    -fx-text-fill: #5E548E;
+    -fx-padding: 4 12;
+    -fx-background-radius: 20;
+    -fx-font-size: 12px;
+}
+
+.table-toolbar {
+    -fx-background-color: transparent;
+    -fx-spacing: 15;
+    -fx-alignment: center-left;
+}
+
+/* ============================================
+   FORMULAIRES
+   ============================================ */
+.form-pane {
+    -fx-spacing: 25;
+}
+
+.form-columns {
+    -fx-spacing: 30;
+    -fx-alignment: top-center;
+}
+
+.form-container {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-border-color: -table-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 24;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, rgba(35, 25, 66, 0.05), 15, 0, 0, 5);
+}
+
+.form-title {
+    -fx-text-fill: #231942;
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+    -fx-padding: 0 0 15 0;
+}
+
+.form-field {
+    -fx-spacing: 5;
+}
+
+.field-label {
+    -fx-text-fill: #5E548E;
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+}
+
+.text-field,
+.text-area,
+.combo-box,
+.password-field {
     -fx-background-color: white;
     -fx-border-color: #d8c9f0;
     -fx-border-radius: 12;
     -fx-background-radius: 12;
-    -fx-padding: 12 16 12 16;
+    -fx-padding: 12 16;
     -fx-font-size: 14px;
+    -fx-text-fill: #231942;
     -fx-prompt-text-fill: rgba(94, 84, 142, 0.4);
 }
 
-.text-field:focused, .text-area:focused, .combo-box:focused {
+.text-field:focused,
+.text-area:focused,
+.combo-box:focused,
+.password-field:focused {
     -fx-border-color: #5E548E;
     -fx-border-width: 2;
     -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.2), 10, 0, 0, 2);
 }
 
 .search-field {
-    -fx-background-radius: 50px;
+    -fx-background-color: white;
+    -fx-border-color: #d8c9f0;
     -fx-border-radius: 50px;
-    -fx-padding: 8 20 8 20;
-}
-
-/* ========== BADGES ========== */
-.badge {
-    -fx-padding: 4 12 4 12;
     -fx-background-radius: 50px;
-    -fx-font-size: 12px;
-    -fx-font-weight: 700;
-}
-
-.badge-creator {
-    -fx-background-color: #f3e8ff;
-    -fx-text-fill: #5E548E;
-}
-
-/* ========== FORM CONTAINERS ========== */
-.form-container {
-    -fx-background-color: white;
-    -fx-background-radius: 20;
-    -fx-border-radius: 20;
-    -fx-border-color: rgba(94, 84, 142, 0.15);
-    -fx-padding: 25;
-    -fx-effect: dropshadow(gaussian, rgba(35, 25, 66, 0.05), 15, 0, 0, 5);
-}
-
-.form-title {
-    -fx-font-size: 18px;
-    -fx-font-weight: 800;
+    -fx-padding: 8 20;
     -fx-text-fill: #231942;
-    -fx-padding: 0 0 15 0;
+    -fx-prompt-text-fill: rgba(94, 84, 142, 0.4);
 }
 
-/* ========== STATS CARDS ========== */
-.stat-card {
-    -fx-background-color: white;
-    -fx-background-radius: 20;
-    -fx-padding: 25;
-    -fx-border-color: rgba(94, 84, 142, 0.1);
-    -fx-border-radius: 20;
-    -fx-effect: dropshadow(gaussian, rgba(35, 25, 66, 0.05), 15, 0, 0, 5);
-}
-
-.stat-value {
-    -fx-font-size: 36px;
-    -fx-font-weight: 900;
-    -fx-text-fill: #231942;
-}
-
-.stat-label {
-    -fx-font-size: 14px;
-    -fx-text-fill: #6b7280;
-    -fx-font-weight: 600;
-}
-
-/* ========== SCROLLBAR ========== */
-.scroll-bar:vertical {
-    -fx-background-color: transparent;
-    -fx-pref-width: 12;
-}
-
-.scroll-bar:vertical .thumb {
-    -fx-background-color: rgba(94, 84, 142, 0.3);
-    -fx-background-radius: 10;
-}
-
-.scroll-bar:vertical .thumb:hover {
-    -fx-background-color: rgba(94, 84, 142, 0.5);
-}
-
-.scroll-bar:vertical .track {
-    -fx-background-color: transparent;
-}
-
-/* ========== TOOLTIPS ========== */
-.tooltip {
-    -fx-background-color: #231942;
-    -fx-background-radius: 8;
-    -fx-text-fill: white;
-    -fx-font-size: 12px;
-    -fx-padding: 8 12;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 3);
-}
-
-/* ========== PROGRESS BAR ========== */
-.progress-bar {
-    -fx-background-radius: 4;
-}
-
-.progress-bar .bar {
-    -fx-background-color: #10b981;
-    -fx-background-radius: 4;
-}
-
-.progress-bar .track {
-    -fx-background-color: #e2e0e7;
-}
-
-/* ========== DIALOGUES ========== */
-.dialog-pane {
-    -fx-background-color: white;
-    -fx-background-radius: 16;
-    -fx-border-color: #f3e8ff;
-    -fx-border-radius: 16;
-}
-
-.dialog-pane .button-bar {
-    -fx-padding: 15;
-}
-
-/* ============================================
-   STYLES GLASSMORPHISM - COMME LE COLLÈGUE
-   ============================================ */
-
-.cours-root {
-    -fx-background-color: #f8f6fc;
-}
-
-/* ========== GLASS CARDS ========== */
-.glass-card {
-    -fx-background-color: rgba(255, 255, 255, 0.85);
-    -fx-background-radius: 24;
-    -fx-border-radius: 24;
-    -fx-border-color: rgba(255, 255, 255, 0.6);
-    -fx-border-width: 1.5;
-    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.15), 30, 0.1, 0, 10);
-    -fx-padding: 25;
-    -fx-background-insets: 0;
-    -fx-transition: all 0.3s ease;
-}
-
-.glass-card:hover {
-    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.25), 35, 0.15, 0, 15);
-    -fx-border-color: rgba(159, 134, 192, 0.4);
-}
-
-.glass-card-light {
-    -fx-background-color: rgba(249, 247, 253, 0.8);
-    -fx-background-radius: 16;
-    -fx-border-radius: 16;
-    -fx-border-color: rgba(159, 134, 192, 0.2);
-    -fx-border-width: 1;
-    -fx-padding: 15;
-}
-
-.glass-card-purple {
-    -fx-background-color: rgba(243, 232, 255, 0.7);
-    -fx-background-radius: 18;
-    -fx-border-radius: 18;
-    -fx-border-color: rgba(159, 134, 192, 0.3);
-    -fx-border-width: 1;
-    -fx-padding: 18;
-    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.1), 15, 0, 0, 5);
-}
-
-/* ========== FORM FIELDS GLASS ========== */
-.glass-field, .glass-combo, .glass-textarea {
-    -fx-background-color: rgba(255, 255, 255, 0.9);
-    -fx-border-color: rgba(159, 134, 192, 0.3);
-    -fx-border-radius: 14;
-    -fx-background-radius: 14;
-    -fx-padding: 12 16;
-    -fx-font-size: 14px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.02), 5, 0, 0, 1);
-}
-
-.glass-field:focused, .glass-combo:focused, .glass-textarea:focused {
+.search-field:focused {
     -fx-border-color: #5E548E;
-    -fx-border-width: 2;
-    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.2), 15, 0, 0, 5);
-    -fx-background-color: white;
 }
 
-.glass-textarea {
-    -fx-padding: 12;
-}
-
-/* ========== BOUTONS ========== */
-.btn-primary-glow {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #231942 0%, #5E548E 100%);
-    -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-font-weight: 900;
-    -fx-padding: 16 40;
-    -fx-background-radius: 50;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.4), 25, 0.2, 0, 10);
-    -fx-border-color: rgba(255, 255, 255, 0.3);
-    -fx-border-width: 1;
-    -fx-border-radius: 50;
-    -fx-transition: all 0.3s ease;
-}
-
-.btn-primary-glow:hover {
-    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.6), 35, 0.25, 0, 15);
-    -fx-scale-x: 1.02;
-    -fx-scale-y: 1.02;
-    -fx-border-color: rgba(255, 255, 255, 0.5);
-}
-
-.btn-outline {
-    -fx-background-color: transparent;
-    -fx-text-fill: #5E548E;
-    -fx-font-size: 14px;
-    -fx-font-weight: 700;
-    -fx-padding: 10 18;
-    -fx-background-radius: 30;
-    -fx-border-color: #9F86C0;
-    -fx-border-width: 2;
-    -fx-border-radius: 30;
-    -fx-cursor: hand;
-    -fx-transition: all 0.2s ease;
-}
-
-.btn-outline:hover {
-    -fx-background-color: rgba(159, 134, 192, 0.1);
-    -fx-border-color: #5E548E;
-    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.2), 10, 0, 0, 3);
-}
-
-/* ========== BADGES ========== */
-.badge-required {
-    -fx-background-color: rgba(254, 226, 226, 0.9);
-    -fx-text-fill: #dc2626;
-    -fx-padding: 4 12;
-    -fx-background-radius: 30;
-    -fx-font-size: 11px;
-    -fx-font-weight: 700;
-    -fx-border-color: rgba(220, 38, 38, 0.2);
-    -fx-border-width: 1;
-    -fx-border-radius: 30;
-}
-
-.badge-verified {
-    -fx-background-color: rgba(209, 250, 229, 0.9);
-    -fx-text-fill: #065f46;
-    -fx-padding: 6 15;
-    -fx-background-radius: 30;
-    -fx-font-size: 13px;
-    -fx-font-weight: 600;
-    -fx-border-color: rgba(6, 95, 70, 0.2);
-    -fx-border-width: 1;
-    -fx-border-radius: 30;
-}
-
-.badge-tracking {
-    -fx-background-color: rgba(243, 232, 255, 0.9);
-    -fx-text-fill: #5E548E;
-    -fx-padding: 6 15;
-    -fx-background-radius: 30;
-    -fx-font-size: 13px;
-    -fx-font-weight: 600;
-    -fx-border-color: rgba(94, 84, 142, 0.2);
-    -fx-border-width: 1;
-    -fx-border-radius: 30;
-}
-
-/* ========== LEVEL BADGES ========== */
-.level-badge-debutant {
-    -fx-background-color: rgba(209, 250, 229, 0.9);
-    -fx-text-fill: #065f46;
-    -fx-padding: 4 14;
-    -fx-background-radius: 30;
-    -fx-font-size: 12px;
-    -fx-font-weight: 600;
-    -fx-border-color: rgba(6, 95, 70, 0.2);
-    -fx-border-width: 1;
-    -fx-border-radius: 30;
-}
-
-.level-badge-intermediaire {
-    -fx-background-color: rgba(254, 243, 199, 0.9);
-    -fx-text-fill: #92400e;
-    -fx-padding: 4 14;
-    -fx-background-radius: 30;
-    -fx-font-size: 12px;
-    -fx-font-weight: 600;
-    -fx-border-color: rgba(146, 64, 14, 0.2);
-    -fx-border-width: 1;
-    -fx-border-radius: 30;
-}
-
-.level-badge-avance {
-    -fx-background-color: rgba(254, 226, 226, 0.9);
-    -fx-text-fill: #991b1b;
-    -fx-padding: 4 14;
-    -fx-background-radius: 30;
-    -fx-font-size: 12px;
-    -fx-font-weight: 600;
-    -fx-border-color: rgba(153, 27, 27, 0.2);
-    -fx-border-width: 1;
-    -fx-border-radius: 30;
-}
-
-.level-badge-expert {
-    -fx-background-color: rgba(237, 233, 254, 0.9);
-    -fx-text-fill: #5E548E;
-    -fx-padding: 4 14;
-    -fx-background-radius: 30;
-    -fx-font-size: 12px;
-    -fx-font-weight: 600;
-    -fx-border-color: rgba(94, 84, 142, 0.2);
-    -fx-border-width: 1;
-    -fx-border-radius: 30;
-}
-
-/* ========== FIELD HINTS ========== */
 .field-hint {
     -fx-text-fill: #6b7280;
     -fx-font-size: 12px;
@@ -817,28 +702,770 @@
     -fx-background-radius: 20;
 }
 
-/* ========== TRUST BADGES ========== */
-.trust-badge {
-    -fx-background-color: rgba(255, 255, 255, 0.5);
-    -fx-background-radius: 30;
-    -fx-padding: 6 15;
-    -fx-border-color: rgba(159, 134, 192, 0.2);
-    -fx-border-width: 1;
-    -fx-border-radius: 30;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.02), 5, 0, 0, 2);
+.error-label {
+    -fx-text-fill: #ff6b6b;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-padding: 2 0 0 0;
 }
 
-.trust-badge:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.7);
-    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.1), 8, 0, 0, 3);
+.status-label {
+    -fx-background-color: #f3e8ff;
+    -fx-border-color: rgba(94, 84, 142, 0.2);
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 8 15;
+    -fx-text-fill: #5E548E;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+}
+
+/* ============================================
+   GLASS CARDS
+   ============================================ */
+.glass-card {
+    -fx-background-color: rgba(255, 255, 255, 0.85);
+    -fx-border-color: rgba(255, 255, 255, 0.6);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 24;
+    -fx-background-radius: 24;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 30, 0.1, 0, 10);
+    -fx-padding: 25;
+}
+
+.glass-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.25), 35, 0.15, 0, 15);
+    -fx-border-color: rgba(159, 134, 192, 0.4);
+}
+
+.glass-card .label {
+    -fx-text-fill: #231942;
+}
+
+.glass-card-light {
+    -fx-background-color: rgba(249, 247, 253, 0.8);
+    -fx-border-color: rgba(159, 134, 192, 0.2);
+}
+
+.glass-card-purple {
+    -fx-background-color: rgba(243, 232, 255, 0.7);
+    -fx-border-color: rgba(159, 134, 192, 0.3);
+}
+
+/* ============================================
+   TIPS SECTIONS
+   ============================================ */
+.tips-section {
+    -fx-background-color: #f3e8ff;
+    -fx-border-color: rgba(94, 84, 142, 0.2);
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-padding: 20;
+}
+
+.tips-title {
+    -fx-text-fill: #5E548E;
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+    -fx-padding: 0 0 10 0;
+}
+
+.tips-list {
+    -fx-spacing: 8;
+}
+
+.tips-item {
+    -fx-text-fill: #231942;
+    -fx-font-size: 13px;
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+.badge {
+    -fx-padding: 4 12;
+    -fx-background-radius: 50px;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.badge-creator {
+    -fx-background-color: #f3e8ff;
+    -fx-text-fill: #5E548E;
+}
+
+.badge-required {
+    -fx-background-color: rgba(254, 226, 226, 0.9);
+    -fx-text-fill: #dc2626;
+}
+
+.badge-verified {
+    -fx-background-color: rgba(209, 250, 229, 0.9);
+    -fx-text-fill: #065f46;
+}
+
+.badge-tracking {
+    -fx-background-color: rgba(243, 232, 255, 0.9);
+    -fx-text-fill: #5E548E;
+}
+
+.level-badge {
+    -fx-background-radius: 50px;
+    -fx-padding: 4 12;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.level-debutant {
+    -fx-background-color: #E0B1CB;
+    -fx-text-fill: #231942;
+}
+
+.level-intermediaire {
+    -fx-background-color: #BE95C4;
+    -fx-text-fill: #231942;
+}
+
+.level-avance {
+    -fx-background-color: #9F86C0;
+    -fx-text-fill: white;
+}
+
+.level-expert {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+}
+
+.level-master {
+    -fx-background-color: #231942;
+    -fx-text-fill: white;
+}
+
+.status-badge {
+    -fx-background-color: #f3e8ff;
+    -fx-text-fill: #5E548E;
+    -fx-padding: 4 12;
+    -fx-background-radius: 20;
+    -fx-font-size: 12px;
+}
+
+.status-obligatoire {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+}
+
+.status-optionnel {
+    -fx-background-color: #f3e8ff;
+    -fx-text-fill: #5E548E;
+}
+
+/* ============================================
+   CHECKBOX
+   ============================================ */
+.check-box {
+    -fx-text-fill: #231942;
+}
+
+.check-box .box {
+    -fx-background-color: white;
+    -fx-border-color: #d8c9f0;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #5E548E;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: white;
+}
+
+/* ============================================
+   SCROLLBARS
+   ============================================ */
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 12;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: rgba(94, 84, 142, 0.3);
+    -fx-background-radius: 10;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: rgba(94, 84, 142, 0.5);
+}
+
+.scroll-bar .track {
+    -fx-background-color: transparent;
+}
+
+/* ============================================
+   TOOLTIPS
+   ============================================ */
+.tooltip {
+    -fx-background-color: #231942;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-font-size: 12px;
+    -fx-padding: 8 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 3);
+}
+
+/* ============================================
+   PROGRESS BAR
+   ============================================ */
+.progress-bar {
+    -fx-background-radius: 4;
+}
+
+.progress-bar .track {
+    -fx-background-color: #e2e0e7;
+    -fx-background-radius: 4;
+}
+
+.progress-bar .bar {
+    -fx-background-color: #10b981;
+    -fx-background-radius: 4;
+}
+
+/* ============================================
+   STATS CARDS
+   ============================================ */
+.stat-card {
+    -fx-background-color: white;
+    -fx-border-color: rgba(94, 84, 142, 0.1);
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, rgba(35, 25, 66, 0.05), 15, 0, 0, 5);
+}
+
+.stat-value {
+    -fx-font-size: 36px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+}
+
+.stat-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6b7280;
+    -fx-font-weight: 600;
+}
+
+/* ============================================
+   LABELS
+   ============================================ */
+.label {
+    -fx-text-fill: #231942;
+}
+
+.label.header-title,
+.label.section-title,
+.label.card-title {
+    -fx-text-fill: #231942;
+}
+
+.label.secondary-text {
+    -fx-text-fill: #5E548E;
+}
+
+.label.muted-text {
+    -fx-text-fill: #6b7280;
+}
+
+.text-primary {
+    -fx-text-fill: #231942;
+}
+
+.text-secondary {
+    -fx-text-fill: #5E548E;
+}
+
+.text-muted {
+    -fx-text-fill: #6b7280;
+}
+
+.text-success {
+    -fx-text-fill: #10b981;
+}
+
+.text-danger {
+    -fx-text-fill: #ff6b6b;
+}
+
+/* ============================================
+   BOUTONS D'ACTION
+   ============================================ */
+.action-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5E548E;
+}
+
+.action-button:hover {
+    -fx-background-color: rgba(94, 84, 142, 0.1);
+}
+
+.btn-delete {
+    -fx-background-color: #ff6b6b;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.btn-delete:hover {
+    -fx-background-color: #ff5252;
 }
 
 .btn-delete-gradient-light {
     -fx-background-color: linear-gradient(to right, #5E548E, #9F86C0);
     -fx-text-fill: white;
+    -fx-font-weight: bold;
 }
 
 .btn-delete-gradient-light:hover {
     -fx-background-color: linear-gradient(to right, #7a6ba5, #b8a3d3);
-    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.4), 8, 0, 0, 2);
+}
+
+/* ============================================
+   BOUTON DE THÈME
+   ============================================ */
+.theme-button {
+    -fx-border-color: #5E548E;
+    -fx-text-fill: #5E548E;
+    -fx-background-color: transparent;
+}
+
+.theme-button:hover {
+    -fx-background-color: rgba(94, 84, 142, 0.1);
+}
+
+.theme-toggle {
+    -fx-text-fill: #5E548E;
+}
+
+.theme-toggle:hover {
+    -fx-background-color: rgba(94, 84, 142, 0.1);
+}
+
+.theme-switch-button {
+    -fx-background-color: rgba(94, 84, 142, 0.1);
+}
+
+.theme-switch-button .theme-icon-dark {
+    -fx-opacity: 0;
+}
+
+/* ============================================
+   ÉLÉMENTS SPÉCIFIQUES
+   ============================================ */
+#tablePane {
+    -fx-background-color: transparent;
+}
+
+#lblStatus {
+    -fx-background-color: #f3e8ff;
+    -fx-text-fill: #5E548E;
+    -fx-border-color: rgba(94, 84, 142, 0.2);
+}
+
+#lblCount {
+    -fx-background-color: #f3e8ff;
+    -fx-text-fill: #5E548E;
+}
+
+/* ============================================
+   PARTIE CANDIDAT
+   ============================================ */
+.cours-candidat-root {
+    -fx-background-color: #f5f3f7;
+}
+
+.catalog-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+}
+
+.catalog-subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: #6b7280;
+}
+
+.filter-box {
+    -fx-background-color: white;
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);
+}
+
+.filter-label {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 700;
+    -fx-font-size: 13px;
+}
+
+.filter-combo, .combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #d8c9f0;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 8 16;
+    -fx-text-fill: #231942;
+}
+.filter-combo:focused, .combo-box:focused {
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+}
+/* Style de la flèche */
+.filter-combo .arrow-button, .combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 0 5;
+}
+
+.filter-combo .arrow, .combo-box .arrow {
+    -fx-background-color: #5E548E;
+    -fx-scale-shape: false;
+}
+.filter-combo .list-cell, .combo-box .list-cell {
+    -fx-text-fill: #231942;
+    -fx-background-color: white;
+}
+
+.filter-combo .list-view, .combo-box .list-view {
+    -fx-background-color: white;
+    -fx-border-color: #d8c9f0;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.2), 10, 0, 0, 3);
+}
+/* Couleurs spécifiques pour les niveaux dans la liste */
+.filter-combo .list-cell[text="Débutant"] {
+    -fx-text-fill: #10b981;
+}
+
+.filter-combo .list-cell[text="Intermédiaire"] {
+    -fx-text-fill: #f59e0b;
+}
+
+.filter-combo .list-cell[text="Avancé"] {
+    -fx-text-fill: #f97316;
+}
+
+.filter-combo .list-cell[text="Expert"] {
+    -fx-text-fill: #8b5cf6;
+}
+
+.filter-combo .list-cell[text="Master"] {
+    -fx-text-fill: #ec4899;
+}
+.search-container {
+    -fx-background-color: white;
+    -fx-border-color: #d8c9f0;
+    -fx-border-radius: 50px;
+    -fx-background-radius: 50px;
+    -fx-padding: 5;
+}
+
+.search-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: #231942;
+    -fx-prompt-text-fill: #a09bb3;
+}
+
+.search-button {
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 30;
+    -fx-background-radius: 50px;
+    -fx-cursor: hand;
+}
+
+.search-button:hover {
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.4), 10, 0, 0, 2);
+}
+
+.stat-box {
+    -fx-background-color: white;
+    -fx-border-color: rgba(94,84,142,0.1);
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 25;
+}
+
+.course-card {
+    -fx-background-color: white;
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);
+}
+
+.course-card .content {
+    -fx-background-color: white;
+    -fx-background-radius: 0 0 20 20;
+}
+
+.course-card .label {
+    -fx-text-fill: #231942;
+}
+
+.course-card .title,
+.course-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #231942;
+}
+
+.course-card .description,
+.course-description {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 13px;
+}
+
+.course-card .duration {
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: 600;
+}
+
+.course-card .obligatoire {
+    -fx-text-fill: #ff6b6b;
+    -fx-font-weight: 600;
+}
+
+.course-button {
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 50px;
+    -fx-cursor: hand;
+}
+
+.course-button-pdf {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 15;
+    -fx-background-radius: 50px;
+    -fx-cursor: hand;
+}
+
+.course-button-pdf:hover {
+    -fx-background-color: #0ea271;
+}
+
+/* ============================================
+   PLAYER
+   ============================================ */
+.candidat-root {
+    -fx-background-color: #f5f3f7;
+}
+
+.header-gradient {
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E);
+    -fx-padding: 20;
+}
+
+#boxModules {
+    -fx-background-color: white;
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-padding: 15;
+}
+
+#boxModules .button {
+    -fx-background-color: #f8f4ff;
+    -fx-text-fill: #231942;
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 15;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+}
+
+#boxModules .button:hover {
+    -fx-background-color: #f3e8ff;
+    -fx-border-color: #5E548E;
+}
+
+#boxModules .button[text*="PASSER LE QUIZ"] {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+#boxModules .button[text*="PASSER LE QUIZ"]:hover {
+    -fx-background-color: #7a6ba5;
+}
+
+#boxModules .button[text*="TEST FINAL"] {
+    -fx-background-color: #9F86C0;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+#boxModules .button[text*="TEST FINAL"]:hover {
+    -fx-background-color: #b8a3d3;
+}
+
+#boxModules .label {
+    -fx-text-fill: #231942;
+    -fx-font-weight: bold;
+}
+
+.lblLeconTitre {
+    -fx-text-fill: #231942 !important;
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
+}
+
+.lblStatus {
+    -fx-text-fill: #6b7280 !important;
+    -fx-font-style: italic;
+}
+
+.web-view {
+    -fx-background-color: white;
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-border-width: 2;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+}
+
+/* ============================================
+   QUIZ
+   ============================================ */
+.quiz-container {
+    -fx-background-color: white;
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-border-width: 2;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-padding: 30;
+}
+
+.quiz-nav-button {
+    -fx-background-color: white;
+    -fx-text-fill: #5E548E;
+    -fx-border-color: #9F86C0;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.quiz-nav-button:hover {
+    -fx-background-color: #f3e8ff;
+    -fx-border-color: #5E548E;
+}
+
+.quiz-terminer-button {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 12 30;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+}
+
+.quiz-terminer-button:hover {
+    -fx-background-color: #7a6ba5;
+}
+
+.radio-button {
+    -fx-text-fill: #231942;
+}
+
+.radio-button .radio {
+    -fx-background-color: white;
+    -fx-border-color: #d8c9f0;
+    -fx-border-radius: 10;
+}
+
+.radio-button:selected .radio {
+    -fx-background-color: #5E548E;
+    -fx-border-color: #5E548E;
+}
+
+.radio-button:selected .dot {
+    -fx-background-color: white;
+}
+
+#lblQuestion {
+    -fx-text-fill: #231942 !important;
+    -fx-font-size: 20px;
+    -fx-font-weight: 700;
+}
+
+#lblPoints {
+    -fx-text-fill: #10b981 !important;
+    -fx-font-weight: bold;
+}
+
+#lblProgression {
+    -fx-text-fill: #6b7280 !important;
+}
+
+#boxResultat {
+    -fx-background-color: #f8f4ff;
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-border-width: 2;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-padding: 30;
+}
+
+#lblScore {
+    -fx-text-fill: #231942 !important;
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
+}
+
+.message-success {
+    -fx-text-fill: #10b981 !important;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+}
+
+.message-error {
+    -fx-text-fill: #ff6b6b !important;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+}
+
+.separator {
+    -fx-background-color: rgba(94,84,142,0.15);
+}
+
+.theme-toggle {
+    -fx-background-color: transparent;
+    -fx-background-radius: 50%;
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-max-width: 40px;
+    -fx-max-height: 40px;
+    -fx-cursor: hand;
+    -fx-alignment: center;
+    -fx-padding: 0;
+    -fx-font-size: 20px;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+    -fx-transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
 }

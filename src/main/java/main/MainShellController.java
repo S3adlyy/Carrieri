@@ -33,6 +33,7 @@ public class MainShellController implements Initializable {
     @FXML private Button btnCours;
     @FXML private Button btnModules;
     @FXML private Button btnLecons;
+    @FXML private Button btnTheme;  // NOUVEAU BOUTON
 
     @FXML private Label coursText;
     @FXML private Label modulesText;
@@ -56,7 +57,6 @@ public class MainShellController implements Initializable {
     private String currentModuleTitre = "";
     private boolean hasModuleActif = false;
 
-    // Services pour vérifier l'existence
     private CoursService coursService = new CoursService();
     private ModuleService moduleService = new ModuleService();
 
@@ -71,90 +71,6 @@ public class MainShellController implements Initializable {
         return instance;
     }
 
-    // ============================================
-    // BASCULE VERS CANDIDAT - MODIFIÉ
-    // ============================================
-    @FXML
-    public void switchToCandidat() {
-        boolean confirmed = AlertUtils.showConfirmation(
-                "🔄 Changement de mode",
-                "Voulez-vous basculer vers l'espace Candidat ?\n\n" +
-                        "Vous pourrez voir les cours comme un candidat et suivre votre progression.",
-                "Oui, basculer",
-                "Non, rester"
-        );
-
-        if (confirmed) {
-            try {
-                Stage stage = (Stage) sidebar.getScene().getWindow();
-
-                // ✅ Sauvegarder TOUS les paramètres de la fenêtre
-                boolean etaitMaximized = stage.isMaximized();
-                boolean etaitFullScreen = stage.isFullScreen();
-                double width = stage.getWidth();
-                double height = stage.getHeight();
-                double x = stage.getX();
-                double y = stage.getY();
-
-                System.out.println("📊 Sauvegarde - Maximized: " + etaitMaximized +
-                        ", Width: " + width + ", Height: " + height);
-
-                // Animation de fondu
-                Parent currentRoot = stage.getScene().getRoot();
-                FadeTransition fadeOut = new FadeTransition(Duration.millis(300), currentRoot);
-                fadeOut.setFromValue(1);
-                fadeOut.setToValue(0);
-
-                fadeOut.setOnFinished(e -> {
-                    try {
-                        Parent newRoot = FXMLLoader.load(getClass().getResource("/candidat-shell.fxml"));
-                        newRoot.setOpacity(0);
-
-                        // ✅ Créer la scène avec les dimensions sauvegardées
-                        Scene scene = new Scene(newRoot, width, height);
-                        stage.setScene(scene);
-                        stage.setTitle("E-Learning - Espace Candidat");
-
-                        // ✅ Restaurer la position
-                        stage.setX(x);
-                        stage.setY(y);
-
-                        // ✅ Restaurer l'état maximized APRÈS avoir défini la scène
-                        if (etaitMaximized) {
-                            Platform.runLater(() -> {
-                                stage.setMaximized(true);
-                                System.out.println("✅ Mode maximized restauré");
-                            });
-                        }
-
-                        if (etaitFullScreen) {
-                            Platform.runLater(() -> stage.setFullScreen(true));
-                        }
-
-                        // Animation d'entrée
-                        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), newRoot);
-                        fadeIn.setFromValue(0);
-                        fadeIn.setToValue(1);
-                        fadeIn.play();
-
-                        AlertUtils.showSuccess("✅ Bascule réussie", "Vous êtes maintenant dans l'espace Candidat.");
-
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                        AlertUtils.showError("❌ Erreur de chargement",
-                                "Impossible de charger l'espace candidat.\n\n" + ex.getMessage());
-                    }
-                });
-
-                fadeOut.play();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                AlertUtils.showError("❌ Erreur", "Impossible de basculer vers le mode Candidat");
-            }
-        }
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         userName.setText("Bilal El Eter");
@@ -163,12 +79,41 @@ public class MainShellController implements Initializable {
         showCoursView();
         setActiveButton(btnCours);
 
-        // Installer le tooltip
+        // Tooltip pour l'avatar
         Tooltip tooltip = new Tooltip("Cliquer pour basculer en mode Candidat");
         Tooltip.install(userAvatar, tooltip);
 
+        // Initialiser le bouton de thème
+        setupThemeButton();
+
         setupAnimations();
     }
+
+    // ============================================
+    // GESTION DU THÈME
+    // ============================================
+
+    private void setupThemeButton() {
+        updateThemeIcon();
+        btnTheme.setOnAction(e -> toggleTheme());
+    }
+
+    private void toggleTheme() {
+        Main.toggleTheme();
+        updateThemeIcon();
+    }
+
+    private void updateThemeIcon() {
+        if (Main.isDarkMode()) {
+            btnTheme.setText("☀");
+        } else {
+            btnTheme.setText("🌙");
+        }
+    }
+
+    // ============================================
+    // ANIMATIONS SIDEBAR
+    // ============================================
 
     private void setupAnimations() {
         expandAnimation = new Timeline(
@@ -198,33 +143,29 @@ public class MainShellController implements Initializable {
         collapseAnimation.play();
     }
 
+    // ============================================
+    // NAVIGATION
+    // ============================================
+
     @FXML
     public void showCoursView() {
         loadView("/cours.fxml");
         setActiveButton(btnCours);
     }
 
-    // ============================================
-    // AFFICHER MODULES - MODIFIÉ
-    // ============================================
     @FXML
     public void showModulesView() {
         if (hasCoursActif) {
             try {
-                // ✅ Vérifier si le cours existe toujours
                 Cours cours = coursService.getById(currentCoursId);
                 if (cours == null) {
-                    // Le cours n'existe plus, réinitialiser
                     resetCurrentCours();
-                    AlertUtils.showWarning("⚠️ Cours introuvable",
-                            "Le cours sélectionné n'existe plus ou a été supprimé.");
                     showCoursView();
                     return;
                 }
                 showModulesViewWithCours(currentCoursId, currentCoursTitre);
             } catch (SQLException e) {
                 resetCurrentCours();
-                AlertUtils.showError("❌ Erreur", "Impossible de vérifier le cours :\n" + e.getMessage());
                 showCoursView();
             }
         } else {
@@ -233,66 +174,63 @@ public class MainShellController implements Initializable {
         }
     }
 
-    // ============================================
-    // AFFICHER LEÇONS - MODIFIÉ
-    // ============================================
     @FXML
     public void showLeconsView() {
+        System.out.println("📋 showLeconsView appelé");
+        System.out.println("   hasModuleActif: " + hasModuleActif);
+        System.out.println("   currentModuleId: " + currentModuleId);
+        System.out.println("   currentModuleTitre: " + currentModuleTitre);
+        System.out.println("   hasCoursActif: " + hasCoursActif);
+
         if (hasModuleActif) {
-            // ✅ Vérifier si le module existe toujours
+            System.out.println("✅ Module actif trouvé: " + currentModuleTitre);
             Module module = moduleService.getModuleById(currentModuleId);
             if (module == null) {
-                // Le module n'existe plus, réinitialiser
+                System.out.println("❌ Module introuvable en base, réinitialisation");
                 resetCurrentModule();
-                AlertUtils.showWarning("⚠️ Module introuvable",
-                        "Le module sélectionné n'existe plus ou a été supprimé.");
                 showModulesView();
                 return;
             }
+            System.out.println("✅ Module valide, affichage des leçons");
             showLeconsViewWithModule(currentModuleId, currentModuleTitre);
         } else if (hasCoursActif) {
+            System.out.println("⚠️ Aucun module actif mais cours actif: " + currentCoursTitre);
             AlertUtils.showNoSelectionWarning("module", "afficher ses leçons");
             showModulesView();
         } else {
+            System.out.println("⚠️ Aucun cours actif");
             AlertUtils.showNoSelectionWarning("cours", "afficher ses modules");
             showCoursView();
         }
     }
 
+    // ============================================
+    // MÉTHODES DE NAVIGATION
+    // ============================================
+
     public void setCurrentCours(int coursId, String coursTitre) {
         this.currentCoursId = coursId;
         this.currentCoursTitre = coursTitre;
         this.hasCoursActif = true;
-        // Quand on sélectionne un nouveau cours, on réinitialise le module actif
         this.hasModuleActif = false;
-        System.out.println("✅ Cours actif: " + coursTitre + " (ID: " + coursId + ")");
-
-        // ✅ Notification optionnelle
-        // AlertUtils.showInfo("ℹ️ Cours sélectionné", "Cours actif : \"" + coursTitre + "\"");
     }
 
     public void setCurrentModule(int moduleId, String moduleTitre) {
         this.currentModuleId = moduleId;
         this.currentModuleTitre = moduleTitre;
         this.hasModuleActif = true;
-        System.out.println("✅ Module actif: " + moduleTitre + " (ID: " + moduleId + ")");
-
-        // ✅ Notification optionnelle
-        // AlertUtils.showInfo("ℹ️ Module sélectionné", "Module actif : \"" + moduleTitre + "\"");
     }
 
     public void resetCurrentCours() {
         this.currentCoursId = 0;
         this.currentCoursTitre = "";
         this.hasCoursActif = false;
-        System.out.println("🔄 Cours actif réinitialisé");
     }
 
     public void resetCurrentModule() {
         this.currentModuleId = 0;
         this.currentModuleTitre = "";
         this.hasModuleActif = false;
-        System.out.println("🔄 Module actif réinitialisé");
     }
 
     public void showModulesViewWithCours(int coursId, String coursTitre) {
@@ -305,21 +243,6 @@ public class MainShellController implements Initializable {
             setActiveButton(btnModules);
         } catch (IOException e) {
             e.printStackTrace();
-            AlertUtils.showError("❌ Erreur", "Impossible de charger la vue des modules.");
-        }
-    }
-
-    public void showLeconsViewWithCours(int coursId, String coursTitre) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/lecon.fxml"));
-            Node view = loader.load();
-            LeconController controller = loader.getController();
-            controller.setCoursId(coursId);
-            animateContentChange(view);
-            setActiveButton(btnLecons);
-        } catch (IOException e) {
-            e.printStackTrace();
-            AlertUtils.showError("❌ Erreur", "Impossible de charger la vue des leçons.");
         }
     }
 
@@ -333,34 +256,73 @@ public class MainShellController implements Initializable {
             setActiveButton(btnLecons);
         } catch (IOException e) {
             e.printStackTrace();
-            AlertUtils.showError("❌ Erreur", "Impossible de charger la vue des leçons.");
         }
     }
 
-    // ============================================
-    // DÉCONNEXION - MODIFIÉ
-    // ============================================
+    @FXML
+    public void switchToCandidat() {
+        if (AlertUtils.showConfirmation("Changement de mode",
+                "Voulez-vous basculer vers l'espace Candidat ?")) {
+            try {
+                Stage stage = (Stage) sidebar.getScene().getWindow();
+                boolean etaitMaximized = stage.isMaximized();
+                double width = stage.getWidth();
+                double height = stage.getHeight();
+                double x = stage.getX();
+                double y = stage.getY();
+
+                Parent currentRoot = stage.getScene().getRoot();
+                FadeTransition fadeOut = new FadeTransition(Duration.millis(300), currentRoot);
+                fadeOut.setFromValue(1);
+                fadeOut.setToValue(0);
+
+                fadeOut.setOnFinished(e -> {
+                    try {
+                        Parent newRoot = FXMLLoader.load(getClass().getResource("/candidat-shell.fxml"));
+                        newRoot.setOpacity(0);
+
+                        Scene scene = new Scene(newRoot, width, height);
+                        stage.setScene(scene);
+                        stage.setTitle("E-Learning - Espace Candidat");
+
+                        stage.setX(x);
+                        stage.setY(y);
+
+                        if (etaitMaximized) {
+                            Platform.runLater(() -> stage.setMaximized(true));
+                        }
+
+                        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), newRoot);
+                        fadeIn.setFromValue(0);
+                        fadeIn.setToValue(1);
+                        fadeIn.play();
+
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        AlertUtils.showError("Erreur", "Impossible de charger l'espace candidat");
+                    }
+                });
+
+                fadeOut.play();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                AlertUtils.showError("Erreur", "Impossible de basculer");
+            }
+        }
+    }
+
     @FXML
     public void logout() {
-        boolean confirmed = AlertUtils.showConfirmation(
-                "🔒 Déconnexion",
-                "Êtes-vous sûr de vouloir vous déconnecter ?\n\n" +
-                        "Toutes les modifications non sauvegardées seront perdues.",
-                "Oui, me déconnecter",
-                "Non, rester connecté"
-        );
-
-        if (confirmed) {
+        if (AlertUtils.showConfirmation("Déconnexion", "Êtes-vous sûr de vouloir vous déconnecter ?")) {
             FadeTransition fadeOut = new FadeTransition(Duration.millis(500), sidebar.getScene().getRoot());
             fadeOut.setFromValue(1);
             fadeOut.setToValue(0);
             fadeOut.setOnFinished(e -> {
-                javafx.application.Platform.exit();
+                Platform.exit();
                 System.exit(0);
             });
             fadeOut.play();
-
-            AlertUtils.showSuccess("👋 Au revoir !", "Déconnexion réussie. À bientôt !");
         }
     }
 
@@ -371,7 +333,6 @@ public class MainShellController implements Initializable {
             animateContentChange(view);
         } catch (IOException e) {
             e.printStackTrace();
-            AlertUtils.showError("❌ Erreur", "Impossible de charger la vue : " + fxmlFile);
         }
     }
 

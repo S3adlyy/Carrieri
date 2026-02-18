@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -25,15 +26,20 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import services.QuizAutoGenerator;
 import utils.AlertUtils;
+import main.Main;
+import main.MainShellController;
+import main.CoursCell;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.ResourceBundle;
 
-public class CoursController {
+public class CoursController implements Initializable {
 
     // FORM FIELDS
     @FXML private TextField txtTitre;
@@ -90,8 +96,8 @@ public class CoursController {
     private byte[] imageBytesSelected;
     private Cours coursSelectionne = null;
 
-    @FXML
-    public void initialize() {
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
         coursService = new CoursService();
         moduleService = new ModuleService();
         leconService = new LeconService();
@@ -299,7 +305,6 @@ public class CoursController {
     }
 
     private void setupTableView() {
-
         colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
         colTitre.setCellFactory(column -> CoursCell.getTitleCell());
 
@@ -330,7 +335,6 @@ public class CoursController {
             {
                 actions.setAlignment(javafx.geometry.Pos.CENTER);
                 btnDelete.getStyleClass().addAll("action-button", "btn-delete-gradient-light");
-
 
                 btnDelete.setOnAction(event -> {
                     Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
@@ -631,7 +635,7 @@ public class CoursController {
 
         List<entities.Module> modules = moduleService.getModulesByCours(coursSelectionne.getId());
         if (modules == null || modules.isEmpty()) {
-            AlertUtils.showWarning("⚠ Impossible de générer le test",
+            AlertUtils.showWarning("⚠️ Impossible de générer le test",
                     "Le cours \"" + coursSelectionne.getTitre() + "\" ne contient aucun module.\n\n" +
                             "Ajoutez d'abord des modules à ce cours pour pouvoir générer un test final.");
             return;
@@ -651,7 +655,7 @@ public class CoursController {
         boolean confirmed = AlertUtils.showConfirmation(
                 "🤖 Génération intelligente du test final",
                 "15 questions INTELLIGENTES seront créées à partir d'une banque de questions JavaFX.\n\n" +
-                        "⚠ Les anciennes questions du test final seront définitivement supprimées.\n\n" +
+                        "⚠️ Les anciennes questions du test final seront définitivement supprimées.\n\n" +
                         "Voulez-vous continuer ?",
                 "Oui, générer",
                 "Non, annuler"

@@ -11,8 +11,7 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="main.MainShellController"
             stylesheets="/css/theme-unified.css"
-            styleClass="shell-root"
-            >
+            styleClass="shell-root">
 
     <!-- Left Sidebar -->
     <left>
@@ -22,7 +21,7 @@
               onMouseEntered="#expandSidebar"
               onMouseExited="#collapseSidebar">
 
-            <!-- Brand avec animation -->
+            <!-- Brand -->
             <VBox styleClass="brand-container" alignment="CENTER">
                 <StackPane styleClass="brand-icon">
                     <ImageView fitWidth="32" fitHeight="32" preserveRatio="true">
@@ -33,11 +32,9 @@
                 <Label fx:id="brandSubtext" text="Gestion des Etudes" styleClass="brand-subtext"/>
             </VBox>
 
-            <!-- Navigation avec icônes -->
+            <!-- Navigation -->
             <VBox styleClass="nav-container" alignment="CENTER">
-                <Button fx:id="btnCours"
-                        onAction="#showCoursView"
-                        styleClass="nav-button">
+                <Button fx:id="btnCours" onAction="#showCoursView" styleClass="nav-button">
                     <graphic>
                         <HBox spacing="15" alignment="CENTER_LEFT">
                             <Label text="📚" styleClass="nav-icon"/>
@@ -46,9 +43,7 @@
                     </graphic>
                 </Button>
 
-                <Button fx:id="btnModules"
-                        onAction="#showModulesView"
-                        styleClass="nav-button">
+                <Button fx:id="btnModules" onAction="#showModulesView" styleClass="nav-button">
                     <graphic>
                         <HBox spacing="15" alignment="CENTER_LEFT">
                             <Label text="📦" styleClass="nav-icon"/>
@@ -57,9 +52,7 @@
                     </graphic>
                 </Button>
 
-                <Button fx:id="btnLecons"
-                        onAction="#showLeconsView"
-                        styleClass="nav-button">
+                <Button fx:id="btnLecons" onAction="#showLeconsView" styleClass="nav-button">
                     <graphic>
                         <HBox spacing="15" alignment="CENTER_LEFT">
                             <Label text="📖" styleClass="nav-icon"/>
@@ -71,8 +64,10 @@
 
             <Region VBox.vgrow="ALWAYS"/>
 
-            <!-- User section -->
-            <!-- User section -->
+            <!-- BOUTON DE THÈME - NOUVEAU -->
+            <!-- Remplacer votre ancien bouton par celui-ci -->
+            <Button fx:id="btnTheme" styleClass="theme-toggle" text="🌙"/>
+
             <!-- User section -->
             <VBox styleClass="user-container" alignment="CENTER">
                 <StackPane>
