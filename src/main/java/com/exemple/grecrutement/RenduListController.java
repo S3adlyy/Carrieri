@@ -8,6 +8,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -256,7 +257,7 @@ public class RenduListController implements Initializable {
     }
 
     /**
-     * ONLY THE TABLE STYLING IS CHANGED - Everything else remains exactly the same
+     * Table styling - kept exactly as you had it
      */
     private void applyTableStyling() {
         // ============ MISSIONLIST TABLE STYLING ============
@@ -374,7 +375,470 @@ public class RenduListController implements Initializable {
         table.refresh();
     }
 
-    // ============ ALL YOUR ORIGINAL METHODS BELOW - NOTHING CHANGED ============
+    // ============ UPDATED ALERT METHODS WITH Alert.css STYLING ============
+
+    /**
+     * Show styled submission details alert
+     */
+    private void viewDetails(RenduMission rendu) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Submission Details");
+        alert.setHeaderText("📋 Submission Details");
+
+        // Format the content with better visual structure
+        String content = String.format(
+                "📊 Score: %d%%\n" +
+                        "🏷️ Status: %s\n" +
+                        "🎯 Mission ID: %d\n" +
+                        "👤 Candidate ID: %d\n" +
+                        "📅 Date: %s\n" +
+                        "💬 Feedback: %s\n" +
+                        "🌐 Language: %s",
+                rendu.getScore(),
+                rendu.getResultat(),
+                rendu.getMissionId(),
+                rendu.getCandidatId(),
+                rendu.getDateRendu() != null ? rendu.getDateRendu() : "N/A",
+                rendu.getFeedback() != null ? rendu.getFeedback() : "No feedback",
+                rendu.getLangue() != null ? rendu.getLangue() : "Python"
+        );
+
+        alert.setContentText(content);
+
+        // Apply styling using Alert.css
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("information");
+
+        // Style the OK button
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #10b981;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    /**
+     * Show styled code view dialog
+     */
+    private void viewCode(RenduMission rendu) {
+        TextArea codeArea = new TextArea(rendu.getCodeSolution());
+        codeArea.setEditable(false);
+        codeArea.setWrapText(true);
+        codeArea.setPrefSize(700, 500);
+        codeArea.setStyle("-fx-font-family: 'Monaco', 'Consolas', monospace; -fx-font-size: 14px; -fx-background-color: #1e1e2f; -fx-text-fill: #e0e0e0;");
+
+        Label header = new Label("📝 Submitted Code");
+        header.setStyle("-fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: #5b21b6;");
+
+        Label metaInfo = new Label(String.format(
+                "Score: %d%% | Status: %s | Mission #%d | Candidate #%d",
+                rendu.getScore(),
+                rendu.getResultat(),
+                rendu.getMissionId(),
+                rendu.getCandidatId()
+        ));
+        metaInfo.setStyle("-fx-text-fill: #6b7280; -fx-font-size: 12px;");
+
+        VBox container = new VBox(10, header, metaInfo, codeArea);
+        container.setPadding(new Insets(20));
+
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Submitted Code");
+        dialog.getDialogPane().setContent(container);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        dialog.getDialogPane().setPrefSize(720, 600);
+
+        // Apply styling to dialog
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("information");
+
+        // Style the close button
+        Button closeButton = (Button) dialogPane.lookupButton(ButtonType.CLOSE);
+        if (closeButton != null) {
+            closeButton.setStyle(
+                    "-fx-background-color: #8b5cf6;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        dialog.showAndWait();
+    }
+
+    /**
+     * Show styled delete confirmation alert
+     */
+    private void deleteRendu(RenduMission rendu) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirm Deletion");
+        confirm.setHeaderText("⚠️ Delete Submission");
+        confirm.setContentText(String.format(
+                "Are you sure you want to delete this submission?\n\n" +
+                        "📊 Score: %d%%\n" +
+                        "🏷️ Status: %s\n" +
+                        "🎯 Mission #%d\n" +
+                        "👤 Candidate #%d\n\n" +
+                        "❌ This action cannot be undone.",
+                rendu.getScore(),
+                rendu.getResultat(),
+                rendu.getMissionId(),
+                rendu.getCandidatId()
+        ));
+
+        // Apply styling using Alert.css
+        DialogPane dialogPane = confirm.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("confirmation");
+
+        // Style the buttons
+        ButtonBar buttonBar = (ButtonBar) dialogPane.lookup(".button-bar");
+        if (buttonBar != null) {
+            buttonBar.getButtons().forEach(button -> {
+                if (button instanceof Button) {
+                    Button btn = (Button) button;
+                    if (btn.getText().equals("OK") || btn.getText().equals("Yes")) {
+                        btn.setStyle(
+                                "-fx-background-color: #ef4444;" +
+                                        "-fx-text-fill: white;" +
+                                        "-fx-font-weight: bold;" +
+                                        "-fx-background-radius: 8;" +
+                                        "-fx-padding: 10 25;"
+                        );
+                    } else {
+                        btn.setStyle(
+                                "-fx-background-color: transparent;" +
+                                        "-fx-text-fill: #6b7280;" +
+                                        "-fx-border-color: #e2e8f0;" +
+                                        "-fx-border-width: 1;" +
+                                        "-fx-border-radius: 8;" +
+                                        "-fx-background-radius: 8;" +
+                                        "-fx-padding: 10 25;"
+                        );
+                    }
+                }
+            });
+        }
+
+        if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            try {
+                service.supprimerRenduMission(rendu.getId());
+                load();
+                showSuccessAlert("Success", "Submission deleted successfully.");
+            } catch (Exception e) {
+                showErrorAlert("Delete Error", "Failed to delete submission: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Show styled bulk delete confirmation alert
+     */
+    @FXML
+    private void deleteSelected() {
+        List<RenduMission> selected = table.getSelectionModel().getSelectedItems();
+        if (selected.isEmpty()) {
+            showWarningAlert("No Selection", "Please select one or more submissions to delete.");
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirm Bulk Deletion");
+        confirm.setHeaderText("⚠️ Delete " + selected.size() + " Submission(s)");
+
+        StringBuilder content = new StringBuilder("Are you sure you want to delete the selected submissions?\n\n");
+        for (int i = 0; i < Math.min(selected.size(), 5); i++) {
+            RenduMission r = selected.get(i);
+            content.append("• ").append(r.getResultat()).append(" - Score: ").append(r.getScore()).append("%\n");
+        }
+        if (selected.size() > 5) {
+            content.append("• ... and ").append(selected.size() - 5).append(" more\n");
+        }
+        content.append("\n❌ This action cannot be undone.");
+
+        confirm.setContentText(content.toString());
+
+        // Apply styling using Alert.css
+        DialogPane dialogPane = confirm.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("confirmation");
+
+        // Style the buttons
+        ButtonBar buttonBar = (ButtonBar) dialogPane.lookup(".button-bar");
+        if (buttonBar != null) {
+            buttonBar.getButtons().forEach(button -> {
+                if (button instanceof Button) {
+                    Button btn = (Button) button;
+                    if (btn.getText().equals("OK") || btn.getText().equals("Yes")) {
+                        btn.setStyle(
+                                "-fx-background-color: #ef4444;" +
+                                        "-fx-text-fill: white;" +
+                                        "-fx-font-weight: bold;" +
+                                        "-fx-background-radius: 8;" +
+                                        "-fx-padding: 10 25;"
+                        );
+                    } else {
+                        btn.setStyle(
+                                "-fx-background-color: transparent;" +
+                                        "-fx-text-fill: #6b7280;" +
+                                        "-fx-border-color: #e2e8f0;" +
+                                        "-fx-border-width: 1;" +
+                                        "-fx-border-radius: 8;" +
+                                        "-fx-background-radius: 8;" +
+                                        "-fx-padding: 10 25;"
+                        );
+                    }
+                }
+            });
+        }
+
+        if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            int successCount = 0;
+            int failCount = 0;
+            StringBuilder errors = new StringBuilder();
+
+            for (RenduMission rendu : selected) {
+                try {
+                    service.supprimerRenduMission(rendu.getId());
+                    successCount++;
+                } catch (Exception e) {
+                    failCount++;
+                    errors.append("• Failed to delete submission #").append(rendu.getId())
+                            .append(": ").append(e.getMessage()).append("\n");
+                }
+            }
+
+            load();
+
+            if (failCount == 0) {
+                showSuccessAlert("Deletion Complete",
+                        "✓ Successfully deleted " + successCount + " submission(s).");
+            } else {
+                showWarningAlert("Deletion Partial",
+                        "✓ Successfully deleted: " + successCount + "\n" +
+                                "✗ Failed to delete: " + failCount + "\n\n" +
+                                errors.toString());
+            }
+        }
+    }
+
+    /**
+     * Show styled export success alert
+     */
+    @FXML
+    private void exportToCSV() {
+        try {
+            List<RenduMission> itemsToExport = table.getSelectionModel().getSelectedItems();
+            if (itemsToExport.isEmpty()) {
+                itemsToExport = table.getItems();
+            }
+
+            if (itemsToExport.isEmpty()) {
+                showInfoAlert("Info", "No data to export.");
+                return;
+            }
+
+            StringBuilder csv = new StringBuilder();
+            csv.append("Score,Result,Mission ID,Candidate ID,Feedback\n");
+
+            for (RenduMission rendu : itemsToExport) {
+                csv.append(rendu.getScore()).append(",")
+                        .append("\"").append(rendu.getResultat().replace("\"", "\"\"")).append("\",")
+                        .append(rendu.getMissionId()).append(",")
+                        .append(rendu.getCandidatId()).append(",")
+                        .append("\"").append(rendu.getFeedback() != null ? rendu.getFeedback().replace("\"", "\"\"") : "").append("\"\n");
+            }
+
+            javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+            fileChooser.setTitle("Export Submissions to CSV");
+            fileChooser.getExtensionFilters().add(
+                    new javafx.stage.FileChooser.ExtensionFilter("CSV Files", "*.csv")
+            );
+            java.io.File file = fileChooser.showSaveDialog(table.getScene().getWindow());
+
+            if (file != null) {
+                try (java.io.FileWriter writer = new java.io.FileWriter(file)) {
+                    writer.write(csv.toString());
+                    showSuccessAlert("Export Successful",
+                            "✓ Exported " + itemsToExport.size() + " submissions to:\n" + file.getAbsolutePath());
+                }
+            }
+
+        } catch (Exception e) {
+            showErrorAlert("Export Failed", "Failed to export: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Show styled filter help alert
+     */
+    @FXML
+    private void showFilter() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Filter Help");
+        alert.setHeaderText("🔍 Advanced Filter Options");
+        alert.setContentText(
+                "Use the filter controls above to filter submissions:\n\n" +
+                        "• Status: Filter by submission status\n" +
+                        "• Mission: Filter by mission ID\n" +
+                        "• Search: Search in candidate IDs and results\n\n" +
+                        "💡 Tip: Double-click any row to schedule an interview!"
+        );
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("information");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #8b5cf6;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    /**
+     * Show styled statistics info
+     */
+    @FXML
+    private void showStatistics() {
+        MissionShellController.getInstance().showStatistics();
+    }
+
+    // ============ HELPER METHODS FOR STYLED ALERTS ============
+
+    /**
+     * Show styled success alert
+     */
+    private void showSuccessAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText("✅ " + title);
+        alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("information");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #10b981;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    /**
+     * Show styled warning alert
+     */
+    private void showWarningAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText("⚠️ " + title);
+        alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("warning");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #f59e0b;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    /**
+     * Show styled error alert
+     */
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText("❌ " + title);
+        alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("error");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #ef4444;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    /**
+     * Show styled info alert
+     */
+    private void showInfoAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText("ℹ️ " + title);
+        alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("information");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #3b82f6;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    /**
+     * Legacy showAlert method - updated to use styled alerts
+     */
+    private void showAlert(String title, String message) {
+        showInfoAlert(title, message);
+    }
+
+    // ============ ALL YOUR ORIGINAL METHODS BELOW - UNCHANGED ============
 
     @FXML
     private void load() {
@@ -389,7 +853,7 @@ public class RenduListController implements Initializable {
             populateMissionFilter();
             System.out.println("✅ Loaded " + rendus.size() + " submissions");
         } catch (Exception e) {
-            showAlert("Error", "Failed to load submissions: " + e.getMessage());
+            showErrorAlert("Error", "Failed to load submissions: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -523,162 +987,13 @@ public class RenduListController implements Initializable {
     }
 
     @FXML
-    private void exportToCSV() {
-        try {
-            List<RenduMission> itemsToExport = table.getSelectionModel().getSelectedItems();
-            if (itemsToExport.isEmpty()) {
-                itemsToExport = table.getItems();
-            }
-
-            if (itemsToExport.isEmpty()) {
-                showAlert("Info", "No data to export.");
-                return;
-            }
-
-            StringBuilder csv = new StringBuilder();
-            csv.append("Score,Result,Mission ID,Candidate ID,Feedback\n");
-
-            for (RenduMission rendu : itemsToExport) {
-                csv.append(rendu.getScore()).append(",")
-                        .append("\"").append(rendu.getResultat().replace("\"", "\"\"")).append("\",")
-                        .append(rendu.getMissionId()).append(",")
-                        .append(rendu.getCandidatId()).append(",")
-                        .append("\"").append(rendu.getFeedback() != null ? rendu.getFeedback().replace("\"", "\"\"") : "").append("\"\n");
-            }
-
-            javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
-            fileChooser.setTitle("Export Submissions to CSV");
-            fileChooser.getExtensionFilters().add(
-                    new javafx.stage.FileChooser.ExtensionFilter("CSV Files", "*.csv")
-            );
-            java.io.File file = fileChooser.showSaveDialog(table.getScene().getWindow());
-
-            if (file != null) {
-                try (java.io.FileWriter writer = new java.io.FileWriter(file)) {
-                    writer.write(csv.toString());
-                    showAlert("Success", "Exported " + itemsToExport.size() + " submissions to:\n" + file.getAbsolutePath());
-                }
-            }
-
-        } catch (Exception e) {
-            showAlert("Error", "Failed to export: " + e.getMessage());
-        }
-    }
-
-    @FXML
     private void viewDetails() {
         RenduMission selected = table.getSelectionModel().getSelectedItem();
         if (selected != null) {
             viewDetails(selected);
         } else {
-            showAlert("No Selection", "Please select a submission first.");
+            showWarningAlert("No Selection", "Please select a submission first.");
         }
-    }
-
-    private void viewDetails(RenduMission rendu) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Submission Details");
-        alert.setHeaderText("Submission Details");
-        alert.setContentText(
-                "📊 Score: " + rendu.getScore() + "%\n" +
-                        "🏷️ Status: " + rendu.getResultat() + "\n" +
-                        "🎯 Mission ID: " + rendu.getMissionId() + "\n" +
-                        "👤 Candidate ID: " + rendu.getCandidatId() + "\n" +
-                        "📅 Date: " + rendu.getDateRendu() + "\n" +
-                        "💬 Feedback: " + (rendu.getFeedback() != null ? rendu.getFeedback() : "No feedback") + "\n" +
-                        "🌐 Language: " + (rendu.getLangue() != null ? rendu.getLangue() : "Python")
-        );
-        alert.setGraphic(new Label("📋"));
-        alert.showAndWait();
-    }
-
-    private void viewCode(RenduMission rendu) {
-        TextArea codeArea = new TextArea(rendu.getCodeSolution());
-        codeArea.setEditable(false);
-        codeArea.setWrapText(true);
-        codeArea.setPrefSize(700, 500);
-        codeArea.setStyle("-fx-font-family: 'Monaco', 'Consolas', monospace; -fx-font-size: 14px;");
-
-        VBox container = new VBox();
-        container.setSpacing(10);
-
-        Label header = new Label("Submitted Code");
-        header.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
-
-        container.getChildren().addAll(header, codeArea);
-
-        Dialog<Void> dialog = new Dialog<>();
-        dialog.setTitle("Submitted Code");
-        dialog.getDialogPane().setContent(container);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        dialog.getDialogPane().setPrefSize(720, 550);
-        dialog.showAndWait();
-    }
-
-    private void deleteRendu(RenduMission rendu) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirm Deletion");
-        confirm.setHeaderText("Delete Submission");
-        confirm.setContentText("Are you sure you want to delete this submission?\nThis action cannot be undone.");
-
-        if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-            try {
-                service.supprimerRenduMission(rendu.getId());
-                load();
-                showAlert("Success", "Submission deleted successfully.");
-            } catch (Exception e) {
-                showAlert("Error", "Failed to delete submission: " + e.getMessage());
-            }
-        }
-    }
-
-    @FXML
-    private void deleteSelected() {
-        List<RenduMission> selected = table.getSelectionModel().getSelectedItems();
-        if (selected.isEmpty()) {
-            showAlert("No Selection", "Please select one or more submissions to delete.");
-            return;
-        }
-
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirm Bulk Deletion");
-        confirm.setHeaderText("Delete " + selected.size() + " submission(s)");
-        confirm.setContentText("Are you sure you want to delete the selected submissions?\nThis action cannot be undone.");
-
-        if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-            int successCount = 0;
-            int failCount = 0;
-
-            for (RenduMission rendu : selected) {
-                try {
-                    service.supprimerRenduMission(rendu.getId());
-                    successCount++;
-                } catch (Exception e) {
-                    failCount++;
-                    System.err.println("Failed to delete submission: " + e.getMessage());
-                }
-            }
-
-            load();
-
-            String message = "Deletion completed:\n" +
-                    "✓ Successfully deleted: " + successCount + "\n" +
-                    (failCount > 0 ? "✗ Failed to delete: " + failCount : "");
-            showAlert("Deletion Results", message);
-        }
-    }
-
-    @FXML
-    private void showStatistics() {
-        MissionShellController.getInstance().showStatistics();
-    }
-
-    @FXML
-    private void showFilter() {
-        showAlert("Advanced Filter", "Use the filter controls above to filter submissions.\n" +
-                "• Status: Filter by submission status\n" +
-                "• Mission: Filter by mission ID\n" +
-                "• Search: Search in candidate IDs and results");
     }
 
     private void setupDoubleClickHandler() {
@@ -691,17 +1006,9 @@ public class RenduListController implements Initializable {
             MissionShellController.getInstance().showScheduleInterview(rendu);
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Navigation Error",
+            showErrorAlert("Navigation Error",
                     "Could not load interview scheduling form: " + e.getMessage());
         }
-    }
-
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     private HBox createScoreDisplay(int score) {
@@ -780,7 +1087,4 @@ public class RenduListController implements Initializable {
 
         return container;
     }
-
-
-
 }
