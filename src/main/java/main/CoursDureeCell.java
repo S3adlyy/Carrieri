@@ -1,14 +1,12 @@
 package main;
 
 import entities.Cours;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
 import services.CoursService;
+import utils.AlertUtils;
 
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.Objects;
 
 public class CoursDureeCell extends TableCell<Cours, Integer> {
@@ -78,7 +76,7 @@ public class CoursDureeCell extends TableCell<Cours, Integer> {
             Integer oldValue = getItem();
 
             if (newValueStr.isEmpty()) {
-                AlertUtils.showAlert(Alert.AlertType.WARNING, "⚠️ Validation", "La durée ne peut pas être vide");
+                AlertUtils.showWarning("⚠️ Validation", "La durée ne peut pas être vide.");
                 cancelEdit();
                 return;
             }
@@ -86,7 +84,9 @@ public class CoursDureeCell extends TableCell<Cours, Integer> {
             try {
                 int newValue = Integer.parseInt(newValueStr);
                 if (newValue <= 0 || newValue > 1000) {
-                    AlertUtils.showAlert(Alert.AlertType.WARNING, "⚠️ Validation", "La durée doit être entre 1 et 1000 heures");
+                    AlertUtils.showWarning("⚠️ Validation",
+                            "La durée doit être comprise entre 1 et 1000 heures.\n\n" +
+                                    "Valeur saisie: " + newValue + " heures.");
                     cancelEdit();
                     return;
                 }
@@ -96,13 +96,16 @@ public class CoursDureeCell extends TableCell<Cours, Integer> {
                     return;
                 }
 
-                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-                confirm.setTitle("✏️ Confirmation");
-                confirm.setHeaderText("Modifier la durée");
-                confirm.setContentText("De: " + oldValue + " heures\nVers: " + newValue + " heures");
+                boolean confirmed = AlertUtils.showConfirmation(
+                        "✏️ Confirmation",
+                        "Voulez-vous modifier la durée du cours ?\n\n" +
+                                "De: " + oldValue + " heures\n" +
+                                "Vers: " + newValue + " heures",
+                        "Oui, modifier",
+                        "Non, annuler"
+                );
 
-                Optional<ButtonType> result = confirm.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
+                if (confirmed) {
                     Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
                     if (cours == null) {
                         cancelEdit();
@@ -113,12 +116,15 @@ public class CoursDureeCell extends TableCell<Cours, Integer> {
                         coursService.update(cours);
                         commitEdit(newValue);
                         getTableView().refresh();
+                        AlertUtils.showSuccess("✅ Succès", "La durée a été modifiée avec succès.");
                     } catch (SQLException e) {
-                        AlertUtils.showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur base de données: " + e.getMessage());
+                        AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
                     }
                 }
             } catch (NumberFormatException e) {
-                AlertUtils.showAlert(Alert.AlertType.WARNING, "⚠️ Validation", "La durée doit être un nombre entier");
+                AlertUtils.showWarning("⚠️ Validation",
+                        "La durée doit être un nombre entier.\n\n" +
+                                "Valeur saisie: \"" + newValueStr + "\" n'est pas un nombre valide.");
             }
             cancelEdit();
         } finally {

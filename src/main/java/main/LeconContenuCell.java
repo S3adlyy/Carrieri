@@ -1,13 +1,11 @@
 package main;
 
 import entities.Lecon;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextArea;
 import services.LeconService;
+import utils.AlertUtils;
 
-import java.util.Optional;
 import java.util.Objects;
 
 public class LeconContenuCell extends TableCell<Lecon, String> {
@@ -82,18 +80,21 @@ public class LeconContenuCell extends TableCell<Lecon, String> {
             }
 
             if (newValue.length() < 10 || newValue.length() > 5000) {
-                AlertUtils.showAlert(Alert.AlertType.WARNING, "⚠️ Validation", "Le contenu doit contenir entre 10 et 5000 caractères");
+                AlertUtils.showWarning("⚠️ Validation",
+                        "Le contenu doit contenir entre 10 et 5000 caractères.\n\n" +
+                                "Votre texte actuel: " + newValue.length() + " caractères.");
                 cancelEdit();
                 return;
             }
 
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("✏️ Confirmation");
-            confirm.setHeaderText("Modifier le contenu de la leçon");
-            confirm.setContentText("Êtes-vous sûr de modifier le contenu ?");
+            boolean confirmed = AlertUtils.showConfirmation(
+                    "✏️ Confirmation",
+                    "Êtes-vous sûr de vouloir modifier le contenu de cette leçon ?",
+                    "Oui, modifier",
+                    "Non, annuler"
+            );
 
-            Optional<ButtonType> result = confirm.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            if (confirmed) {
                 Lecon lecon = getTableRow() != null ? getTableRow().getItem() : null;
                 if (lecon == null) {
                     cancelEdit();
@@ -104,8 +105,9 @@ public class LeconContenuCell extends TableCell<Lecon, String> {
                     leconService.modifier(lecon);
                     commitEdit(newValue);
                     getTableView().refresh();
+                    AlertUtils.showSuccess("✅ Succès", "Le contenu a été modifié avec succès.");
                 } catch (Exception e) {
-                    AlertUtils.showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur base de données: " + e.getMessage());
+                    AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
                 }
             }
             cancelEdit();

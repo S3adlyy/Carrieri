@@ -1,14 +1,12 @@
 package main;
 
 import entities.Cours;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
 import services.CoursService;
+import utils.AlertUtils;
 
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.Objects;
 
 public class CoursTitleCell extends TableCell<Cours, String> {
@@ -83,18 +81,23 @@ public class CoursTitleCell extends TableCell<Cours, String> {
             }
 
             if (newValue.length() < 3 || newValue.length() > 200) {
-                AlertUtils.showAlert(Alert.AlertType.WARNING, "⚠️ Validation", "Le titre doit contenir entre 3 et 200 caractères");
+                AlertUtils.showWarning("⚠️ Validation",
+                        "Le titre doit contenir entre 3 et 200 caractères.\n\n" +
+                                "Votre texte actuel: " + newValue.length() + " caractères.");
                 cancelEdit();
                 return;
             }
 
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("✏️ Confirmation");
-            confirm.setHeaderText("Modifier le titre");
-            confirm.setContentText("De: \"" + oldValue + "\"\nVers: \"" + newValue + "\"");
+            boolean confirmed = AlertUtils.showConfirmation(
+                    "✏️ Confirmation",
+                    "Voulez-vous modifier le titre du cours ?\n\n" +
+                            "De: \"" + oldValue + "\"\n" +
+                            "Vers: \"" + newValue + "\"",
+                    "Oui, modifier",
+                    "Non, annuler"
+            );
 
-            Optional<ButtonType> result = confirm.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            if (confirmed) {
                 Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
                 if (cours == null) {
                     cancelEdit();
@@ -105,8 +108,9 @@ public class CoursTitleCell extends TableCell<Cours, String> {
                     coursService.update(cours);
                     commitEdit(newValue);
                     getTableView().refresh();
+                    AlertUtils.showSuccess("✅ Succès", "Le titre a été modifié avec succès.");
                 } catch (SQLException e) {
-                    AlertUtils.showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur base de données: " + e.getMessage());
+                    AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
                 }
             }
             cancelEdit();

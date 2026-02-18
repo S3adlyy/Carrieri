@@ -1,0 +1,264 @@
+/* ============================================
+   ALERTES PROFESSIONNELLES - VERSION FINALE
+   Couleurs: #231942, #5E548E, #9F86C0, #E0B1CB
+   ============================================ */
+
+/* ========== CONTENEUR PRINCIPAL ========== */
+.dialog-pane {
+    -fx-background-color: white;
+    -fx-background-radius: 28px;
+    -fx-border-radius: 28px;
+    -fx-padding: 32px 32px 24px 32px;
+    -fx-effect: dropshadow(gaussian, rgba(35, 25, 66, 0.25), 40, 0.15, 0, 20);
+    -fx-border-width: 0;
+    -fx-min-width: 480px;
+    -fx-max-width: 560px;
+    -fx-background-insets: 0;
+}
+
+/* ========== EN-TÊTE AVEC ICÔNE ========== */
+.dialog-pane .header-panel {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 20px 0;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-font-size: 26px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #231942;
+    -fx-font-family: "Segoe UI", "System";
+    -fx-padding: 0;
+    -fx-graphic: null;
+}
+
+/* ========== ZONE DE CONTENU ========== */
+.dialog-pane .content {
+    -fx-padding: 10px 0 25px 0;
+}
+
+.dialog-pane .content.label {
+    -fx-font-size: 15px;
+    -fx-text-fill: #2d2d2d;
+    -fx-line-spacing: 8px;
+    -fx-wrap-text: true;
+}
+
+/* Conteneur VBox pour les messages personnalisés */
+.dialog-pane .vbox {
+    -fx-spacing: 16px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Messages principaux */
+.dialog-pane .main-message {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #231942;
+    -fx-wrap-text: true;
+}
+
+/* Messages secondaires */
+.dialog-pane .secondary-message {
+    -fx-font-size: 14px;
+    -fx-text-fill: #4a4a4a;
+    -fx-wrap-text: true;
+}
+
+/* Messages d'instruction */
+.dialog-pane .instruction-message {
+    -fx-font-size: 14px;
+    -fx-text-fill: #5E548E;
+    -fx-font-style: italic;
+    -fx-background-color: #f5edfc;
+    -fx-background-radius: 12px;
+    -fx-padding: 12px 16px;
+    -fx-border-color: #9F86C0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+    -fx-wrap-text: true;
+}
+
+/* Messages d'avertissement */
+.dialog-pane .warning-message {
+    -fx-font-size: 14px;
+    -fx-text-fill: #dc3545;
+    -fx-font-weight: 600;
+    -fx-background-color: #fff5f5;
+    -fx-background-radius: 12px;
+    -fx-padding: 12px 16px;
+    -fx-border-color: #ffb3b3;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+    -fx-wrap-text: true;
+}
+
+/* Nom de l'élément (cours, module) */
+.dialog-pane .item-name {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #5E548E;
+    -fx-background-color: #f0e6ff;
+    -fx-background-radius: 50px;
+    -fx-padding: 10px 20px;
+    -fx-border-color: #9F86C0;
+    -fx-border-width: 2px;
+    -fx-border-radius: 50px;
+    -fx-alignment: CENTER;
+    -fx-max-width: Infinity;
+    -fx-wrap-text: true;
+}
+
+/* Séparateur */
+.dialog-pane .separator {
+    -fx-background-color: #e0e0e0;
+    -fx-padding: 0;
+    -fx-max-height: 1px;
+    -fx-min-height: 1px;
+    -fx-pref-height: 1px;
+    -fx-margin: 10px 0;
+}
+
+/* ========== BARRE DE BOUTONS ========== */
+.dialog-pane .button-bar {
+    -fx-padding: 20px 0 0 0;
+}
+
+.dialog-pane .button-bar .container {
+    -fx-alignment: CENTER_RIGHT;
+    -fx-spacing: 15px;
+}
+
+/* ========== BOUTONS ========== */
+.dialog-pane .button-bar .button {
+    -fx-min-width: 120px;
+    -fx-min-height: 44px;
+    -fx-background-radius: 50px;
+    -fx-border-radius: 50px;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 3);
+    -fx-transition: all 0.2s ease;
+    -fx-background-insets: 0;
+    -fx-padding: 10px 24px;
+}
+
+.dialog-pane .button-bar .button:hover {
+    -fx-translate-y: -2px;
+    -fx-effect: dropshadow(gaussian, rgba(94, 84, 142, 0.3), 12, 0, 0, 5);
+}
+
+.dialog-pane .button-bar .button:pressed {
+    -fx-translate-y: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0, 0, 2);
+}
+
+/* Bouton primaire (OK, Confirmer) */
+.dialog-pane .button-bar .button.btn-primary {
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E);
+    -fx-text-fill: white;
+    -fx-border-width: 0;
+}
+
+.dialog-pane .button-bar .button.btn-primary:hover {
+    -fx-background-color: linear-gradient(to right, #2d2a4e, #7a6ba5);
+}
+
+/* Bouton secondaire (Annuler) */
+.dialog-pane .button-bar .button.btn-secondary {
+    -fx-background-color: white;
+    -fx-text-fill: #5E548E;
+    -fx-border-color: #9F86C0;
+    -fx-border-width: 2px;
+}
+
+.dialog-pane .button-bar .button.btn-secondary:hover {
+    -fx-background-color: #f5edfc;
+    -fx-border-color: #5E548E;
+}
+
+/* Bouton danger (Supprimer) */
+.dialog-pane .button-bar .button.btn-danger {
+    -fx-background-color: linear-gradient(to right, #dc3545, #b02a37);
+    -fx-text-fill: white;
+    -fx-border-width: 0;
+}
+
+.dialog-pane .button-bar .button.btn-danger:hover {
+    -fx-background-color: linear-gradient(to right, #e04b5a, #c82333);
+}
+
+/* ========== STYLES PAR TYPE ========== */
+
+/* Confirmation - Bordure violette */
+.dialog-pane.confirmation {
+    -fx-border-color: #9F86C0;
+    -fx-border-width: 0 0 0 8px;
+    -fx-border-radius: 28px;
+}
+
+/* Erreur - Bordure rouge */
+.dialog-pane.error {
+    -fx-border-color: #dc3545;
+    -fx-border-width: 0 0 0 8px;
+    -fx-border-radius: 28px;
+}
+
+/* Warning - Bordure orange */
+.dialog-pane.warning {
+    -fx-border-color: #f59e0b;
+    -fx-border-width: 0 0 0 8px;
+    -fx-border-radius: 28px;
+}
+
+/* Information/Succès - Bordure violette claire */
+.dialog-pane.info {
+    -fx-border-color: #5E548E;
+    -fx-border-width: 0 0 0 8px;
+    -fx-border-radius: 28px;
+}
+
+/* ========== ICÔNES ========== */
+.dialog-pane .graphic-container {
+    -fx-padding: 0 20px 0 0;
+}
+
+.dialog-pane .graphic-container .label {
+    -fx-font-size: 42px;
+    -fx-min-width: 60px;
+    -fx-min-height: 60px;
+    -fx-alignment: center;
+}
+
+/* ========== STYLE GLASS ========== */
+.dialog-pane.glass-card {
+    -fx-background-color: rgba(255, 255, 255, 0.98);
+    -fx-background-radius: 32px;
+    -fx-border-color: rgba(255, 255, 255, 0.8);
+    -fx-border-width: 1.5px;
+    -fx-effect: dropshadow(gaussian, rgba(35, 25, 66, 0.25), 50, 0.15, 0, 25);
+}
+
+/* ========== ALERTE SPÉCIALE POUR SUCCÈS ========== */
+.dialog-pane.success-alert .main-message {
+    -fx-font-size: 18px;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 700;
+}
+
+.dialog-pane.success-alert .instruction-message {
+    -fx-background-color: #e8f5e9;
+    -fx-border-color: #10b981;
+    -fx-text-fill: #065f46;
+}
+
+/* ========== ALERTE POUR SÉLECTION ========== */
+.dialog-pane.selection-alert .main-message {
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+}
+
+.dialog-pane.selection-alert .secondary-message {
+    -fx-padding: 5px 0 0 0;
+}

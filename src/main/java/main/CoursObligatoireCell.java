@@ -5,9 +5,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
 import services.CoursService;
+import utils.AlertUtils;
 
 import java.sql.SQLException;
-import java.util.Optional;
 
 public class CoursObligatoireCell extends TableCell<Cours, Boolean> {
     private final CoursService coursService;
@@ -87,13 +87,16 @@ public class CoursObligatoireCell extends TableCell<Cours, Boolean> {
                 return;
             }
 
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("✏️ Confirmation");
-            confirm.setHeaderText("Modifier le statut");
-            confirm.setContentText("Voulez-vous marquer ce cours comme " + (newValue ? "obligatoire" : "optionnel") + " ?");
+            String statusText = newValue ? "obligatoire" : "optionnel";
 
-            Optional<ButtonType> result = confirm.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            boolean confirmed = AlertUtils.showConfirmation(
+                    "✏️ Confirmation",
+                    "Voulez-vous marquer ce cours comme " + statusText + " ?",
+                    "Oui, modifier",
+                    "Non, annuler"
+            );
+
+            if (confirmed) {
                 Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
                 if (cours == null) {
                     cancelEdit();
@@ -104,8 +107,9 @@ public class CoursObligatoireCell extends TableCell<Cours, Boolean> {
                     coursService.update(cours);
                     commitEdit(newValue);
                     getTableView().refresh();
+                    AlertUtils.showSuccess("✅ Succès", "Le cours est maintenant " + statusText + ".");
                 } catch (SQLException ex) {
-                    AlertUtils.showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur base de données: " + ex.getMessage());
+                    AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + ex.getMessage());
                 }
             }
             cancelEdit();
@@ -114,4 +118,3 @@ public class CoursObligatoireCell extends TableCell<Cours, Boolean> {
         }
     }
 }
-

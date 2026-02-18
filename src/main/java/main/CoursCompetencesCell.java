@@ -6,6 +6,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
 import services.CoursService;
+import utils.AlertUtils;
 
 import java.sql.SQLException;
 import java.util.Optional;

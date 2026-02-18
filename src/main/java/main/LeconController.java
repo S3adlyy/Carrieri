@@ -14,12 +14,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import services.LeconService;
 import services.ModuleService;
+import utils.AlertUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.Optional;
 
 public class LeconController {
 
@@ -30,8 +30,7 @@ public class LeconController {
     @FXML private TextField txtTitre;
     @FXML private TextArea txtContenu;
     @FXML private ComboBox<Module> comboModules;
-    @FXML private Label lblInfo;  // Gardé pour compatibilité
-    @FXML private Label lblModuleInfo;  // Label pour le titre du module
+    @FXML private Label lblModuleInfo;
     @FXML private VBox formBox;
     @FXML private VBox tablePane;
 
@@ -58,6 +57,7 @@ public class LeconController {
     @FXML private Label errorTitre;
     @FXML private Label errorContenu;
     @FXML private Label charCountLabel;
+
     // ============================================
     // SERVICES & DATA
     // ============================================
@@ -69,8 +69,8 @@ public class LeconController {
     // State variables
     private int coursId = 0;
     private int moduleId = 0;
-    private String moduleTitre = "";  // Stocker le titre du module
-    private boolean hasModuleActif = false;  // Indique si un module est sélectionné
+    private String moduleTitre = "";
+    private boolean hasModuleActif = false;
     private Module moduleSelectionne = null;
     private Lecon leconSelectionnee = null;
 
@@ -95,12 +95,12 @@ public class LeconController {
         setFormVisible(false);
         setTableVisible(true);
 
-        // ✅ VALIDATION EN TEMPS RÉEL
         setupValidation();
+
         txtContenu.textProperty().addListener((obs, oldVal, newVal) -> {
             if (charCountLabel != null) {
                 int length = newVal != null ? newVal.length() : 0;
-                charCountLabel.setText(length + "/500");
+                charCountLabel.setText(length + "/10000");
 
                 if (length < 500) {
                     charCountLabel.setStyle("-fx-text-fill: #ff6b6b; -fx-font-weight: 600; -fx-background-color: #fee2e2; -fx-padding: 4 10; -fx-background-radius: 20;");
@@ -111,6 +111,7 @@ public class LeconController {
                 }
             }
         });
+
         comboModules.valueProperty().addListener((obs, oldModule, newModule) -> {
             if (newModule != null) {
                 moduleSelectionne = newModule;
@@ -130,9 +131,7 @@ public class LeconController {
         });
     }
 
-    // ✅ NOUVELLE MÉTHODE POUR LA VALIDATION EN TEMPS RÉEL
     private void setupValidation() {
-        // Validation du titre
         txtTitre.textProperty().addListener((obs, oldVal, newVal) -> {
             String titre = newVal != null ? newVal.trim() : "";
             if (titre.isEmpty()) {
@@ -152,7 +151,7 @@ public class LeconController {
             String contenu = newVal != null ? newVal.trim() : "";
             if (contenu.isEmpty()) {
                 showError(errorContenu, "Le contenu est obligatoire");
-            } else if (contenu.length() < 500) {  // ✅ Changé de 10 à 500
+            } else if (contenu.length() < 500) {
                 showError(errorContenu, "Le contenu doit contenir au moins 500 caractères");
             } else if (contenu.length() > 10000) {
                 showError(errorContenu, "Le contenu ne peut pas dépasser 10000 caractères");
@@ -164,7 +163,6 @@ public class LeconController {
         });
     }
 
-    // ✅ MÉTHODES UTILITAIRES POUR LES ERREURS
     private void showError(Label errorLabel, String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
@@ -183,10 +181,9 @@ public class LeconController {
     }
 
     // ============================================
-    // PUBLIC METHODS - CALLED BY OTHER CONTROLLERS
+    // PUBLIC METHODS
     // ============================================
 
-    // ✅ Méthode principale pour passer l'ID et le TITRE du module (depuis le bouton 📖)
     public void setModuleInfo(int id, String titre) {
         System.out.println("📌 CHARGEMENT: Leçons du module " + id + " - " + titre);
         this.moduleId = id;
@@ -211,7 +208,6 @@ public class LeconController {
         chargerLeconsParModule(id);
     }
 
-    // Méthode pour les leçons depuis un cours (toutes les leçons du cours)
     public void setCoursId(int id) {
         System.out.println("📌 CHARGEMENT: Toutes les leçons du cours " + id);
         this.coursId = id;
@@ -270,13 +266,15 @@ public class LeconController {
                     lblTailleVideo.setText("✅ Prêt - " + taille);
 
                     if (videoBytes.length > 50 * 1024 * 1024) {
-                        showAlert(Alert.AlertType.WARNING, "⚠️ Attention",
-                                "Vidéo de " + taille + "\nAssurez-vous que max_allowed_packet est à 64M dans MySQL");
+                        AlertUtils.showWarning("⚠️ Attention - Fichier volumineux",
+                                "La vidéo fait " + taille + ".\n\n" +
+                                        "Assurez-vous que la base de données peut accepter des fichiers de cette taille.\n" +
+                                        "Vérifiez le paramètre max_allowed_packet dans MySQL (minimum 64M).");
                     }
 
                 } catch (IOException ex) {
                     ex.printStackTrace();
-                    showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Impossible de lire le fichier vidéo");
+                    AlertUtils.showError("❌ Erreur", "Impossible de lire le fichier vidéo");
                 }
             }
         });
@@ -323,9 +321,9 @@ public class LeconController {
         colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
         colTitre.setCellFactory(column -> new LeconTitleCell(leconService));
 
-        // ✅ CONTENU - Affichage sur plusieurs lignes
         colContenu.setCellValueFactory(new PropertyValueFactory<>("contenu"));
         colContenu.setCellFactory(column -> new LeconContenuCell(leconService));
+
         colVideo.setCellValueFactory(new PropertyValueFactory<>("video"));
         colVideo.setCellFactory(column -> new LeconVideoCell(leconService));
 
@@ -379,7 +377,7 @@ public class LeconController {
     }
 
     // ============================================
-    // CRUD OPERATIONS
+    // CRUD OPERATIONS - MODIFIÉES
     // ============================================
 
     @FXML
@@ -418,14 +416,22 @@ public class LeconController {
 
         try {
             leconService.ajouter(lecon);
-            showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Leçon ajoutée !");
+
+            // ✅ ALERTE DE SUCCÈS AVEC INFORMATIONS
+            String moduleNom = moduleId > 0 ? moduleTitre : comboModules.getValue().getTitre();
+            AlertUtils.showSuccessWithInstructions(
+                    "✅ Leçon créée avec succès",
+                    "La leçon \"" + txtTitre.getText() + "\" a été ajoutée au module \"" + moduleNom + "\".",
+                    "Cette leçon est maintenant disponible pour les candidats.\n\n" +
+                            (videoBytes != null ? "📹 Une vidéo a été associée à cette leçon." : "📝 Cette leçon est de type texte.")
+            );
+
             chargerLeconsParModule(targetModuleId);
             clearFields();
             setFormVisible(false);
             setTableVisible(true);
 
         } catch (IllegalArgumentException e) {
-            // ✅ Capturer les erreurs de validation
             String message = e.getMessage();
             if (message.contains("titre")) {
                 showError(errorTitre, message);
@@ -434,28 +440,28 @@ public class LeconController {
             } else if (message.contains("module")) {
                 showError(errorModule, message);
             } else {
-                showAlert(Alert.AlertType.WARNING, "⚠️ Validation", message);
+                AlertUtils.showWarning("⚠️ Validation", message);
             }
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "❌ Erreur", e.getMessage());
+            AlertUtils.showError("❌ Erreur", "Impossible d'ajouter la leçon :\n" + e.getMessage());
         }
     }
 
     private void supprimerLecon(Lecon lecon) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("🗑️ Confirmation");
-        confirm.setHeaderText("Supprimer la leçon");
-        confirm.setContentText("Voulez-vous supprimer la leçon : \"" + lecon.getTitre() + "\" ?");
+        boolean confirmed = AlertUtils.showDeleteConfirmation(
+                "leçon",
+                lecon.getTitre(),
+                "Cette action est irréversible et supprimera définitivement cette leçon."
+        );
 
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (confirmed) {
             try {
                 leconService.supprimer(lecon.getId());
-                showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Leçon supprimée !");
+                AlertUtils.showSuccess("✅ Suppression réussie", "La leçon a été supprimée avec succès.");
                 chargerLeconsParModule(lecon.getModuleId());
                 clearFields();
             } catch (Exception e) {
-                showAlert(Alert.AlertType.ERROR, "❌ Erreur", e.getMessage());
+                AlertUtils.showError("❌ Erreur", "Impossible de supprimer la leçon :\n" + e.getMessage());
             }
         }
     }
@@ -497,7 +503,7 @@ public class LeconController {
         if (contenu.isEmpty()) {
             errors.append("• Le contenu est obligatoire\n");
             showError(errorContenu, "Le contenu est obligatoire");
-        } else if (contenu.length() < 500) {  // ✅ Changé de 10 à 500
+        } else if (contenu.length() < 500) {
             errors.append("• Le contenu doit contenir au moins 500 caractères\n");
             showError(errorContenu, "Le contenu doit contenir au moins 500 caractères");
         } else if (contenu.length() > 10000) {
@@ -511,6 +517,7 @@ public class LeconController {
         }
 
         if (errors.length() > 0) {
+            AlertUtils.showWarning("⚠️ Formulaire incomplet", errors.toString());
             return false;
         }
         return true;
@@ -528,13 +535,11 @@ public class LeconController {
         tableLecons.getSelectionModel().clearSelection();
         leconSelectionnee = null;
 
-        // ✅ Réinitialiser le compteur
         if (charCountLabel != null) {
-            charCountLabel.setText("0/500");
+            charCountLabel.setText("0/10000");
             charCountLabel.setStyle("-fx-text-fill: #9ca3af; -fx-font-weight: 600; -fx-background-color: #f3e8ff; -fx-padding: 4 10; -fx-background-radius: 20;");
         }
 
-        // Cacher les erreurs
         hideError(errorModule);
         hideError(errorTitre);
         hideError(errorContenu);
@@ -567,13 +572,5 @@ public class LeconController {
             setFormVisible(false);
             setTableVisible(true);
         }
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String msg) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
     }
 }

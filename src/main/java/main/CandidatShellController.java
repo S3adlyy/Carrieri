@@ -15,10 +15,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import utils.AlertUtils;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class CandidatShellController implements Initializable {
@@ -58,15 +58,21 @@ public class CandidatShellController implements Initializable {
     public static CandidatShellController getInstance() {
         return instance;
     }
+
+    // ============================================
+    // BASCULE VERS ADMIN - MODIFIÉ
+    // ============================================
     @FXML
     public void switchToAdmin() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Changement de mode");
-        confirm.setHeaderText("Passer en mode Administrateur");
-        confirm.setContentText("Voulez-vous basculer vers l'espace Admin ?");
+        boolean confirmed = AlertUtils.showConfirmation(
+                "🔄 Changement de mode",
+                "Voulez-vous basculer vers l'espace Administrateur ?\n\n" +
+                        "Vous pourrez gérer les cours, modules et leçons.",
+                "Oui, basculer",
+                "Non, rester"
+        );
 
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (confirmed) {
             try {
                 Stage stage = (Stage) sidebar.getScene().getWindow();
 
@@ -111,9 +117,12 @@ public class CandidatShellController implements Initializable {
                         fadeIn.setToValue(1);
                         fadeIn.play();
 
+                        AlertUtils.showSuccess("✅ Bascule réussie", "Vous êtes maintenant dans l'espace Administrateur.");
+
                     } catch (IOException ex) {
                         ex.printStackTrace();
-                        showAlert("Erreur de chargement", "Impossible de charger l'espace admin");
+                        AlertUtils.showError("❌ Erreur de chargement",
+                                "Impossible de charger l'espace administrateur.\n\n" + ex.getMessage());
                     }
                 });
 
@@ -121,17 +130,20 @@ public class CandidatShellController implements Initializable {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                showAlert("Erreur", "Impossible de basculer vers le mode Admin");
+                AlertUtils.showError("❌ Erreur", "Impossible de basculer vers le mode Admin");
             }
         }
     }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         userName.setText("Bilal El Eter");
         userRole.setText("Candidat");
+
         // ✅ Installer le tooltip sur l'avatar
         Tooltip candidatTooltip = new Tooltip("Cliquer pour basculer en mode Admin");
         Tooltip.install(userAvatar, candidatTooltip);
+
         showCatalogue();
         setActiveButton(btnCatalogue);
 
@@ -179,34 +191,28 @@ public class CandidatShellController implements Initializable {
         setActiveButton(btnCatalogue);
     }
 
+    // ============================================
+    // FONCTIONNALITÉS À VENIR - MODIFIÉES
+    // ============================================
     @FXML
     public void showMesCours() {
-        // À implémenter si besoin
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setHeaderText(null);
-        alert.setContentText("Fonctionnalité à venir : Mes cours en progression");
-        alert.showAndWait();
+        AlertUtils.showInfo("📚 Mes cours",
+                "Cette fonctionnalité arrivera très bientôt !\n\n" +
+                        "Vous pourrez suivre votre progression dans tous vos cours.");
     }
 
     @FXML
     public void showCertificats() {
-        // À implémenter si besoin
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setHeaderText(null);
-        alert.setContentText("Fonctionnalité à venir : Mes certificats");
-        alert.showAndWait();
+        AlertUtils.showInfo("📜 Mes certificats",
+                "Cette fonctionnalité arrivera très bientôt !\n\n" +
+                        "Vous pourrez consulter et télécharger tous vos certificats.");
     }
 
     @FXML
     public void showProfil() {
-        // À implémenter si besoin
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setHeaderText(null);
-        alert.setContentText("Fonctionnalité à venir : Profil candidat");
-        alert.showAndWait();
+        AlertUtils.showInfo("👤 Mon profil",
+                "Cette fonctionnalité arrivera très bientôt !\n\n" +
+                        "Vous pourrez modifier vos informations personnelles.");
     }
 
     // ✅ Méthode pour ouvrir un cours
@@ -224,7 +230,7 @@ public class CandidatShellController implements Initializable {
 
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Erreur", "Impossible d'ouvrir le cours: " + e.getMessage());
+            AlertUtils.showError("❌ Erreur", "Impossible d'ouvrir le cours:\n\n" + e.getMessage());
         }
     }
 
@@ -239,9 +245,13 @@ public class CandidatShellController implements Initializable {
 
             animateContentChange(view);
 
+            AlertUtils.showInfo("📝 Quiz du module",
+                    "Vous allez passer le quiz du module \"" + moduleTitre + "\".\n\n" +
+                            "Répondez aux 5 questions pour valider ce module.");
+
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Erreur", "Impossible d'ouvrir le quiz: " + e.getMessage());
+            AlertUtils.showError("❌ Erreur", "Impossible d'ouvrir le quiz:\n\n" + e.getMessage());
         }
     }
 
@@ -256,9 +266,13 @@ public class CandidatShellController implements Initializable {
 
             animateContentChange(view);
 
+            AlertUtils.showInfo("🎯 Test final",
+                    "Vous allez passer le test final du cours.\n\n" +
+                            "15 questions pour valider l'ensemble du cours. Bonne chance !");
+
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Erreur", "Impossible d'ouvrir le test final: " + e.getMessage());
+            AlertUtils.showError("❌ Erreur", "Impossible d'ouvrir le test final:\n\n" + e.getMessage());
         }
     }
 
@@ -271,25 +285,31 @@ public class CandidatShellController implements Initializable {
         }
     }
 
+    // ============================================
+    // DÉCONNEXION - MODIFIÉE
+    // ============================================
     @FXML
     public void logout() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Déconnexion");
-        alert.setHeaderText(null);
-        alert.setContentText("Êtes-vous sûr de vouloir vous déconnecter ?");
+        boolean confirmed = AlertUtils.showConfirmation(
+                "🔒 Déconnexion",
+                "Êtes-vous sûr de vouloir vous déconnecter ?\n\n" +
+                        "Votre progression sera sauvegardée automatiquement.",
+                "Oui, me déconnecter",
+                "Non, rester connecté"
+        );
 
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                FadeTransition fadeOut = new FadeTransition(Duration.millis(500), sidebar.getScene().getRoot());
-                fadeOut.setFromValue(1);
-                fadeOut.setToValue(0);
-                fadeOut.setOnFinished(e -> {
-                    javafx.application.Platform.exit();
-                    System.exit(0);
-                });
-                fadeOut.play();
-            }
-        });
+        if (confirmed) {
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(500), sidebar.getScene().getRoot());
+            fadeOut.setFromValue(1);
+            fadeOut.setToValue(0);
+            fadeOut.setOnFinished(e -> {
+                javafx.application.Platform.exit();
+                System.exit(0);
+            });
+            fadeOut.play();
+
+            AlertUtils.showSuccess("👋 Au revoir !", "Déconnexion réussie. À bientôt !");
+        }
     }
 
     private void loadView(String fxmlFile) {
@@ -299,7 +319,7 @@ public class CandidatShellController implements Initializable {
             animateContentChange(view);
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Erreur", "Impossible de charger la vue: " + fxmlFile);
+            AlertUtils.showError("❌ Erreur", "Impossible de charger la vue:\n\n" + fxmlFile);
         }
     }
 
@@ -329,13 +349,5 @@ public class CandidatShellController implements Initializable {
         if (activeButton != null) {
             activeButton.getStyleClass().add("nav-button-active");
         }
-    }
-
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

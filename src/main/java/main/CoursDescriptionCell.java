@@ -1,14 +1,12 @@
 package main;
 
 import entities.Cours;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextArea;
 import services.CoursService;
+import utils.AlertUtils;
 
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.Objects;
 
 public class CoursDescriptionCell extends TableCell<Cours, String> {
@@ -83,18 +81,21 @@ public class CoursDescriptionCell extends TableCell<Cours, String> {
             }
 
             if (newValue.length() < 10 || newValue.length() > 1000) {
-                AlertUtils.showAlert(Alert.AlertType.WARNING, "⚠️ Validation", "La description doit contenir entre 10 et 1000 caractères");
+                AlertUtils.showWarning("⚠️ Validation",
+                        "La description doit contenir entre 10 et 1000 caractères.\n\n" +
+                                "Votre texte actuel: " + newValue.length() + " caractères.");
                 cancelEdit();
                 return;
             }
 
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("✏️ Confirmation");
-            confirm.setHeaderText("Modifier la description");
-            confirm.setContentText("Êtes-vous sûr de modifier la description ?");
+            boolean confirmed = AlertUtils.showConfirmation(
+                    "✏️ Confirmation",
+                    "Êtes-vous sûr de vouloir modifier la description ?",
+                    "Oui, modifier",
+                    "Non, annuler"
+            );
 
-            Optional<ButtonType> result = confirm.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            if (confirmed) {
                 Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
                 if (cours == null) {
                     cancelEdit();
@@ -105,8 +106,9 @@ public class CoursDescriptionCell extends TableCell<Cours, String> {
                     coursService.update(cours);
                     commitEdit(newValue);
                     getTableView().refresh();
+                    AlertUtils.showSuccess("✅ Succès", "La description a été modifiée avec succès.");
                 } catch (SQLException e) {
-                    AlertUtils.showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur base de données: " + e.getMessage());
+                    AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
                 }
             }
             cancelEdit();

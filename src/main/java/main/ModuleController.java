@@ -4,9 +4,7 @@ import entities.Module;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
@@ -14,20 +12,20 @@ import javafx.scene.layout.VBox;
 import services.ModuleService;
 import services.QuizAutoGenerator;
 import services.LeconService;
+import utils.AlertUtils;
 
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class ModuleController implements Initializable {
 
     @FXML private TextField txtTitre;
     @FXML private TextArea txtDescription;
-    @FXML private Label lblCoursInfo;  // Pour afficher le titre du cours
+    @FXML private Label lblCoursInfo;
     @FXML private VBox formBox;
     @FXML private VBox tablePane;
     @FXML private TableView<Module> tableModules;
@@ -47,25 +45,21 @@ public class ModuleController implements Initializable {
     private LeconService leconService = new LeconService();
     private ObservableList<Module> moduleList = FXCollections.observableArrayList();
     private int coursId = 0;
-    private String coursTitre = "";  // Stocker le titre du cours
+    private String coursTitre = "";
     private Module moduleSelectionne = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTableColumns();
 
-        // Start with table visible and form hidden
         setFormVisible(false);
         setTableVisible(true);
 
-        // ✅ VALIDATION EN TEMPS RÉEL
         setupValidation();
 
-        // ✅ LISTENER POUR METTRE À JOUR LE MODULE ACTIF QUAND ON SÉLECTIONNE UN MODULE
         tableModules.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 moduleSelectionne = newSelection;
-                // ✅ Mettre à jour le module actif dans le shell
                 MainShellController.getInstance().setCurrentModule(newSelection.getId(), newSelection.getTitre());
             } else {
                 moduleSelectionne = null;
@@ -73,9 +67,7 @@ public class ModuleController implements Initializable {
         });
     }
 
-    // ✅ NOUVELLE MÉTHODE POUR LA VALIDATION EN TEMPS RÉEL
     private void setupValidation() {
-        // Validation du titre en temps réel
         txtTitre.textProperty().addListener((obs, oldVal, newVal) -> {
             String titre = newVal != null ? newVal.trim() : "";
             if (titre.isEmpty()) {
@@ -91,7 +83,6 @@ public class ModuleController implements Initializable {
             }
         });
 
-        // Validation de la description
         txtDescription.textProperty().addListener((obs, oldVal, newVal) -> {
             String desc = newVal != null ? newVal.trim() : "";
             if (desc.isEmpty()) {
@@ -108,7 +99,6 @@ public class ModuleController implements Initializable {
         });
     }
 
-    // ✅ MÉTHODES UTILITAIRES POUR LES ERREURS
     private void showError(Label errorLabel, String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
@@ -126,7 +116,6 @@ public class ModuleController implements Initializable {
         return textWithoutSpaces.matches("\\d+");
     }
 
-    // ✅ Méthode pour passer l'ID et le TITRE du cours
     public void setCoursInfo(int id, String titre) {
         this.coursId = id;
         this.coursTitre = titre;
@@ -134,7 +123,6 @@ public class ModuleController implements Initializable {
         chargerModules();
     }
 
-    // Méthode existante pour compatibilité
     public void setCoursId(int id) {
         this.coursId = id;
         this.coursTitre = "Cours #" + id;
@@ -160,14 +148,12 @@ public class ModuleController implements Initializable {
         colOrdre.setCellValueFactory(new PropertyValueFactory<>("ordre"));
         colOrdre.setCellFactory(column -> new ModuleOrdreCell(moduleService, moduleList));
 
-        // ✅ NOUVELLE VERSION - SANS le bouton 📖
         colActions.setCellFactory(param -> new TableCell<Module, Void>() {
             private final Button btnDelete = new Button("🗑️");
-            private final HBox actions = new HBox(5, btnDelete);  // Plus que le bouton supprimer
+            private final HBox actions = new HBox(5, btnDelete);
 
             {
                 actions.setAlignment(javafx.geometry.Pos.CENTER);
-
                 btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5 10; -fx-background-radius: 5; -fx-cursor: hand;");
 
                 btnDelete.setOnAction(event -> {
@@ -189,12 +175,6 @@ public class ModuleController implements Initializable {
         tableModules.setItems(moduleList);
     }
 
-    private void ouvrirLecons(Module module) {
-        // ✅ Met à jour le module actif dans le shell
-        MainShellController.getInstance().setCurrentModule(module.getId(), module.getTitre());
-        MainShellController.getInstance().showLeconsViewWithModule(module.getId(), module.getTitre());
-    }
-
     private void chargerModules() {
         if (coursId > 0) {
             try {
@@ -202,11 +182,14 @@ public class ModuleController implements Initializable {
                 moduleList.setAll(modules);
                 System.out.println("📚 Modules chargés pour " + coursTitre + ": " + modules.size());
             } catch (Exception e) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur chargement: " + e.getMessage());
+                AlertUtils.showError("❌ Erreur", "Erreur lors du chargement des modules :\n" + e.getMessage());
             }
         }
     }
 
+    // ============================================
+    // AJOUTER MODULE - MODIFIÉ
+    // ============================================
     @FXML
     private void ajouterModule() {
         if (!validerFormulaire()) return;
@@ -223,75 +206,92 @@ public class ModuleController implements Initializable {
         try {
             if (coursId > 0) {
                 moduleService.ajouter(module);
-                showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Module ajouté !");
+
+                // ✅ NOUVELLE ALERTE AVEC INSTRUCTIONS
+                AlertUtils.showSuccessWithInstructions(
+                        "✅ Module créé avec succès",
+                        "Le module \"" + txtTitre.getText() + "\" a été ajouté au cours.",
+                        "Utilisez le bouton 📖 pour ajouter des leçons à ce module.\n\n" +
+                                "Vous pourrez également générer un quiz pour ce module après avoir ajouté des leçons."
+                );
+
                 chargerModules();
                 clearFields();
                 setFormVisible(false);
                 setTableVisible(true);
             } else {
-                showAlert(Alert.AlertType.WARNING, "⚠️", "ID de cours invalide");
+                AlertUtils.showError("❌ Erreur", "ID de cours invalide");
             }
 
         } catch (IllegalArgumentException e) {
-            // ✅ Capturer les erreurs de validation
             String message = e.getMessage();
             if (message.contains("titre")) {
                 showError(errorTitre, message);
             } else if (message.contains("description")) {
                 showError(errorDescription, message);
             } else {
-                showAlert(Alert.AlertType.WARNING, "⚠️ Validation", message);
+                AlertUtils.showWarning("⚠️ Validation", message);
             }
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "❌ Erreur", e.getMessage());
+            AlertUtils.showError("❌ Erreur", "Impossible d'ajouter le module :\n" + e.getMessage());
         }
     }
 
+    // ============================================
+    // SUPPRIMER MODULE - MODIFIÉ
+    // ============================================
     private void supprimerModule(Module module) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("🗑️ Confirmation");
-        confirm.setHeaderText("Supprimer le module");
-        confirm.setContentText("Voulez-vous supprimer le module : \"" + module.getTitre() + "\" ?\n\nToutes les leçons associées seront également supprimées !");
+        boolean confirmed = AlertUtils.showDeleteConfirmation(
+                "module",
+                module.getTitre(),
+                "Toutes les leçons associées à ce module seront également supprimées définitivement.\n\nCette action est irréversible !"
+        );
 
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (confirmed) {
             try {
                 moduleService.supprimer(module.getId());
 
-                // ✅ Réinitialiser le module actif si c'était celui-ci
                 if (moduleSelectionne != null && moduleSelectionne.getId() == module.getId()) {
                     MainShellController.getInstance().resetCurrentModule();
                 }
 
-                showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Module supprimé !");
+                AlertUtils.showSuccess("✅ Suppression réussie", "Le module a été supprimé avec succès.");
                 chargerModules();
                 clearFields();
             } catch (Exception e) {
-                showAlert(Alert.AlertType.ERROR, "❌ Erreur", e.getMessage());
+                AlertUtils.showError("❌ Erreur", "Impossible de supprimer le module :\n" + e.getMessage());
             }
         }
     }
 
+    // ============================================
+    // GÉNÉRER QUIZ AUTOMATIQUE - MODIFIÉ
+    // ============================================
     @FXML
     private void genererQuizAutomatique() {
         if (moduleSelectionne == null) {
-            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Sélectionnez d'abord un module");
+            AlertUtils.showNoSelectionWarning("module", "générer un quiz");
             return;
         }
 
         List<entities.Lecon> lecons = leconService.getLeconsByModule(moduleSelectionne.getId());
         if (lecons == null || lecons.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Impossible de générer un quiz : ce module ne contient aucune leçon.");
+            AlertUtils.showWarning("⚠️ Impossible de générer le quiz",
+                    "Le module \"" + moduleSelectionne.getTitre() + "\" ne contient aucune leçon.\n\n" +
+                            "Ajoutez d'abord des leçons à ce module pour pouvoir générer un quiz.");
             return;
         }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("🤖 Génération");
-        confirm.setHeaderText("Générer le quiz du module ?");
-        confirm.setContentText("5 questions seront créées.\n\nLes anciennes questions seront supprimées.");
+        boolean confirmed = AlertUtils.showConfirmation(
+                "🤖 Génération automatique du quiz",
+                "5 questions seront créées à partir du contenu des leçons.\n\n" +
+                        "⚠️ Les anciennes questions du quiz seront définitivement supprimées.\n\n" +
+                        "Voulez-vous continuer ?",
+                "Oui, générer",
+                "Non, annuler"
+        );
 
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (confirmed) {
             try {
                 Connection con = utils.MyDatabase.getInstance().getConnection();
 
@@ -308,11 +308,13 @@ public class ModuleController implements Initializable {
                 QuizAutoGenerator generator = new QuizAutoGenerator();
                 generator.genererQuizModule(moduleSelectionne.getId());
 
-                showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Quiz généré avec succès !");
+                AlertUtils.showSuccess("✅ Quiz généré avec succès",
+                        "Le quiz du module \"" + moduleSelectionne.getTitre() + "\" a été généré avec 5 questions.\n\n" +
+                                "Les candidats pourront maintenant passer ce quiz après avoir terminé toutes les leçons du module.");
 
             } catch (SQLException e) {
                 e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "❌ Erreur", e.getMessage());
+                AlertUtils.showError("❌ Erreur", "Impossible de générer le quiz :\n" + e.getMessage());
             }
         }
     }
@@ -338,27 +340,39 @@ public class ModuleController implements Initializable {
         String titre = txtTitre.getText().trim();
         if (titre.isEmpty()) {
             errors.append("• Le titre est obligatoire\n");
+            showError(errorTitre, "Le titre est obligatoire");
         } else if (titre.length() < 3) {
             errors.append("• Le titre doit contenir au moins 3 caractères\n");
+            showError(errorTitre, "Le titre doit contenir au moins 3 caractères");
         } else if (titre.length() > 200) {
             errors.append("• Le titre ne peut pas dépasser 200 caractères\n");
+            showError(errorTitre, "Le titre ne peut pas dépasser 200 caractères");
         } else if (isOnlyDigits(titre)) {
             errors.append("• Le titre ne peut pas être composé uniquement de chiffres\n");
+            showError(errorTitre, "Le titre ne peut pas être composé uniquement de chiffres");
+        } else {
+            hideError(errorTitre);
         }
 
         String description = txtDescription.getText().trim();
         if (description.isEmpty()) {
             errors.append("• La description est obligatoire\n");
+            showError(errorDescription, "La description est obligatoire");
         } else if (description.length() < 10) {
             errors.append("• La description doit contenir au moins 10 caractères\n");
+            showError(errorDescription, "La description doit contenir au moins 10 caractères");
         } else if (description.length() > 1000) {
             errors.append("• La description ne peut pas dépasser 1000 caractères\n");
+            showError(errorDescription, "La description ne peut pas dépasser 1000 caractères");
         } else if (isOnlyDigits(description)) {
             errors.append("• La description ne peut pas être composée uniquement de chiffres\n");
+            showError(errorDescription, "La description ne peut pas être composée uniquement de chiffres");
+        } else {
+            hideError(errorDescription);
         }
 
         if (errors.length() > 0) {
-            showAlert(Alert.AlertType.WARNING, "⚠️ Validation", errors.toString());
+            AlertUtils.showWarning("⚠️ Formulaire incomplet", errors.toString());
             return false;
         }
         return true;
@@ -370,7 +384,6 @@ public class ModuleController implements Initializable {
         tableModules.getSelectionModel().clearSelection();
         moduleSelectionne = null;
 
-        // ✅ Cacher les erreurs
         hideError(errorTitre);
         hideError(errorDescription);
     }
@@ -387,13 +400,5 @@ public class ModuleController implements Initializable {
             tablePane.setVisible(visible);
             tablePane.setManaged(visible);
         }
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String msg) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
     }
 }

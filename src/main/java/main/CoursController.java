@@ -16,9 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import services.CoursService;
 import services.ModuleService;
@@ -26,7 +24,7 @@ import services.LeconService;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import services.QuizAutoGenerator;
-import utils.MyDatabase;
+import utils.AlertUtils;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -34,7 +32,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 public class CoursController {
 
@@ -234,6 +231,7 @@ public class CoursController {
                 hideError(errorDescription);
             }
         });
+
         btnChoisirImage.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().add(
@@ -246,7 +244,7 @@ public class CoursController {
                     Image image = new Image(new FileInputStream(file));
                     imageViewForm.setImage(image);
                     lblImageNom.setText(file.getName());
-                    hideError(errorImage); // ✅ Cacher l'erreur quand une image est choisie
+                    hideError(errorImage);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -285,7 +283,7 @@ public class CoursController {
                     Image image = new Image(new FileInputStream(file));
                     imageViewForm.setImage(image);
                     lblImageNom.setText(file.getName());
-                    hideError(errorImage); // ✅ Cacher l'erreur quand une image est choisie
+                    hideError(errorImage);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -304,14 +302,12 @@ public class CoursController {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colId.setVisible(false);
 
-        // Titre - Éditable inline
         colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
         colTitre.setCellFactory(column -> new CoursTitleCell(coursService));
 
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
         colDescription.setCellFactory(column -> new CoursDescriptionCell(coursService));
 
-        // Durée - Éditable inline
         colDuree.setCellValueFactory(new PropertyValueFactory<>("duree"));
         colDuree.setCellFactory(column -> new CoursDureeCell(coursService));
 
@@ -337,30 +333,24 @@ public class CoursController {
             {
                 actions.setAlignment(javafx.geometry.Pos.CENTER);
 
-                // Styles des boutons
                 btnModules.setStyle("-fx-background-color: #5E548E; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5; -fx-cursor: hand;");
                 btnLecons.setStyle("-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5; -fx-cursor: hand;");
                 btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5; -fx-cursor: hand;");
 
-                // Dans colActions, pour le bouton Modules
                 btnModules.setOnAction(event -> {
                     Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
                     if (cours != null) {
-                        // Le cours est déjà sélectionné via le listener
                         MainShellController.getInstance().showModulesViewWithCours(cours.getId(), cours.getTitre());
                     }
                 });
 
-// Pour le bouton Leçons
                 btnLecons.setOnAction(event -> {
                     Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
                     if (cours != null) {
-                        // Le cours est déjà sélectionné via le listener
                         MainShellController.getInstance().showLeconsViewWithCours(cours.getId(), cours.getTitre());
                     }
                 });
 
-                // Action pour Supprimer
                 btnDelete.setOnAction(event -> {
                     Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
                     if (cours != null) {
@@ -377,7 +367,6 @@ public class CoursController {
             }
         });
 
-        // Sélection dans la table
         tableCours.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 coursSelectionne = newSelection;
@@ -419,7 +408,6 @@ public class CoursController {
     }
 
     private void setupNumericFieldsOnly() {
-        // Restreindre le champ durée aux nombres uniquement
         txtDuree.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 txtDuree.setText(newValue.replaceAll("[^\\d]", ""));
@@ -438,14 +426,13 @@ public class CoursController {
     }
 
     // ============================================
-    // MÉTHODE PRINCIPALE : AJOUTER COURS
+    // MÉTHODE PRINCIPALE : AJOUTER COURS - MODIFIÉE
     // ============================================
     @FXML
     private void ajouter() {
         try {
             if (!validateForm()) return;
 
-            // 1. Créer le cours
             Cours nouveauCours = new Cours(
                     txtTitre.getText(),
                     txtDescription.getText(),
@@ -457,11 +444,14 @@ public class CoursController {
                     imageBytesSelected
             );
 
-            // 2. Sauvegarder le cours
             coursService.ajouter(nouveauCours);
 
-            // 3. Afficher message de succès et recharger la table
-            showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Cours ajouté avec succès !\n\nUtilisez les icônes 📚 et 📖 pour ajouter des modules et leçons.");
+            // ✅ NOUVELLE ALERTE AVEC INSTRUCTIONS
+            AlertUtils.showSuccessWithInstructions(
+                    "🎉 Cours créé avec succès",
+                    "Le cours \"" + txtTitre.getText() + "\" a été ajouté à la plateforme.",
+                    "Utilisez les icônes 📚 et 📖 pour ajouter des modules et des leçons à ce cours."
+            );
 
             loadCours();
             clearForm();
@@ -472,7 +462,6 @@ public class CoursController {
             formPane.setManaged(false);
 
         } catch (IllegalArgumentException e) {
-            // ✅ Capturer les erreurs de validation du service et les afficher dans l'interface
             String message = e.getMessage();
             if (message.contains("titre")) {
                 showError(errorTitre, message);
@@ -487,23 +476,22 @@ public class CoursController {
             } else if (message.contains("image")) {
                 showError(errorImage, message);
             } else {
-                showAlert(Alert.AlertType.WARNING, "⚠️ Validation", message);
+                AlertUtils.showWarning("⚠️ Validation", message);
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur base de données: " + e.getMessage());
+            AlertUtils.showError("❌ Erreur base de données", "Impossible d'ajouter le cours :\n" + e.getMessage());
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "❌ Erreur", e.getMessage());
+            AlertUtils.showError("❌ Erreur", "Une erreur inattendue est survenue :\n" + e.getMessage());
         }
     }
 
-
     // ============================================
-    // MODIFIER COURS
+    // MODIFIER COURS - MODIFIÉE
     // ============================================
     @FXML
     private void modifier() {
         if (coursSelectionne == null) {
-            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Veuillez sélectionner un cours à modifier !");
+            AlertUtils.showNoSelectionWarning("cours", "modifier");
             return;
         }
 
@@ -524,48 +512,48 @@ public class CoursController {
             coursService.update(coursSelectionne);
             tableCours.refresh();
 
-            showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Cours modifié avec succès !");
+            AlertUtils.showSuccess("✅ Modification réussie", "Le cours a été mis à jour avec succès.");
             clearForm();
             loadCours();
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "❌ Erreur", e.getMessage());
+            AlertUtils.showError("❌ Erreur", e.getMessage());
         }
     }
 
     // ============================================
-    // SUPPRIMER COURS
+    // SUPPRIMER COURS - MODIFIÉE
     // ============================================
     @FXML
     private void supprimer() {
         if (coursSelectionne == null) {
-            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Veuillez sélectionner un cours à supprimer !");
+            AlertUtils.showNoSelectionWarning("cours", "supprimer");
             return;
         }
         supprimerCoursAvecConfirmation(coursSelectionne);
     }
 
     private void supprimerCoursAvecConfirmation(Cours cours) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("🗑️ Confirmation");
-        confirm.setHeaderText("Supprimer le cours");
-        confirm.setContentText("Êtes-vous sûr de vouloir supprimer le cours :\n\"" + cours.getTitre() + "\" ?\n\nTous les modules et leçons associés seront également supprimés !");
+        // ✅ NOUVELLE CONFIRMATION AVEC CONSÉQUENCES
+        boolean confirmed = AlertUtils.showDeleteConfirmation(
+                "cours",
+                cours.getTitre(),
+                "Tous les modules et leçons associés à ce cours seront également supprimés définitivement.\n\nCette action est irréversible !"
+        );
 
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (confirmed) {
             try {
                 coursService.supprimer(cours.getId());
 
-                // ✅ Réinitialiser le cours actif si c'était celui-ci
                 if (coursSelectionne != null && coursSelectionne.getId() == cours.getId()) {
                     MainShellController.getInstance().resetCurrentCours();
                 }
 
-                showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Cours supprimé !");
+                AlertUtils.showSuccess("✅ Suppression réussie", "Le cours a été supprimé avec succès.");
                 loadCours();
                 clearForm();
             } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "❌ Erreur", e.getMessage());
+                AlertUtils.showError("❌ Erreur", "Impossible de supprimer le cours :\n" + e.getMessage());
             }
         }
     }
@@ -577,7 +565,7 @@ public class CoursController {
             updateCount();
             updateStatus("Liste actualisée - " + list.size() + " cours");
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur lors du chargement: " + e.getMessage());
+            AlertUtils.showError("❌ Erreur", "Erreur lors du chargement des cours :\n" + e.getMessage());
         }
     }
 
@@ -587,7 +575,7 @@ public class CoursController {
     @FXML
     private void gererModules() {
         if (coursSelectionne == null) {
-            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Veuillez sélectionner un cours !");
+            AlertUtils.showNoSelectionWarning("cours", "gérer ses modules");
             return;
         }
         ouvrirGestionModules(coursSelectionne);
@@ -596,7 +584,7 @@ public class CoursController {
     @FXML
     private void gererLecons() {
         if (coursSelectionne == null) {
-            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Veuillez sélectionner un cours !");
+            AlertUtils.showNoSelectionWarning("cours", "gérer ses leçons");
             return;
         }
         ouvrirGestionLecons(coursSelectionne);
@@ -622,7 +610,7 @@ public class CoursController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Impossible d'ouvrir la gestion des modules:\n" + e.getMessage());
+            AlertUtils.showError("❌ Erreur", "Impossible d'ouvrir la gestion des modules:\n" + e.getMessage());
         }
     }
 
@@ -646,24 +634,25 @@ public class CoursController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Impossible d'ouvrir la gestion des leçons:\n" + e.getMessage());
+            AlertUtils.showError("❌ Erreur", "Impossible d'ouvrir la gestion des leçons:\n" + e.getMessage());
         }
     }
 
     // ============================================
-    // GÉNÉRER AUTOMATIQUEMENT LE TEST FINAL
+    // GÉNÉRER TEST FINAL - MODIFIÉE
     // ============================================
-
     @FXML
     private void genererTestFinalAutomatique() {
         if (coursSelectionne == null) {
-            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Sélectionnez d'abord un cours");
+            AlertUtils.showNoSelectionWarning("cours", "générer son test final");
             return;
         }
 
         List<entities.Module> modules = moduleService.getModulesByCours(coursSelectionne.getId());
         if (modules == null || modules.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Impossible de générer un test : ce cours ne contient aucun module.");
+            AlertUtils.showWarning("⚠️ Impossible de générer le test",
+                    "Le cours \"" + coursSelectionne.getTitre() + "\" ne contient aucun module.\n\n" +
+                            "Ajoutez d'abord des modules à ce cours pour pouvoir générer un test final.");
             return;
         }
 
@@ -672,17 +661,22 @@ public class CoursController {
             return lecons != null && !lecons.isEmpty();
         });
         if (!hasLecons) {
-            showAlert(Alert.AlertType.WARNING, "⚠️ Attention", "Impossible de générer un test : les modules sont vides (aucune leçon).");
+            AlertUtils.showWarning("⚠️ Impossible de générer le test",
+                    "Les modules de ce cours sont vides (aucune leçon).\n\n" +
+                            "Ajoutez d'abord des leçons aux modules pour générer un test final.");
             return;
         }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("🤖 Génération intelligente");
-        confirm.setHeaderText("Générer le test final du cours ?");
-        confirm.setContentText("15 questions INTELLIGENTES seront créées à partir d'une banque de questions JavaFX.\n\nLes anciennes questions seront supprimées.");
+        boolean confirmed = AlertUtils.showConfirmation(
+                "🤖 Génération intelligente du test final",
+                "15 questions INTELLIGENTES seront créées à partir d'une banque de questions JavaFX.\n\n" +
+                        "⚠️ Les anciennes questions du test final seront définitivement supprimées.\n\n" +
+                        "Voulez-vous continuer ?",
+                "Oui, générer",
+                "Non, annuler"
+        );
 
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (confirmed) {
             try {
                 Connection con = utils.MyDatabase.getInstance().getConnection();
 
@@ -696,16 +690,16 @@ public class CoursController {
                 ps2.setInt(1, coursSelectionne.getId());
                 ps2.executeUpdate();
 
-                // Générer avec le NOUVEAU générateur intelligent
                 QuizAutoGenerator generator = new QuizAutoGenerator();
                 generator.genererTestFinal(coursSelectionne.getId());
 
-                showAlert(Alert.AlertType.INFORMATION, "✅ Succès",
-                        "Test final généré avec 15 questions INTELLIGENTES !\n\nLes questions sont maintenant logiques.");
+                AlertUtils.showSuccess("✅ Test final généré avec succès",
+                        "Le test final du cours \"" + coursSelectionne.getTitre() + "\" a été généré avec 15 questions intelligentes.\n\n" +
+                                "Les candidats pourront maintenant passer ce test après avoir terminé tous les modules.");
 
             } catch (SQLException e) {
                 e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "❌ Erreur", e.getMessage());
+                AlertUtils.showError("❌ Erreur", "Impossible de générer le test final :\n" + e.getMessage());
             }
         }
     }
@@ -716,7 +710,6 @@ public class CoursController {
     private boolean validateForm() {
         StringBuilder errors = new StringBuilder();
 
-        // Validation du titre
         String titre = txtTitre.getText().trim();
         if (titre.isEmpty()) {
             errors.append("• Le titre est obligatoire\n");
@@ -734,7 +727,6 @@ public class CoursController {
             hideError(errorTitre);
         }
 
-        // Validation de la description
         String description = txtDescription.getText().trim();
         if (description.isEmpty()) {
             errors.append("• La description est obligatoire\n");
@@ -752,7 +744,6 @@ public class CoursController {
             hideError(errorDescription);
         }
 
-        // Validation du niveau
         if (comboNiveau.getValue() == null) {
             errors.append("• Le niveau est obligatoire\n");
             showError(errorNiveau, "Le niveau est obligatoire");
@@ -760,7 +751,6 @@ public class CoursController {
             hideError(errorNiveau);
         }
 
-        // Validation de la durée
         if (txtDuree.getText().trim().isEmpty()) {
             errors.append("• La durée est obligatoire\n");
             showError(errorDuree, "La durée est obligatoire");
@@ -782,7 +772,6 @@ public class CoursController {
             }
         }
 
-        // Validation des compétences
         String competences = txtCompetences.getText().trim();
         if (!competences.isEmpty() && competences.length() > 500) {
             errors.append("• Les compétences ne peuvent pas dépasser 500 caractères\n");
@@ -794,7 +783,6 @@ public class CoursController {
             hideError(errorCompetences);
         }
 
-        // Validation de l'image
         if (coursSelectionne == null && imageBytesSelected == null) {
             errors.append("• L'image du cours est obligatoire\n");
             showError(errorImage, "L'image du cours est obligatoire");
@@ -819,7 +807,6 @@ public class CoursController {
         coursSelectionne = null;
         tableCours.getSelectionModel().clearSelection();
 
-        // ✅ Cacher toutes les erreurs
         hideError(errorTitre);
         hideError(errorNiveau);
         hideError(errorDuree);
@@ -827,7 +814,6 @@ public class CoursController {
         hideError(errorDescription);
         hideError(errorImage);
 
-        // Réinitialiser le compteur
         if (charCountLabel != null) {
             charCountLabel.setText("0/1000");
             charCountLabel.setStyle("-fx-text-fill: #9ca3af; -fx-font-weight: 600; -fx-background-color: #f3e8ff; -fx-padding: 4 10; -fx-background-radius: 20;");
@@ -872,18 +858,13 @@ public class CoursController {
             boolean isTableVisible = tablePane.isVisible();
 
             if (isTableVisible) {
-                // Cacher la table, afficher le formulaire
                 tablePane.setVisible(false);
                 tablePane.setManaged(false);
                 formPane.setVisible(true);
                 formPane.setManaged(true);
-
-                // Réinitialiser le formulaire
                 clearForm();
-
                 System.out.println("📝 Formulaire affiché");
             } else {
-                // Afficher la table, cacher le formulaire
                 tablePane.setVisible(true);
                 tablePane.setManaged(true);
                 formPane.setVisible(false);
@@ -894,18 +875,4 @@ public class CoursController {
             System.err.println("❌ tablePane ou formPane est null!");
         }
     }
-
-    private void showAlert(Alert.AlertType type, String title, String msg) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
-    }
-
-    // ============================================
-    // INNER CLASSES - CELLULES ÉDITABLES
-    // ============================================
-
-    // Removed: inner editable cell classes (now in separate files)
 }

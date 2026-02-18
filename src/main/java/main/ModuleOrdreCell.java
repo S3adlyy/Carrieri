@@ -2,13 +2,11 @@ package main;
 
 import entities.Module;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
 import services.ModuleService;
+import utils.AlertUtils;
 
-import java.util.Optional;
 import java.util.Objects;
 
 public class ModuleOrdreCell extends TableCell<Module, Integer> {
@@ -80,7 +78,7 @@ public class ModuleOrdreCell extends TableCell<Module, Integer> {
             Integer oldValue = getItem();
 
             if (newValueStr.isEmpty()) {
-                AlertUtils.showAlert(Alert.AlertType.WARNING, "⚠️ Validation", "L'ordre ne peut pas être vide");
+                AlertUtils.showWarning("⚠️ Validation", "L'ordre ne peut pas être vide.");
                 cancelEdit();
                 return;
             }
@@ -88,7 +86,9 @@ public class ModuleOrdreCell extends TableCell<Module, Integer> {
             try {
                 int newValue = Integer.parseInt(newValueStr);
                 if (newValue <= 0 || newValue > 100) {
-                    AlertUtils.showAlert(Alert.AlertType.WARNING, "⚠️ Validation", "L'ordre doit être entre 1 et 100");
+                    AlertUtils.showWarning("⚠️ Validation",
+                            "L'ordre doit être compris entre 1 et 100.\n\n" +
+                                    "Valeur saisie: " + newValue);
                     cancelEdit();
                     return;
                 }
@@ -108,30 +108,37 @@ public class ModuleOrdreCell extends TableCell<Module, Integer> {
                         .anyMatch(m -> m.getOrdre() == newValue && m.getId() != module.getId());
 
                 if (ordreExiste) {
-                    AlertUtils.showAlert(Alert.AlertType.WARNING, "⚠️ Ordre déjà utilisé",
-                            "Un autre module a déjà l'ordre " + newValue + ".\nVeuillez choisir un autre ordre.");
+                    AlertUtils.showWarning("⚠️ Ordre déjà utilisé",
+                            "Un autre module a déjà l'ordre " + newValue + ".\n\n" +
+                                    "Veuillez choisir un autre ordre.");
                     cancelEdit();
                     return;
                 }
 
-                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-                confirm.setTitle("✏️ Confirmation");
-                confirm.setHeaderText("Modifier l'ordre");
-                confirm.setContentText("De: " + oldValue + "\nVers: " + newValue);
+                boolean confirmed = AlertUtils.showConfirmation(
+                        "✏️ Confirmation",
+                        "Voulez-vous modifier l'ordre de ce module ?\n\n" +
+                                "De: " + oldValue + "\n" +
+                                "Vers: " + newValue,
+                        "Oui, modifier",
+                        "Non, annuler"
+                );
 
-                Optional<ButtonType> result = confirm.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
+                if (confirmed) {
                     module.setOrdre(newValue);
                     try {
                         moduleService.modifier(module);
                         commitEdit(newValue);
                         getTableView().refresh();
+                        AlertUtils.showSuccess("✅ Succès", "L'ordre a été modifié avec succès.");
                     } catch (Exception e) {
-                        AlertUtils.showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur base de données: " + e.getMessage());
+                        AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
                     }
                 }
             } catch (NumberFormatException e) {
-                AlertUtils.showAlert(Alert.AlertType.WARNING, "⚠️ Validation", "L'ordre doit être un nombre entier");
+                AlertUtils.showWarning("⚠️ Validation",
+                        "L'ordre doit être un nombre entier.\n\n" +
+                                "Valeur saisie: \"" + newValueStr + "\" n'est pas valide.");
             }
             cancelEdit();
         } finally {

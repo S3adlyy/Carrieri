@@ -1,13 +1,11 @@
 package main;
 
 import entities.Module;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
 import services.ModuleService;
+import utils.AlertUtils;
 
-import java.util.Optional;
 import java.util.Objects;
 
 public class ModuleTitleCell extends TableCell<Module, String> {
@@ -82,18 +80,23 @@ public class ModuleTitleCell extends TableCell<Module, String> {
             }
 
             if (newValue.length() < 3 || newValue.length() > 200) {
-                AlertUtils.showAlert(Alert.AlertType.WARNING, "⚠️ Validation", "Le titre doit contenir entre 3 et 200 caractères");
+                AlertUtils.showWarning("⚠️ Validation",
+                        "Le titre doit contenir entre 3 et 200 caractères.\n\n" +
+                                "Votre texte actuel: " + newValue.length() + " caractères.");
                 cancelEdit();
                 return;
             }
 
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("✏️ Confirmation");
-            confirm.setHeaderText("Modifier le titre du module");
-            confirm.setContentText("De: \"" + oldValue + "\"\nVers: \"" + newValue + "\"");
+            boolean confirmed = AlertUtils.showConfirmation(
+                    "✏️ Confirmation",
+                    "Voulez-vous modifier le titre de ce module ?\n\n" +
+                            "De: \"" + oldValue + "\"\n" +
+                            "Vers: \"" + newValue + "\"",
+                    "Oui, modifier",
+                    "Non, annuler"
+            );
 
-            Optional<ButtonType> result = confirm.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            if (confirmed) {
                 Module module = getTableRow() != null ? getTableRow().getItem() : null;
                 if (module == null) {
                     cancelEdit();
@@ -104,8 +107,9 @@ public class ModuleTitleCell extends TableCell<Module, String> {
                     moduleService.modifier(module);
                     commitEdit(newValue);
                     getTableView().refresh();
+                    AlertUtils.showSuccess("✅ Succès", "Le titre a été modifié avec succès.");
                 } catch (Exception e) {
-                    AlertUtils.showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur base de données: " + e.getMessage());
+                    AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
                 }
             }
             cancelEdit();

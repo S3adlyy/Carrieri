@@ -4,11 +4,10 @@ import entities.Lecon;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import services.LeconService;
+import utils.AlertUtils;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.sql.SQLException;
-import java.util.Optional;
 
 public class LeconVideoCell extends TableCell<Lecon, byte[]> {
     private final LeconService leconService;
@@ -48,15 +47,10 @@ public class LeconVideoCell extends TableCell<Lecon, byte[]> {
     }
 
     private String formatTaille(long taille) {
-        if (taille < 1024) {
-            return taille + " B";
-        } else if (taille < 1024 * 1024) {
-            return (taille / 1024) + " KB";
-        } else if (taille < 1024 * 1024 * 1024) {
-            return String.format("%.1f MB", taille / (1024.0 * 1024.0));
-        } else {
-            return String.format("%.2f GB", taille / (1024.0 * 1024.0 * 1024.0));
-        }
+        if (taille < 1024) return taille + " B";
+        if (taille < 1024 * 1024) return (taille / 1024) + " KB";
+        if (taille < 1024 * 1024 * 1024) return String.format("%.1f MB", taille / (1024.0 * 1024.0));
+        return String.format("%.2f GB", taille / (1024.0 * 1024.0 * 1024.0));
     }
 
     private void chooseVideo() {
@@ -74,15 +68,17 @@ public class LeconVideoCell extends TableCell<Lecon, byte[]> {
 
                 // Vérifier la taille
                 if (newVideoBytes.length > 64 * 1024 * 1024) { // 64 MB max
-                    AlertUtils.showAlert(Alert.AlertType.WARNING, "⚠️ Attention",
-                        "La vidéo ne peut pas dépasser 64 MB (limite MySQL).\nTaille: " + formatTaille(newVideoBytes.length));
+                    AlertUtils.showWarning("⚠️ Attention - Fichier trop volumineux",
+                            "La vidéo ne peut pas dépasser 64 MB (limite MySQL).\n\n" +
+                                    "Taille: " + formatTaille(newVideoBytes.length) + "\n" +
+                                    "Veuillez compresser la vidéo ou choisir un autre fichier.");
                     cancelEdit();
                     return;
                 }
 
                 confirmEdit(newVideoBytes, file.getName());
             } catch (Exception ex) {
-                AlertUtils.showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Impossible de lire la vidéo: " + ex.getMessage());
+                AlertUtils.showError("❌ Erreur", "Impossible de lire la vidéo:\n\n" + ex.getMessage());
                 cancelEdit();
             }
         } else {
@@ -94,13 +90,17 @@ public class LeconVideoCell extends TableCell<Lecon, byte[]> {
         if (confirming) return;
         confirming = true;
         try {
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("✏️ Confirmation");
-            confirm.setHeaderText("Modifier la vidéo");
-            confirm.setContentText("Voulez-vous remplacer la vidéo de cette leçon ?\n\nNouvelle vidéo: " + fileName + " (" + formatTaille(newVideoBytes.length) + ")");
+            boolean confirmed = AlertUtils.showConfirmation(
+                    "✏️ Confirmation",
+                    "Voulez-vous remplacer la vidéo de cette leçon ?\n\n" +
+                            "Nouvelle vidéo: \"" + fileName + "\"\n" +
+                            "Taille: " + formatTaille(newVideoBytes.length) + "\n\n" +
+                            "⚠️ Cette action est irréversible.",
+                    "Oui, remplacer",
+                    "Non, annuler"
+            );
 
-            Optional<ButtonType> result = confirm.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            if (confirmed) {
                 Lecon lecon = getTableRow() != null ? getTableRow().getItem() : null;
                 if (lecon == null) {
                     cancelEdit();
@@ -110,13 +110,13 @@ public class LeconVideoCell extends TableCell<Lecon, byte[]> {
                 leconService.modifier(lecon);
                 commitEdit(newVideoBytes);
                 getTableView().refresh();
-                AlertUtils.showAlert(Alert.AlertType.INFORMATION, "✅ Succès", "Vidéo modifiée avec succès !");
+                AlertUtils.showSuccess("✅ Succès", "La vidéo a été modifiée avec succès.");
             }
             cancelEdit();
+        } catch (Exception e) {
+            AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n\n" + e.getMessage());
         } finally {
             confirming = false;
         }
     }
 }
-
-

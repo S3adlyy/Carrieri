@@ -12,7 +12,7 @@ public class CoursService implements ICoursService {
     public CoursService() {
         this.connection = MyDatabase.getInstance().getConnection();
     }
-    // ✅ AJOUTER CETTE MÉTHODE
+
     public Cours getById(int id) throws SQLException {
         String sql = "SELECT * FROM cours WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {

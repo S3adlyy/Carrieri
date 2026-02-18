@@ -3,9 +3,9 @@ package main;
 import entities.Cours;
 import javafx.scene.control.*;
 import services.CoursService;
+import utils.AlertUtils;
 
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.Objects;
 
 public class CoursNiveauCell extends TableCell<Cours, String> {
@@ -76,13 +76,16 @@ public class CoursNiveauCell extends TableCell<Cours, String> {
                 return;
             }
 
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("✏️ Confirmation");
-            confirm.setHeaderText("Modifier le niveau");
-            confirm.setContentText("De: \"" + oldValue + "\"\nVers: \"" + newValue + "\"");
+            boolean confirmed = AlertUtils.showConfirmation(
+                    "✏️ Confirmation",
+                    "Voulez-vous modifier le niveau du cours ?\n\n" +
+                            "De: \"" + oldValue + "\"\n" +
+                            "Vers: \"" + newValue + "\"",
+                    "Oui, modifier",
+                    "Non, annuler"
+            );
 
-            Optional<ButtonType> result = confirm.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            if (confirmed) {
                 Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
                 if (cours == null) {
                     cancelEdit();
@@ -93,8 +96,9 @@ public class CoursNiveauCell extends TableCell<Cours, String> {
                     coursService.update(cours);
                     commitEdit(newValue);
                     getTableView().refresh();
+                    AlertUtils.showSuccess("✅ Succès", "Le niveau a été modifié avec succès.");
                 } catch (SQLException ex) {
-                    AlertUtils.showAlert(Alert.AlertType.ERROR, "❌ Erreur", "Erreur base de données: " + ex.getMessage());
+                    AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + ex.getMessage());
                 }
             }
             cancelEdit();
@@ -103,4 +107,3 @@ public class CoursNiveauCell extends TableCell<Cours, String> {
         }
     }
 }
-

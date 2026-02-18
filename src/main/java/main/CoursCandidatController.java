@@ -3,14 +3,10 @@ package main;
 import entities.Certification;
 import entities.Cours;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
 import services.CertificationService;
 import services.CoursService;
 import services.ProgressionCoursService;
@@ -20,6 +16,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.Priority;
+import utils.AlertUtils;
+
 import java.io.ByteArrayInputStream;
 import java.sql.SQLException;
 import java.util.List;
@@ -38,27 +36,24 @@ public class CoursCandidatController {
 
     private CoursService coursServices;
     private List<Cours> tousLesCours;
-    private int candidatId = 1; // À remplacer par l'ID du candidat connecté
+    private int candidatId = 1;
 
     @FXML
     public void initialize() {
         coursServices = new CoursService();
 
-        // Initialiser les ComboBox avec styles
         comboDomaine.getItems().addAll("Tous", "Développement", "Design", "Data Science", "Marketing");
         comboNiveau.getItems().addAll("Tous", "Débutant", "Intermédiaire", "Avancé", "Expert", "Master");
 
         comboDomaine.setValue("Tous");
         comboNiveau.setValue("Tous");
 
-        // Écouteurs pour les filtres
         comboDomaine.valueProperty().addListener((obs, oldVal, newVal) -> filtrerCours());
         comboNiveau.valueProperty().addListener((obs, oldVal, newVal) -> filtrerCours());
 
         loadCoursFromDatabase();
         chargerStatistiques();
 
-        // Recherche dynamique
         txtRecherche.textProperty().addListener((obs, oldVal, newVal) -> filtrerCours());
     }
 
@@ -72,6 +67,7 @@ public class CoursCandidatController {
             e.printStackTrace();
             lblTotalCours.setText("0 cours disponibles");
             lblTotalCoursStat.setText("0");
+            AlertUtils.showError("❌ Erreur", "Impossible de charger les cours depuis la base de données.");
         }
     }
 
@@ -94,6 +90,7 @@ public class CoursCandidatController {
             lblCompletes.setText(String.valueOf(completes));
         } catch (Exception e) {
             e.printStackTrace();
+            AlertUtils.showError("❌ Erreur", "Impossible de charger les statistiques de progression.");
         }
     }
 
@@ -121,7 +118,6 @@ public class CoursCandidatController {
         if (cours.getImageCouverture() != null && cours.getImageCouverture().length > 0) {
             imageView = new ImageView(new Image(new ByteArrayInputStream(cours.getImageCouverture())));
         } else {
-            // Image par défaut avec icône
             Label defaultIcon = new Label("📚");
             defaultIcon.setStyle("-fx-font-size: 48px; -fx-text-fill: white; -fx-opacity: 0.5;");
             imageContainer.getChildren().add(defaultIcon);
@@ -148,7 +144,6 @@ public class CoursCandidatController {
         content.setPadding(new Insets(20));
         content.setStyle("-fx-background-color: white; -fx-background-radius: 0 0 20 20;");
 
-        // Badges
         HBox badges = new HBox(10);
         badges.setAlignment(Pos.CENTER_LEFT);
 
@@ -161,18 +156,15 @@ public class CoursCandidatController {
 
         badges.getChildren().addAll(lblNiveau, lblCategorie);
 
-        // Titre
         Label lblTitre = new Label(cours.getTitre());
         lblTitre.setStyle("-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #231942;");
         lblTitre.setWrapText(true);
 
-        // Description
         Label lblDesc = new Label(cours.getDescription());
         lblDesc.setStyle("-fx-text-fill: #6b7280; -fx-font-size: 13px;");
         lblDesc.setWrapText(true);
         lblDesc.setMaxHeight(60);
 
-        // Métadonnées
         HBox metaBox = new HBox(20);
         metaBox.setAlignment(Pos.CENTER_LEFT);
 
@@ -197,7 +189,6 @@ public class CoursCandidatController {
             metaBox.getChildren().add(obligBox);
         }
 
-        // Boutons
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER);
 
@@ -232,7 +223,6 @@ public class CoursCandidatController {
         content.getChildren().addAll(badges, lblTitre, lblDesc, metaBox, buttonBox);
         card.getChildren().add(content);
 
-        // Effet hover
         card.setOnMouseEntered(e -> {
             card.setStyle("-fx-effect: dropshadow(gaussian, rgba(94,84,142,0.3), 20, 0, 0, 5);");
             card.setTranslateY(-3);
@@ -258,7 +248,6 @@ public class CoursCandidatController {
         }
     }
 
-    // Au lieu d'ouvrir un nouveau stage
     private void ouvrirCours(Cours cours) {
         CandidatShellController.getInstance().openCours(cours);
     }
@@ -290,56 +279,87 @@ public class CoursCandidatController {
         lblTotalCours.setText(filtered.size() + " cours disponibles");
     }
 
+    // ============================================
+    // GÉNÉRER CERTIFICAT - MODIFIÉ
+    // ============================================
     private void genererCertifTest(Cours cours) {
         if (cours == null) {
-            showAlert("⚠️ Attention", "Cours invalide !");
+            AlertUtils.showWarning("⚠️ Attention", "Cours invalide !");
             return;
         }
 
         ProgressionCoursService progressionService = new ProgressionCoursService();
 
         try {
-            boolean estComplete = progressionService.estCoursComplete(candidatId, cours.getId());
+            double progression = progressionService.getProgressionCours(candidatId, cours.getId());
+            boolean estComplete = progression >= 99.9;
 
             if (!estComplete) {
-                showAlert("Cours non terminé",
-                        "Vous devez compléter ce cours à 100% pour générer le certificat.\n" +
-                                "Progression actuelle: " + progressionService.getProgressionCours(candidatId, cours.getId()) + "%");
+                AlertUtils.showWarning("⚠️ Cours non terminé",
+                        "Vous devez compléter ce cours à 100% pour générer le certificat.\n\n" +
+                                "📊 Progression actuelle: " + String.format("%.0f%%", progression) + "\n\n" +
+                                "Continuez votre apprentissage et revenez quand vous aurez terminé toutes les leçons et réussi tous les quiz !");
                 return;
             }
 
-            String nomCandidat = "Bilal Eter"; // À remplacer par le vrai nom
-            String cheminFichier = "C:/Users/MSI/Desktop/certificats/certificat_" +
-                    cours.getTitre().replace(" ", "_") + ".pdf";
+            // ✅ Vérifier si un certificat existe déjà
+            CertificationService certifService = new CertificationService();
+            Certification existing = certifService.readByCoursAndCandidat(cours.getId(), candidatId);
 
-            CertificationService pdfService = new CertificationService();
-            pdfService.genererCertification(nomCandidat, cours.getTitre(), cheminFichier);
+            if (existing != null) {
+                String date = existing.getDateObtention()
+                        .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm"));
 
-            showAlert("✅ Succès", "Certificat généré : " + cheminFichier);
+                AlertUtils.showInfo("📄 Certificat déjà généré",
+                        "Vous avez déjà généré un certificat pour ce cours le " + date + ".\n\n" +
+                                "Vous pouvez le retrouver dans votre dossier de certificats.");
+                return;
+            }
 
-            Certification certif = new Certification(
-                    candidatId,
-                    cours.getId(),
-                    java.time.LocalDateTime.now()
+            // ✅ Confirmation avant génération
+            boolean confirmed = AlertUtils.showConfirmation(
+                    "🎓 Génération du certificat",
+                    "Félicitations ! Vous avez complété le cours \"" + cours.getTitre() + "\" à 100%.\n\n" +
+                            "Un certificat officiel va être généré à votre nom.\n\n" +
+                            "Voulez-vous continuer ?",
+                    "Oui, générer mon certificat",
+                    "Non, plus tard"
             );
-            pdfService.ajouter(certif);
+
+            if (confirmed) {
+                String nomCandidat = "Bilal Eter";
+                String dateStr = java.time.LocalDate.now()
+                        .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
+                String cheminFichier = "C:/Users/MSI/Desktop/certificats/certificat_" +
+                        cours.getTitre().replace(" ", "_") + "_" + dateStr + ".pdf";
+
+                CertificationService pdfService = new CertificationService();
+                pdfService.genererCertification(nomCandidat, cours.getTitre(), cheminFichier);
+
+                Certification certif = new Certification(
+                        candidatId,
+                        cours.getId(),
+                        java.time.LocalDateTime.now()
+                );
+                pdfService.ajouter(certif);
+
+                AlertUtils.showSuccessWithInstructions(
+                        "🎉 FÉLICITATIONS !",
+                        "Votre certificat pour le cours \"" + cours.getTitre() + "\" a été généré avec succès.",
+                        "📁 Emplacement : " + cheminFichier + "\n\n" +
+                                "Vous pouvez imprimer ce certificat ou le partager sur LinkedIn.\n\n" +
+                                "Continuez sur votre lancée ! 🚀"
+                );
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Erreur", "Erreur lors de la génération du certificat: " + e.getMessage());
+            AlertUtils.showError("❌ Erreur", "Erreur lors de la génération du certificat:\n\n" + e.getMessage());
         }
     }
 
     @FXML
     private void rechercherCours() {
         filtrerCours();
-    }
-
-    private void showAlert(String title, String msg) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
     }
 }

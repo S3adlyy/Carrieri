@@ -6,36 +6,39 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.stage.Stage;
 import services.*;
+import utils.AlertUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
 public class CoursPlayerController {
 
-    @FXML private Label lblCoursTitre;
-    @FXML private VBox boxModules;
-    @FXML private Label lblLeconTitre;
-    @FXML private WebView webViewContenu;
-    @FXML private ProgressBar progressBar;
-    @FXML private Label lblProgression;
-    @FXML private Button btnTerminer;
-    @FXML private Label lblStatus;
-    @FXML private Label lblProgressionValue;  // Pour l'affichage en bas
+    @FXML
+    private Label lblCoursTitre;
+    @FXML
+    private VBox boxModules;
+    @FXML
+    private Label lblLeconTitre;
+    @FXML
+    private WebView webViewContenu;
+    @FXML
+    private ProgressBar progressBar;
+    @FXML
+    private Label lblProgression;
+    @FXML
+    private Button btnTerminer;
+    @FXML
+    private Label lblStatus;
+    @FXML
+    private Label lblProgressionValue;  // Pour l'affichage en bas
 
     // SERVICES
     private ModuleService moduleService = new ModuleService();
@@ -288,22 +291,21 @@ public class CoursPlayerController {
     private void genererCertificat() {
         System.out.println("\n🟡=== GÉNÉRATION CERTIFICAT - VERSION INVIOLABLE ===🟡");
 
-        // ✅ 1. Vérifier la progression (100%)
         double progression = progressionLeconService.getProgressionCours(candidatId, coursActuel.getId());
         if (progression < 99.9) {
-            showAlert("⛔ PROGRESSION INCOMPLÈTE",
-                    "Progression: " + String.format("%.0f%%", progression) + "\nTerminez toutes les leçons.");
+            AlertUtils.showWarning("⛔ PROGRESSION INCOMPLÈTE",
+                    "Votre progression actuelle est de " + String.format("%.0f%%", progression) + ".\n\n" +
+                            "Vous devez terminer toutes les leçons (100%) pour obtenir votre certificat.\n\n" +
+                            "Continuez votre apprentissage !");
             return;
         }
 
-        // ✅ 2. Vérifier CHAQUE module - MÊME SANS QUESTIONS !
         List<Module> modules = moduleService.getModulesByCours(coursActuel.getId());
         List<String> modulesNonReussis = new ArrayList<>();
 
         System.out.println("\n📝 VÉRIFICATION MODULES:");
 
         for (Module m : modules) {
-            // ✅ Vérification INDÉPENDANTE - toujours vérifier isModuleReussi()
             boolean reussi = quizModuleService.isModuleReussi(candidatId, m.getId());
             System.out.println("   Module " + m.getId() + " - " + m.getTitre() +
                     " | Réussi: " + (reussi ? "✅" : "❌"));
@@ -313,56 +315,74 @@ public class CoursPlayerController {
             }
         }
 
-        // ✅ 3. BLOQUER si des modules ne sont pas réussis
         if (!modulesNonReussis.isEmpty()) {
             String liste = String.join("\n• ", modulesNonReussis);
-            showAlert("⛔ MODULES NON RÉUSSIS",
-                    "Vous devez réussir CES modules :\n\n• " + liste);
+            AlertUtils.showWarning("⛔ MODULES NON RÉUSSIS",
+                    "Vous devez réussir les quiz des modules suivants :\n\n• " + liste + "\n\n" +
+                            "Revenez après avoir obtenu au moins 70% à chaque quiz.");
             return;
         }
         System.out.println("✅ Tous les modules sont réussis !");
 
-        // ✅ 4. Vérifier le test final - TOUJOURS vérifier !
         boolean testReussi = testCoursService.isCoursReussi(candidatId, coursActuel.getId());
         System.out.println("   Test final: " + (testReussi ? "✅" : "❌"));
 
         if (!testReussi) {
-            showAlert("⛔ TEST FINAL NON RÉUSSI",
-                    "Vous devez réussir le test final (70%).");
+            AlertUtils.showWarning("⛔ TEST FINAL NON RÉUSSI",
+                    "Vous devez réussir le test final du cours (note minimum : 70%).\n\n" +
+                            "Le test final est disponible dans la section ci-dessus.");
             return;
         }
 
-        // ✅ 5. Vérifier le certificat existant
         try {
             Certification existing = certificationService.readByCoursAndCandidat(coursActuel.getId(), candidatId);
             if (existing != null) {
                 String date = existing.getDateObtention()
-                        .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                showAlert("ℹ️ CERTIFICAT EXISTANT", "Certificat déjà généré le " + date);
+                        .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm"));
+                AlertUtils.showInfo("📄 Certificat déjà généré",
+                        "Vous avez déjà généré un certificat pour ce cours le " + date + ".\n\n" +
+                                "Félicitations pour votre réussite ! 🎉");
                 return;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        // ✅ 6. TOUT EST BON - Générer le certificat
-        try {
-            String nomCandidat = "Bilal Eter";
-            String date = java.time.LocalDate.now()
-                    .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
-            String chemin = "C:/Users/MSI/Desktop/certificat_" +
-                    coursActuel.getTitre().replace(" ", "_") + "_" + date + ".pdf";
+        // ✅ Confirmation avant génération
+        boolean confirmed = AlertUtils.showConfirmation(
+                "🎓 Félicitations !",
+                "Vous avez rempli toutes les conditions pour obtenir le certificat du cours \"" + coursActuel.getTitre() + "\" :\n\n" +
+                        "✓ Toutes les leçons terminées (100%)\n" +
+                        "✓ Tous les quiz de modules réussis\n" +
+                        "✓ Test final réussi\n\n" +
+                        "Voulez-vous générer votre certificat maintenant ?",
+                "Oui, générer mon certificat",
+                "Non, plus tard"
+        );
 
-            certificationService.genererEtEnregistrer(
-                    nomCandidat, coursActuel.getTitre(), chemin, candidatId, coursActuel.getId());
+        if (confirmed) {
+            try {
+                String nomCandidat = "Bilal Eter";
+                String date = java.time.LocalDate.now()
+                        .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
+                String chemin = "C:/Users/MSI/Desktop/certificats/certificat_" +
+                        coursActuel.getTitre().replace(" ", "_") + "_" + date + ".pdf";
 
-            showAlert("🎓 FÉLICITATIONS !",
-                    "Certificat généré avec succès !\n" + chemin +
-                            "\n\nFélicitations pour votre réussite ! 🎉");
+                certificationService.genererEtEnregistrer(
+                        nomCandidat, coursActuel.getTitre(), chemin, candidatId, coursActuel.getId());
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("❌ ERREUR", e.getMessage());
+                AlertUtils.showSuccessWithInstructions(
+                        "🎉 FÉLICITATIONS !!!",
+                        "Votre certificat pour le cours \"" + coursActuel.getTitre() + "\" a été généré avec succès.",
+                        "📁 Emplacement : " + chemin + "\n\n" +
+                                "Vous pouvez imprimer ce certificat ou le partager sur LinkedIn.\n\n" +
+                                "Continuez votre parcours d'apprentissage ! 🚀"
+                );
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                AlertUtils.showError("❌ Erreur", "Erreur lors de la génération du certificat:\n\n" + e.getMessage());
+            }
         }
     }
 
@@ -698,19 +718,24 @@ public class CoursPlayerController {
     // ============================================
 
     private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        AlertUtils.showInfo(title, message);
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        switch (type) {
+            case INFORMATION:
+                AlertUtils.showInfo(title, message);
+                break;
+            case WARNING:
+                AlertUtils.showWarning(title, message);
+                break;
+            case ERROR:
+                AlertUtils.showError(title, message);
+                break;
+            case CONFIRMATION:
+                // Ne pas utiliser cette méthode pour les confirmations
+                break;
+        }
     }
 }
 

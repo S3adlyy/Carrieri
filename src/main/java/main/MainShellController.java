@@ -18,14 +18,12 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import services.CoursService;
 import services.ModuleService;
+import utils.AlertUtils;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.ResourceBundle;
-
-import static main.AlertUtils.showAlert;
 
 public class MainShellController implements Initializable {
 
@@ -44,6 +42,7 @@ public class MainShellController implements Initializable {
     @FXML private Label userName;
     @FXML private Label userRole;
     @FXML private Circle userAvatar;
+
     private Button activeButton = null;
     private static MainShellController instance;
 
@@ -72,15 +71,20 @@ public class MainShellController implements Initializable {
         return instance;
     }
 
+    // ============================================
+    // BASCULE VERS CANDIDAT - MODIFIÉ
+    // ============================================
     @FXML
     public void switchToCandidat() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Changement de mode");
-        confirm.setHeaderText("Passer en mode Candidat");
-        confirm.setContentText("Voulez-vous basculer vers l'espace Candidat ?");
+        boolean confirmed = AlertUtils.showConfirmation(
+                "🔄 Changement de mode",
+                "Voulez-vous basculer vers l'espace Candidat ?\n\n" +
+                        "Vous pourrez voir les cours comme un candidat et suivre votre progression.",
+                "Oui, basculer",
+                "Non, rester"
+        );
 
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (confirmed) {
             try {
                 Stage stage = (Stage) sidebar.getScene().getWindow();
 
@@ -117,7 +121,6 @@ public class MainShellController implements Initializable {
 
                         // ✅ Restaurer l'état maximized APRÈS avoir défini la scène
                         if (etaitMaximized) {
-                            // Petit délai pour que la scène soit bien prise en compte
                             Platform.runLater(() -> {
                                 stage.setMaximized(true);
                                 System.out.println("✅ Mode maximized restauré");
@@ -134,9 +137,12 @@ public class MainShellController implements Initializable {
                         fadeIn.setToValue(1);
                         fadeIn.play();
 
+                        AlertUtils.showSuccess("✅ Bascule réussie", "Vous êtes maintenant dans l'espace Candidat.");
+
                     } catch (IOException ex) {
                         ex.printStackTrace();
-                        showAlert(Alert.AlertType.ERROR,"Erreur de chargement", "Impossible de charger l'espace candidat");
+                        AlertUtils.showError("❌ Erreur de chargement",
+                                "Impossible de charger l'espace candidat.\n\n" + ex.getMessage());
                     }
                 });
 
@@ -144,10 +150,11 @@ public class MainShellController implements Initializable {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR,"Erreur", "Impossible de basculer vers le mode Candidat");
+                AlertUtils.showError("❌ Erreur", "Impossible de basculer vers le mode Candidat");
             }
         }
     }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         userName.setText("Bilal El Eter");
@@ -155,9 +162,11 @@ public class MainShellController implements Initializable {
 
         showCoursView();
         setActiveButton(btnCours);
-// Installer le tooltip
+
+        // Installer le tooltip
         Tooltip tooltip = new Tooltip("Cliquer pour basculer en mode Candidat");
         Tooltip.install(userAvatar, tooltip);
+
         setupAnimations();
     }
 
@@ -195,6 +204,9 @@ public class MainShellController implements Initializable {
         setActiveButton(btnCours);
     }
 
+    // ============================================
+    // AFFICHER MODULES - MODIFIÉ
+    // ============================================
     @FXML
     public void showModulesView() {
         if (hasCoursActif) {
@@ -204,24 +216,26 @@ public class MainShellController implements Initializable {
                 if (cours == null) {
                     // Le cours n'existe plus, réinitialiser
                     resetCurrentCours();
+                    AlertUtils.showWarning("⚠️ Cours introuvable",
+                            "Le cours sélectionné n'existe plus ou a été supprimé.");
                     showCoursView();
                     return;
                 }
                 showModulesViewWithCours(currentCoursId, currentCoursTitre);
             } catch (SQLException e) {
                 resetCurrentCours();
+                AlertUtils.showError("❌ Erreur", "Impossible de vérifier le cours :\n" + e.getMessage());
                 showCoursView();
             }
         } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Aucun cours sélectionné");
-            alert.setHeaderText(null);
-            alert.setContentText("Veuillez d'abord sélectionner un cours dans la liste.");
-            alert.showAndWait();
+            AlertUtils.showNoSelectionWarning("cours", "afficher ses modules");
             showCoursView();
         }
     }
 
+    // ============================================
+    // AFFICHER LEÇONS - MODIFIÉ
+    // ============================================
     @FXML
     public void showLeconsView() {
         if (hasModuleActif) {
@@ -230,23 +244,17 @@ public class MainShellController implements Initializable {
             if (module == null) {
                 // Le module n'existe plus, réinitialiser
                 resetCurrentModule();
+                AlertUtils.showWarning("⚠️ Module introuvable",
+                        "Le module sélectionné n'existe plus ou a été supprimé.");
                 showModulesView();
                 return;
             }
             showLeconsViewWithModule(currentModuleId, currentModuleTitre);
         } else if (hasCoursActif) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Aucun module sélectionné");
-            alert.setHeaderText(null);
-            alert.setContentText("Veuillez d'abord sélectionner un module dans la liste.");
-            alert.showAndWait();
+            AlertUtils.showNoSelectionWarning("module", "afficher ses leçons");
             showModulesView();
         } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Aucun cours sélectionné");
-            alert.setHeaderText(null);
-            alert.setContentText("Veuillez d'abord sélectionner un cours.");
-            alert.showAndWait();
+            AlertUtils.showNoSelectionWarning("cours", "afficher ses modules");
             showCoursView();
         }
     }
@@ -258,6 +266,9 @@ public class MainShellController implements Initializable {
         // Quand on sélectionne un nouveau cours, on réinitialise le module actif
         this.hasModuleActif = false;
         System.out.println("✅ Cours actif: " + coursTitre + " (ID: " + coursId + ")");
+
+        // ✅ Notification optionnelle
+        // AlertUtils.showInfo("ℹ️ Cours sélectionné", "Cours actif : \"" + coursTitre + "\"");
     }
 
     public void setCurrentModule(int moduleId, String moduleTitre) {
@@ -265,6 +276,9 @@ public class MainShellController implements Initializable {
         this.currentModuleTitre = moduleTitre;
         this.hasModuleActif = true;
         System.out.println("✅ Module actif: " + moduleTitre + " (ID: " + moduleId + ")");
+
+        // ✅ Notification optionnelle
+        // AlertUtils.showInfo("ℹ️ Module sélectionné", "Module actif : \"" + moduleTitre + "\"");
     }
 
     public void resetCurrentCours() {
@@ -291,6 +305,7 @@ public class MainShellController implements Initializable {
             setActiveButton(btnModules);
         } catch (IOException e) {
             e.printStackTrace();
+            AlertUtils.showError("❌ Erreur", "Impossible de charger la vue des modules.");
         }
     }
 
@@ -304,6 +319,7 @@ public class MainShellController implements Initializable {
             setActiveButton(btnLecons);
         } catch (IOException e) {
             e.printStackTrace();
+            AlertUtils.showError("❌ Erreur", "Impossible de charger la vue des leçons.");
         }
     }
 
@@ -317,28 +333,35 @@ public class MainShellController implements Initializable {
             setActiveButton(btnLecons);
         } catch (IOException e) {
             e.printStackTrace();
+            AlertUtils.showError("❌ Erreur", "Impossible de charger la vue des leçons.");
         }
     }
 
+    // ============================================
+    // DÉCONNEXION - MODIFIÉ
+    // ============================================
     @FXML
     public void logout() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Déconnexion");
-        alert.setHeaderText(null);
-        alert.setContentText("Êtes-vous sûr de vouloir vous déconnecter ?");
+        boolean confirmed = AlertUtils.showConfirmation(
+                "🔒 Déconnexion",
+                "Êtes-vous sûr de vouloir vous déconnecter ?\n\n" +
+                        "Toutes les modifications non sauvegardées seront perdues.",
+                "Oui, me déconnecter",
+                "Non, rester connecté"
+        );
 
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                FadeTransition fadeOut = new FadeTransition(Duration.millis(500), sidebar.getScene().getRoot());
-                fadeOut.setFromValue(1);
-                fadeOut.setToValue(0);
-                fadeOut.setOnFinished(e -> {
-                    javafx.application.Platform.exit();
-                    System.exit(0);
-                });
-                fadeOut.play();
-            }
-        });
+        if (confirmed) {
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(500), sidebar.getScene().getRoot());
+            fadeOut.setFromValue(1);
+            fadeOut.setToValue(0);
+            fadeOut.setOnFinished(e -> {
+                javafx.application.Platform.exit();
+                System.exit(0);
+            });
+            fadeOut.play();
+
+            AlertUtils.showSuccess("👋 Au revoir !", "Déconnexion réussie. À bientôt !");
+        }
     }
 
     private void loadView(String fxmlFile) {
@@ -348,6 +371,7 @@ public class MainShellController implements Initializable {
             animateContentChange(view);
         } catch (IOException e) {
             e.printStackTrace();
+            AlertUtils.showError("❌ Erreur", "Impossible de charger la vue : " + fxmlFile);
         }
     }
 
