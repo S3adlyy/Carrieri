@@ -49,7 +49,7 @@ public class EntretienCreateController implements Initializable {
                 "Entretien Final",
                 "Entretien Téléphonique",
                 "Entretien Vidéo",
-                "Entretirn Code"
+                "Entretien Code"
         );
         comboType.setValue("Entretien Technique");
 
@@ -76,12 +76,13 @@ public class EntretienCreateController implements Initializable {
                 txtCandidatEmail.setText(candidateInfo.email);
                 txtCandidatName.setText(candidateInfo.name);
 
-                // Display rendu information
+                // Display rendu information with mission ID
                 lblCandidatInfo.setText(String.format(
-                        "📊 Rendu #%d | Score: %d%% | Résultat: %s",
+                        "📊 Rendu #%d | Score: %d%% | Résultat: %s | 🎯 Mission #%d",
                         rendu.getId(),
                         rendu.getScore(),
-                        rendu.getResultat()
+                        rendu.getResultat(),
+                        candidateInfo.missionId
                 ));
 
                 lblCandidatInfo.setStyle(rendu.isAccepted()
@@ -141,7 +142,7 @@ public class EntretienCreateController implements Initializable {
     }
 
     /**
-     * Schedule the interview
+     * Schedule the interview with Jitsi Meet link
      */
     @FXML
     private void scheduleInterview() {
@@ -169,29 +170,40 @@ public class EntretienCreateController implements Initializable {
             entretien.setDateEntretien(dateTime);
             entretien.setType(comboType.getValue());
             entretien.setStatus("SCHEDULED");
-            entretien.setPostulationId(renduMissionId); // This will be converted in createEntretien
+            entretien.setPostulationId(renduMissionId);
 
             // Get candidate info
             String candidatEmail = txtCandidatEmail.getText().trim();
             String candidatName = txtCandidatName.getText().trim();
+            int candidatId = Integer.parseInt(txtCandidatId.getText());
+
+            // Get mission ID from selected rendu or from candidateInfo
+            int missionId = 0;
+            if (selectedRendu != null) {
+                missionId = selectedRendu.getMissionId();
+            }
 
             // Disable button during processing
             btnSchedule.setDisable(true);
-            lblStatus.setText("⏳ Création de l'entretien en cours...");
+            lblStatus.setText("⏳ Création de l'entretien et génération du lien Jitsi...");
             lblStatus.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
 
-            // Create entretien and send email
-            entretienService.createEntretien(entretien, candidatEmail, candidatName);
+            // Create entretien and send email with Jitsi link
+            entretienService.createEntretienWithJitsi(entretien, candidatEmail, candidatName, candidatId, missionId);
 
             // Show success message
-            lblStatus.setText("✅ Entretien programmé avec succès! Email envoyé.");
+            lblStatus.setText("✅ Entretien programmé avec succès! Lien Jitsi envoyé par email.");
             lblStatus.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
 
-            showSuccessAlert("Succès",
+            showSuccessAlert("Succès avec Jitsi Meet",
                     String.format("L'entretien a été programmé pour le %s à %02d:%02d\n\n" +
-                                    "Un email de confirmation a été envoyé à: %s",
+                                    "✅ Un lien Jitsi Meet a été généré et envoyé à:\n%s\n\n" +
+                                    "Le candidat pourra rejoindre la visio directement depuis son navigateur.\n\n" +
+                                    "🎥 Lien: https://meet.jit.si/Carrieri-CANDIDAT%d-MISSION%d-ENTRETIEN%d",
                             selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                            hour, minute, candidatEmail));
+                            hour, minute,
+                            candidatEmail,
+                            candidatId, missionId, entretien.getId()));
 
             // Clear form after short delay
             new Thread(() -> {
