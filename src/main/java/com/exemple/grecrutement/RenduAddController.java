@@ -702,8 +702,9 @@ public class RenduAddController implements Initializable {
 
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Time's Up");
-            alert.setHeaderText("Submission Time Expired");
+            alert.setHeaderText("⏰ Submission Time Expired");
             alert.setContentText("You didn't submit any code before the timer ended.");
+            styleAlert(alert, "warning");
             alert.showAndWait();
         }
     }
@@ -786,6 +787,32 @@ public class RenduAddController implements Initializable {
     }
 
     // ============================
+    // HELPER METHOD FOR STYLING ALERTS
+    // ============================
+
+    private void styleAlert(Alert alert, String alertType) {
+        DialogPane dialogPane = alert.getDialogPane();
+
+        // Add Alert.css from resources folder
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+
+        // Add style class based on alert type
+        dialogPane.getStyleClass().add(alertType);
+
+        // Style the OK button
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.getStyleClass().add("ok-button");
+        }
+
+        // Style Cancel button if present
+        Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+        if (cancelButton != null) {
+            cancelButton.getStyleClass().add("cancel-button");
+        }
+    }
+
+    // ============================
     // EVALUATION METHOD
     // ============================
 
@@ -795,7 +822,7 @@ public class RenduAddController implements Initializable {
         if (!validateAllFields()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Validation Error");
-            alert.setHeaderText("Please fix the following errors:");
+            alert.setHeaderText("⚠️ Please fix the following errors:");
 
             StringBuilder errors = new StringBuilder();
             if (!validateCandidatId()) errors.append("• Invalid Candidate ID\n");
@@ -804,6 +831,7 @@ public class RenduAddController implements Initializable {
             if (!validateMissionType()) errors.append("• Mission type required\n");
 
             alert.setContentText(errors.toString());
+            styleAlert(alert, "warning");
             alert.showAndWait();
             return;
         }
@@ -819,7 +847,13 @@ public class RenduAddController implements Initializable {
             missionId = Integer.parseInt(txtMissionId.getText());
             candidatId = Integer.parseInt(txtCandidatId.getText());
         } catch (Exception e) {
-            alert("Error", "Invalid IDs. Please enter valid numbers for Mission ID and Candidate ID");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid Input");
+            alert.setHeaderText("❌ Invalid IDs");
+            alert.setContentText("Please enter valid numbers for Mission ID and Candidate ID");
+            styleAlert(alert, "error");
+            alert.showAndWait();
+
             if (!isTimerFinished) {
                 startTimer(remainingSeconds > 0 ? remainingSeconds : DEFAULT_TIMER_MINUTES * 60);
             }
@@ -867,9 +901,10 @@ public class RenduAddController implements Initializable {
                         lblResultat.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold; -fx-font-size: 14px;");
 
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Code Accepted");
+                        alert.setTitle("Success");
                         alert.setHeaderText("✅ Congratulations!");
                         alert.setContentText("Your code has been accepted with a score of " + r.getScore() + "%!");
+                        styleAlert(alert, "information");
                         alert.showAndWait();
 
                     } else {
@@ -880,6 +915,7 @@ public class RenduAddController implements Initializable {
                         alert.setTitle("Code Rejected");
                         alert.setHeaderText("❌ Code Rejected");
                         alert.setContentText("Your code scored " + r.getScore() + "%, which is below the minimum requirement.");
+                        styleAlert(alert, "warning");
                         alert.showAndWait();
                     }
 
@@ -909,8 +945,9 @@ public class RenduAddController implements Initializable {
 
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Evaluation Error");
-                    alert.setHeaderText("Failed to evaluate code");
+                    alert.setHeaderText("❌ Failed to evaluate code");
                     alert.setContentText(e.getMessage());
+                    styleAlert(alert, "error");
                     alert.showAndWait();
                 });
             }
@@ -936,8 +973,9 @@ public class RenduAddController implements Initializable {
     private void alert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);
-        alert.setHeaderText(null);
+        alert.setHeaderText("⚠️ " + title);
         alert.setContentText(message);
+        styleAlert(alert, "warning");
         alert.showAndWait();
     }
 }
