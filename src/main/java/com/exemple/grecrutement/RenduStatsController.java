@@ -67,8 +67,6 @@ public class RenduStatsController implements Initializable {
     @FXML private Label lblSlowestEval;
     @FXML private Label lblLastUpdated;
 
-
-
     private ObservableList<RenduMission> renduList;
     private RenduMissionService service = new RenduMissionService();
     private SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -87,7 +85,7 @@ public class RenduStatsController implements Initializable {
             updateDetailedMetrics();
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Error", "Failed to load data: " + e.getMessage());
+            showErrorAlert("Load Error", "Failed to load data: " + e.getMessage());
         }
     }
 
@@ -359,32 +357,85 @@ public class RenduStatsController implements Initializable {
         MissionShellController.getInstance().showRenduList();
     }
 
-
-
+    // ============ UPDATED EXPORT METHODS WITH STYLED ALERTS ============
 
     @FXML
     private void exportAsPNG() {
         try {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Feature Not Available");
-            alert.setHeaderText("PNG Export Currently Unavailable");
-            alert.setContentText("The PNG export feature requires additional dependencies.\n\n" +
-                    "Please use the CSV or HTML export options instead.");
-            alert.showAndWait();
+            // First show info that PNG export is not available
+            Alert infoAlert = new Alert(Alert.AlertType.INFORMATION);
+            infoAlert.setTitle("Feature Unavailable");
+            infoAlert.setHeaderText("📷 PNG Export Currently Unavailable");
+            infoAlert.setContentText("The PNG export feature requires additional dependencies.\n\n" +
+                    "Would you like to export as CSV instead?");
 
-            // Alternative: Offer to export as CSV instead
-            Alert choiceAlert = new Alert(Alert.AlertType.CONFIRMATION);
-            choiceAlert.setTitle("Export as CSV Instead?");
-            choiceAlert.setHeaderText("PNG export not available");
-            choiceAlert.setContentText("Would you like to export the data as CSV instead?");
+            // Apply styling
+            DialogPane infoPane = infoAlert.getDialogPane();
+            infoPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+            infoPane.getStyleClass().add("information");
 
-            if (choiceAlert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-                exportAsCSV(); // Call CSV export instead
+            Button okButton = (Button) infoPane.lookupButton(ButtonType.OK);
+            if (okButton != null) {
+                okButton.setStyle(
+                        "-fx-background-color: #3b82f6;" +
+                                "-fx-text-fill: white;" +
+                                "-fx-font-weight: bold;" +
+                                "-fx-background-radius: 8;" +
+                                "-fx-padding: 10 25;"
+                );
+            }
+
+            // Show and check response
+            Optional<ButtonType> result = infoAlert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // Ask for CSV export confirmation
+                Alert choiceAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                choiceAlert.setTitle("Export as CSV");
+                choiceAlert.setHeaderText("📊 Export as CSV?");
+                choiceAlert.setContentText("Would you like to export the statistics data as CSV instead?");
+
+                // Apply styling
+                DialogPane choicePane = choiceAlert.getDialogPane();
+                choicePane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+                choicePane.getStyleClass().add("confirmation");
+
+                // Style buttons
+                ButtonBar buttonBar = (ButtonBar) choicePane.lookup(".button-bar");
+                if (buttonBar != null) {
+                    buttonBar.getButtons().forEach(button -> {
+                        if (button instanceof Button) {
+                            Button btn = (Button) button;
+                            if (btn.getText().equals("OK") || btn.getText().equals("Yes")) {
+                                btn.setStyle(
+                                        "-fx-background-color: #10b981;" +
+                                                "-fx-text-fill: white;" +
+                                                "-fx-font-weight: bold;" +
+                                                "-fx-background-radius: 8;" +
+                                                "-fx-padding: 10 25;"
+                                );
+                            } else {
+                                btn.setStyle(
+                                        "-fx-background-color: transparent;" +
+                                                "-fx-text-fill: #6b7280;" +
+                                                "-fx-border-color: #e2e8f0;" +
+                                                "-fx-border-width: 1;" +
+                                                "-fx-border-radius: 8;" +
+                                                "-fx-background-radius: 8;" +
+                                                "-fx-padding: 10 25;"
+                                );
+                            }
+                        }
+                    });
+                }
+
+                if (choiceAlert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+                    exportAsCSV();
+                }
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Error", "Export feature unavailable: " + e.getMessage());
+            showErrorAlert("Export Error", "Export feature unavailable: " + e.getMessage());
         }
     }
 
@@ -430,12 +481,13 @@ public class RenduStatsController implements Initializable {
                         writer.write(data.getName() + "," + data.getPieValue() + "\n");
                     }
 
-                    showAlert("Success", "Statistics data exported successfully to:\n" + file.getAbsolutePath());
+                    showSuccessAlert("Export Successful",
+                            "✓ Statistics data exported successfully to:\n" + file.getAbsolutePath());
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Error", "Failed to export CSV: " + e.getMessage());
+            showErrorAlert("Export Failed", "Failed to export CSV: " + e.getMessage());
         }
     }
 
@@ -452,11 +504,12 @@ public class RenduStatsController implements Initializable {
             File file = fileChooser.showSaveDialog(lblTotalSubmissions.getScene().getWindow());
             if (file != null) {
                 generateHTMLReport(file);
-                showAlert("Success", "Full report exported successfully to:\n" + file.getAbsolutePath());
+                showSuccessAlert("Report Generated",
+                        "✓ Full report exported successfully to:\n" + file.getAbsolutePath());
             }
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Error", "Failed to export report: " + e.getMessage());
+            showErrorAlert("Export Failed", "Failed to export report: " + e.getMessage());
         }
     }
 
@@ -543,7 +596,7 @@ public class RenduStatsController implements Initializable {
             writer.write("            <tr><th>Status</th><th>Count</th><th>Percentage</th></tr>\n");
             int total = Integer.parseInt(lblTotalSubmissions.getText().replace("%", ""));
             for (PieChart.Data data : statusPieChart.getData()) {
-                double percentage = (data.getPieValue() / total) * 100;
+                double percentage = total > 0 ? (data.getPieValue() / total) * 100 : 0;
                 writer.write("            <tr><td>" + data.getName() + "</td><td>" + data.getPieValue() + "</td><td>" + String.format("%.1f", percentage) + "%</td></tr>\n");
             }
             writer.write("        </table>\n");
@@ -565,14 +618,123 @@ public class RenduStatsController implements Initializable {
     private void refreshData() {
         loadData();
         updateLastUpdated();
-        showAlert("Refreshed", "Statistics data has been refreshed.");
+        showSuccessAlert("Refreshed", "✓ Statistics data has been refreshed.");
     }
 
-    private void showAlert(String title, String message) {
+    // ============ HELPER METHODS FOR STYLED ALERTS ============
+
+    /**
+     * Show styled success alert
+     */
+    private void showSuccessAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
-        alert.setHeaderText(null);
+        alert.setHeaderText("✅ " + title);
         alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("information");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #10b981;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
         alert.showAndWait();
+    }
+
+    /**
+     * Show styled warning alert
+     */
+    private void showWarningAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText("⚠️ " + title);
+        alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("warning");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #f59e0b;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    /**
+     * Show styled error alert
+     */
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText("❌ " + title);
+        alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("error");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #ef4444;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    /**
+     * Show styled info alert
+     */
+    private void showInfoAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText("ℹ️ " + title);
+        alert.setContentText(message);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("information");
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #3b82f6;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-padding: 10 25;"
+            );
+        }
+
+        alert.showAndWait();
+    }
+
+    /**
+     * Legacy showAlert method - updated to use styled alerts
+     */
+    private void showAlert(String title, String message) {
+        showInfoAlert(title, message);
     }
 }
