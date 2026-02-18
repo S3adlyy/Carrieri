@@ -299,57 +299,38 @@ public class CoursController {
     }
 
     private void setupTableView() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colId.setVisible(false);
 
         colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
-        colTitre.setCellFactory(column -> new CoursTitleCell(coursService));
+        colTitre.setCellFactory(column -> CoursCell.getTitleCell());
 
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        colDescription.setCellFactory(column -> new CoursDescriptionCell(coursService));
+        colDescription.setCellFactory(column -> CoursCell.getDescriptionCell());
 
         colDuree.setCellValueFactory(new PropertyValueFactory<>("duree"));
-        colDuree.setCellFactory(column -> new CoursDureeCell(coursService));
+        colDuree.setCellFactory(column -> CoursCell.getDureeCell());
 
         colNiveau.setCellValueFactory(new PropertyValueFactory<>("niveau"));
-        colNiveau.setCellFactory(column -> new CoursNiveauCell(coursService));
+        colNiveau.setCellFactory(column -> CoursCell.getNiveauCell());
 
         colCompetences.setCellValueFactory(new PropertyValueFactory<>("competences_visees"));
-        colCompetences.setCellFactory(column -> new CoursCompetencesCell(coursService));
+        colCompetences.setCellFactory(column -> CoursCell.getCompetencesCell());
 
         colObligatoire.setCellValueFactory(new PropertyValueFactory<>("est_obligatoire"));
-        colObligatoire.setCellFactory(column -> new CoursObligatoireCell(coursService));
+        colObligatoire.setCellFactory(column -> CoursCell.getObligatoireCell());
 
         colImage.setCellValueFactory(new PropertyValueFactory<>("imageCouverture"));
-        colImage.setCellFactory(column -> new CoursImageCell(coursService));
+        colImage.setCellFactory(column -> CoursCell.getImageCell());
 
         // Colonne Actions avec bouton de suppression
         colActions.setCellFactory(param -> new TableCell<>() {
-            private final Button btnModules = new Button("📚");
-            private final Button btnLecons = new Button("📖");
+
             private final Button btnDelete = new Button("🗑️");
-            private final HBox actions = new HBox(6, btnModules, btnLecons, btnDelete);
+            private final HBox actions = new HBox(6, btnDelete);
 
             {
                 actions.setAlignment(javafx.geometry.Pos.CENTER);
+                btnDelete.getStyleClass().addAll("action-button", "btn-delete-gradient-light");
 
-                btnModules.setStyle("-fx-background-color: #5E548E; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5; -fx-cursor: hand;");
-                btnLecons.setStyle("-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5; -fx-cursor: hand;");
-                btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 8; -fx-background-radius: 5; -fx-cursor: hand;");
-
-                btnModules.setOnAction(event -> {
-                    Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
-                    if (cours != null) {
-                        MainShellController.getInstance().showModulesViewWithCours(cours.getId(), cours.getTitre());
-                    }
-                });
-
-                btnLecons.setOnAction(event -> {
-                    Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
-                    if (cours != null) {
-                        MainShellController.getInstance().showLeconsViewWithCours(cours.getId(), cours.getTitre());
-                    }
-                });
 
                 btnDelete.setOnAction(event -> {
                     Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
@@ -650,7 +631,7 @@ public class CoursController {
 
         List<entities.Module> modules = moduleService.getModulesByCours(coursSelectionne.getId());
         if (modules == null || modules.isEmpty()) {
-            AlertUtils.showWarning("⚠️ Impossible de générer le test",
+            AlertUtils.showWarning("⚠ Impossible de générer le test",
                     "Le cours \"" + coursSelectionne.getTitre() + "\" ne contient aucun module.\n\n" +
                             "Ajoutez d'abord des modules à ce cours pour pouvoir générer un test final.");
             return;
@@ -670,7 +651,7 @@ public class CoursController {
         boolean confirmed = AlertUtils.showConfirmation(
                 "🤖 Génération intelligente du test final",
                 "15 questions INTELLIGENTES seront créées à partir d'une banque de questions JavaFX.\n\n" +
-                        "⚠️ Les anciennes questions du test final seront définitivement supprimées.\n\n" +
+                        "⚠ Les anciennes questions du test final seront définitivement supprimées.\n\n" +
                         "Voulez-vous continuer ?",
                 "Oui, générer",
                 "Non, annuler"

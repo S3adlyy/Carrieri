@@ -234,13 +234,12 @@
                 <TableView fx:id="tableCours" VBox.vgrow="ALWAYS" editable="true"
                            style="-fx-background-color: transparent; -fx-border-color: rgba(94,84,142,0.15); -fx-border-radius: 16;">
                     <columns>
-                        <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
                         <TableColumn fx:id="colTitre" text="TITRE" prefWidth="180"/>
-                        <TableColumn fx:id="colNiveau" text="NIVEAU" prefWidth="100"/>
-                        <TableColumn fx:id="colDuree" text="DURÉE" prefWidth="80"/>
+                        <TableColumn fx:id="colNiveau" text="NIVEAU" prefWidth="200"/>
+                        <TableColumn fx:id="colDuree" text="DURÉE" prefWidth="100"/>
                         <TableColumn fx:id="colDescription" text="DESCRIPTION" prefWidth="250"/>
                         <TableColumn fx:id="colCompetences" text="COMPÉTENCES" prefWidth="200"/>
-                        <TableColumn fx:id="colObligatoire" text="STATUT" prefWidth="100"/>
+                        <TableColumn fx:id="colObligatoire" text="STATUT" prefWidth="150"/>
                         <TableColumn fx:id="colImage" text="IMAGE" prefWidth="80"/>
                         <TableColumn fx:id="colActions" text="ACTIONS" prefWidth="120"/>
                     </columns>

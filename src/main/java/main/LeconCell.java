@@ -4,6 +4,7 @@ import entities.Lecon;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import utils.AlertUtils;
 import services.LeconService;
@@ -16,214 +17,333 @@ public class LeconCell {
     private static final LeconService leconService = new LeconService();
 
     // ============================================
-    // CELLULE POUR LE TITRE
+    // CELLULE TITRE
     // ============================================
-    public static TableCell<Lecon, String> titleCell() {
-        return new TableCell<Lecon, String>() {
-            private TextField textField;
+    public static TableCell<Lecon, String> getTitleCell() {
+        return new LeconTitleCellImpl();
+    }
 
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
+    private static class LeconTitleCellImpl extends TableCell<Lecon, String> {
+        private TextField textField;
+        private boolean confirming;
+
+        @Override
+        public void startEdit() {
+            if (!isEditable() || !getTableView().isEditable() || !getTableColumn().isEditable()) return;
+            super.startEdit();
+            createTextField();
+            setText(null);
+            setGraphic(textField);
+            textField.selectAll();
+            textField.requestFocus();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setText(getItem());
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) textField.setText(item);
                     setText(null);
-                    setGraphic(null);
+                    setGraphic(textField);
                 } else {
-                    if (isEditing()) {
-                        if (textField != null) textField.setText(item);
-                        setText(null);
-                        setGraphic(textField);
-                    } else {
-                        setText(item);
-                        setGraphic(null);
-                    }
+                    setText(item);
+                    setGraphic(null);
                 }
             }
+        }
 
-            @Override
-            public void startEdit() {
-                super.startEdit();
-                textField = new TextField(getItem());
-                textField.setOnAction(e -> commitEdit(textField.getText()));
-                textField.focusedProperty().addListener((obs, old, newVal) -> {
-                    if (!newVal) commitEdit(textField.getText());
-                });
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-                textField.requestFocus();
-            }
+        private void createTextField() {
+            textField = new TextField(getItem());
+            textField.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                    confirmEdit();
+                } else if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+            textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) confirmEdit();
+            });
+        }
 
-            @Override
-            public void commitEdit(String newValue) {
+        private void confirmEdit() {
+            if (confirming) return;
+            confirming = true;
+            try {
+                String newValue = textField.getText().trim();
+                String oldValue = getItem();
+
+                if (newValue.equals(oldValue)) {
+                    cancelEdit();
+                    return;
+                }
+
                 if (newValue.length() < 3 || newValue.length() > 200) {
                     AlertUtils.showWarning("⚠️ Validation",
-                            "Le titre doit contenir entre 3 et 200 caractères.\n" +
+                            "Le titre de la leçon doit contenir entre 3 et 200 caractères.\n\n" +
                                     "Valeur saisie: " + newValue.length() + " caractères.");
                     cancelEdit();
                     return;
                 }
 
-                Lecon lecon = getTableView().getItems().get(getIndex());
-                String oldValue = lecon.getTitre();
-
                 boolean confirmed = AlertUtils.showConfirmation(
-                        "✏️ Modification du titre",
+                        "✏️ Confirmation",
                         "De: \"" + oldValue + "\"\nVers: \"" + newValue + "\"",
                         "Oui, modifier",
                         "Non, annuler"
                 );
 
                 if (confirmed) {
+                    Lecon lecon = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (lecon == null) {
+                        cancelEdit();
+                        return;
+                    }
                     lecon.setTitre(newValue);
                     try {
                         leconService.modifier(lecon);
-                        super.commitEdit(newValue);
+                        commitEdit(newValue);
                         getTableView().refresh();
+                        AlertUtils.showSuccess("✅ Succès", "Titre de la leçon modifié avec succès.");
                     } catch (Exception e) {
-                        AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n" + e.getMessage());
+                        AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n\n" + e.getMessage());
                     }
-                } else {
-                    cancelEdit();
                 }
+                cancelEdit();
+            } finally {
+                confirming = false;
             }
-        };
+        }
     }
 
     // ============================================
-    // CELLULE POUR LE CONTENU
+    // CELLULE CONTENU
     // ============================================
-    public static TableCell<Lecon, String> contenuCell() {
-        return new TableCell<Lecon, String>() {
-            private TextArea textArea;
+    public static TableCell<Lecon, String> getContenuCell() {
+        return new LeconContenuCellImpl();
+    }
 
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
+    private static class LeconContenuCellImpl extends TableCell<Lecon, String> {
+        private TextArea textArea;
+        private boolean confirming;
+
+        @Override
+        public void startEdit() {
+            if (!isEditable() || !getTableView().isEditable() || !getTableColumn().isEditable()) return;
+            super.startEdit();
+            createTextArea();
+            setText(null);
+            setGraphic(textArea);
+            textArea.selectAll();
+            textArea.requestFocus();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setText(getItem() != null ? getItem().substring(0, Math.min(20, getItem().length())) + "..." : "");
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textArea != null) textArea.setText(item);
                     setText(null);
-                    setGraphic(null);
+                    setGraphic(textArea);
                 } else {
-                    if (isEditing()) {
-                        if (textArea != null) textArea.setText(item);
-                        setText(null);
-                        setGraphic(textArea);
-                    } else {
-                        setText(item != null ? item.substring(0, Math.min(30, item.length())) + "..." : "");
-                        setGraphic(null);
-                    }
+                    setText(item != null ? item.substring(0, Math.min(20, item.length())) + "..." : "");
+                    setGraphic(null);
                 }
             }
+        }
 
-            @Override
-            public void startEdit() {
-                super.startEdit();
-                textArea = new TextArea(getItem());
-                textArea.setWrapText(true);
-                textArea.setPrefRowCount(4);
-                textArea.setPrefWidth(400);
-                textArea.focusedProperty().addListener((obs, old, newVal) -> {
-                    if (!newVal) commitEdit(textArea.getText());
-                });
-                setText(null);
-                setGraphic(textArea);
-                textArea.requestFocus();
-            }
+        private void createTextArea() {
+            textArea = new TextArea(getItem());
+            textArea.setWrapText(true);
+            textArea.setPrefRowCount(4);
+            textArea.setPrefWidth(400);
+            textArea.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+            textArea.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) confirmEdit();
+            });
+        }
 
-            @Override
-            public void commitEdit(String newValue) {
+        private void confirmEdit() {
+            if (confirming) return;
+            confirming = true;
+            try {
+                String newValue = textArea.getText().trim();
+                String oldValue = getItem();
+
+                if (newValue.equals(oldValue)) {
+                    cancelEdit();
+                    return;
+                }
+
                 if (newValue.length() < 500 || newValue.length() > 10000) {
                     AlertUtils.showWarning("⚠️ Validation",
-                            "Le contenu doit contenir entre 500 et 10000 caractères.\n" +
+                            "Le contenu doit contenir entre 500 et 10000 caractères.\n\n" +
                                     "Valeur saisie: " + newValue.length() + " caractères.");
                     cancelEdit();
                     return;
                 }
 
-                Lecon lecon = getTableView().getItems().get(getIndex());
-
                 boolean confirmed = AlertUtils.showConfirmation(
-                        "✏️ Modification du contenu",
-                        "Êtes-vous sûr de vouloir modifier le contenu de cette leçon ?",
+                        "✏️ Confirmation",
+                        "Êtes-vous sûr de vouloir modifier le contenu de la leçon ?",
                         "Oui, modifier",
                         "Non, annuler"
                 );
 
                 if (confirmed) {
+                    Lecon lecon = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (lecon == null) {
+                        cancelEdit();
+                        return;
+                    }
                     lecon.setContenu(newValue);
                     try {
                         leconService.modifier(lecon);
-                        super.commitEdit(newValue);
+                        commitEdit(newValue);
                         getTableView().refresh();
+                        AlertUtils.showSuccess("✅ Succès", "Contenu de la leçon modifié avec succès.");
                     } catch (Exception e) {
-                        AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n" + e.getMessage());
+                        AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n\n" + e.getMessage());
                     }
-                } else {
-                    cancelEdit();
                 }
+                cancelEdit();
+            } finally {
+                confirming = false;
             }
-        };
+        }
     }
 
     // ============================================
-    // CELLULE POUR L'ORDRE
+    // CELLULE ORDRE
     // ============================================
-    public static TableCell<Lecon, Integer> ordreCell(ObservableList<Lecon> leconList) {
-        return new TableCell<Lecon, Integer>() {
-            private TextField textField;
+    public static TableCell<Lecon, Integer> getOrdreCell(ObservableList<Lecon> leconList) {
+        return new LeconOrdreCellImpl(leconList);
+    }
 
-            @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
+    private static class LeconOrdreCellImpl extends TableCell<Lecon, Integer> {
+        private final ObservableList<Lecon> leconList;
+        private TextField textField;
+        private boolean confirming;
+
+        public LeconOrdreCellImpl(ObservableList<Lecon> leconList) {
+            this.leconList = leconList;
+        }
+
+        @Override
+        public void startEdit() {
+            if (!isEditable() || !getTableView().isEditable() || !getTableColumn().isEditable()) return;
+            super.startEdit();
+            createTextField();
+            setText(null);
+            setGraphic(textField);
+            textField.selectAll();
+            textField.requestFocus();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setText(getItem() != null ? getItem().toString() : "");
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(Integer item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) textField.setText(item.toString());
                     setText(null);
-                    setGraphic(null);
+                    setGraphic(textField);
                 } else {
-                    if (isEditing()) {
-                        if (textField != null) textField.setText(item.toString());
-                        setText(null);
-                        setGraphic(textField);
-                    } else {
-                        setText(item.toString());
-                        setGraphic(null);
-                    }
+                    setText(item.toString());
+                    setGraphic(null);
                 }
             }
+        }
 
-            @Override
-            public void startEdit() {
-                super.startEdit();
-                textField = new TextField(getItem().toString());
-                textField.textProperty().addListener((obs, old, newVal) -> {
-                    if (!newVal.matches("\\d*")) {
-                        textField.setText(newVal.replaceAll("[^\\d]", ""));
-                    }
-                });
-                textField.setOnAction(e -> {
+        private void createTextField() {
+            textField = new TextField(getItem() != null ? getItem().toString() : "");
+            textField.textProperty().addListener((obs, old, newVal) -> {
+                if (!newVal.matches("\\d*")) {
+                    textField.setText(newVal.replaceAll("[^\\d]", ""));
+                }
+            });
+            textField.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
                     try {
-                        commitEdit(Integer.parseInt(textField.getText()));
+                        confirmEdit(Integer.parseInt(textField.getText()));
                     } catch (NumberFormatException ex) {
                         AlertUtils.showWarning("⚠️ Validation", "Veuillez entrer un nombre valide.");
                     }
-                });
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-                textField.requestFocus();
-            }
+                } else if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+            textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    try {
+                        confirmEdit(Integer.parseInt(textField.getText()));
+                    } catch (NumberFormatException ex) {
+                        cancelEdit();
+                    }
+                }
+            });
+        }
 
-            @Override
-            public void commitEdit(Integer newValue) {
+        private void confirmEdit(int newValue) {
+            if (confirming) return;
+            confirming = true;
+            try {
+                Integer oldValue = getItem();
+
+                if (newValue == oldValue) {
+                    cancelEdit();
+                    return;
+                }
+
                 if (newValue <= 0 || newValue > 100) {
                     AlertUtils.showWarning("⚠️ Validation",
-                            "L'ordre doit être compris entre 1 et 100.\n" +
+                            "L'ordre doit être compris entre 1 et 100.\n\n" +
                                     "Valeur saisie: " + newValue);
                     cancelEdit();
                     return;
                 }
 
-                Lecon lecon = getTableView().getItems().get(getIndex());
-                Integer oldValue = lecon.getOrdre();
+                Lecon lecon = getTableRow() != null ? getTableRow().getItem() : null;
+                if (lecon == null) {
+                    cancelEdit();
+                    return;
+                }
 
                 boolean ordreExiste = leconList.stream()
                         .anyMatch(l -> l.getOrdre() == newValue &&
@@ -232,14 +352,14 @@ public class LeconCell {
 
                 if (ordreExiste) {
                     AlertUtils.showWarning("⚠️ Ordre déjà utilisé",
-                            "Une autre leçon a déjà l'ordre " + newValue + " dans ce module.\n" +
+                            "Une autre leçon a déjà l'ordre " + newValue + " dans ce module.\n\n" +
                                     "Veuillez choisir un autre ordre.");
                     cancelEdit();
                     return;
                 }
 
                 boolean confirmed = AlertUtils.showConfirmation(
-                        "✏️ Modification de l'ordre",
+                        "✏️ Confirmation",
                         "De: " + oldValue + "\nVers: " + newValue,
                         "Oui, modifier",
                         "Non, annuler"
@@ -249,116 +369,113 @@ public class LeconCell {
                     lecon.setOrdre(newValue);
                     try {
                         leconService.modifier(lecon);
-                        super.commitEdit(newValue);
+                        commitEdit(newValue);
                         getTableView().refresh();
+                        AlertUtils.showSuccess("✅ Succès", "Ordre de la leçon modifié avec succès.");
                     } catch (Exception e) {
-                        AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n" + e.getMessage());
+                        AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n\n" + e.getMessage());
                     }
-                } else {
-                    cancelEdit();
                 }
+                cancelEdit();
+            } finally {
+                confirming = false;
             }
-        };
+        }
     }
 
     // ============================================
-    // CELLULE POUR LA VIDÉO
+    // CELLULE VIDÉO
     // ============================================
-    public static TableCell<Lecon, byte[]> videoCell() {
-        return new TableCell<Lecon, byte[]>() {
+    public static TableCell<Lecon, byte[]> getVideoCell() {
+        return new LeconVideoCellImpl();
+    }
 
-            @Override
-            protected void updateItem(byte[] videoBytes, boolean empty) {
-                super.updateItem(videoBytes, empty);
-                if (empty) {
-                    setText(null);
-                    setGraphic(null);
+    private static class LeconVideoCellImpl extends TableCell<Lecon, byte[]> {
+        private boolean confirming;
+
+        @Override
+        protected void updateItem(byte[] videoBytes, boolean empty) {
+            super.updateItem(videoBytes, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (videoBytes != null && videoBytes.length > 0) {
+                    setText("🎥 " + formatTaille(videoBytes.length));
+                    setStyle("-fx-cursor: hand;");
+                    setOnMouseClicked(e -> choisirVideo());
                 } else {
-                    if (videoBytes != null && videoBytes.length > 0) {
-                        setText("🎥 " + formatTaille(videoBytes.length));
-                        setStyle("-fx-cursor: hand;");
-                        setOnMouseClicked(e -> choisirVideo());
-                    } else {
-                        setText("❌ Ajouter");
-                        setStyle("-fx-cursor: hand; -fx-text-fill: #5E548E; -fx-font-weight: bold;");
-                        setOnMouseClicked(e -> choisirVideo());
-                    }
+                    setText("❌ Ajouter");
+                    setStyle("-fx-cursor: hand; -fx-text-fill: #5E548E; -fx-font-weight: bold;");
+                    setOnMouseClicked(e -> choisirVideo());
                 }
             }
+        }
 
-            private String formatTaille(long taille) {
-                if (taille < 1024) return taille + " B";
-                if (taille < 1024 * 1024) return (taille / 1024) + " KB";
-                return String.format("%.1f MB", taille / (1024.0 * 1024.0));
+        private String formatTaille(long taille) {
+            if (taille < 1024) return taille + " B";
+            if (taille < 1024 * 1024) return (taille / 1024) + " KB";
+            return String.format("%.1f MB", taille / (1024.0 * 1024.0));
+        }
+
+        private void choisirVideo() {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Choisir une vidéo");
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Vidéos MP4", "*.mp4"),
+                    new FileChooser.ExtensionFilter("Tous les formats", "*.mp4", "*.avi", "*.mov", "*.mkv")
+            );
+
+            File file = fileChooser.showOpenDialog(getScene().getWindow());
+            if (file != null) {
+                try {
+                    byte[] newVideo = Files.readAllBytes(file.toPath());
+
+                    if (newVideo.length > 64 * 1024 * 1024) {
+                        AlertUtils.showWarning("⚠️ Fichier trop volumineux",
+                                "La vidéo ne peut pas dépasser 64 MB.\n\n" +
+                                        "Taille: " + formatTaille(newVideo.length));
+                        return;
+                    }
+
+                    confirmEdit(newVideo, file.getName());
+                } catch (Exception ex) {
+                    AlertUtils.showError("❌ Erreur", "Impossible de lire la vidéo:\n\n" + ex.getMessage());
+                }
             }
+        }
 
-            private void choisirVideo() {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Choisir une vidéo");
-                fileChooser.getExtensionFilters().addAll(
-                        new FileChooser.ExtensionFilter("Vidéos MP4", "*.mp4"),
-                        new FileChooser.ExtensionFilter("Tous les formats", "*.mp4", "*.avi", "*.mov", "*.mkv")
+        private void confirmEdit(byte[] newVideoBytes, String fileName) {
+            if (confirming) return;
+            confirming = true;
+            try {
+                Lecon lecon = getTableRow() != null ? getTableRow().getItem() : null;
+                if (lecon == null) {
+                    return;
+                }
+
+                String action = lecon.getVideo() == null ? "Ajouter" : "Remplacer";
+                boolean confirmed = AlertUtils.showConfirmation(
+                        "✏️ Confirmation",
+                        action + " la vidéo ?\n\n" +
+                                "Fichier: " + fileName + "\n" +
+                                "Taille: " + formatTaille(newVideoBytes.length),
+                        "Oui",
+                        "Non"
                 );
 
-                File file = fileChooser.showOpenDialog(getScene().getWindow());
-                if (file != null) {
-                    try {
-                        byte[] newVideo = Files.readAllBytes(file.toPath());
-
-                        if (newVideo.length > 64 * 1024 * 1024) {
-                            AlertUtils.showWarning("⚠️ Fichier trop volumineux",
-                                    "La vidéo ne peut pas dépasser 64 MB.\n" +
-                                            "Taille: " + formatTaille(newVideo.length));
-                            return;
-                        }
-
-                        Lecon lecon = getTableView().getItems().get(getIndex());
-
-                        boolean confirmed = AlertUtils.showConfirmation(
-                                "✏️ Modification de la vidéo",
-                                "Voulez-vous " + (lecon.getVideo() == null ? "ajouter" : "remplacer") + " la vidéo ?\n\n" +
-                                        "Fichier: " + file.getName() + "\n" +
-                                        "Taille: " + formatTaille(newVideo.length),
-                                "Oui",
-                                "Non"
-                        );
-
-                        if (confirmed) {
-                            lecon.setVideo(newVideo);
-                            leconService.modifier(lecon);
-                            getTableView().refresh();
-                        }
-                    } catch (Exception ex) {
-                        AlertUtils.showError("❌ Erreur", "Impossible de lire la vidéo:\n" + ex.getMessage());
-                    }
+                if (confirmed) {
+                    lecon.setVideo(newVideoBytes);
+                    leconService.modifier(lecon);
+                    commitEdit(newVideoBytes);
+                    getTableView().refresh();
+                    AlertUtils.showSuccess("✅ Succès", "Vidéo " + (lecon.getVideo() == null ? "ajoutée" : "remplacée") + " avec succès.");
                 }
+            } catch (Exception e) {
+                AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n\n" + e.getMessage());
+            } finally {
+                confirming = false;
             }
-        };
-    }
-
-    // ============================================
-    // CELLULE POUR LES ACTIONS
-    // ============================================
-    public static TableCell<Lecon, Void> actionsCell() {
-        return new TableCell<Lecon, Void>() {
-            private final Button btnDelete = new Button("🗑️");
-            private final HBox actions = new HBox(5, btnDelete);
-
-            {
-                actions.setAlignment(javafx.geometry.Pos.CENTER);
-                btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5 10; -fx-background-radius: 5; -fx-cursor: hand;");
-
-                btnDelete.setOnAction(event -> {
-                    Lecon lecon = getTableView().getItems().get(getIndex());
-                    // La logique de suppression sera dans le contrôleur
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : actions);
-            }
-        };
+        }
     }
 }

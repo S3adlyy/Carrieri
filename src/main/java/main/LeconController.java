@@ -315,20 +315,18 @@ public class LeconController {
     }
 
     private void setupTableColumns() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colId.setVisible(false);
 
         colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
-        colTitre.setCellFactory(column -> new LeconTitleCell(leconService));
+        colTitre.setCellFactory(column -> LeconCell.getTitleCell());
 
         colContenu.setCellValueFactory(new PropertyValueFactory<>("contenu"));
-        colContenu.setCellFactory(column -> new LeconContenuCell(leconService));
+        colContenu.setCellFactory(column -> LeconCell.getContenuCell());
 
         colVideo.setCellValueFactory(new PropertyValueFactory<>("video"));
-        colVideo.setCellFactory(column -> new LeconVideoCell(leconService));
+        colVideo.setCellFactory(column -> LeconCell.getVideoCell());
 
         colOrdre.setCellValueFactory(new PropertyValueFactory<>("ordre"));
-        colOrdre.setCellFactory(column -> new LeconOrdreCell(leconService, leconList));
+        colOrdre.setCellFactory(column -> LeconCell.getOrdreCell(leconList));
 
         colActions.setCellFactory(param -> new TableCell<>() {
             private final Button btnDelete = new Button("🗑️");
@@ -336,7 +334,7 @@ public class LeconController {
 
             {
                 actions.setAlignment(javafx.geometry.Pos.CENTER);
-                btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5 10; -fx-background-radius: 5; -fx-cursor: hand;");
+                btnDelete.getStyleClass().addAll("action-button", "btn-delete-gradient-light");
 
                 btnDelete.setOnAction(event -> {
                     Lecon lecon = getTableRow() != null ? getTableRow().getItem() : null;

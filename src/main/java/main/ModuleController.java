@@ -136,17 +136,15 @@ public class ModuleController implements Initializable {
     }
 
     private void setupTableColumns() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colId.setVisible(false);
 
         colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
-        colTitre.setCellFactory(column -> new ModuleTitleCell(moduleService));
+        colTitre.setCellFactory(column -> ModuleCell.getTitleCell());
 
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        colDescription.setCellFactory(column -> new ModuleDescriptionCell(moduleService));
+        colDescription.setCellFactory(column -> ModuleCell.getDescriptionCell());
 
         colOrdre.setCellValueFactory(new PropertyValueFactory<>("ordre"));
-        colOrdre.setCellFactory(column -> new ModuleOrdreCell(moduleService, moduleList));
+        colOrdre.setCellFactory(column -> ModuleCell.getOrdreCell(moduleList));
 
         colActions.setCellFactory(param -> new TableCell<Module, Void>() {
             private final Button btnDelete = new Button("🗑️");
@@ -154,7 +152,7 @@ public class ModuleController implements Initializable {
 
             {
                 actions.setAlignment(javafx.geometry.Pos.CENTER);
-                btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5 10; -fx-background-radius: 5; -fx-cursor: hand;");
+                btnDelete.getStyleClass().addAll("action-button", "btn-delete-gradient-light");
 
                 btnDelete.setOnAction(event -> {
                     Module module = getTableRow() != null ? getTableRow().getItem() : null;
@@ -276,7 +274,7 @@ public class ModuleController implements Initializable {
 
         List<entities.Lecon> lecons = leconService.getLeconsByModule(moduleSelectionne.getId());
         if (lecons == null || lecons.isEmpty()) {
-            AlertUtils.showWarning("⚠️ Impossible de générer le quiz",
+            AlertUtils.showWarning("⚠ Impossible de générer le quiz",
                     "Le module \"" + moduleSelectionne.getTitre() + "\" ne contient aucune leçon.\n\n" +
                             "Ajoutez d'abord des leçons à ce module pour pouvoir générer un quiz.");
             return;
@@ -285,7 +283,7 @@ public class ModuleController implements Initializable {
         boolean confirmed = AlertUtils.showConfirmation(
                 "🤖 Génération automatique du quiz",
                 "5 questions seront créées à partir du contenu des leçons.\n\n" +
-                        "⚠️ Les anciennes questions du quiz seront définitivement supprimées.\n\n" +
+                        "⚠ Les anciennes questions du quiz seront définitivement supprimées.\n\n" +
                         "Voulez-vous continuer ?",
                 "Oui, générer",
                 "Non, annuler"

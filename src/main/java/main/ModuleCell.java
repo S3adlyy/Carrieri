@@ -4,6 +4,7 @@ import entities.Module;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import main.MainShellController;
 import utils.AlertUtils;
 import services.ModuleService;
@@ -13,227 +14,346 @@ public class ModuleCell {  // ✅ Plus d'import SQLException
     private static final ModuleService moduleService = new ModuleService();
 
     // ============================================
-    // CELLULE POUR LE TITRE
+    // CELLULE TITRE
     // ============================================
-    public static TableCell<Module, String> titleCell() {
-        return new TableCell<Module, String>() {
-            private TextField textField;
+    public static TableCell<Module, String> getTitleCell() {
+        return new ModuleTitleCellImpl();
+    }
 
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
+    private static class ModuleTitleCellImpl extends TableCell<Module, String> {
+        private TextField textField;
+        private boolean confirming;
+
+        @Override
+        public void startEdit() {
+            if (!isEditable() || !getTableView().isEditable() || !getTableColumn().isEditable()) return;
+            super.startEdit();
+            createTextField();
+            setText(null);
+            setGraphic(textField);
+            textField.selectAll();
+            textField.requestFocus();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setText(getItem());
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) textField.setText(item);
                     setText(null);
-                    setGraphic(null);
+                    setGraphic(textField);
                 } else {
-                    if (isEditing()) {
-                        if (textField != null) textField.setText(item);
-                        setText(null);
-                        setGraphic(textField);
-                    } else {
-                        setText(item);
-                        setGraphic(null);
-                    }
+                    setText(item);
+                    setGraphic(null);
                 }
             }
+        }
 
-            @Override
-            public void startEdit() {
-                super.startEdit();
-                textField = new TextField(getItem());
-                textField.setOnAction(e -> commitEdit(textField.getText()));
-                textField.focusedProperty().addListener((obs, old, newVal) -> {
-                    if (!newVal) commitEdit(textField.getText());
-                });
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-                textField.requestFocus();
-            }
+        private void createTextField() {
+            textField = new TextField(getItem());
+            textField.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                    confirmEdit();
+                } else if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+            textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) confirmEdit();
+            });
+        }
 
-            @Override
-            public void commitEdit(String newValue) {
+        private void confirmEdit() {
+            if (confirming) return;
+            confirming = true;
+            try {
+                String newValue = textField.getText().trim();
+                String oldValue = getItem();
+
+                if (newValue.equals(oldValue)) {
+                    cancelEdit();
+                    return;
+                }
+
                 if (newValue.length() < 3 || newValue.length() > 200) {
                     AlertUtils.showWarning("⚠️ Validation",
-                            "Le titre doit contenir entre 3 et 200 caractères.\n" +
+                            "Le titre du module doit contenir entre 3 et 200 caractères.\n\n" +
                                     "Valeur saisie: " + newValue.length() + " caractères.");
                     cancelEdit();
                     return;
                 }
 
-                Module module = getTableView().getItems().get(getIndex());
-                String oldValue = module.getTitre();
-
                 boolean confirmed = AlertUtils.showConfirmation(
-                        "✏️ Modification du titre",
+                        "✏️ Confirmation",
                         "De: \"" + oldValue + "\"\nVers: \"" + newValue + "\"",
                         "Oui, modifier",
                         "Non, annuler"
                 );
 
                 if (confirmed) {
+                    Module module = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (module == null) {
+                        cancelEdit();
+                        return;
+                    }
                     module.setTitre(newValue);
                     try {
                         moduleService.modifier(module);
-                        super.commitEdit(newValue);
+                        commitEdit(newValue);
                         getTableView().refresh();
+                        AlertUtils.showSuccess("✅ Succès", "Titre du module modifié avec succès.");
                     } catch (Exception e) {  // ✅ Changé de SQLException à Exception
-                        AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n" + e.getMessage());
+                        AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
                     }
-                } else {
-                    cancelEdit();
                 }
+                cancelEdit();
+            } finally {
+                confirming = false;
             }
-        };
+        }
     }
 
     // ============================================
-    // CELLULE POUR LA DESCRIPTION
+    // CELLULE DESCRIPTION
     // ============================================
-    public static TableCell<Module, String> descriptionCell() {
-        return new TableCell<Module, String>() {
-            private TextArea textArea;
+    public static TableCell<Module, String> getDescriptionCell() {
+        return new ModuleDescriptionCellImpl();
+    }
 
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
+    private static class ModuleDescriptionCellImpl extends TableCell<Module, String> {
+        private TextArea textArea;
+        private boolean confirming;
+
+        @Override
+        public void startEdit() {
+            if (!isEditable() || !getTableView().isEditable() || !getTableColumn().isEditable()) return;
+            super.startEdit();
+            createTextArea();
+            setText(null);
+            setGraphic(textArea);
+            textArea.selectAll();
+            textArea.requestFocus();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setText(getItem() != null ? getItem().substring(0, Math.min(20, getItem().length())) + "..." : "");
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textArea != null) textArea.setText(item);
                     setText(null);
-                    setGraphic(null);
+                    setGraphic(textArea);
                 } else {
-                    if (isEditing()) {
-                        if (textArea != null) textArea.setText(item);
-                        setText(null);
-                        setGraphic(textArea);
-                    } else {
-                        setText(item != null ? item.substring(0, Math.min(30, item.length())) + "..." : "");
-                        setGraphic(null);
-                    }
+                    setText(item != null ? item.substring(0, Math.min(20, item.length())) + "..." : "");
+                    setGraphic(null);
                 }
             }
+        }
 
-            @Override
-            public void startEdit() {
-                super.startEdit();
-                textArea = new TextArea(getItem());
-                textArea.setWrapText(true);
-                textArea.setPrefRowCount(4);
-                textArea.focusedProperty().addListener((obs, old, newVal) -> {
-                    if (!newVal) commitEdit(textArea.getText());
-                });
-                setText(null);
-                setGraphic(textArea);
-                textArea.requestFocus();
-            }
+        private void createTextArea() {
+            textArea = new TextArea(getItem());
+            textArea.setWrapText(true);
+            textArea.setPrefRowCount(3);
+            textArea.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+            textArea.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) confirmEdit();
+            });
+        }
 
-            @Override
-            public void commitEdit(String newValue) {
+        private void confirmEdit() {
+            if (confirming) return;
+            confirming = true;
+            try {
+                String newValue = textArea.getText().trim();
+                String oldValue = getItem();
+
+                if (newValue.equals(oldValue)) {
+                    cancelEdit();
+                    return;
+                }
+
                 if (newValue.length() < 10 || newValue.length() > 1000) {
                     AlertUtils.showWarning("⚠️ Validation",
-                            "La description doit contenir entre 10 et 1000 caractères.\n" +
+                            "La description du module doit contenir entre 10 et 1000 caractères.\n\n" +
                                     "Valeur saisie: " + newValue.length() + " caractères.");
                     cancelEdit();
                     return;
                 }
 
-                Module module = getTableView().getItems().get(getIndex());
-
                 boolean confirmed = AlertUtils.showConfirmation(
-                        "✏️ Modification de la description",
-                        "Êtes-vous sûr de vouloir modifier la description ?",
+                        "✏️ Confirmation",
+                        "Êtes-vous sûr de vouloir modifier la description du module ?",
                         "Oui, modifier",
                         "Non, annuler"
                 );
 
                 if (confirmed) {
+                    Module module = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (module == null) {
+                        cancelEdit();
+                        return;
+                    }
                     module.setDescription(newValue);
                     try {
                         moduleService.modifier(module);
-                        super.commitEdit(newValue);
+                        commitEdit(newValue);
                         getTableView().refresh();
+                        AlertUtils.showSuccess("✅ Succès", "Description du module modifiée avec succès.");
                     } catch (Exception e) {  // ✅ Changé de SQLException à Exception
-                        AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n" + e.getMessage());
+                        AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
                     }
-                } else {
-                    cancelEdit();
                 }
+                cancelEdit();
+            } finally {
+                confirming = false;
             }
-        };
+        }
     }
 
     // ============================================
-    // CELLULE POUR L'ORDRE
+    // CELLULE ORDRE
     // ============================================
-    public static TableCell<Module, Integer> ordreCell(ObservableList<Module> moduleList) {
-        return new TableCell<Module, Integer>() {
-            private TextField textField;
+    public static TableCell<Module, Integer> getOrdreCell(ObservableList<Module> moduleList) {
+        return new ModuleOrdreCellImpl(moduleList);
+    }
 
-            @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
+    private static class ModuleOrdreCellImpl extends TableCell<Module, Integer> {
+        private final ObservableList<Module> moduleList;
+        private TextField textField;
+        private boolean confirming;
+
+        public ModuleOrdreCellImpl(ObservableList<Module> moduleList) {
+            this.moduleList = moduleList;
+        }
+
+        @Override
+        public void startEdit() {
+            if (!isEditable() || !getTableView().isEditable() || !getTableColumn().isEditable()) return;
+            super.startEdit();
+            createTextField();
+            setText(null);
+            setGraphic(textField);
+            textField.selectAll();
+            textField.requestFocus();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setText(getItem() != null ? getItem().toString() : "");
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(Integer item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) textField.setText(item.toString());
                     setText(null);
-                    setGraphic(null);
+                    setGraphic(textField);
                 } else {
-                    if (isEditing()) {
-                        if (textField != null) textField.setText(item.toString());
-                        setText(null);
-                        setGraphic(textField);
-                    } else {
-                        setText(item.toString());
-                        setGraphic(null);
-                    }
+                    setText(item.toString());
+                    setGraphic(null);
                 }
             }
+        }
 
-            @Override
-            public void startEdit() {
-                super.startEdit();
-                textField = new TextField(getItem().toString());
-                textField.textProperty().addListener((obs, old, newVal) -> {
-                    if (!newVal.matches("\\d*")) {
-                        textField.setText(newVal.replaceAll("[^\\d]", ""));
-                    }
-                });
-                textField.setOnAction(e -> {
+        private void createTextField() {
+            textField = new TextField(getItem() != null ? getItem().toString() : "");
+            textField.textProperty().addListener((obs, old, newVal) -> {
+                if (!newVal.matches("\\d*")) {
+                    textField.setText(newVal.replaceAll("[^\\d]", ""));
+                }
+            });
+            textField.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
                     try {
-                        commitEdit(Integer.parseInt(textField.getText()));
+                        confirmEdit(Integer.parseInt(textField.getText()));
                     } catch (NumberFormatException ex) {
                         AlertUtils.showWarning("⚠️ Validation", "Veuillez entrer un nombre valide.");
                     }
-                });
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-                textField.requestFocus();
-            }
+                } else if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+            textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    try {
+                        confirmEdit(Integer.parseInt(textField.getText()));
+                    } catch (NumberFormatException ex) {
+                        cancelEdit();
+                    }
+                }
+            });
+        }
 
-            @Override
-            public void commitEdit(Integer newValue) {
+        private void confirmEdit(int newValue) {
+            if (confirming) return;
+            confirming = true;
+            try {
+                Integer oldValue = getItem();
+
+                if (newValue == oldValue) {
+                    cancelEdit();
+                    return;
+                }
+
                 if (newValue <= 0 || newValue > 100) {
                     AlertUtils.showWarning("⚠️ Validation",
-                            "L'ordre doit être compris entre 1 et 100.\n" +
+                            "L'ordre doit être compris entre 1 et 100.\n\n" +
                                     "Valeur saisie: " + newValue);
                     cancelEdit();
                     return;
                 }
 
-                Module module = getTableView().getItems().get(getIndex());
-                Integer oldValue = module.getOrdre();
+                Module module = getTableRow() != null ? getTableRow().getItem() : null;
+                if (module == null) {
+                    cancelEdit();
+                    return;
+                }
 
                 boolean ordreExiste = moduleList.stream()
                         .anyMatch(m -> m.getOrdre() == newValue && m.getId() != module.getId());
 
                 if (ordreExiste) {
                     AlertUtils.showWarning("⚠️ Ordre déjà utilisé",
-                            "Un autre module a déjà l'ordre " + newValue + ".\n" +
+                            "Un autre module a déjà l'ordre " + newValue + ".\n\n" +
                                     "Veuillez choisir un autre ordre.");
                     cancelEdit();
                     return;
                 }
 
                 boolean confirmed = AlertUtils.showConfirmation(
-                        "✏️ Modification de l'ordre",
+                        "✏️ Confirmation",
                         "De: " + oldValue + "\nVers: " + newValue,
                         "Oui, modifier",
                         "Non, annuler"
@@ -243,50 +363,17 @@ public class ModuleCell {  // ✅ Plus d'import SQLException
                     module.setOrdre(newValue);
                     try {
                         moduleService.modifier(module);
-                        super.commitEdit(newValue);
+                        commitEdit(newValue);
                         getTableView().refresh();
+                        AlertUtils.showSuccess("✅ Succès", "Ordre du module modifié avec succès.");
                     } catch (Exception e) {  // ✅ Changé de SQLException à Exception
-                        AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n" + e.getMessage());
+                        AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
                     }
-                } else {
-                    cancelEdit();
                 }
+                cancelEdit();
+            } finally {
+                confirming = false;
             }
-        };
-    }
-
-    // ============================================
-    // CELLULE POUR LES ACTIONS
-    // ============================================
-    public static TableCell<Module, Void> actionsCell() {
-        return new TableCell<Module, Void>() {
-            private final Button btnLecons = new Button("📖");
-            private final Button btnDelete = new Button("🗑️");
-            private final HBox actions = new HBox(5, btnLecons, btnDelete);
-
-            {
-                actions.setAlignment(javafx.geometry.Pos.CENTER);
-
-                btnLecons.setStyle("-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5 10; -fx-background-radius: 5; -fx-cursor: hand;");
-                btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5 10; -fx-background-radius: 5; -fx-cursor: hand;");
-
-                btnLecons.setOnAction(event -> {
-                    Module module = getTableView().getItems().get(getIndex());
-                    MainShellController.getInstance().setCurrentModule(module.getId(), module.getTitre());
-                    MainShellController.getInstance().showLeconsViewWithModule(module.getId(), module.getTitre());
-                });
-
-                btnDelete.setOnAction(event -> {
-                    Module module = getTableView().getItems().get(getIndex());
-                    // La logique de suppression sera dans le contrôleur
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : actions);
-            }
-        };
+        }
     }
 }

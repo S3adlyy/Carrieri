@@ -7,6 +7,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
+import javafx.geometry.Pos;
+import javafx.scene.paint.Color;
 import main.MainShellController;
 import utils.AlertUtils;
 import services.CoursService;
@@ -21,543 +23,780 @@ public class CoursCell {
     private static final CoursService coursService = new CoursService();
 
     // ============================================
-    // CELLULE POUR LE TITRE
+    // CELLULE TITRE
     // ============================================
-    public static TableCell<Cours, String> titleCell() {
-        return new TableCell<Cours, String>() {
-            private TextField textField;
+    public static TableCell<Cours, String> getTitleCell() {
+        return new CoursTitleCellImpl();
+    }
 
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
+    private static class CoursTitleCellImpl extends TableCell<Cours, String> {
+        private TextField textField;
+        private boolean confirming;
+
+        @Override
+        public void startEdit() {
+            if (!isEditable() || !getTableView().isEditable() || !getTableColumn().isEditable()) return;
+            super.startEdit();
+            createTextField();
+            setText(null);
+            setGraphic(textField);
+            textField.selectAll();
+            textField.requestFocus();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setText(getItem());
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) textField.setText(item);
                     setText(null);
-                    setGraphic(null);
+                    setGraphic(textField);
                 } else {
-                    if (isEditing()) {
-                        if (textField != null) textField.setText(item);
-                        setText(null);
-                        setGraphic(textField);
-                    } else {
-                        setText(item);
-                        setGraphic(null);
-                    }
+                    setText(item);
+                    setGraphic(null);
                 }
             }
+        }
 
-            @Override
-            public void startEdit() {
-                super.startEdit();
-                textField = new TextField(getItem());
-                textField.setOnAction(e -> commitEdit(textField.getText()));
-                textField.focusedProperty().addListener((obs, old, newVal) -> {
-                    if (!newVal) commitEdit(textField.getText());
-                });
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-                textField.requestFocus();
-            }
+        private void createTextField() {
+            textField = new TextField(getItem());
+            textField.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                    confirmEdit();
+                } else if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+            textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) confirmEdit();
+            });
+        }
 
-            @Override
-            public void commitEdit(String newValue) {
+        private void confirmEdit() {
+            if (confirming) return;
+            confirming = true;
+            try {
+                String newValue = textField.getText().trim();
+                String oldValue = getItem();
+
+                if (newValue.equals(oldValue)) {
+                    cancelEdit();
+                    return;
+                }
+
                 if (newValue.length() < 3 || newValue.length() > 200) {
+                    // ✅ CORRIGÉ : Utilise la nouvelle alerte stylisée
                     AlertUtils.showWarning("⚠️ Validation",
-                            "Le titre doit contenir entre 3 et 200 caractères.\n" +
+                            "Le titre doit contenir entre 3 et 200 caractères.\n\n" +
                                     "Valeur saisie: " + newValue.length() + " caractères.");
                     cancelEdit();
                     return;
                 }
 
-                Cours cours = getTableView().getItems().get(getIndex());
-                String oldValue = cours.getTitre();
-
+                // ✅ CORRIGÉ : Utilise la nouvelle confirmation stylisée
                 boolean confirmed = AlertUtils.showConfirmation(
-                        "✏️ Modification du titre",
+                        "✏️ Confirmation",
                         "De: \"" + oldValue + "\"\nVers: \"" + newValue + "\"",
                         "Oui, modifier",
                         "Non, annuler"
                 );
 
                 if (confirmed) {
+                    Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (cours == null) {
+                        cancelEdit();
+                        return;
+                    }
                     cours.setTitre(newValue);
                     try {
                         coursService.update(cours);
-                        super.commitEdit(newValue);
+                        commitEdit(newValue);
                         getTableView().refresh();
+                        // ✅ Optionnel : message de succès
+                        AlertUtils.showSuccess("✅ Succès", "Titre modifié avec succès.");
                     } catch (SQLException e) {
-                        AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n" + e.getMessage());
+                        AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
                     }
-                } else {
-                    cancelEdit();
                 }
+                cancelEdit();
+            } finally {
+                confirming = false;
             }
-        };
+        }
     }
 
     // ============================================
-    // CELLULE POUR LA DESCRIPTION
+    // CELLULE DESCRIPTION
     // ============================================
-    public static TableCell<Cours, String> descriptionCell() {
-        return new TableCell<Cours, String>() {
-            private TextArea textArea;
+    public static TableCell<Cours, String> getDescriptionCell() {
+        return new CoursDescriptionCellImpl();
+    }
 
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
+    private static class CoursDescriptionCellImpl extends TableCell<Cours, String> {
+        private TextArea textArea;
+        private boolean confirming;
+
+        @Override
+        public void startEdit() {
+            if (!isEditable() || !getTableView().isEditable() || !getTableColumn().isEditable()) return;
+            super.startEdit();
+            createTextArea();
+            setText(null);
+            setGraphic(textArea);
+            textArea.selectAll();
+            textArea.requestFocus();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setText(getItem() != null ? getItem().substring(0, Math.min(20, getItem().length())) + "..." : "");
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textArea != null) textArea.setText(item);
                     setText(null);
-                    setGraphic(null);
+                    setGraphic(textArea);
                 } else {
-                    if (isEditing()) {
-                        if (textArea != null) textArea.setText(item);
-                        setText(null);
-                        setGraphic(textArea);
-                    } else {
-                        setText(item != null ? item.substring(0, Math.min(30, item.length())) + "..." : "");
-                        setGraphic(null);
-                    }
+                    setText(item != null ? item.substring(0, Math.min(20, item.length())) + "..." : "");
+                    setGraphic(null);
                 }
             }
+        }
 
-            @Override
-            public void startEdit() {
-                super.startEdit();
-                textArea = new TextArea(getItem());
-                textArea.setWrapText(true);
-                textArea.setPrefRowCount(4);
-                textArea.setPrefWidth(300);
-                textArea.focusedProperty().addListener((obs, old, newVal) -> {
-                    if (!newVal) commitEdit(textArea.getText());
-                });
-                setText(null);
-                setGraphic(textArea);
-                textArea.requestFocus();
-            }
+        private void createTextArea() {
+            textArea = new TextArea(getItem());
+            textArea.setWrapText(true);
+            textArea.setPrefRowCount(3);
+            textArea.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+            textArea.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) confirmEdit();
+            });
+        }
 
-            @Override
-            public void commitEdit(String newValue) {
+        private void confirmEdit() {
+            if (confirming) return;
+            confirming = true;
+            try {
+                String newValue = textArea.getText().trim();
+                String oldValue = getItem();
+
+                if (newValue.equals(oldValue)) {
+                    cancelEdit();
+                    return;
+                }
+
                 if (newValue.length() < 10 || newValue.length() > 1000) {
+                    // ✅ CORRIGÉ
                     AlertUtils.showWarning("⚠️ Validation",
-                            "La description doit contenir entre 10 et 1000 caractères.\n" +
+                            "La description doit contenir entre 10 et 1000 caractères.\n\n" +
                                     "Valeur saisie: " + newValue.length() + " caractères.");
                     cancelEdit();
                     return;
                 }
 
-                Cours cours = getTableView().getItems().get(getIndex());
-
+                // ✅ CORRIGÉ
                 boolean confirmed = AlertUtils.showConfirmation(
-                        "✏️ Modification de la description",
+                        "✏️ Confirmation",
                         "Êtes-vous sûr de vouloir modifier la description ?",
                         "Oui, modifier",
                         "Non, annuler"
                 );
 
                 if (confirmed) {
+                    Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (cours == null) {
+                        cancelEdit();
+                        return;
+                    }
                     cours.setDescription(newValue);
                     try {
                         coursService.update(cours);
-                        super.commitEdit(newValue);
+                        commitEdit(newValue);
                         getTableView().refresh();
+                        AlertUtils.showSuccess("✅ Succès", "Description modifiée avec succès.");
                     } catch (SQLException e) {
-                        AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n" + e.getMessage());
+                        AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
                     }
-                } else {
-                    cancelEdit();
                 }
+                cancelEdit();
+            } finally {
+                confirming = false;
             }
-        };
+        }
     }
 
     // ============================================
-    // CELLULE POUR LA DURÉE
+    // CELLULE DURÉE
     // ============================================
-    public static TableCell<Cours, Integer> dureeCell() {
-        return new TableCell<Cours, Integer>() {
-            private TextField textField;
+    public static TableCell<Cours, Integer> getDureeCell() {
+        return new CoursDureeCellImpl();
+    }
 
-            @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
+    private static class CoursDureeCellImpl extends TableCell<Cours, Integer> {
+        private TextField textField;
+        private boolean confirming;
+
+        @Override
+        public void startEdit() {
+            if (!isEditable() || !getTableView().isEditable() || !getTableColumn().isEditable()) return;
+            super.startEdit();
+            createTextField();
+            setText(null);
+            setGraphic(textField);
+            textField.selectAll();
+            textField.requestFocus();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setText(getItem() != null ? getItem().toString() : "");
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(Integer item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) textField.setText(item.toString());
                     setText(null);
-                    setGraphic(null);
+                    setGraphic(textField);
                 } else {
-                    if (isEditing()) {
-                        if (textField != null) textField.setText(item.toString());
-                        setText(null);
-                        setGraphic(textField);
-                    } else {
-                        setText(item + "h");
-                        setGraphic(null);
-                    }
+                    setText(item != null ? item.toString() : "");
+                    setGraphic(null);
                 }
             }
+        }
 
-            @Override
-            public void startEdit() {
-                super.startEdit();
-                textField = new TextField(getItem().toString());
-                textField.textProperty().addListener((obs, old, newVal) -> {
-                    if (!newVal.matches("\\d*")) {
-                        textField.setText(newVal.replaceAll("[^\\d]", ""));
-                    }
-                });
-                textField.setOnAction(e -> {
+        private void createTextField() {
+            textField = new TextField(getItem() != null ? getItem().toString() : "");
+            textField.textProperty().addListener((obs, old, newVal) -> {
+                if (!newVal.matches("\\d*")) {
+                    textField.setText(newVal.replaceAll("[^\\d]", ""));
+                }
+            });
+            textField.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
                     try {
-                        commitEdit(Integer.parseInt(textField.getText()));
+                        confirmEdit(Integer.parseInt(textField.getText()));
                     } catch (NumberFormatException ex) {
                         AlertUtils.showWarning("⚠️ Validation", "Veuillez entrer un nombre valide.");
                     }
-                });
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-                textField.requestFocus();
-            }
+                } else if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+            textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    try {
+                        confirmEdit(Integer.parseInt(textField.getText()));
+                    } catch (NumberFormatException ex) {
+                        cancelEdit();
+                    }
+                }
+            });
+        }
 
-            @Override
-            public void commitEdit(Integer newValue) {
+        private void confirmEdit(int newValue) {
+            if (confirming) return;
+            confirming = true;
+            try {
+                Integer oldValue = getItem();
+
+                if (newValue == oldValue) {
+                    cancelEdit();
+                    return;
+                }
+
                 if (newValue <= 0 || newValue > 1000) {
                     AlertUtils.showWarning("⚠️ Validation",
-                            "La durée doit être comprise entre 1 et 1000 heures.\n" +
+                            "La durée doit être comprise entre 1 et 1000 heures.\n\n" +
                                     "Valeur saisie: " + newValue + " heures.");
                     cancelEdit();
                     return;
                 }
 
-                Cours cours = getTableView().getItems().get(getIndex());
-                Integer oldValue = cours.getDuree();
-
                 boolean confirmed = AlertUtils.showConfirmation(
-                        "✏️ Modification de la durée",
+                        "✏️ Confirmation",
                         "De: " + oldValue + " heures\nVers: " + newValue + " heures",
                         "Oui, modifier",
                         "Non, annuler"
                 );
 
                 if (confirmed) {
+                    Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (cours == null) {
+                        cancelEdit();
+                        return;
+                    }
                     cours.setDuree(newValue);
                     try {
                         coursService.update(cours);
-                        super.commitEdit(newValue);
+                        commitEdit(newValue);
                         getTableView().refresh();
+                        AlertUtils.showSuccess("✅ Succès", "Durée modifiée avec succès.");
                     } catch (SQLException e) {
-                        AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n" + e.getMessage());
+                        AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
                     }
-                } else {
-                    cancelEdit();
                 }
+                cancelEdit();
+            } finally {
+                confirming = false;
             }
-        };
+        }
+
+        @Override
+        public void commitEdit(Integer newValue) {
+            // Cette méthode est appelée par la superclasse
+            super.commitEdit(newValue);
+        }
     }
 
     // ============================================
-    // CELLULE POUR LE NIVEAU
+    // CELLULE NIVEAU
     // ============================================
-    public static TableCell<Cours, String> niveauCell() {
-        return new TableCell<Cours, String>() {
-            private ComboBox<String> comboBox;
+    public static TableCell<Cours, String> getNiveauCell() {
+        return new CoursNiveauCellImpl();
+    }
 
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
+    private static class CoursNiveauCellImpl extends TableCell<Cours, String> {
+        private ComboBox<String> comboBox;
+        private boolean confirming;
+
+        @Override
+        public void startEdit() {
+            if (!isEditable() || !getTableView().isEditable() || !getTableColumn().isEditable()) return;
+            super.startEdit();
+            createComboBox();
+            setText(null);
+            setGraphic(comboBox);
+            comboBox.requestFocus();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setText(getItem());
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (comboBox != null) comboBox.setValue(item);
                     setText(null);
-                    setGraphic(null);
+                    setGraphic(comboBox);
                 } else {
-                    if (isEditing()) {
-                        if (comboBox != null) comboBox.setValue(item);
-                        setText(null);
-                        setGraphic(comboBox);
-                    } else {
-                        setText(item);
-                        setGraphic(null);
-                    }
+                    setText(item);
+                    setGraphic(null);
                 }
             }
+        }
 
-            @Override
-            public void startEdit() {
-                super.startEdit();
-                comboBox = new ComboBox<>();
-                comboBox.getItems().addAll("Débutant", "Intermédiaire", "Avancé", "Expert", "Master");
-                comboBox.setValue(getItem());
-                comboBox.setOnAction(e -> commitEdit(comboBox.getValue()));
-                comboBox.setOnKeyPressed(e -> {
-                    if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
-                        cancelEdit();
-                    }
-                });
-                setText(null);
-                setGraphic(comboBox);
-                comboBox.requestFocus();
-            }
+        private void createComboBox() {
+            comboBox = new ComboBox<>();
+            comboBox.getItems().addAll("Débutant", "Intermédiaire", "Avancé", "Expert", "Master");
+            comboBox.setValue(getItem());
+            comboBox.setOnAction(e -> confirmEdit(comboBox.getValue()));
+            comboBox.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+        }
 
-            @Override
-            public void commitEdit(String newValue) {
-                Cours cours = getTableView().getItems().get(getIndex());
-                String oldValue = cours.getNiveau();
+        private void confirmEdit(String newValue) {
+            if (confirming) return;
+            confirming = true;
+            try {
+                String oldValue = getItem();
+
+                if (newValue.equals(oldValue)) {
+                    cancelEdit();
+                    return;
+                }
 
                 boolean confirmed = AlertUtils.showConfirmation(
-                        "✏️ Modification du niveau",
+                        "✏️ Confirmation",
                         "De: \"" + oldValue + "\"\nVers: \"" + newValue + "\"",
                         "Oui, modifier",
                         "Non, annuler"
                 );
 
                 if (confirmed) {
+                    Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (cours == null) {
+                        cancelEdit();
+                        return;
+                    }
                     cours.setNiveau(newValue);
                     try {
                         coursService.update(cours);
-                        super.commitEdit(newValue);
+                        commitEdit(newValue);
                         getTableView().refresh();
-                    } catch (SQLException e) {
-                        AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n" + e.getMessage());
+                        AlertUtils.showSuccess("✅ Succès", "Niveau modifié avec succès.");
+                    } catch (SQLException ex) {
+                        AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + ex.getMessage());
                     }
-                } else {
-                    cancelEdit();
                 }
+                cancelEdit();
+            } finally {
+                confirming = false;
             }
-        };
+        }
     }
 
     // ============================================
-    // CELLULE POUR OBLIGATOIRE
+    // CELLULE OBLIGATOIRE
     // ============================================
-    public static TableCell<Cours, Boolean> obligatoireCell() {
-        return new TableCell<Cours, Boolean>() {
-            private CheckBox checkBox;
+    public static TableCell<Cours, Boolean> getObligatoireCell() {
+        return new CoursObligatoireCellImpl();
+    }
 
-            @Override
-            protected void updateItem(Boolean item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
+    private static class CoursObligatoireCellImpl extends TableCell<Cours, Boolean> {
+        private CheckBox checkBox;
+        private boolean confirming;
+
+        @Override
+        public void startEdit() {
+            if (!isEditable() || !getTableView().isEditable() || !getTableColumn().isEditable()) return;
+            super.startEdit();
+            createCheckBox();
+            setText(null);
+            setGraphic(checkBox);
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            updateDisplay(getItem());
+        }
+
+        @Override
+        protected void updateItem(Boolean item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (checkBox != null) checkBox.setSelected(item != null && item);
                     setText(null);
-                    setGraphic(null);
+                    setGraphic(checkBox);
                 } else {
-                    if (isEditing()) {
-                        if (checkBox != null) checkBox.setSelected(item);
-                        setText(null);
-                        setGraphic(checkBox);
-                    } else {
-                        HBox container = new HBox(8);
-                        container.setAlignment(javafx.geometry.Pos.CENTER);
-                        Circle dot = new Circle(6);
-                        Label label = new Label();
-                        if (item) {
-                            dot.setFill(javafx.scene.paint.Color.valueOf("#10b981"));
-                            label.setText("Obligatoire");
-                            label.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
-                        } else {
-                            dot.setFill(javafx.scene.paint.Color.valueOf("#6b7280"));
-                            label.setText("Optionnel");
-                            label.setStyle("-fx-text-fill: #6b7280; -fx-font-weight: bold;");
-                        }
-                        container.getChildren().addAll(dot, label);
-                        setGraphic(container);
-                        setText(null);
-                    }
+                    updateDisplay(item);
                 }
             }
+        }
 
-            @Override
-            public void startEdit() {
-                super.startEdit();
-                checkBox = new CheckBox("Obligatoire");
-                checkBox.setSelected(getItem());
-                checkBox.setOnAction(e -> commitEdit(checkBox.isSelected()));
-                setGraphic(checkBox);
-                setText(null);
+        private void updateDisplay(Boolean item) {
+            HBox container = new HBox(8);
+            container.setAlignment(javafx.geometry.Pos.CENTER);
+            Circle dot = new Circle(6);
+            Label label = new Label();
+            if (item != null && item) {
+                dot.setFill(javafx.scene.paint.Color.valueOf("#10b981"));
+                label.setText("Obligatoire");
+                label.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
+            } else {
+                dot.setFill(javafx.scene.paint.Color.valueOf("#6b7280"));
+                label.setText("Optionnel");
+                label.setStyle("-fx-text-fill: #6b7280; -fx-font-weight: bold;");
             }
+            container.getChildren().addAll(dot, label);
+            setText(null);
+            setGraphic(container);
+        }
 
-            @Override
-            public void commitEdit(Boolean newValue) {
-                Cours cours = getTableView().getItems().get(getIndex());
+        private void createCheckBox() {
+            checkBox = new CheckBox("Obligatoire");
+            checkBox.setSelected(getItem() != null && getItem());
+            checkBox.setOnAction(e -> confirmEdit(checkBox.isSelected()));
+        }
+
+        private void confirmEdit(boolean newValue) {
+            if (confirming) return;
+            confirming = true;
+            try {
+                boolean oldValue = getItem();
+
+                if (newValue == oldValue) {
+                    cancelEdit();
+                    return;
+                }
+
                 String status = newValue ? "obligatoire" : "optionnel";
-
                 boolean confirmed = AlertUtils.showConfirmation(
-                        "✏️ Modification du statut",
+                        "✏️ Confirmation",
                         "Voulez-vous marquer ce cours comme " + status + " ?",
                         "Oui, modifier",
                         "Non, annuler"
                 );
 
                 if (confirmed) {
+                    Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (cours == null) {
+                        cancelEdit();
+                        return;
+                    }
                     cours.setEst_obligatoire(newValue);
                     try {
                         coursService.update(cours);
-                        super.commitEdit(newValue);
+                        commitEdit(newValue);
                         getTableView().refresh();
-                    } catch (SQLException e) {
-                        AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n" + e.getMessage());
+                        AlertUtils.showSuccess("✅ Succès", "Statut modifié avec succès.");
+                    } catch (SQLException ex) {
+                        AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + ex.getMessage());
                     }
-                } else {
+                }
+                cancelEdit();
+            } finally {
+                confirming = false;
+            }
+        }
+    }
+
+    // ============================================
+    // CELLULE IMAGE
+    // ============================================
+    public static TableCell<Cours, byte[]> getImageCell() {
+        return new CoursImageCellImpl();
+    }
+
+    private static class CoursImageCellImpl extends TableCell<Cours, byte[]> {
+        private final ImageView imageView = new ImageView();
+        private boolean confirming;
+
+        {
+            imageView.setFitWidth(80);
+            imageView.setFitHeight(60);
+            imageView.setPreserveRatio(true);
+            imageView.setStyle("-fx-cursor: hand;");
+            imageView.setOnMouseClicked(e -> choisirImage());
+        }
+
+        @Override
+        public void startEdit() {
+            if (!isEditable() || !getTableView().isEditable() || !getTableColumn().isEditable()) return;
+            super.startEdit();
+            choisirImage();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            updateItem(getItem(), false);
+        }
+
+        @Override
+        protected void updateItem(byte[] imageBytes, boolean empty) {
+            super.updateItem(imageBytes, empty);
+            if (empty || imageBytes == null) {
+                setGraphic(null);
+            } else {
+                imageView.setImage(new Image(new ByteArrayInputStream(imageBytes)));
+                setGraphic(imageView);
+            }
+        }
+
+        private void choisirImage() {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Choisir une nouvelle image");
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg")
+            );
+            File file = fileChooser.showOpenDialog(getTableView().getScene().getWindow());
+
+            if (file != null) {
+                try {
+                    byte[] newImageBytes = Files.readAllBytes(file.toPath());
+                    confirmEdit(newImageBytes, file.getName());
+                } catch (Exception ex) {
+                    AlertUtils.showError("❌ Erreur", "Impossible de lire l'image:\n\n" + ex.getMessage());
                     cancelEdit();
                 }
+            } else {
+                cancelEdit();
             }
-        };
-    }
+        }
 
-    // ============================================
-    // CELLULE POUR L'IMAGE
-    // ============================================
-    public static TableCell<Cours, byte[]> imageCell() {
-        return new TableCell<Cours, byte[]>() {
-            private final ImageView imageView = new ImageView();
-
-            {
-                imageView.setFitWidth(80);
-                imageView.setFitHeight(60);
-                imageView.setPreserveRatio(true);
-                imageView.setStyle("-fx-cursor: hand;");
-                imageView.setOnMouseClicked(e -> choisirImage());
-            }
-
-            @Override
-            protected void updateItem(byte[] imageBytes, boolean empty) {
-                super.updateItem(imageBytes, empty);
-                if (empty || imageBytes == null) {
-                    setGraphic(null);
-                } else {
-                    imageView.setImage(new Image(new ByteArrayInputStream(imageBytes)));
-                    setGraphic(imageView);
-                }
-            }
-
-            private void choisirImage() {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Choisir une image");
-                fileChooser.getExtensionFilters().add(
-                        new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg")
+        private void confirmEdit(byte[] newImageBytes, String fileName) {
+            if (confirming) return;
+            confirming = true;
+            try {
+                boolean confirmed = AlertUtils.showConfirmation(
+                        "✏️ Confirmation",
+                        "Voulez-vous remplacer l'image de ce cours ?\n\n" +
+                                "Nouvelle image: " + fileName + "\n" +
+                                "Taille: " + (newImageBytes.length / 1024) + " KB",
+                        "Oui, remplacer",
+                        "Non, annuler"
                 );
 
-                File file = fileChooser.showOpenDialog(getScene().getWindow());
-                if (file != null) {
+                if (confirmed) {
+                    Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (cours == null) {
+                        cancelEdit();
+                        return;
+                    }
+                    cours.setImageCouverture(newImageBytes);
                     try {
-                        byte[] newImage = Files.readAllBytes(file.toPath());
-                        Cours cours = getTableView().getItems().get(getIndex());
-
-                        boolean confirmed = AlertUtils.showConfirmation(
-                                "✏️ Modification de l'image",
-                                "Voulez-vous remplacer l'image du cours ?\n\n" +
-                                        "Nouvelle image: " + file.getName() + "\n" +
-                                        "Taille: " + (newImage.length / 1024) + " KB",
-                                "Oui, remplacer",
-                                "Non, annuler"
-                        );
-
-                        if (confirmed) {
-                            cours.setImageCouverture(newImage);
-                            coursService.update(cours);
-                            getTableView().refresh();
-                        }
-                    } catch (Exception ex) {
-                        AlertUtils.showError("❌ Erreur", "Impossible de lire l'image:\n" + ex.getMessage());
+                        coursService.update(cours);
+                        commitEdit(newImageBytes);
+                        getTableView().refresh();
+                        AlertUtils.showSuccess("✅ Succès", "Image modifiée avec succès.");
+                    } catch (SQLException ex) {
+                        AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + ex.getMessage());
                     }
                 }
+                cancelEdit();
+            } finally {
+                confirming = false;
             }
-        };
+        }
     }
 
     // ============================================
-    // CELLULE POUR LES COMPÉTENCES
+    // CELLULE COMPÉTENCES
     // ============================================
-    public static TableCell<Cours, String> competencesCell() {
-        return new TableCell<Cours, String>() {
-            private TextField textField;
+    public static TableCell<Cours, String> getCompetencesCell() {
+        return new CoursCompetencesCellImpl();
+    }
 
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
+    private static class CoursCompetencesCellImpl extends TableCell<Cours, String> {
+        private TextField textField;
+        private boolean confirming;
+
+        @Override
+        public void startEdit() {
+            if (!isEditable() || !getTableView().isEditable() || !getTableColumn().isEditable()) return;
+            super.startEdit();
+            createTextField();
+            setText(null);
+            setGraphic(textField);
+            textField.selectAll();
+            textField.requestFocus();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setText(getItem() != null ? getItem().substring(0, Math.min(20, getItem().length())) + "..." : "");
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) textField.setText(item);
                     setText(null);
-                    setGraphic(null);
+                    setGraphic(textField);
                 } else {
-                    if (isEditing()) {
-                        if (textField != null) textField.setText(item);
-                        setText(null);
-                        setGraphic(textField);
-                    } else {
-                        setText(item != null ? item.substring(0, Math.min(20, item.length())) + "..." : "");
-                        setGraphic(null);
-                    }
+                    setText(item != null ? item.substring(0, Math.min(20, item.length())) + "..." : "");
+                    setGraphic(null);
                 }
             }
+        }
 
-            @Override
-            public void startEdit() {
-                super.startEdit();
-                textField = new TextField(getItem());
-                textField.setOnAction(e -> commitEdit(textField.getText()));
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-                textField.requestFocus();
-            }
+        private void createTextField() {
+            textField = new TextField(getItem());
+            textField.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                    confirmEdit();
+                } else if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+            textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) confirmEdit();
+            });
+        }
 
-            @Override
-            public void commitEdit(String newValue) {
-                if (newValue.length() > 500) {
+        private void confirmEdit() {
+            if (confirming) return;
+            confirming = true;
+            try {
+                String newValue = textField.getText().trim();
+                String oldValue = getItem();
+
+                if (newValue.equals(oldValue)) {
+                    cancelEdit();
+                    return;
+                }
+
+                if (!newValue.isEmpty() && newValue.length() > 500) {
                     AlertUtils.showWarning("⚠️ Validation",
-                            "Les compétences ne peuvent pas dépasser 500 caractères.\n" +
+                            "Les compétences ne peuvent pas dépasser 500 caractères.\n\n" +
                                     "Valeur saisie: " + newValue.length() + " caractères.");
                     cancelEdit();
                     return;
                 }
 
-                Cours cours = getTableView().getItems().get(getIndex());
-                cours.setCompetences_visees(newValue);
-                try {
-                    coursService.update(cours);
-                    super.commitEdit(newValue);
-                    getTableView().refresh();
-                } catch (SQLException e) {
-                    AlertUtils.showError("❌ Erreur", "Erreur lors de la modification:\n" + e.getMessage());
+                boolean confirmed = AlertUtils.showConfirmation(
+                        "✏️ Confirmation",
+                        "Êtes-vous sûr de modifier les compétences ?",
+                        "Oui, modifier",
+                        "Non, annuler"
+                );
+
+                if (confirmed) {
+                    Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (cours == null) {
+                        cancelEdit();
+                        return;
+                    }
+                    cours.setCompetences_visees(newValue);
+                    try {
+                        coursService.update(cours);
+                        commitEdit(newValue);
+                        getTableView().refresh();
+                        AlertUtils.showSuccess("✅ Succès", "Compétences modifiées avec succès.");
+                    } catch (SQLException e) {
+                        AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
+                    }
                 }
+                cancelEdit();
+            } finally {
+                confirming = false;
             }
-        };
-    }
-
-    // ============================================
-    // CELLULE POUR LES ACTIONS (boutons)
-    // ============================================
-    public static TableCell<Cours, Void> actionsCell() {
-        return new TableCell<Cours, Void>() {
-            private final Button btnModules = new Button("📚");
-            private final Button btnLecons = new Button("📖");
-            private final Button btnDelete = new Button("🗑️");
-            private final HBox actions = new HBox(6, btnModules, btnLecons, btnDelete);
-
-            {
-                actions.setAlignment(javafx.geometry.Pos.CENTER);
-
-                btnModules.setStyle("-fx-background-color: #5E548E; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5 10; -fx-background-radius: 5; -fx-cursor: hand;");
-                btnLecons.setStyle("-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5 10; -fx-background-radius: 5; -fx-cursor: hand;");
-                btnDelete.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5 10; -fx-background-radius: 5; -fx-cursor: hand;");
-
-                btnModules.setOnAction(event -> {
-                    Cours cours = getTableView().getItems().get(getIndex());
-                    MainShellController.getInstance().showModulesViewWithCours(cours.getId(), cours.getTitre());
-                });
-
-                btnLecons.setOnAction(event -> {
-                    Cours cours = getTableView().getItems().get(getIndex());
-                    MainShellController.getInstance().showLeconsViewWithCours(cours.getId(), cours.getTitre());
-                });
-
-                btnDelete.setOnAction(event -> {
-                    Cours cours = getTableView().getItems().get(getIndex());
-                    // La logique de suppression sera dans le contrôleur
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : actions);
-            }
-        };
+        }
     }
 }

@@ -163,11 +163,10 @@
                 <TableView fx:id="tableLecons" VBox.vgrow="ALWAYS" editable="true"
                            style="-fx-background-color: transparent; -fx-border-color: rgba(94,84,142,0.15); -fx-border-radius: 16;">
                     <columns>
-                        <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
-                        <TableColumn fx:id="colTitre" text="TITRE" prefWidth="200"/>
+                        <TableColumn fx:id="colTitre" text="TITRE" prefWidth="300"/>
                         <TableColumn fx:id="colContenu" text="CONTENU" prefWidth="400"/>
                         <TableColumn fx:id="colVideo" text="VIDÉO" prefWidth="80"/>
-                        <TableColumn fx:id="colOrdre" text="ORDRE" prefWidth="80"/>
+                        <TableColumn fx:id="colOrdre" text="ORDRE" prefWidth="100"/>
                         <TableColumn fx:id="colActions" text="ACTIONS" prefWidth="100"/>
                     </columns>
                 </TableView>
