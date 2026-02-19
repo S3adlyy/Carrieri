@@ -49,14 +49,12 @@
             </VBox>
 
             <!-- RECHERCHE -->
-            <HBox style="-fx-background-color: white; -fx-background-radius: 50px; -fx-border-color: #d8c9f0; -fx-border-width: 1.5; -fx-border-radius: 50px; -fx-padding: 5;">
+            <HBox styleClass="search-container" style="-fx-background-color: white; -fx-background-radius: 50px; -fx-border-color: #d8c9f0; -fx-border-width: 1.5; -fx-border-radius: 50px; -fx-padding: 5;">
                 <TextField fx:id="txtRecherche"
                            promptText="Rechercher un cours par titre ou description..."
                            style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 10 20;"
                            HBox.hgrow="ALWAYS"/>
-                <Button text="Rechercher" onAction="#rechercherCours"
-                        style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #231942 0%, #5E548E 100%);
-                               -fx-text-fill: white; -fx-font-weight: 900; -fx-padding: 10 30; -fx-background-radius: 50px; -fx-cursor: hand;"/>
+                <Button text="Rechercher" onAction="#rechercherCours" styleClass="search-button"/>
             </HBox>
 
             <!-- STATISTIQUES -->

@@ -4,14 +4,17 @@ import entities.*;
 import entities.Module;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.ListChangeListener;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import services.*;
 import utils.AlertUtils;
+import javafx.beans.value.ChangeListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -123,14 +126,30 @@ public class CoursPlayerController {
             }
         });
     }
+    private void rechargerContenuAvecTheme() {
+        if (leconCourante != null) {
+            System.out.println("🎨 Changement de thème détecté, rechargement du contenu...");
+            afficherLecon(leconCourante);
+        }
+    }
 
+    // Modifiez la méthode setCours existante
     public void setCours(Cours cours) {
         this.coursActuel = cours;
         lblCoursTitre.setText(cours.getTitre());
         chargerModules();
-
-        // ✅ Mettre à jour la progression immédiatement
         mettreAJourProgression();
+
+        // Ajouter un écouteur pour les changements de thème
+        Platform.runLater(() -> {
+            Scene scene = lblCoursTitre.getScene();
+            if (scene != null) {
+                // Utiliser ListChangeListener au lieu de ChangeListener
+                scene.getStylesheets().addListener((ListChangeListener<String>) change -> {
+                    rechargerContenuAvecTheme();
+                });
+            }
+        });
     }
 
     // ============================================
@@ -143,7 +162,7 @@ public class CoursPlayerController {
 
         for (Module module : modules) {
             Label moduleLabel = new Label("Module " + module.getOrdre() + " : " + module.getTitre());
-            moduleLabel.setStyle("-fx-font-weight:bold; -fx-padding:5;");
+            moduleLabel.getStyleClass().add("module-label");
             boxModules.getChildren().add(moduleLabel);
 
             List<Lecon> lecons = leconService.getLeconsByModule(module.getId());
@@ -183,7 +202,7 @@ public class CoursPlayerController {
             if (!quizReussi) {
                 Button btnQuiz = new Button("   📝 PASSER LE QUIZ DU MODULE");
                 btnQuiz.setMaxWidth(Double.MAX_VALUE);
-                btnQuiz.setStyle("-fx-background-color: #9F86C0; -fx-text-fill: white; -fx-font-weight: bold;");
+                btnQuiz.getStyleClass().add("btn-quiz-module");
                 btnQuiz.setUserData(module);
                 btnQuiz.setOnAction(e -> {
                     Module m = (Module) btnQuiz.getUserData();
@@ -192,7 +211,7 @@ public class CoursPlayerController {
                 boxModules.getChildren().add(btnQuiz);
             } else {
                 Label lblQuizReussi = new Label("   ✅ Quiz du module réussi");
-                lblQuizReussi.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
+                lblQuizReussi.getStyleClass().add("label-quiz-reussi");
                 boxModules.getChildren().add(lblQuizReussi);
             }
         }
@@ -226,7 +245,7 @@ public class CoursPlayerController {
                 // Afficher bouton test final
                 Button btnTestFinal = new Button("   🎯 PASSER LE TEST FINAL DU COURS");
                 btnTestFinal.setMaxWidth(Double.MAX_VALUE);
-                btnTestFinal.setStyle("-fx-background-color: #E0B1CB; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
+                btnTestFinal.getStyleClass().add("btn-test-final");
                 btnTestFinal.setOnAction(e -> lancerTestFinal());
                 boxModules.getChildren().add(btnTestFinal);
 
@@ -241,11 +260,11 @@ public class CoursPlayerController {
 
     private void afficherSuccesCours() {
         Label lblCoursReussi = new Label("   🎓 FÉLICITATIONS ! VOUS AVEZ RÉUSSI LE COURS !");
-        lblCoursReussi.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold; -fx-font-size: 14px;");
+        lblCoursReussi.getStyleClass().add("label-cours-reussi");
         boxModules.getChildren().add(lblCoursReussi);
         Button btnCertificat = new Button("   📄 GÉNÉRER MON CERTIFICAT");
         btnCertificat.setMaxWidth(Double.MAX_VALUE);
-        btnCertificat.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;");
+        btnCertificat.getStyleClass().add("btn-certificat");
         btnCertificat.setOnAction(e -> genererCertificat());
         boxModules.getChildren().add(btnCertificat);
     }
@@ -564,6 +583,10 @@ public class CoursPlayerController {
     // AFFICHAGE VIDÉO - AVEC MARQUEUR DE FIN
     // ============================================
 
+    // ============================================
+// AFFICHAGE VIDÉO - AVEC MARQUEUR DE FIN ET SUPPORT DU THÈME SOMBRE
+// ============================================
+
     private void afficherVideoLocale(Lecon lecon) {
         File tempFile = null;
         try {
@@ -574,29 +597,15 @@ public class CoursPlayerController {
             String videoPath = tempFile.toURI().toString();
             String contenu = lecon.getContenu();
 
-            String html = "<!DOCTYPE html>" +
-                    "<html><head><meta charset='UTF-8'>" +
-                    "<style>" +
-                    "body { font-family: Arial; padding: 20px; background: #f9f9f9; }" +
-                    ".video-container { background: black; border-radius: 10px; overflow: hidden; margin-bottom: 30px; }" +
-                    "video { width: 100%; max-height: 400px; }" +
-                    ".content { background: white; padding: 30px; border-radius: 10px; }" +
-                    "h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }" +
-                    ".end-marker { " +
-                    "    text-align: center; " +
-                    "    color: #7f8c8d; " +
-                    "    margin-top: 40px; " +
-                    "    padding-top: 20px; " +
-                    "    border-top: 2px dashed #bdc3c7; " +
-                    "    font-weight: bold;" +
-                    "}" +
-                    "</style></head><body>" +
-                    "<div class='video-container'><video controls preload='auto'>" +
-                    "<source src='" + videoPath + "' type='video/mp4'></video></div>" +
-                    "<div class='content'><h2>" + lecon.getTitre() + "</h2>" +
-                    formatContenuPourHTMLAdaptatif(contenu) +
-                    "<div class='end-marker'>★ FIN DE LA LEÇON ★</div></div>" +
-                    "</body></html>";
+            // ✅ Détecter si le mode sombre est actif
+            boolean isDarkMode = Main.isDarkMode();
+
+            String html;
+            if (isDarkMode) {
+                html = genererHtmlVideoSombre(lecon.getTitre(), videoPath, contenu);
+            } else {
+                html = genererHtmlVideoClair(lecon.getTitre(), videoPath, contenu);
+            }
 
             webEngine.loadContent(html);
 
@@ -606,39 +615,179 @@ public class CoursPlayerController {
         }
     }
 
-    // ============================================
-    // AFFICHAGE TEXTE - AVEC MARQUEUR DE FIN
-    // ============================================
+// ============================================
+// AFFICHAGE TEXTE - AVEC MARQUEUR DE FIN ET SUPPORT DU THÈME SOMBRE
+// ============================================
 
     private void afficherContenuWebViewAdaptatif(String contenu) {
-        int nombreLignes = contenu.split("\n").length;
-        int hauteurEstimee = Math.min(2000, Math.max(400, nombreLignes * 25 + 100));
+        // ✅ Détecter si le mode sombre est actif
+        boolean isDarkMode = Main.isDarkMode();
 
-        String htmlContent = "<!DOCTYPE html>" +
-                "<html><head><meta charset='UTF-8'>" +
-                "<style>" +
-                "body { font-family: 'Segoe UI'; font-size: 16px; line-height: 1.8; padding: 30px; background: #f9f9f9; }" +
-                ".container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; }" +
-                "h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 15px; }" +
-                "p { margin-bottom: 20px; text-align: justify; }" +
-                ".end-marker { " +
-                "    text-align: center; " +
-                "    color: #7f8c8d; " +
-                "    margin-top: 50px; " +
-                "    padding-top: 20px; " +
-                "    border-top: 3px solid #3498db; " +
-                "    font-size: 18px;" +
-                "    font-weight: bold;" +
-                "}" +
-                "</style></head><body>" +
-                "<div class='container'>" +
-                "<h1>" + lblLeconTitre.getText() + "</h1>" +
-                formatContenuPourHTMLAdaptatif(contenu) +
-                "<div class='end-marker'>★ FIN DE LA LEÇON ★</div>" +
-                "</div></body></html>";
+        String htmlContent;
+        if (isDarkMode) {
+            htmlContent = genererHtmlTexteSombre(lblLeconTitre.getText(), contenu);
+        } else {
+            htmlContent = genererHtmlTexteClair(lblLeconTitre.getText(), contenu);
+        }
 
         webEngine.loadContent(htmlContent);
     }
+
+// ============================================
+// GÉNÉRATION HTML - MODE CLAIR
+// ============================================
+
+    private String genererHtmlVideoClair(String titre, String videoPath, String contenu) {
+        return "<!DOCTYPE html>" +
+                "<html><head><meta charset='UTF-8'>" +
+                "<style>" +
+                "body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #f5f3f7; margin: 0; }" +
+                ".video-container { background: #1a1a2e; border-radius: 16px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(94,84,142,0.15); border: 1px solid rgba(94,84,142,0.2); }" +
+                "video { width: 100%; max-height: 400px; display: block; }" +
+                ".content { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(94,84,142,0.1); border: 1px solid rgba(94,84,142,0.15); }" +
+                "h2 { color: #231942; border-bottom: 3px solid #5E548E; padding-bottom: 15px; font-weight: 700; margin-top: 0; font-size: 24px; }" +
+                "p { color: #2d2d44; line-height: 1.8; font-size: 16px; margin-bottom: 20px; text-align: justify; }" +
+                ".chapter { background: #f8f4ff; padding: 15px; border-radius: 12px; margin: 20px 0; border-left: 5px solid #9F86C0; }" +
+                ".chapter-title { color: #5E548E; font-weight: bold; font-size: 18px; margin-bottom: 10px; }" +
+                ".end-marker { " +
+                "    text-align: center; " +
+                "    color: #6b7280; " +
+                "    margin-top: 50px; " +
+                "    padding-top: 25px; " +
+                "    border-top: 3px dashed #9F86C0; " +
+                "    font-weight: bold;" +
+                "    font-size: 18px;" +
+                "    letter-spacing: 2px;" +
+                "}" +
+                "ul, ol { color: #2d2d44; line-height: 1.8; }" +
+                "li { margin-bottom: 8px; }" +
+                "code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-family: monospace; }" +
+                "pre { background: #f0f0f0; padding: 15px; border-radius: 8px; overflow-x: auto; }" +
+                "</style></head><body>" +
+                "<div class='video-container'><video controls preload='auto'>" +
+                "<source src='" + videoPath + "' type='video/mp4'></video></div>" +
+                "<div class='content'><h2>" + titre + "</h2>" +
+                formatContenuPourHTMLAdaptatif(contenu) +
+                "<div class='end-marker'>★ FIN DE LA LEÇON ★</div></div>" +
+                "</body></html>";
+    }
+
+    private String genererHtmlTexteClair(String titre, String contenu) {
+        int nombreLignes = contenu.split("\n").length;
+        int hauteurEstimee = Math.min(2000, Math.max(400, nombreLignes * 25 + 100));
+
+        return "<!DOCTYPE html>" +
+                "<html><head><meta charset='UTF-8'>" +
+                "<style>" +
+                "body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #f5f3f7; margin: 0; }" +
+                ".container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(94,84,142,0.1); border: 1px solid rgba(94,84,142,0.15); }" +
+                "h1 { color: #231942; border-bottom: 3px solid #5E548E; padding-bottom: 15px; font-weight: 800; margin-top: 0; font-size: 28px; }" +
+                "p { color: #2d2d44; line-height: 1.8; font-size: 16px; margin-bottom: 20px; text-align: justify; }" +
+                ".chapter { background: #f8f4ff; padding: 15px; border-radius: 12px; margin: 20px 0; border-left: 5px solid #9F86C0; }" +
+                ".chapter-title { color: #5E548E; font-weight: bold; font-size: 18px; margin-bottom: 10px; }" +
+                ".end-marker { " +
+                "    text-align: center; " +
+                "    color: #6b7280; " +
+                "    margin-top: 50px; " +
+                "    padding-top: 25px; " +
+                "    border-top: 3px dashed #9F86C0; " +
+                "    font-weight: bold;" +
+                "    font-size: 18px;" +
+                "    letter-spacing: 2px;" +
+                "}" +
+                "ul, ol { color: #2d2d44; line-height: 1.8; }" +
+                "li { margin-bottom: 8px; }" +
+                "code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-family: monospace; }" +
+                "pre { background: #f0f0f0; padding: 15px; border-radius: 8px; overflow-x: auto; }" +
+                "</style></head><body>" +
+                "<div class='container'>" +
+                "<h1>" + titre + "</h1>" +
+                formatContenuPourHTMLAdaptatif(contenu) +
+                "<div class='end-marker'>★ FIN DE LA LEÇON ★</div>" +
+                "</div></body></html>";
+    }
+
+// ============================================
+// GÉNÉRATION HTML - MODE SOMBRE
+// ============================================
+
+    private String genererHtmlVideoSombre(String titre, String videoPath, String contenu) {
+        return "<!DOCTYPE html>" +
+                "<html><head><meta charset='UTF-8'>" +
+                "<style>" +
+                "body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #1a1a2e; margin: 0; }" +
+                ".video-container { background: #0f0f1f; border-radius: 16px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #5E548E; }" +
+                "video { width: 100%; max-height: 400px; display: block; }" +
+                ".content { background: #2d2d44; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #5E548E; }" +
+                "h2 { color: #E0B1CB; border-bottom: 3px solid #9F86C0; padding-bottom: 15px; font-weight: 700; margin-top: 0; font-size: 24px; }" +
+                "p { color: #e0e0e0; line-height: 1.8; font-size: 16px; margin-bottom: 20px; text-align: justify; }" +
+                ".chapter { background: #35354f; padding: 15px; border-radius: 12px; margin: 20px 0; border-left: 5px solid #E0B1CB; }" +
+                ".chapter-title { color: #E0B1CB; font-weight: bold; font-size: 18px; margin-bottom: 10px; }" +
+                ".end-marker { " +
+                "    text-align: center; " +
+                "    color: #9F86C0; " +
+                "    margin-top: 50px; " +
+                "    padding-top: 25px; " +
+                "    border-top: 3px dashed #5E548E; " +
+                "    font-weight: bold;" +
+                "    font-size: 18px;" +
+                "    letter-spacing: 2px;" +
+                "}" +
+                "ul, ol { color: #e0e0e0; line-height: 1.8; }" +
+                "li { margin-bottom: 8px; }" +
+                "code { background: #40405c; color: #E0B1CB; padding: 2px 6px; border-radius: 4px; font-family: monospace; }" +
+                "pre { background: #40405c; color: #e0e0e0; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid #5E548E; }" +
+                "a { color: #E0B1CB; }" +
+                "a:hover { color: #f5b0d5; }" +
+                "</style></head><body>" +
+                "<div class='video-container'><video controls preload='auto'>" +
+                "<source src='" + videoPath + "' type='video/mp4'></video></div>" +
+                "<div class='content'><h2>" + titre + "</h2>" +
+                formatContenuPourHTMLAdaptatif(contenu) +
+                "<div class='end-marker'>★ FIN DE LA LEÇON ★</div></div>" +
+                "</body></html>";
+    }
+
+    private String genererHtmlTexteSombre(String titre, String contenu) {
+        int nombreLignes = contenu.split("\n").length;
+        int hauteurEstimee = Math.min(2000, Math.max(400, nombreLignes * 25 + 100));
+
+        return "<!DOCTYPE html>" +
+                "<html><head><meta charset='UTF-8'>" +
+                "<style>" +
+                "body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #1a1a2e; margin: 0; }" +
+                ".container { max-width: 900px; margin: 0 auto; background: #2d2d44; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #5E548E; }" +
+                "h1 { color: #E0B1CB; border-bottom: 3px solid #9F86C0; padding-bottom: 15px; font-weight: 800; margin-top: 0; font-size: 28px; }" +
+                "p { color: #e0e0e0; line-height: 1.8; font-size: 16px; margin-bottom: 20px; text-align: justify; }" +
+                ".chapter { background: #35354f; padding: 15px; border-radius: 12px; margin: 20px 0; border-left: 5px solid #E0B1CB; }" +
+                ".chapter-title { color: #E0B1CB; font-weight: bold; font-size: 18px; margin-bottom: 10px; }" +
+                ".end-marker { " +
+                "    text-align: center; " +
+                "    color: #9F86C0; " +
+                "    margin-top: 50px; " +
+                "    padding-top: 25px; " +
+                "    border-top: 3px dashed #5E548E; " +
+                "    font-weight: bold;" +
+                "    font-size: 18px;" +
+                "    letter-spacing: 2px;" +
+                "}" +
+                "ul, ol { color: #e0e0e0; line-height: 1.8; }" +
+                "li { margin-bottom: 8px; }" +
+                "code { background: #40405c; color: #E0B1CB; padding: 2px 6px; border-radius: 4px; font-family: monospace; }" +
+                "pre { background: #40405c; color: #e0e0e0; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid #5E548E; }" +
+                "a { color: #E0B1CB; }" +
+                "a:hover { color: #f5b0d5; }" +
+                "</style></head><body>" +
+                "<div class='container'>" +
+                "<h1>" + titre + "</h1>" +
+                formatContenuPourHTMLAdaptatif(contenu) +
+                "<div class='end-marker'>★ FIN DE LA LEÇON ★</div>" +
+                "</div></body></html>";
+    }
+
+// ============================================
+// FORMATAGE DU CONTENU (inchangé)
+// ============================================
 
     private String formatContenuPourHTMLAdaptatif(String contenu) {
         if (contenu == null || contenu.isEmpty()) {

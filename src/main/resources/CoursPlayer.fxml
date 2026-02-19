@@ -14,7 +14,7 @@
     <top>
         <VBox styleClass="header-gradient" spacing="10" alignment="CENTER_LEFT">
             <padding><Insets top="15" bottom="15" left="20" right="20"/></padding>
-            <Label fx:id="lblCoursTitre" styleClass="header-title"/>
+            <Label fx:id="lblCoursTitre" styleClass="lecon-title"/>
             <Label fx:id="lblProgression" text="0%" styleClass="header-subtitle"/>
         </VBox>
     </top>
@@ -33,13 +33,11 @@
             <Label fx:id="lblLeconTitre"
                    style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: #231942;"/>
 
-            <WebView fx:id="webViewContenu" prefHeight="500"
+            <WebView fx:id="webViewContenu" prefHeight="500" styleClass="web-view"
                      style="-fx-background-radius: 16; -fx-border-radius: 16;"/>
 
-            <Button fx:id="btnTerminer"
-                    text="✅ Marquer comme terminée"
-                    styleClass="quiz-terminer-button"
-                    visible="false"
+            <Button fx:id="btnTerminer" styleClass="quiz-terminer-button" text="✅ Marquer comme terminée"
+                     visible="false"
                     maxWidth="300" alignment="CENTER"/>
 
             <Label fx:id="lblStatus"
@@ -48,12 +46,10 @@
     </center>
 
     <bottom>
-        <HBox spacing="15" style="-fx-padding: 15; -fx-background-color: white; -fx-border-color: #f3e8ff; -fx-border-width: 1 0 0 0;" alignment="CENTER_LEFT">
-            <Label text="Progression globale :" style="-fx-font-weight: 700; -fx-text-fill: #231942;"/>
-            <ProgressBar fx:id="progressBar" prefWidth="400"
-                         style="-fx-accent: #5E548E; -fx-background-radius: 10;"/>
-            <Label fx:id="lblProgressionValue" text="0%"
-                   style="-fx-font-weight: 700; -fx-text-fill: #5E548E; -fx-font-size: 16px;"/>
+        <HBox styleClass="progress-bottom" spacing="15" alignment="CENTER_LEFT">
+            <Label text="Progression globale :" styleClass="progress-label"/>
+            <ProgressBar fx:id="progressBar" prefWidth="400"/>
+            <Label fx:id="lblProgressionValue" text="0%" styleClass="progress-value"/>
         </HBox>
     </bottom>
 

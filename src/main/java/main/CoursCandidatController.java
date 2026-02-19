@@ -112,14 +112,14 @@ public class CoursCandidatController {
         // --- IMAGE DE COUVERTURE ---
         StackPane imageContainer = new StackPane();
         imageContainer.setPrefHeight(160);
-        imageContainer.setStyle("-fx-background-color: linear-gradient(to bottom, #231942, #5E548E);");
+        imageContainer.getStyleClass().add("image-container");
 
         ImageView imageView;
         if (cours.getImageCouverture() != null && cours.getImageCouverture().length > 0) {
             imageView = new ImageView(new Image(new ByteArrayInputStream(cours.getImageCouverture())));
         } else {
             Label defaultIcon = new Label("📚");
-            defaultIcon.setStyle("-fx-font-size: 48px; -fx-text-fill: white; -fx-opacity: 0.5;");
+            defaultIcon.getStyleClass().add("default-icon");
             imageContainer.getChildren().add(defaultIcon);
             imageView = new ImageView();
         }
@@ -142,7 +142,7 @@ public class CoursCandidatController {
         // --- CONTENU DE LA CARTE ---
         VBox content = new VBox(15);
         content.setPadding(new Insets(20));
-        content.setStyle("-fx-background-color: white; -fx-background-radius: 0 0 20 20;");
+        content.getStyleClass().add("card-content");
 
         HBox badges = new HBox(10);
         badges.setAlignment(Pos.CENTER_LEFT);
@@ -152,16 +152,16 @@ public class CoursCandidatController {
 
         Label lblCategorie = new Label(cours.getCompetences_visees() != null ?
                 cours.getCompetences_visees().split(",")[0] : "Général");
-        lblCategorie.setStyle("-fx-background-color: #f3e8ff; -fx-text-fill: #5E548E; -fx-padding: 4 12; -fx-background-radius: 50px; -fx-font-size: 12px; -fx-font-weight: 600;");
+        lblCategorie.getStyleClass().add("category-badge");
 
         badges.getChildren().addAll(lblNiveau, lblCategorie);
 
         Label lblTitre = new Label(cours.getTitre());
-        lblTitre.setStyle("-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #231942;");
+        lblTitre.getStyleClass().add("course-title-label");
         lblTitre.setWrapText(true);
 
         Label lblDesc = new Label(cours.getDescription());
-        lblDesc.setStyle("-fx-text-fill: #6b7280; -fx-font-size: 13px;");
+        lblDesc.getStyleClass().add("course-description-label");
         lblDesc.setWrapText(true);
         lblDesc.setMaxHeight(60);
 
@@ -170,10 +170,10 @@ public class CoursCandidatController {
 
         HBox durationBox = new HBox(5);
         durationBox.setAlignment(Pos.CENTER_LEFT);
-        Label clockIcon = new Label("⏱️");
+        Label clockIcon = new Label("⏱");
         clockIcon.setStyle("-fx-font-size: 14px;");
         Label lblDuration = new Label(cours.getDuree() + " heures");
-        lblDuration.setStyle("-fx-text-fill: #5E548E; -fx-font-size: 13px; -fx-font-weight: 600;");
+        lblDuration.getStyleClass().add("duration-label");
         durationBox.getChildren().addAll(clockIcon, lblDuration);
 
         metaBox.getChildren().add(durationBox);
@@ -184,7 +184,7 @@ public class CoursCandidatController {
             Label obligIcon = new Label("📌");
             obligIcon.setStyle("-fx-font-size: 14px;");
             Label lblOblig = new Label("Obligatoire");
-            lblOblig.setStyle("-fx-text-fill: #ff6b6b; -fx-font-size: 13px; -fx-font-weight: 600;");
+            lblOblig.getStyleClass().add("obligatoire-label");
             obligBox.getChildren().addAll(obligIcon, lblOblig);
             metaBox.getChildren().add(obligBox);
         }
@@ -193,29 +193,14 @@ public class CoursCandidatController {
         buttonBox.setAlignment(Pos.CENTER);
 
         Button btnCommencer = new Button("Commencer");
-        btnCommencer.setStyle(
-                "-fx-background-color: linear-gradient(to right, #231942, #5E548E);" +
-                        "-fx-text-fill: white;" +
-                        "-fx-font-weight: 700;" +
-                        "-fx-padding: 10 20;" +
-                        "-fx-background-radius: 50px;" +
-                        "-fx-cursor: hand;" +
-                        "-fx-font-size: 13px;"
-        );
+        btnCommencer.getStyleClass().add("btn-commencer");
+
         btnCommencer.setOnAction(e -> ouvrirCours(cours));
         btnCommencer.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(btnCommencer, Priority.ALWAYS);
 
         Button btnPDF = new Button("PDF");
-        btnPDF.setStyle(
-                "-fx-background-color: #10b981;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-font-weight: 700;" +
-                        "-fx-padding: 10 15;" +
-                        "-fx-background-radius: 50px;" +
-                        "-fx-cursor: hand;" +
-                        "-fx-font-size: 13px;"
-        );
+        btnPDF.getStyleClass().add("btn-pdf");
         btnPDF.setOnAction(event -> genererCertifTest(cours));
 
         buttonBox.getChildren().addAll(btnCommencer, btnPDF);

@@ -809,13 +809,6 @@
     -fx-text-fill: #5E548E;
 }
 
-.level-badge {
-    -fx-background-radius: 50px;
-    -fx-padding: 4 12;
-    -fx-font-size: 12px;
-    -fx-font-weight: 700;
-}
-
 .level-debutant {
     -fx-background-color: #E0B1CB;
     -fx-text-fill: #231942;
@@ -927,6 +920,24 @@
 .progress-bar .bar {
     -fx-background-color: #10b981;
     -fx-background-radius: 4;
+}
+
+.progress-bottom {
+    -fx-background-color: white;
+    -fx-border-color: #f3e8ff;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 15;
+}
+
+.progress-label {
+    -fx-font-weight: 700;
+    -fx-text-fill: #231942;
+}
+
+.progress-value {
+    -fx-font-weight: 700;
+    -fx-text-fill: #5E548E;
+    -fx-font-size: 16px;
 }
 
 /* ============================================
@@ -1176,9 +1187,9 @@
 }
 
 .search-button {
-    -fx-background-color: linear-gradient(to right, #231942, #5E548E);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #231942 0%, #5E548E 100%);
     -fx-text-fill: white;
-    -fx-font-weight: bold;
+    -fx-font-weight: 900;
     -fx-padding: 10 30;
     -fx-background-radius: 50px;
     -fx-cursor: hand;
@@ -1468,4 +1479,290 @@
     -fx-background-color: rgba(255, 255, 255, 0.15);
     -fx-scale-x: 1.1;
     -fx-scale-y: 1.1;
+}
+/* ============================================
+   STYLES SPÉCIFIQUES POUR CoursCandidatController
+   ============================================ */
+
+/* ===== IMAGE CONTAINER ===== */
+.course-card .image-container {
+    -fx-background-color: linear-gradient(to bottom, #231942, #5E548E);
+}
+
+/* ===== BADGE CATÉGORIE ===== */
+.category-badge {
+    -fx-background-color: #f3e8ff;
+    -fx-text-fill: #5E548E;
+    -fx-padding: 4 12;
+    -fx-background-radius: 50px;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+/* ===== TITRE DU COURS ===== */
+.course-title-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #231942;
+}
+
+/* ===== DESCRIPTION ===== */
+.course-description-label {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 13px;
+}
+
+/* ===== DURÉE ===== */
+.duration-label {
+    -fx-text-fill: #5E548E;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+}
+
+/* ===== LABEL OBLIGATOIRE ===== */
+.obligatoire-label {
+    -fx-text-fill: #ff6b6b;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+}
+
+/* ===== BOUTON COMMENCER ===== */
+.btn-commencer {
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E);
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+    -fx-padding: 10 20;
+    -fx-background-radius: 50px;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+    -fx-max-width: Infinity;
+}
+
+.btn-commencer:hover {
+    -fx-background-color: linear-gradient(to right, #2d2a4e, #7a6ba5);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.3), 10, 0, 0, 2);
+}
+
+/* ===== BOUTON PDF ===== */
+.btn-pdf {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+    -fx-padding: 10 15;
+    -fx-background-radius: 50px;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.btn-pdf:hover {
+    -fx-background-color: #0ea271;
+}
+
+/* ===== ICÔNE PAR DÉFAUT ===== */
+.default-icon {
+    -fx-font-size: 48px;
+    -fx-text-fill: white;
+    -fx-opacity: 0.5;
+}
+
+/* ===== EFFETS DE SURVOL DES CARTES ===== */
+.course-card {
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.15), 10, 0, 0, 2);
+    -fx-transition: all 0.2s ease;
+}
+
+.course-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.3), 20, 0, 0, 5);
+    -fx-translate-y: -3;
+}
+/* ============================================
+   STYLES POUR LES ÉLÉMENTS DU CoursPlayerController
+   ============================================ */
+
+/* ===== TITRE DU COURS ===== */
+#lblCoursTitre {
+    -fx-text-fill: #231942;
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
+}
+
+/* ===== TITRE DE LA LEÇON ===== */
+#lblLeconTitre {
+    -fx-text-fill: #231942;
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
+}
+
+/* ===== LABELS DE PROGRESSION ===== */
+#lblProgression,
+#lblProgressionValue {
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: 700;
+}
+
+/* ===== STATUS LABEL ===== */
+#lblStatus {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 14px;
+    -fx-font-style: italic;
+}
+
+/* ===== LABELS DE MODULE ===== */
+.module-label {
+    -fx-text-fill: #231942;
+    -fx-font-weight: bold;
+    -fx-padding: 5;
+    -fx-font-size: 14px;
+}
+
+/* ===== BOUTON QUIZ ===== */
+.btn-quiz-module {
+    -fx-background-color: #9F86C0;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 15;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.btn-quiz-module:hover {
+    -fx-background-color: #b8a3d3;
+}
+
+/* ===== LABEL QUIZ RÉUSSI ===== */
+.label-quiz-reussi {
+    -fx-text-fill: #10b981;
+    -fx-font-weight: bold;
+    -fx-padding: 5 10;
+}
+
+/* ===== BOUTON TEST FINAL ===== */
+.btn-test-final {
+    -fx-background-color: #E0B1CB;
+    -fx-text-fill: #231942;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 12 20;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.btn-test-final:hover {
+    -fx-background-color: #f5d3e5;
+}
+
+/* ===== LABEL COURS RÉUSSI ===== */
+.label-cours-reussi {
+    -fx-text-fill: #10b981;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10;
+    -fx-background-color: rgba(16, 185, 129, 0.1);
+    -fx-background-radius: 8;
+}
+
+/* ===== BOUTON CERTIFICAT ===== */
+.btn-certificat {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 12 20;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+}
+
+.btn-certificat:hover {
+    -fx-background-color: #0ea271;
+}
+
+/* ===== BOUTON TERMINER ===== */
+#btnTerminer {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-max-width: 300;
+    -fx-alignment: center;
+}
+
+#btnTerminer:hover {
+    -fx-background-color: #7a6ba5;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.3), 10, 0, 0, 2);
+}
+
+#btnTerminer:disabled {
+    -fx-opacity: 0.5;
+}
+
+/* ===== BOX MODULES ===== */
+#boxModules {
+    -fx-background-color: white;
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-border-width: 2;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-padding: 15;
+    -fx-spacing: 8;
+}
+
+#boxModules .button {
+    -fx-background-color: #f8f4ff;
+    -fx-text-fill: #231942;
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 15;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+#boxModules .button:hover {
+    -fx-background-color: #f3e8ff;
+    -fx-border-color: #5E548E;
+}
+
+#boxModules .button:selected {
+    -fx-background-color: #f3e8ff;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+}
+
+/* ===== STYLES POUR LE CONTENU HTML DANS WEBVIEW ===== */
+.web-view-html body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    line-height: 1.6;
+}
+
+.web-view-html .container,
+.web-view-html .content {
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+}
+
+.web-view-html h1,
+.web-view-html h2 {
+    -fx-color: #2c3e50;
+    -fx-border-color: transparent transparent #3498db transparent;
+    -fx-border-width: 0 0 2px 0;
+    -fx-padding: 0 0 10px 0;
+}
+
+.web-view-html .end-marker {
+    -fx-text-alignment: center;
+    -fx-text-fill: #7f8c8d;
+    -fx-padding: 20px 0 0 0;
+    -fx-border-color: #bdc3c7 transparent transparent transparent;
+    -fx-border-width: 2px 0 0 0;
+    -fx-border-style: dashed;
+    -fx-font-weight: bold;
 }
