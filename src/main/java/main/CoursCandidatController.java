@@ -20,6 +20,12 @@ import javafx.scene.layout.Priority;
 import utils.AlertUtils;
 import javafx.stage.DirectoryChooser;
 import java.io.File;
+import services.TraductionService;
+import main.LangueTest;
+import javafx.scene.control.ComboBox;
+import javafx.collections.FXCollections;
+import java.util.HashMap;
+import java.util.Map;
 
 import java.io.ByteArrayInputStream;
 import java.sql.SQLException;
@@ -27,7 +33,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CoursCandidatController {
-
+    @FXML private ComboBox<String> comboLangueTest;
+    private TraductionService traductionService = new TraductionService();
+    private String langueTest = "fr";
+    private Map<Integer, Cours> coursTraduits = new HashMap<>();
     @FXML private Label lblTotalCours;
     @FXML private Label lblTotalCoursStat;
     @FXML private Label lblEnCours;
@@ -53,7 +62,7 @@ public class CoursCandidatController {
 
         comboDomaine.valueProperty().addListener((obs, oldVal, newVal) -> filtrerCours());
         comboNiveau.valueProperty().addListener((obs, oldVal, newVal) -> filtrerCours());
-
+        setupLangueSelector();
         loadCoursFromDatabase();
         chargerStatistiques();
 
@@ -100,7 +109,8 @@ public class CoursCandidatController {
     private void displayCours(List<Cours> list) {
         tileCours.getChildren().clear();
         for (Cours c : list) {
-            tileCours.getChildren().add(createCoursCard(c));
+            Cours coursTraduit = traduireCours(c);
+            tileCours.getChildren().add(createCoursCard(coursTraduit));
         }
     }
 
@@ -598,5 +608,84 @@ public class CoursCandidatController {
     @FXML
     private void rechercherCours() {
         filtrerCours();
+    }
+
+    private void setupLangueSelector() {
+        // Initialiser le ComboBox
+        comboLangueTest.setItems(FXCollections.observableArrayList(
+                "🇫🇷 Français (fr)",
+                "🇬🇧 English (en)",
+                "🇪🇸 Español (es)",
+                "🇩🇪 Deutsch (de)",
+                "🇮🇹 Italiano (it)",
+                "🇵🇹 Português (pt)",
+                "🇳🇱 Nederlands (nl)",
+                "🇷🇺 Русский (ru)",
+                "🇨🇳 中文 (zh-Hans)",
+                "🇯🇵 日本語 (ja)",
+                "🇰🇷 한국어 (ko)",
+                "🇸🇦 العربية (ar)",
+                "🇮🇳 हिन्दी (hi)"
+        ));
+
+        // Récupérer la langue depuis LangueTest
+        langueTest = LangueTest.getInstance().getLangue();
+
+        // Sélectionner la bonne valeur
+        for (String item : comboLangueTest.getItems()) {
+            if (item.contains("(" + langueTest + ")")) {
+                comboLangueTest.setValue(item);
+                break;
+            }
+        }
+
+        comboLangueTest.setOnAction(e -> changerLangue());
+    }
+    @FXML
+    private void changerLangue() {
+        String selection = comboLangueTest.getValue();
+        if (selection != null && selection.contains("(")) {
+            langueTest = selection.substring(
+                    selection.indexOf("(") + 1,
+                    selection.indexOf(")")
+            );
+
+            LangueTest.getInstance().setLangue(langueTest);
+            rechargerCoursAvecTraduction();
+
+            AlertUtils.showInfo("🌐 Langue changée",
+                    "Les cours sont maintenant en " + selection.split(" ")[0]);
+        }
+    }
+    private void rechargerCoursAvecTraduction() {
+        try {
+            tousLesCours = coursServices.readAll();
+            coursTraduits.clear();
+            displayCours(tousLesCours);
+            lblTotalCours.setText(tousLesCours.size() + " cours disponibles");
+            System.out.println(traductionService.getStatistiques());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    private Cours traduireCours(Cours cours) {
+        if (coursTraduits.containsKey(cours.getId())) {
+            return coursTraduits.get(cours.getId());
+        }
+
+        Cours coursTraduit = new Cours(
+                traductionService.traduire(cours.getTitre(), langueTest),
+                traductionService.traduire(cours.getDescription(), langueTest),
+                cours.getDuree(),
+                cours.getNiveau(),
+                traductionService.traduire(cours.getCompetences_visees(), langueTest),
+                cours.isEst_obligatoire(),
+                cours.getCreatedBy(),
+                cours.getImageCouverture()
+        );
+        coursTraduit.setId(cours.getId());
+
+        coursTraduits.put(cours.getId(), coursTraduit);
+        return coursTraduit;
     }
 }

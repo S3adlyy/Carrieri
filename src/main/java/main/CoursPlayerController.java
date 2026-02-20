@@ -22,7 +22,10 @@ import java.awt.Desktop;
 import java.net.URI;
 import java.net.URLEncoder;
 import javafx.stage.DirectoryChooser;
-
+import services.TraductionService;
+import main.LangueTest;
+import java.util.HashMap;
+import java.util.Map;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,7 +33,10 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class CoursPlayerController {
-
+    private TraductionService traductionService = new TraductionService();
+    private String langueTest = "fr";
+    private Map<Integer, Lecon> leconsTraduites = new HashMap<>();
+    private Map<Integer, String> modulesTraduits = new HashMap<>();
     @FXML
     private Label lblCoursTitre;
     @FXML
@@ -140,10 +146,16 @@ public class CoursPlayerController {
         }
     }
 
-    // Modifiez la méthode setCours existante
     public void setCours(Cours cours) {
         this.coursActuel = cours;
-        lblCoursTitre.setText(cours.getTitre());
+
+        // Récupérer la langue
+        this.langueTest = LangueTest.getInstance().getLangue();
+
+        // Traduire le titre du cours
+        String titreTraduit = traductionService.traduire(cours.getTitre(), langueTest);
+        lblCoursTitre.setText(titreTraduit);
+
         chargerModules();
         mettreAJourProgression();
 
@@ -151,7 +163,6 @@ public class CoursPlayerController {
         Platform.runLater(() -> {
             Scene scene = lblCoursTitre.getScene();
             if (scene != null) {
-                // Utiliser ListChangeListener au lieu de ChangeListener
                 scene.getStylesheets().addListener((ListChangeListener<String>) change -> {
                     rechargerContenuAvecTheme();
                 });
@@ -168,56 +179,39 @@ public class CoursPlayerController {
         List<Module> modules = moduleService.getModulesByCours(coursActuel.getId());
 
         for (Module module : modules) {
-            Label moduleLabel = new Label("Module " + module.getOrdre() + " : " + module.getTitre());
+            // Traduire le titre du module
+            String moduleTitreTraduit = traductionService.traduire(
+                    "Module " + module.getOrdre() + " : " + module.getTitre(),
+                    langueTest
+            );
+
+            Label moduleLabel = new Label(moduleTitreTraduit);
             moduleLabel.getStyleClass().add("module-label");
             boxModules.getChildren().add(moduleLabel);
 
             List<Lecon> lecons = leconService.getLeconsByModule(module.getId());
-
-            // Trier les leçons par ordre
             lecons.sort(Comparator.comparingInt(Lecon::getOrdre));
 
-            // Vérifier si le module est accessible
-            boolean moduleAccessible = isModuleAccessible(module, modules);
-
             for (Lecon lecon : lecons) {
-                String texteBouton = "   " + module.getOrdre() + "." + lecon.getOrdre() + " " + lecon.getTitre();
+                String leconTitreTraduit = traductionService.traduire(lecon.getTitre(), langueTest);
 
-                // Vérifier si la leçon est terminée
-                boolean leconTerminee = progressionLeconService.isLeconTerminee(candidatId, lecon.getId());
-                if (leconTerminee) {
+                String texteBouton = "   " + module.getOrdre() + "." + lecon.getOrdre() + " " + leconTitreTraduit;
+
+                if (progressionLeconService.isLeconTerminee(candidatId, lecon.getId())) {
                     texteBouton += " ✓";
                 }
 
                 Button btnLecon = new Button(texteBouton);
                 btnLecon.setMaxWidth(Double.MAX_VALUE);
                 btnLecon.setUserData(lecon);
-
-                // Vérifier si la leçon est accessible
-                boolean leconAccessible = moduleAccessible && isLeconAccessible(lecon, lecons);
-
-                if (leconAccessible || leconTerminee) {
-                    // Leçon accessible ou déjà terminée
-                    btnLecon.setOnAction(e -> {
-                        Lecon l = (Lecon) btnLecon.getUserData();
-                        afficherLecon(l);
-                    });
-                    btnLecon.setStyle("-fx-background-color: #35354f; -fx-text-fill: white;");
-                } else {
-                    // Leçon verrouillée
-                    btnLecon.setDisable(true);
-                    btnLecon.setStyle("-fx-background-color: #2d2d44; -fx-text-fill: #6b7280; -fx-opacity: 0.5;");
-
-                    // Ajouter un tooltip pour expliquer pourquoi
-                    Tooltip tooltip = new Tooltip("🔒 Terminez la leçon précédente d'abord");
-                    btnLecon.setTooltip(tooltip);
-                }
-
+                btnLecon.setOnAction(e -> {
+                    Lecon l = (Lecon) btnLecon.getUserData();
+                    afficherLecon(l);
+                });
                 boxModules.getChildren().add(btnLecon);
             }
 
-            // Vérifier si le quiz du module est accessible
-            verifierQuizModule(module, modules);
+            verifierQuizModule(module,modules);
         }
 
         verifierEtatCours();
@@ -425,26 +419,26 @@ public class CoursPlayerController {
 
     private void afficherLecon(Lecon lecon) {
         arreterVerificationScroll();
-        this.leconCourante = lecon;
+
+        Lecon leconTraduite = traduireLecon(lecon);
+
+        this.leconCourante = leconTraduite;
         this.dejaValidee = false;
 
-        lblLeconTitre.setText(lecon.getTitre());
+        lblLeconTitre.setText(leconTraduite.getTitre());
 
-        // ✅ Afficher le contenu (vidéo ou texte)
         if (lecon.getVideo() != null && lecon.getVideo().length > 0) {
-            afficherVideoLocale(lecon);
+            afficherVideoLocale(leconTraduite);
         } else {
-            afficherContenuWebViewAdaptatif(lecon.getContenu());
+            afficherContenuWebViewAdaptatif(leconTraduite.getContenu());
         }
 
-        // ✅ Vérifier si déjà terminée
         if (progressionLeconService.isLeconTerminee(candidatId, lecon.getId())) {
             lblStatus.setText("✔ Déjà terminée");
             btnTerminer.setVisible(false);
             return;
         }
 
-        // Toujours traiter comme une leçon classique
         btnTerminer.setVisible(false);
         lblStatus.setText("📖 Scrollez jusqu'en bas pour valider la leçon");
         demarrerVerificationScroll();
@@ -875,7 +869,33 @@ public class CoursPlayerController {
         }
     }
 
+    private Lecon traduireLecon(Lecon lecon) {
+        if (leconsTraduites.containsKey(lecon.getId())) {
+            return leconsTraduites.get(lecon.getId());
+        }
 
+        Lecon leconTraduite = new Lecon(
+                traductionService.traduire(lecon.getTitre(), langueTest),
+                traductionService.traduire(lecon.getContenu(), langueTest),
+                lecon.getVideo(),
+                lecon.getOrdre(),
+                lecon.getModuleId()
+        );
+        leconTraduite.setId(lecon.getId());
+
+        leconsTraduites.put(lecon.getId(), leconTraduite);
+        return leconTraduite;
+    }
+
+    private String traduireModule(String moduleTexte, int moduleId) {
+        if (modulesTraduits.containsKey(moduleId)) {
+            return modulesTraduits.get(moduleId);
+        }
+
+        String traduit = traductionService.traduire(moduleTexte, langueTest);
+        modulesTraduits.put(moduleId, traduit);
+        return traduit;
+    }
 
 }
 

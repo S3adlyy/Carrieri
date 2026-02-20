@@ -8,7 +8,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import services.QuizModuleService;
+import services.TraductionService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class QuizModulePlayerController {
@@ -33,35 +35,55 @@ public class QuizModulePlayerController {
     private int moduleId;
     private ToggleGroup group;
     private int[] reponsesSelectionnees; // Stocke les IDs des réponses sélectionnées
+    private TraductionService traductionService = new TraductionService();
+    private String langueTest = "fr";
 
     public void setModuleId(int moduleId, int candidatId) {
         this.moduleId = moduleId;
         this.candidatId = candidatId;
 
-        // ✅ Charger les questions
+        // ✅ Récupérer la langue depuis LangueTest
+        this.langueTest = LangueTest.getInstance().getLangue();
+
+        // Charger les questions originales
         this.questions = quizService.getQuestionsByModule(moduleId);
 
-        // ✅ Initialiser le tableau des réponses
+        // ✅ Traduire les questions selon la langue
+        traduireQuestions();
+
+        // Initialiser le tableau des réponses
         this.reponsesSelectionnees = new int[questions.size()];
         for (int i = 0; i < reponsesSelectionnees.length; i++) {
-            reponsesSelectionnees[i] = -1; // -1 = pas de réponse
+            reponsesSelectionnees[i] = -1;
         }
 
-        // ✅ Définir le titre
         lblTitre.setText("Quiz du module");
 
-        // ✅ Afficher la première question
         if (!questions.isEmpty()) {
             afficherQuestion(0);
             mettreAJourProgression();
         } else {
-            // ✅ Aucune question
             lblQuestion.setText("Aucune question disponible pour ce module.");
             boxReponses.getChildren().clear();
             btnPrecedent.setDisable(true);
             btnSuivant.setDisable(true);
             btnTerminer.setVisible(false);
         }
+    }
+    private void traduireQuestions() {
+        if (langueTest.equals("fr")) {
+            // Pas besoin de traduction pour le français
+            return;
+        }
+
+        // Traduire toutes les questions
+        List<QuestionQuiz> questionsTraduites = new ArrayList<>();
+        for (QuestionQuiz q : questions) {
+            questionsTraduites.add(traductionService.traduireQuestionQuiz(q, langueTest));
+        }
+        this.questions = questionsTraduites;
+
+        System.out.println("✅ Questions traduites en " + langueTest);
     }
 
     private void afficherQuestion(int index) {

@@ -8,7 +8,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import services.TestCoursService;
+import services.TraductionService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TestFinalPlayerController {
@@ -32,19 +34,54 @@ public class TestFinalPlayerController {
     private int candidatId;
     private int coursId;
     private ToggleGroup group = new ToggleGroup();
-    private RadioButton[] reponsesSelectionnees;
+    private int[] reponsesSelectionnees; // ✅ Changé de RadioButton[] à int[]
+    private TraductionService traductionService = new TraductionService();
+    private String langueTest = "fr";
 
     public void setCoursId(int coursId, int candidatId) {
         this.coursId = coursId;
         this.candidatId = candidatId;
-        this.questions = testService.getQuestionsByCours(coursId);
-        this.reponsesSelectionnees = new RadioButton[questions.size()];
 
-        lblTitre.setText("TEST FINAL");
+        // ✅ Récupérer la langue depuis LangueTest
+        this.langueTest = LangueTest.getInstance().getLangue();
+
+        // Charger les questions originales
+        this.questions = testService.getQuestionsByCours(coursId);
+
+        // ✅ Traduire les questions
+        traduireQuestions();
+
+        // ✅ Initialiser le tableau d'entiers (pas de RadioButton)
+        this.reponsesSelectionnees = new int[questions.size()];
+        for (int i = 0; i < reponsesSelectionnees.length; i++) {
+            reponsesSelectionnees[i] = -1; // -1 = pas de réponse
+        }
 
         if (!questions.isEmpty()) {
             afficherQuestion(0);
             mettreAJourProgression();
+        } else {
+            lblQuestion.setText("Aucune question disponible pour ce test.");
+            boxReponses.getChildren().clear();
+            btnPrecedent.setDisable(true);
+            btnSuivant.setDisable(true);
+            btnTerminer.setVisible(false);
+        }
+    }
+
+    private void traduireQuestions() {
+        if (langueTest.equals("fr")) return;
+
+        for (QuestionTest q : questions) {
+            // Traduire le texte de la question
+            q.setQuestionText(traductionService.traduire(q.getQuestionText(), langueTest));
+
+            // Traduire les réponses
+            if (q.getReponses() != null) {
+                for (Reponse r : q.getReponses()) {
+                    r.setReponseText(traductionService.traduire(r.getReponseText(), langueTest));
+                }
+            }
         }
     }
 
@@ -60,12 +97,12 @@ public class TestFinalPlayerController {
         for (Reponse r : q.getReponses()) {
             RadioButton rb = new RadioButton(r.getReponseText());
             rb.setToggleGroup(group);
-            rb.setUserData(r);
+            rb.setUserData(r); // Stocker l'objet Reponse
             rb.setWrapText(true);
             rb.setStyle("-fx-font-size: 14px; -fx-padding: 5;");
 
-            if (reponsesSelectionnees[index] != null &&
-                    reponsesSelectionnees[index].getUserData().equals(r)) {
+            // ✅ Restaurer la réponse précédente (comparer les IDs)
+            if (reponsesSelectionnees[index] != -1 && reponsesSelectionnees[index] == r.getId()) {
                 rb.setSelected(true);
             }
 
@@ -100,7 +137,8 @@ public class TestFinalPlayerController {
     private void sauvegarderReponseCourante() {
         RadioButton selected = (RadioButton) group.getSelectedToggle();
         if (selected != null) {
-            reponsesSelectionnees[indexCourant] = selected;
+            Reponse r = (Reponse) selected.getUserData();
+            reponsesSelectionnees[indexCourant] = r.getId(); // ✅ Stocker l'ID, pas le RadioButton
         }
     }
 
@@ -108,8 +146,9 @@ public class TestFinalPlayerController {
     private void terminerTest() {
         sauvegarderReponseCourante();
 
+        // ✅ Vérifier que toutes les questions ont une réponse
         for (int i = 0; i < reponsesSelectionnees.length; i++) {
-            if (reponsesSelectionnees[i] == null) {
+            if (reponsesSelectionnees[i] == -1) {
                 showAlert("⚠️ Attention", "Veuillez répondre à toutes les questions avant de terminer.");
                 indexCourant = i;
                 afficherQuestion(indexCourant);
@@ -124,11 +163,12 @@ public class TestFinalPlayerController {
             QuestionTest q = questions.get(i);
             totalPoints += q.getPoints();
 
-            RadioButton rb = reponsesSelectionnees[i];
-            Reponse r = (Reponse) rb.getUserData();
-
-            if (r.isEstCorrecte()) {
-                score += q.getPoints();
+            // ✅ Chercher la réponse correspondante
+            for (Reponse r : q.getReponses()) {
+                if (r.getId() == reponsesSelectionnees[i] && r.isEstCorrecte()) {
+                    score += q.getPoints();
+                    break;
+                }
             }
         }
 
