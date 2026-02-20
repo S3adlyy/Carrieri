@@ -627,7 +627,7 @@ public class CoursController implements Initializable {
     // GÉNÉRER TEST FINAL - MODIFIÉE
     // ============================================
     @FXML
-    private void genererTestFinalAutomatique() {
+    public void genererTestFinalAutomatique() {
         if (coursSelectionne == null) {
             AlertUtils.showNoSelectionWarning("cours", "générer son test final");
             return;

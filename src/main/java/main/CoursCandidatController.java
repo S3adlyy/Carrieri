@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import services.CertificationService;
 import services.CoursService;
+import services.EmailService;
 import services.ProgressionCoursService;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -17,6 +18,8 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.Priority;
 import utils.AlertUtils;
+import javafx.stage.DirectoryChooser;
+import java.io.File;
 
 import java.io.ByteArrayInputStream;
 import java.sql.SQLException;
@@ -312,11 +315,42 @@ public class CoursCandidatController {
             );
 
             if (confirmed) {
+                // ✅ CHOISIR L'EMPLACEMENT
+                DirectoryChooser directoryChooser = new DirectoryChooser();
+                directoryChooser.setTitle("Choisissez où enregistrer le certificat");
+
+                String userHome = System.getProperty("user.home");
+                File defaultDirectory = new File(userHome + "/Desktop");
+                if (defaultDirectory.exists()) {
+                    directoryChooser.setInitialDirectory(defaultDirectory);
+                }
+
+                File selectedDirectory = directoryChooser.showDialog(null);
+
+                if (selectedDirectory == null) {
+                    AlertUtils.showInfo("Annulation", "Génération du certificat annulée.");
+                    return;
+                }
+
                 String nomCandidat = "Bilal Eter";
                 String dateStr = java.time.LocalDate.now()
                         .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
-                String cheminFichier = "C:/Users/MSI/Desktop/certificats/certificat_" +
-                        cours.getTitre().replace(" ", "_") + "_" + dateStr + ".pdf";
+
+                String titrePropre = cours.getTitre()
+                        .replace(" ", "_")
+                        .replace("'", "")
+                        .replace("\"", "")
+                        .replace("?", "")
+                        .replace("*", "")
+                        .replace("<", "")
+                        .replace(">", "")
+                        .replace("|", "")
+                        .replace(":", "")
+                        .replace("/", "")
+                        .replace("\\", "");
+
+                String nomFichier = "certificat_" + titrePropre + "_" + dateStr + ".pdf";
+                String cheminFichier = selectedDirectory.getAbsolutePath() + File.separator + nomFichier;
 
                 CertificationService pdfService = new CertificationService();
                 pdfService.genererCertification(nomCandidat, cours.getTitre(), cheminFichier);
@@ -328,10 +362,14 @@ public class CoursCandidatController {
                 );
                 pdfService.ajouter(certif);
 
+                // ✅ AJOUTER L'ENVOI D'EMAIL
+                envoyerEmailNotification(nomCandidat, cours.getTitre(), cheminFichier);
+
                 AlertUtils.showSuccessWithInstructions(
                         "🎉 FÉLICITATIONS !",
                         "Votre certificat pour le cours \"" + cours.getTitre() + "\" a été généré avec succès.",
                         "📁 Emplacement : " + cheminFichier + "\n\n" +
+                                "📧 Un email de confirmation a été envoyé.\n\n" +
                                 "Vous pouvez imprimer ce certificat ou le partager sur LinkedIn.\n\n" +
                                 "Continuez sur votre lancée ! 🚀"
                 );
@@ -343,6 +381,35 @@ public class CoursCandidatController {
         }
     }
 
+    // ============================================
+// ENVOI EMAIL DE NOTIFICATION
+// ============================================
+    private void envoyerEmailNotification(String nomCandidat, String titreCours, String cheminCertificat) {
+        try {
+            String emailDestinataire = "bilaleter05@gmail.com"; // Votre email
+
+            System.out.println("📧 Tentative d'envoi d'email depuis le catalogue...");
+
+            EmailService emailService = new EmailService();
+
+            boolean envoye = emailService.envoyerNotificationCompletionCours(
+                    emailDestinataire,
+                    nomCandidat,
+                    titreCours,
+                    "file:///" + cheminCertificat.replace("\\", "/")
+            );
+
+            if (envoye) {
+                System.out.println("✅ Email envoyé avec succès depuis le catalogue");
+            } else {
+                System.err.println("❌ Échec envoi email depuis le catalogue");
+            }
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur envoi email: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void rechercherCours() {
         filtrerCours();

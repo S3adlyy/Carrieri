@@ -14,7 +14,11 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import services.*;
 import utils.AlertUtils;
-import javafx.beans.value.ChangeListener;
+import services.EmailService;
+import java.awt.Desktop;
+import java.net.URI;
+import java.net.URLEncoder;
+import javafx.stage.DirectoryChooser;
 
 import java.io.File;
 import java.io.IOException;
@@ -381,20 +385,34 @@ public class CoursPlayerController {
 
         if (confirmed) {
             try {
-                String nomCandidat = "Bilal Eter";
+                // Remplacez cette partie dans genererCertificat() :
+
+                String nomCandidat = "Bilal El Eter";
                 String date = java.time.LocalDate.now()
                         .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
-                String chemin = "C:/Users/MSI/Desktop/certificats/certificat_" +
+
+// ✅ Créer le dossier s'il n'existe pas
+                String dossierPath = "C:/Users/MSI/Desktop/certificats/"; // J'ai mis "certificats" au lieu de "certif"
+                File dossier = new File(dossierPath);
+                if (!dossier.exists()) {
+                    dossier.mkdirs(); // Crée le dossier
+                    System.out.println("✅ Dossier créé: " + dossierPath);
+                }
+
+                String chemin = dossierPath +
                         coursActuel.getTitre().replace(" ", "_") + "_" + date + ".pdf";
 
                 certificationService.genererEtEnregistrer(
                         nomCandidat, coursActuel.getTitre(), chemin, candidatId, coursActuel.getId());
 
+                // ✅ NOUVEAU : Envoyer l'email de notification
+                envoyerEmailNotification(nomCandidat, coursActuel.getTitre(), chemin);
+
                 AlertUtils.showSuccessWithInstructions(
                         "🎉 FÉLICITATIONS !!!",
                         "Votre certificat pour le cours \"" + coursActuel.getTitre() + "\" a été généré avec succès.",
                         "📁 Emplacement : " + chemin + "\n\n" +
-                                "Vous pouvez imprimer ce certificat ou le partager sur LinkedIn.\n\n" +
+                                "Un email de confirmation a été envoyé.\n\n" +
                                 "Continuez votre parcours d'apprentissage ! 🚀"
                 );
 
@@ -857,6 +875,39 @@ public class CoursPlayerController {
             System.out.println("✅ Progression enregistrée en base: " + progArrondie + "%");
         } catch (Exception e) {
             System.err.println("❌ Erreur enregistrement progression: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    // ============================================
+// ENVOI EMAIL DE NOTIFICATION
+// ============================================
+    // ============================================
+// ENVOI EMAIL DE NOTIFICATION - VERSION CORRIGÉE
+// ============================================
+    private void envoyerEmailNotification(String nomCandidat, String titreCours, String cheminCertificat) {
+        try {
+            String emailDestinataire = "bilaleter05@gmail.com"; // Peut être n'importe quel email pour le test
+
+            EmailService emailService = new EmailService();
+
+            boolean envoye = emailService.envoyerNotificationCompletionCours(
+                    emailDestinataire,
+                    nomCandidat,
+                    titreCours,
+                    "file:///" + cheminCertificat.replace("\\", "/")
+            );
+
+            if (envoye) {
+                System.out.println("✅ Notification email traitée");
+                AlertUtils.showInfo("📧 Email simulé",
+                        "L'email a été envoyé à Mailtrap.\n\n" +
+                                "Connectez-vous sur mailtrap.io pour voir le message.");
+            } else {
+                AlertUtils.showWarning("⚠️ Erreur email",
+                        "L'email n'a pas pu être envoyé. Vérifiez la console.");
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
