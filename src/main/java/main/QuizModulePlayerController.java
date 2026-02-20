@@ -224,8 +224,7 @@ public class QuizModulePlayerController {
 
     @FXML
     private void fermer() {
-        Stage stage = (Stage) lblTitre.getScene().getWindow();
-        stage.close();
+        CandidatShellController.getInstance().retourAuCours();
     }
 
     private void showAlert(String title, String msg) {
@@ -235,4 +234,5 @@ public class QuizModulePlayerController {
         alert.setContentText(msg);
         alert.showAndWait();
     }
+
 }

@@ -150,4 +150,21 @@ public class QuizModuleService implements IQuizModuleService {
             e.printStackTrace();
         }
     }
+    /**
+     * Vérifie si un module a des questions de quiz
+     */
+    public boolean aDesQuestions(int moduleId) {
+        String sql = "SELECT COUNT(*) FROM question_quiz WHERE module_id = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, moduleId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

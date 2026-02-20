@@ -13,6 +13,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import services.*;
+import java.util.Comparator;
+import java.util.stream.Collectors;
+import javafx.scene.control.Tooltip;
 import utils.AlertUtils;
 import services.EmailService;
 import java.awt.Desktop;
@@ -170,23 +173,51 @@ public class CoursPlayerController {
             boxModules.getChildren().add(moduleLabel);
 
             List<Lecon> lecons = leconService.getLeconsByModule(module.getId());
+
+            // Trier les leçons par ordre
+            lecons.sort(Comparator.comparingInt(Lecon::getOrdre));
+
+            // Vérifier si le module est accessible
+            boolean moduleAccessible = isModuleAccessible(module, modules);
+
             for (Lecon lecon : lecons) {
                 String texteBouton = "   " + module.getOrdre() + "." + lecon.getOrdre() + " " + lecon.getTitre();
-                if (progressionLeconService.isLeconTerminee(candidatId, lecon.getId())) {
+
+                // Vérifier si la leçon est terminée
+                boolean leconTerminee = progressionLeconService.isLeconTerminee(candidatId, lecon.getId());
+                if (leconTerminee) {
                     texteBouton += " ✓";
                 }
 
                 Button btnLecon = new Button(texteBouton);
                 btnLecon.setMaxWidth(Double.MAX_VALUE);
                 btnLecon.setUserData(lecon);
-                btnLecon.setOnAction(e -> {
-                    Lecon l = (Lecon) btnLecon.getUserData();
-                    afficherLecon(l);
-                });
+
+                // Vérifier si la leçon est accessible
+                boolean leconAccessible = moduleAccessible && isLeconAccessible(lecon, lecons);
+
+                if (leconAccessible || leconTerminee) {
+                    // Leçon accessible ou déjà terminée
+                    btnLecon.setOnAction(e -> {
+                        Lecon l = (Lecon) btnLecon.getUserData();
+                        afficherLecon(l);
+                    });
+                    btnLecon.setStyle("-fx-background-color: #35354f; -fx-text-fill: white;");
+                } else {
+                    // Leçon verrouillée
+                    btnLecon.setDisable(true);
+                    btnLecon.setStyle("-fx-background-color: #2d2d44; -fx-text-fill: #6b7280; -fx-opacity: 0.5;");
+
+                    // Ajouter un tooltip pour expliquer pourquoi
+                    Tooltip tooltip = new Tooltip("🔒 Terminez la leçon précédente d'abord");
+                    btnLecon.setTooltip(tooltip);
+                }
+
                 boxModules.getChildren().add(btnLecon);
             }
 
-            verifierQuizModule(module);
+            // Vérifier si le quiz du module est accessible
+            verifierQuizModule(module, modules);
         }
 
         verifierEtatCours();
@@ -197,10 +228,11 @@ public class CoursPlayerController {
     // GESTION DES QUIZ DE MODULE
     // ============================================
 
-    private void verifierQuizModule(Module module) {
+    private void verifierQuizModule(Module module, List<Module> tousModules) {
         boolean toutesLeconsTerminees = isAllLeconsTerminees(module.getId());
+        boolean moduleAccessible = isModuleAccessible(module, tousModules);
 
-        if (toutesLeconsTerminees) {
+        if (toutesLeconsTerminees && moduleAccessible) {
             boolean quizReussi = quizModuleService.isModuleReussi(candidatId, module.getId());
 
             if (!quizReussi) {
@@ -218,6 +250,16 @@ public class CoursPlayerController {
                 lblQuizReussi.getStyleClass().add("label-quiz-reussi");
                 boxModules.getChildren().add(lblQuizReussi);
             }
+        } else if (!toutesLeconsTerminees) {
+            // Message indiquant qu'il faut terminer toutes les leçons
+            Label lblInfo = new Label("   ⏳ Terminez toutes les leçons pour débloquer le quiz");
+            lblInfo.setStyle("-fx-text-fill: #9ca3af; -fx-font-style: italic; -fx-padding: 5 0 5 20; -fx-font-size: 12px;");
+            boxModules.getChildren().add(lblInfo);
+        } else if (!moduleAccessible) {
+            // Message indiquant que le module précédent doit être terminé
+            Label lblInfo = new Label("   🔒 Terminez le module précédent pour débloquer celui-ci");
+            lblInfo.setStyle("-fx-text-fill: #9ca3af; -fx-font-style: italic; -fx-padding: 5 0 5 20; -fx-font-size: 12px;");
+            boxModules.getChildren().add(lblInfo);
         }
     }
 
@@ -302,14 +344,79 @@ public class CoursPlayerController {
     private void retourAuCatalogue() {
         CandidatShellController.getInstance().showCatalogue();
     }
-    // ============================================
-    // GESTION DU CERTIFICAT
-    // ============================================
 
-    // ============================================
-// GESTION DU CERTIFICAT - VERSION INVIOLABLE
-// ============================================
+    /**
+     * Vérifie si une leçon est accessible (si toutes les leçons précédentes sont terminées)
+     */
+    private boolean isLeconAccessible(Lecon lecon, List<Lecon> toutesLecons) {
+        // Trier les leçons par ordre
+        List<Lecon> leconsTriees = toutesLecons.stream()
+                .sorted((l1, l2) -> Integer.compare(l1.getOrdre(), l2.getOrdre()))
+                .collect(Collectors.toList());
 
+        // Trouver l'index de la leçon actuelle
+        int indexActuel = -1;
+        for (int i = 0; i < leconsTriees.size(); i++) {
+            if (leconsTriees.get(i).getId() == lecon.getId()) {
+                indexActuel = i;
+                break;
+            }
+        }
+
+        // Si c'est la première leçon (index 0), elle est accessible
+        if (indexActuel == 0) return true;
+
+        // Vérifier que toutes les leçons précédentes sont terminées
+        for (int i = 0; i < indexActuel; i++) {
+            Lecon leconPrecedente = leconsTriees.get(i);
+            if (!progressionLeconService.isLeconTerminee(candidatId, leconPrecedente.getId())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Vérifie si un module est accessible (si le module précédent est terminé)
+     */
+    private boolean isModuleAccessible(Module module, List<Module> tousModules) {
+        // Trier les modules par ordre
+        List<Module> modulesTries = tousModules.stream()
+                .sorted((m1, m2) -> Integer.compare(m1.getOrdre(), m2.getOrdre()))
+                .collect(Collectors.toList());
+
+        // Trouver l'index du module actuel
+        int indexActuel = -1;
+        for (int i = 0; i < modulesTries.size(); i++) {
+            if (modulesTries.get(i).getId() == module.getId()) {
+                indexActuel = i;
+                break;
+            }
+        }
+
+        // Si c'est le premier module (index 0), il est accessible
+        if (indexActuel == 0) return true;
+
+        // Vérifier que toutes les leçons du module précédent sont terminées
+        Module modulePrecedent = modulesTries.get(indexActuel - 1);
+        List<Lecon> leconsModulePrecedent = leconService.getLeconsByModule(modulePrecedent.getId());
+
+        for (Lecon lecon : leconsModulePrecedent) {
+            if (!progressionLeconService.isLeconTerminee(candidatId, lecon.getId())) {
+                return false;
+            }
+        }
+
+        // Vérifier que le quiz du module précédent est réussi (s'il existe)
+        if (quizModuleService.aDesQuestions(modulePrecedent.getId())) {
+            if (!quizModuleService.isModuleReussi(candidatId, modulePrecedent.getId())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
 
     // ============================================
