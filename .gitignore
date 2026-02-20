@@ -36,4 +36,4 @@ build/
 .vscode/
 
 ### Mac OS ###
-.DS_Storesrc/main/resources/config.properties
+.DS_Store

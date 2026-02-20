@@ -81,7 +81,18 @@
 
             <Region VBox.vgrow="ALWAYS"/>
             <Button fx:id="btnTheme" styleClass="theme-toggle" text="🌙"/>
-
+            <Button fx:id="btnChatbot"
+                    onAction="#ouvrirChatbot"
+                    styleClass="nav-button">
+                <graphic>
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <ImageView fitWidth="50" fitHeight="50" preserveRatio="true">
+                            <Image url="/images/logo_chatbot.png" />
+                        </ImageView>
+                        <Label fx:id="chatbotText" text="Carrieri ChatBot" styleClass="nav-text"/>
+                    </HBox>
+                </graphic>
+            </Button>
             <!-- User section -->
             <!-- User section -->
             <!-- User section -->

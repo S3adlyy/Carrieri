@@ -87,6 +87,7 @@
                       style="-fx-padding: 10;" alignment="CENTER"/>
 
         </VBox>
+
     </ScrollPane>
 
 </StackPane>

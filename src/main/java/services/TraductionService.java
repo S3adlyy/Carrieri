@@ -10,7 +10,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import utils.Config;
+import utils.ConfigTraduction;
 import utils.MyDatabase;
 
 import java.sql.*;
@@ -19,9 +19,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TraductionService {
 
-    private static final String API_KEY = Config.getTranslatorKey();
-    private static final String REGION = Config.getTranslatorRegion();
-    private static final String ENDPOINT = Config.getTranslatorEndpoint();
+    private static final String API_KEY = ConfigTraduction.getTranslatorKey();
+    private static final String REGION = ConfigTraduction.getTranslatorRegion();
+    private static final String ENDPOINT = ConfigTraduction.getTranslatorEndpoint();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Connection connection;

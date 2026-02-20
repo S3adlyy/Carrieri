@@ -7,11 +7,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import services.*;
 import java.util.Comparator;
 import java.util.stream.Collectors;
@@ -55,7 +58,8 @@ public class CoursPlayerController {
     private Label lblStatus;
     @FXML
     private Label lblProgressionValue;  // Pour l'affichage en bas
-
+    @FXML
+    private Button btnAssistant;
     // SERVICES
     private ModuleService moduleService = new ModuleService();
     private LeconService leconService = new LeconService();
@@ -896,6 +900,39 @@ public class CoursPlayerController {
         modulesTraduits.put(moduleId, traduit);
         return traduit;
     }
+    @FXML
+    private void ouvrirAssistant() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/chatbot.fxml"));
+            Parent root = loader.load();
 
+            ChatbotController controller = loader.getController();
+
+            // Passer le contexte complet
+            String moduleTitre = "";
+            if (leconCourante != null) {
+                Module module = moduleService.getModuleById(leconCourante.getModuleId());
+                if (module != null) {
+                    moduleTitre = module.getTitre();
+                }
+            }
+
+            controller.setContexte(
+                    coursActuel.getTitre(),
+                    moduleTitre,
+                    leconCourante != null ? leconCourante.getTitre() : ""
+            );
+
+            Stage stage = new Stage();
+            stage.setTitle("Assistant pédagogique");
+            stage.setScene(new Scene(root));
+            stage.setAlwaysOnTop(true);
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            AlertUtils.showError("❌ Erreur", "Impossible d'ouvrir l'assistant.");
+        }
+    }
 }
 

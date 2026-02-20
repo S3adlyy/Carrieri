@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class Config {
+public class ConfigTraduction {
     private static Properties properties = new Properties();
 
     static {
-        try (InputStream input = Config.class.getClassLoader()
+        try (InputStream input = ConfigTraduction.class.getClassLoader()
                 .getResourceAsStream("config.properties")) {
             if (input != null) {
                 properties.load(input);

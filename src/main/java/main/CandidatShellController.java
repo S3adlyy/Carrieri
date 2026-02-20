@@ -6,6 +6,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -144,12 +146,14 @@ public class CandidatShellController implements Initializable {
         Tooltip candidatTooltip = new Tooltip("Cliquer pour basculer en mode Admin");
         Tooltip.install(userAvatar, candidatTooltip);
         setupThemeButton();
-        showCatalogue();
+
+        // ✅ NE PAS AJOUTER DE VUE ICI - juste montrer le catalogue
+        showCatalogue(); // Cette méthode utilise animateContentChange() qui gère proprement le contentPane
         setActiveButton(btnCatalogue);
 
         setupAnimations();
 
-        // Animation de fondu initiale
+        // ✅ Animation de fondu initiale
         contentPane.setOpacity(0);
         FadeTransition fadeIn = new FadeTransition(Duration.millis(400), contentPane);
         fadeIn.setFromValue(0);
@@ -366,6 +370,66 @@ public class CandidatShellController implements Initializable {
         activeButton = button;
         if (activeButton != null) {
             activeButton.getStyleClass().add("nav-button-active");
+        }
+    }
+    @FXML
+    private void ouvrirChatbot() {
+        try {
+            // Chercher le chatbot existant
+            Node existingChatbot = contentPane.lookup("#chatbotOverlay");
+
+            if (existingChatbot != null) {
+                // Fermer le chatbot
+                contentPane.getChildren().remove(existingChatbot);
+                return;
+            }
+
+            // Charger le chatbot
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/chatbot.fxml"));
+            Node chatbotView = loader.load();
+            chatbotView.setId("chatbotOverlay");
+
+            ChatbotController controller = loader.getController();
+
+            // ✅ PASSER LA RÉFÉRENCE DU CONTENTPANE
+            controller.setContentPane(contentPane);
+
+            // Passer le contexte si un cours est actif
+            if (coursActif != null) {
+                controller.setContexte(coursActif.getTitre(), "", "");
+            }
+
+            // Positionner le chatbot en bas à droite
+            StackPane.setAlignment(chatbotView, Pos.BOTTOM_RIGHT);
+            StackPane.setMargin(chatbotView, new Insets(0, 20, 20, 0));
+
+            // Animation d'entrée
+            chatbotView.setTranslateY(50);
+            chatbotView.setOpacity(0);
+
+            contentPane.getChildren().add(chatbotView);
+
+            Timeline showAnimation = new Timeline(
+                    new KeyFrame(Duration.millis(300),
+                            new KeyValue(chatbotView.translateYProperty(), 0, Interpolator.EASE_BOTH),
+                            new KeyValue(chatbotView.opacityProperty(), 1, Interpolator.EASE_BOTH)
+                    )
+            );
+            showAnimation.play();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Platform.runLater(() -> {
+                AlertUtils.showError("❌ Erreur", "Impossible d'ouvrir l'assistant.");
+            });
+        }
+    }
+    // ✅ Méthode publique pour fermer le chatbot (appelée par le X)
+    public void fermerChatbot() {
+        Node chatbot = contentPane.lookup("#chatbotOverlay");
+        if (chatbot != null) {
+            contentPane.getChildren().remove(chatbot);
+            System.out.println("✅ Chatbot fermé via bouton X");
         }
     }
 }
