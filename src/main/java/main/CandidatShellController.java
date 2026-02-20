@@ -219,11 +219,11 @@ public class CandidatShellController implements Initializable {
                         "Vous pourrez suivre votre progression dans tous vos cours.");
     }
 
+    // Modifiez la méthode showCertificats() :
     @FXML
     public void showCertificats() {
-        AlertUtils.showInfo("📜 Mes certificats",
-                "Cette fonctionnalité arrivera très bientôt !\n\n" +
-                        "Vous pourrez consulter et télécharger tous vos certificats.");
+        loadView("/certificats_candidat.fxml");
+        setActiveButton(btnCertificats);
     }
 
     @FXML

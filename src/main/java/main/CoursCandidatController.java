@@ -284,13 +284,10 @@ public class CoursCandidatController {
 
             if (!estComplete) {
                 AlertUtils.showWarning("⚠️ Cours non terminé",
-                        "Vous devez compléter ce cours à 100% pour générer le certificat.\n\n" +
-                                "📊 Progression actuelle: " + String.format("%.0f%%", progression) + "\n\n" +
-                                "Continuez votre apprentissage et revenez quand vous aurez terminé toutes les leçons et réussi tous les quiz !");
+                        "Progression: " + String.format("%.0f%%", progression));
                 return;
             }
 
-            // ✅ Vérifier si un certificat existe déjà
             CertificationService certifService = new CertificationService();
             Certification existing = certifService.readByCoursAndCandidat(cours.getId(), candidatId);
 
@@ -299,87 +296,275 @@ public class CoursCandidatController {
                         .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm"));
 
                 AlertUtils.showInfo("📄 Certificat déjà généré",
-                        "Vous avez déjà généré un certificat pour ce cours le " + date + ".\n\n" +
-                                "Vous pouvez le retrouver dans votre dossier de certificats.");
+                        "Vous avez déjà un certificat pour ce cours (généré le " + date + ").");
                 return;
             }
 
-            // ✅ Confirmation avant génération
             boolean confirmed = AlertUtils.showConfirmation(
                     "🎓 Génération du certificat",
                     "Félicitations ! Vous avez complété le cours \"" + cours.getTitre() + "\" à 100%.\n\n" +
-                            "Un certificat officiel va être généré à votre nom.\n\n" +
-                            "Voulez-vous continuer ?",
-                    "Oui, générer mon certificat",
-                    "Non, plus tard"
+                            "Voulez-vous générer votre certificat ?",
+                    "Oui",
+                    "Non"
             );
 
             if (confirmed) {
-                // ✅ CHOISIR L'EMPLACEMENT
-                DirectoryChooser directoryChooser = new DirectoryChooser();
-                directoryChooser.setTitle("Choisissez où enregistrer le certificat");
-
-                String userHome = System.getProperty("user.home");
-                File defaultDirectory = new File(userHome + "/Desktop");
-                if (defaultDirectory.exists()) {
-                    directoryChooser.setInitialDirectory(defaultDirectory);
-                }
-
-                File selectedDirectory = directoryChooser.showDialog(null);
-
-                if (selectedDirectory == null) {
-                    AlertUtils.showInfo("Annulation", "Génération du certificat annulée.");
-                    return;
-                }
-
                 String nomCandidat = "Bilal Eter";
-                String dateStr = java.time.LocalDate.now()
-                        .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
-
-                String titrePropre = cours.getTitre()
-                        .replace(" ", "_")
-                        .replace("'", "")
-                        .replace("\"", "")
-                        .replace("?", "")
-                        .replace("*", "")
-                        .replace("<", "")
-                        .replace(">", "")
-                        .replace("|", "")
-                        .replace(":", "")
-                        .replace("/", "")
-                        .replace("\\", "");
-
-                String nomFichier = "certificat_" + titrePropre + "_" + dateStr + ".pdf";
-                String cheminFichier = selectedDirectory.getAbsolutePath() + File.separator + nomFichier;
-
                 CertificationService pdfService = new CertificationService();
-                pdfService.genererCertification(nomCandidat, cours.getTitre(), cheminFichier);
 
-                Certification certif = new Certification(
-                        candidatId,
-                        cours.getId(),
-                        java.time.LocalDateTime.now()
-                );
-                pdfService.ajouter(certif);
+                try {
+                    // 1. Créer l'entrée en base
+                    Certification certif = new Certification(
+                            candidatId,
+                            cours.getId(),
+                            java.time.LocalDateTime.now()
+                    );
+                    int certificatId = pdfService.ajouterEtRetournerId(certif);
 
-                // ✅ AJOUTER L'ENVOI D'EMAIL
-                envoyerEmailNotification(nomCandidat, cours.getTitre(), cheminFichier);
+                    if (certificatId > 0) {
+                        // 2. Générer le PDF professionnel
+                        byte[] pdfBytes = genererPDFProfessionnel(nomCandidat, cours.getTitre(), certificatId);
 
-                AlertUtils.showSuccessWithInstructions(
-                        "🎉 FÉLICITATIONS !",
-                        "Votre certificat pour le cours \"" + cours.getTitre() + "\" a été généré avec succès.",
-                        "📁 Emplacement : " + cheminFichier + "\n\n" +
+                        // 3. Stocker en base
+                        String sql = "UPDATE certification SET fichier_pdf = ? WHERE id = ?";
+                        try (java.sql.PreparedStatement ps = utils.MyDatabase.getInstance().getConnection().prepareStatement(sql)) {
+                            ps.setBytes(1, pdfBytes);
+                            ps.setInt(2, certificatId);
+                            ps.executeUpdate();
+                            System.out.println("✅ PDF stocké en base pour le certificat ID: " + certificatId);
+                        }
+
+                        // 4. Email
+                        envoyerEmailNotification(nomCandidat, cours.getTitre(), "Certificat stocké en base");
+
+                        AlertUtils.showSuccessWithInstructions(
+                                "🎉 FÉLICITATIONS !",
+                                "Votre certificat professionnel a été généré avec succès.",
                                 "📧 Un email de confirmation a été envoyé.\n\n" +
-                                "Vous pouvez imprimer ce certificat ou le partager sur LinkedIn.\n\n" +
-                                "Continuez sur votre lancée ! 🚀"
-                );
+                                        "Vous pourrez télécharger votre certificat à tout moment depuis la page 'Mes certificats'.\n\n" +
+                                        "Continuez sur votre lancée ! 🚀"
+                        );
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    AlertUtils.showError("❌ Erreur", "Erreur :\n" + e.getMessage());
+                }
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            AlertUtils.showError("❌ Erreur", "Erreur lors de la génération du certificat:\n\n" + e.getMessage());
+            AlertUtils.showError("❌ Erreur", e.getMessage());
         }
     }
+    /**
+     * Génère un certificat professionnel sur une seule page
+     */
+    /**
+     * Génère un certificat professionnel sur une seule page avec le logo Carrieri
+     */
+    /**
+     * Génère un certificat professionnel sur une seule page avec le logo Carrieri (image)
+     */
+    private byte[] genererPDFProfessionnel(String nomCandidat, String titreCours, int certificatId) throws Exception {
+        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+        com.itextpdf.kernel.pdf.PdfWriter writer = new com.itextpdf.kernel.pdf.PdfWriter(baos);
+        com.itextpdf.kernel.pdf.PdfDocument pdf = new com.itextpdf.kernel.pdf.PdfDocument(writer);
+
+        // Format A4 portrait (une seule page)
+        pdf.setDefaultPageSize(com.itextpdf.kernel.geom.PageSize.A4);
+
+        com.itextpdf.layout.Document document = new com.itextpdf.layout.Document(pdf);
+        document.setMargins(40, 40, 40, 40);
+
+        // Couleurs de Carrieri
+        com.itextpdf.kernel.colors.Color violetFonce = new com.itextpdf.kernel.colors.DeviceRgb(35, 25, 66);  // #231942
+        com.itextpdf.kernel.colors.Color violet = new com.itextpdf.kernel.colors.DeviceRgb(94, 84, 142);      // #5E548E
+        com.itextpdf.kernel.colors.Color violetClair = new com.itextpdf.kernel.colors.DeviceRgb(159, 134, 192); // #9F86C0
+        com.itextpdf.kernel.colors.Color rose = new com.itextpdf.kernel.colors.DeviceRgb(224, 177, 203);      // #E0B1CB
+
+        // --- BORDURE DÉCORATIVE EN CADRE ---
+        float[] borderWidths = {1};
+        com.itextpdf.layout.element.Table borderTable = new com.itextpdf.layout.element.Table(borderWidths);
+        borderTable.setWidth(com.itextpdf.layout.properties.UnitValue.createPercentValue(100));
+
+        com.itextpdf.layout.element.Cell borderCell = new com.itextpdf.layout.element.Cell();
+        borderCell.setBorder(new com.itextpdf.layout.borders.SolidBorder(violet, 2));
+        borderCell.setPadding(20);
+
+        // --- LOGO IMAGE (DEPUIS LES RESSOURCES) ---
+        try {
+            // Charger l'image depuis les ressources
+            java.io.InputStream imageStream = getClass().getResourceAsStream("/images/logo.png");
+            if (imageStream != null) {
+                byte[] imageBytes = imageStream.readAllBytes();
+                com.itextpdf.io.image.ImageData imageData = com.itextpdf.io.image.ImageDataFactory.create(imageBytes);
+                com.itextpdf.layout.element.Image logo = new com.itextpdf.layout.element.Image(imageData);
+
+                // Redimensionner le logo (hauteur 60, largeur automatique)
+                logo.setHeight(60);
+                logo.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
+                logo.setMarginTop(10);
+                logo.setMarginBottom(5);
+
+                borderCell.add(logo);
+            } else {
+                // Fallback: texte si l'image n'est pas trouvée
+                com.itextpdf.layout.element.Paragraph fallbackLogo = new com.itextpdf.layout.element.Paragraph("Carrieri")
+                        .setFontSize(48)
+                        .setFontColor(violetFonce)
+                        .setBold()
+                        .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                        .setMarginTop(10)
+                        .setMarginBottom(5);
+                borderCell.add(fallbackLogo);
+                System.out.println("⚠️ Logo non trouvé, utilisation du texte par défaut");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Fallback en cas d'erreur
+            com.itextpdf.layout.element.Paragraph fallbackLogo = new com.itextpdf.layout.element.Paragraph("Carrieri")
+                    .setFontSize(48)
+                    .setFontColor(violetFonce)
+                    .setBold()
+                    .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                    .setMarginTop(10)
+                    .setMarginBottom(5);
+            borderCell.add(fallbackLogo);
+        }
+
+        // --- TITRE PRINCIPAL ---
+        com.itextpdf.layout.element.Paragraph titreCertif = new com.itextpdf.layout.element.Paragraph("CERTIFICAT DE RÉUSSITE")
+                .setFontSize(28)
+                .setFontColor(violet)
+                .setBold()
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(20);
+        borderCell.add(titreCertif);
+
+        // --- LIGNE DÉCORATIVE ---
+        com.itextpdf.layout.element.LineSeparator ligne = new com.itextpdf.layout.element.LineSeparator(
+                new com.itextpdf.kernel.pdf.canvas.draw.SolidLine(2f));
+        ligne.setWidth(150);
+        ligne.setMarginBottom(25);
+        ligne.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
+        borderCell.add(ligne);
+
+        // --- TEXTE "DÉCERNÉ À" ---
+        com.itextpdf.layout.element.Paragraph decerne = new com.itextpdf.layout.element.Paragraph("Ce certificat est décerné à")
+                .setFontSize(14)
+                .setFontColor(violetClair)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(5);
+        borderCell.add(decerne);
+
+        // --- NOM DU CANDIDAT (ENCADRÉ) ---
+        com.itextpdf.layout.element.Paragraph nom = new com.itextpdf.layout.element.Paragraph(nomCandidat)
+                .setFontSize(30)
+                .setFontColor(violetFonce)
+                .setBold()
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setBackgroundColor(new com.itextpdf.kernel.colors.DeviceRgb(250, 247, 252)) // Fond très léger
+                .setPadding(12)
+                .setMarginBottom(15);
+        borderCell.add(nom);
+
+        // --- TEXTE "POUR AVOIR COMPLÉTÉ" ---
+        com.itextpdf.layout.element.Paragraph pour = new com.itextpdf.layout.element.Paragraph("pour avoir complété avec succès le cours")
+                .setFontSize(14)
+                .setFontColor(violetClair)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(5);
+        borderCell.add(pour);
+
+        // --- TITRE DU COURS (STYLISÉ) ---
+        com.itextpdf.layout.element.Paragraph coursTitre = new com.itextpdf.layout.element.Paragraph(titreCours)
+                .setFontSize(22)
+                .setFontColor(violetFonce)
+                .setBold()
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(25);
+        borderCell.add(coursTitre);
+
+        // --- MENTION ---
+        com.itextpdf.layout.element.Paragraph mention = new com.itextpdf.layout.element.Paragraph("avec la mention ⭐ FÉLICITATIONS ⭐")
+                .setFontSize(14)
+                .setFontColor(rose)
+                .setBold()
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(30);
+        borderCell.add(mention);
+
+        // --- INFORMATIONS (DATE ET NUMÉRO) ---
+        float[] columnWidths = {1, 1};
+        com.itextpdf.layout.element.Table infoTable = new com.itextpdf.layout.element.Table(columnWidths);
+        infoTable.setWidth(com.itextpdf.layout.properties.UnitValue.createPercentValue(80));
+        infoTable.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
+        infoTable.setMarginBottom(25);
+
+        // Date d'obtention
+        com.itextpdf.layout.element.Cell dateCell = new com.itextpdf.layout.element.Cell();
+        String dateFormatee = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        dateCell.add(new com.itextpdf.layout.element.Paragraph("Date").setFontColor(violet).setFontSize(12).setBold());
+        dateCell.add(new com.itextpdf.layout.element.Paragraph(dateFormatee).setFontColor(violetFonce).setFontSize(14));
+        dateCell.setBorder(com.itextpdf.layout.borders.Border.NO_BORDER);
+        dateCell.setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER);
+        dateCell.setPadding(5);
+
+        // Numéro de certificat
+        com.itextpdf.layout.element.Cell numeroCell = new com.itextpdf.layout.element.Cell();
+        numeroCell.add(new com.itextpdf.layout.element.Paragraph("N° certificat").setFontColor(violet).setFontSize(12).setBold());
+        numeroCell.add(new com.itextpdf.layout.element.Paragraph("CERT-" + String.format("%04d", certificatId)).setFontColor(violetFonce).setFontSize(14));
+        numeroCell.setBorder(com.itextpdf.layout.borders.Border.NO_BORDER);
+        numeroCell.setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER);
+        numeroCell.setPadding(5);
+
+        infoTable.addCell(dateCell);
+        infoTable.addCell(numeroCell);
+
+        borderCell.add(infoTable);
+
+        // --- LIGNE DE SÉPARATION ---
+        com.itextpdf.layout.element.LineSeparator ligneFine = new com.itextpdf.layout.element.LineSeparator(
+                new com.itextpdf.kernel.pdf.canvas.draw.SolidLine(1f));
+        ligneFine.setWidth(400);
+        ligneFine.setMarginBottom(20);
+        ligneFine.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
+        borderCell.add(ligneFine);
+
+        // --- SIGNATURE UNIQUE (BILAL EL ETER) ---
+        com.itextpdf.layout.element.Paragraph signature = new com.itextpdf.layout.element.Paragraph("Bilal El Eter")
+                .setFontSize(18)
+                .setFontColor(violetFonce)
+                .setBold()
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(5);
+        borderCell.add(signature);
+
+        com.itextpdf.layout.element.Paragraph signatureTitre = new com.itextpdf.layout.element.Paragraph("Formateur & Directeur Pédagogique")
+                .setFontSize(12)
+                .setFontColor(violetClair)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(5);
+        borderCell.add(signatureTitre);
+
+        // --- PIED DE PAGE ---
+        com.itextpdf.layout.element.Paragraph footer = new com.itextpdf.layout.element.Paragraph("Carrieri · www.carrieri.com")
+                .setFontSize(10)
+                .setFontColor(com.itextpdf.kernel.colors.ColorConstants.GRAY)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginTop(10);
+        borderCell.add(footer);
+
+        borderTable.addCell(borderCell);
+        document.add(borderTable);
+        document.close();
+
+        return baos.toByteArray();
+    }
+    /**
+     * Génère un PDF de certificat professionnel avec le logo Carrieri
+     */
 
     // ============================================
 // ENVOI EMAIL DE NOTIFICATION

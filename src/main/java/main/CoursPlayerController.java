@@ -269,7 +269,6 @@ public class CoursPlayerController {
         Button btnCertificat = new Button("   📄 GÉNÉRER MON CERTIFICAT");
         btnCertificat.setMaxWidth(Double.MAX_VALUE);
         btnCertificat.getStyleClass().add("btn-certificat");
-        btnCertificat.setOnAction(e -> genererCertificat());
         boxModules.getChildren().add(btnCertificat);
     }
 
@@ -311,117 +310,7 @@ public class CoursPlayerController {
 // GESTION DU CERTIFICAT - VERSION INVIOLABLE
 // ============================================
 
-    private void genererCertificat() {
-        System.out.println("\n🟡=== GÉNÉRATION CERTIFICAT - VERSION INVIOLABLE ===🟡");
 
-        double progression = progressionLeconService.getProgressionCours(candidatId, coursActuel.getId());
-        if (progression < 99.9) {
-            AlertUtils.showWarning("⛔ PROGRESSION INCOMPLÈTE",
-                    "Votre progression actuelle est de " + String.format("%.0f%%", progression) + ".\n\n" +
-                            "Vous devez terminer toutes les leçons (100%) pour obtenir votre certificat.\n\n" +
-                            "Continuez votre apprentissage !");
-            return;
-        }
-
-        List<Module> modules = moduleService.getModulesByCours(coursActuel.getId());
-        List<String> modulesNonReussis = new ArrayList<>();
-
-        System.out.println("\n📝 VÉRIFICATION MODULES:");
-
-        for (Module m : modules) {
-            boolean reussi = quizModuleService.isModuleReussi(candidatId, m.getId());
-            System.out.println("   Module " + m.getId() + " - " + m.getTitre() +
-                    " | Réussi: " + (reussi ? "✅" : "❌"));
-
-            if (!reussi) {
-                modulesNonReussis.add("Module " + m.getOrdre() + " - " + m.getTitre());
-            }
-        }
-
-        if (!modulesNonReussis.isEmpty()) {
-            String liste = String.join("\n• ", modulesNonReussis);
-            AlertUtils.showWarning("⛔ MODULES NON RÉUSSIS",
-                    "Vous devez réussir les quiz des modules suivants :\n\n• " + liste + "\n\n" +
-                            "Revenez après avoir obtenu au moins 70% à chaque quiz.");
-            return;
-        }
-        System.out.println("✅ Tous les modules sont réussis !");
-
-        boolean testReussi = testCoursService.isCoursReussi(candidatId, coursActuel.getId());
-        System.out.println("   Test final: " + (testReussi ? "✅" : "❌"));
-
-        if (!testReussi) {
-            AlertUtils.showWarning("⛔ TEST FINAL NON RÉUSSI",
-                    "Vous devez réussir le test final du cours (note minimum : 70%).\n\n" +
-                            "Le test final est disponible dans la section ci-dessus.");
-            return;
-        }
-
-        try {
-            Certification existing = certificationService.readByCoursAndCandidat(coursActuel.getId(), candidatId);
-            if (existing != null) {
-                String date = existing.getDateObtention()
-                        .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm"));
-                AlertUtils.showInfo("📄 Certificat déjà généré",
-                        "Vous avez déjà généré un certificat pour ce cours le " + date + ".\n\n" +
-                                "Félicitations pour votre réussite ! 🎉");
-                return;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        // ✅ Confirmation avant génération
-        boolean confirmed = AlertUtils.showConfirmation(
-                "🎓 Félicitations !",
-                "Vous avez rempli toutes les conditions pour obtenir le certificat du cours \"" + coursActuel.getTitre() + "\" :\n\n" +
-                        "✓ Toutes les leçons terminées (100%)\n" +
-                        "✓ Tous les quiz de modules réussis\n" +
-                        "✓ Test final réussi\n\n" +
-                        "Voulez-vous générer votre certificat maintenant ?",
-                "Oui, générer mon certificat",
-                "Non, plus tard"
-        );
-
-        if (confirmed) {
-            try {
-                // Remplacez cette partie dans genererCertificat() :
-
-                String nomCandidat = "Bilal El Eter";
-                String date = java.time.LocalDate.now()
-                        .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
-
-// ✅ Créer le dossier s'il n'existe pas
-                String dossierPath = "C:/Users/MSI/Desktop/certificats/"; // J'ai mis "certificats" au lieu de "certif"
-                File dossier = new File(dossierPath);
-                if (!dossier.exists()) {
-                    dossier.mkdirs(); // Crée le dossier
-                    System.out.println("✅ Dossier créé: " + dossierPath);
-                }
-
-                String chemin = dossierPath +
-                        coursActuel.getTitre().replace(" ", "_") + "_" + date + ".pdf";
-
-                certificationService.genererEtEnregistrer(
-                        nomCandidat, coursActuel.getTitre(), chemin, candidatId, coursActuel.getId());
-
-                // ✅ NOUVEAU : Envoyer l'email de notification
-                envoyerEmailNotification(nomCandidat, coursActuel.getTitre(), chemin);
-
-                AlertUtils.showSuccessWithInstructions(
-                        "🎉 FÉLICITATIONS !!!",
-                        "Votre certificat pour le cours \"" + coursActuel.getTitre() + "\" a été généré avec succès.",
-                        "📁 Emplacement : " + chemin + "\n\n" +
-                                "Un email de confirmation a été envoyé.\n\n" +
-                                "Continuez votre parcours d'apprentissage ! 🚀"
-                );
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                AlertUtils.showError("❌ Erreur", "Erreur lors de la génération du certificat:\n\n" + e.getMessage());
-            }
-        }
-    }
 
     // ============================================
     // GESTION DES LEÇONS - SCROLL 100% FONCTIONNEL
@@ -878,44 +767,7 @@ public class CoursPlayerController {
             e.printStackTrace();
         }
     }
-    // ============================================
-// ENVOI EMAIL DE NOTIFICATION
-// ============================================
-    // ============================================
-// ENVOI EMAIL DE NOTIFICATION - VERSION CORRIGÉE
-// ============================================
-    private void envoyerEmailNotification(String nomCandidat, String titreCours, String cheminCertificat) {
-        try {
-            String emailDestinataire = "bilaleter05@gmail.com"; // Peut être n'importe quel email pour le test
 
-            EmailService emailService = new EmailService();
-
-            boolean envoye = emailService.envoyerNotificationCompletionCours(
-                    emailDestinataire,
-                    nomCandidat,
-                    titreCours,
-                    "file:///" + cheminCertificat.replace("\\", "/")
-            );
-
-            if (envoye) {
-                System.out.println("✅ Notification email traitée");
-                AlertUtils.showInfo("📧 Email simulé",
-                        "L'email a été envoyé à Mailtrap.\n\n" +
-                                "Connectez-vous sur mailtrap.io pour voir le message.");
-            } else {
-                AlertUtils.showWarning("⚠️ Erreur email",
-                        "L'email n'a pas pu être envoyé. Vérifiez la console.");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    // ============================================
-    // UTILITAIRES
-    // ============================================
 
 
 }

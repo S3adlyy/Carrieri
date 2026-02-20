@@ -44,7 +44,7 @@ public class EmailService {
 
             boutonHtml = "<div style='background: #e53e3e; color: white; padding: 15px; border-radius: 10px; margin: 20px 0;'>" +
                     "<p style='margin: 0; font-weight: bold;'>⚠️ Téléchargement non disponible dans l'email</p>" +
-                    "<p style='margin: 10px 0 0 0; font-size: 14px;'>Le certificat est sur votre ordinateur au chemin indiqué ci-dessous.</p>" +
+                    "<p style='margin: 10px 0 0 0; font-size: 14px;'>Veuillez accéder à la partie Certificats dans l'application pour pouvoir télécharger.</p>" +
                     "</div>" +
                     "<div style='background: #f7fafc; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e0;'>" +
                     "<p style='margin: 0; font-family: monospace; word-break: break-all;'>" +

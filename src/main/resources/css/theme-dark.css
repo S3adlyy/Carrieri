@@ -2365,6 +2365,7 @@
     color: #b0b0b0 !important;
 }
 
+
 .root.dark .web-view-html .end-marker {
     color: #9F86C0 !important;
     border-top-color: #5E548E !important;
@@ -2381,4 +2382,190 @@
 .root.dark .module-separator {
     -fx-background-color: #5E548E;
     -fx-opacity: 0.3;
+}
+
+/* ============================================
+   STYLES POUR LA PAGE CERTIFICATS - MODE SOMBRE
+   ============================================ */
+
+/* Conteneur principal */
+.root.dark .certificats-root {
+    -fx-background-color: #1a1a2e;
+}
+
+/* Header */
+.root.dark .header-title {
+    -fx-text-fill: #E0B1CB !important;
+}
+
+.root.dark #lblTotalCertificats {
+    -fx-text-fill: #a0a0c0 !important;
+}
+
+/* Statistiques */
+.root.dark .stat-card {
+    -fx-background-color: #2d2d44 !important;
+    -fx-border-color: #5E548E !important;
+}
+
+.root.dark .stat-card .label {
+    -fx-text-fill: #a0a0c0 !important;
+}
+
+.root.dark #lblTotalStats,
+.root.dark #lblCetteAnnee,
+.root.dark #lblCeMois {
+    -fx-text-fill: #E0B1CB !important;
+}
+
+/* Barre de recherche */
+.root.dark .search-container {
+    -fx-background-color: #35354f !important;
+    -fx-border-color: #5E548E !important;
+}
+
+.root.dark .search-field,
+.root.dark #txtRecherche {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: white !important;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.5) !important;
+}
+
+.root.dark .search-button {
+    -fx-background-color: linear-gradient(to right, #2d2a4e, #5E548E) !important;
+    -fx-text-fill: white !important;
+}
+
+.root.dark .search-button:hover {
+    -fx-background-color: linear-gradient(to right, #3a3559, #7a6ba5) !important;
+}
+
+/* Message vide */
+.root.dark #boxEmpty {
+    -fx-background-color: transparent;
+}
+
+.root.dark #boxEmpty .label {
+    -fx-text-fill: #a0a0c0 !important;
+}
+
+.root.dark #boxEmpty .label:first-child {
+    -fx-text-fill: #5E548E !important;
+    -fx-opacity: 0.5;
+}
+
+.root.dark #boxEmpty .button {
+    -fx-background-color: linear-gradient(to right, #2d2a4e, #5E548E) !important;
+    -fx-text-fill: white !important;
+}
+
+.root.dark #boxEmpty .button:hover {
+    -fx-background-color: linear-gradient(to right, #3a3559, #7a6ba5) !important;
+}
+
+/* ============================================
+   STYLES POUR LES CARTES DE CERTIFICATS - MODE SOMBRE
+   (à ajouter si pas déjà présents)
+   ============================================ */
+
+.root.dark .certificat-card {
+    -fx-background-color: #2d2d44;
+    -fx-border-color: #5E548E;
+}
+
+/* En-tête - identique au mode clair (dégradé reste beau) */
+.root.dark .certificat-card .header-container {
+    -fx-background-color: linear-gradient(to bottom, #5E548E, #231942);
+}
+
+.root.dark .certificat-card .header-icon {
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .certificat-card .header-title {
+    -fx-text-fill: white;
+}
+
+.root.dark .certificat-card .header-date {
+    -fx-text-fill: #E0B1CB;
+}
+
+/* Contenu sombre */
+.root.dark .certificat-card .card-content {
+    -fx-background-color: #2d2d44;
+}
+
+/* Badge sombre */
+.root.dark .certificat-card .badge-obtenu {
+    -fx-background-color: #1a4030;
+    -fx-text-fill: #a3e0c0;
+}
+
+/* Titre rose */
+.root.dark .certificat-card .course-title {
+    -fx-text-fill: #E0B1CB;
+}
+
+/* Description grise */
+.root.dark .certificat-card .course-description {
+    -fx-text-fill: #b0b0b0;
+}
+
+/* Numéro et année violets */
+.root.dark .certificat-card .cert-number,
+.root.dark .certificat-card .cert-year {
+    -fx-text-fill: #9F86C0;
+}
+
+.root.dark .certificat-card .cert-number Label,
+.root.dark .certificat-card .cert-year Label {
+    -fx-text-fill: #a0a0c0;
+}
+
+/* Bouton téléchargement sombre */
+.root.dark .certificat-card .btn-download {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+}
+
+.root.dark .certificat-card .btn-download:hover {
+    -fx-background-color: #7a6ba5;
+    -fx-effect: dropshadow(gaussian, rgba(224, 177, 203, 0.3), 10, 0, 0, 2);
+}
+
+.root.dark .certificat-card .btn-download:disabled {
+    -fx-background-color: #4a4a6a;
+    -fx-text-fill: #a0a0c0;
+}
+
+/* Bouton partage sombre */
+.root.dark .certificat-card .btn-share {
+    -fx-background-color: #1a4030;
+    -fx-text-fill: #a3e0c0;
+}
+
+.root.dark .certificat-card .btn-share:hover {
+    -fx-background-color: #22553e;
+}
+
+.root.dark .certificat-card .btn-share:disabled {
+    -fx-background-color: #4a4a6a;
+    -fx-text-fill: #a0a0c0;
+}
+
+/* Pied de page sombre */
+.root.dark .certificat-card .footer {
+    -fx-text-fill: #5E548E;
+}
+
+/* Séparateur sombre */
+.root.dark .certificat-card .separator {
+    -fx-background-color: #5E548E;
+    -fx-opacity: 0.5;
+}
+
+/* Effet de survol sombre */
+.root.dark .certificat-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(224, 177, 203, 0.2), 15, 0, 0, 5);
+    -fx-border-color: #E0B1CB;
 }

@@ -1766,3 +1766,232 @@
     -fx-border-style: dashed;
     -fx-font-weight: bold;
 }
+
+/* ============================================
+   STYLES POUR LES CARTES DE CERTIFICATS
+   ============================================ */
+
+/* Carte de certificat */
+.certificat-card {
+    -fx-border-width: 1.5;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-pref-width: 350;
+    -fx-max-width: 350;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);
+    -fx-transition: all 0.2s ease;
+}
+
+/* En-tête */
+.certificat-card .header-container {
+    -fx-pref-height: 120;
+    -fx-background-radius: 20 20 0 0;
+    -fx-padding: 20;
+}
+
+.certificat-card .header-icon {
+    -fx-font-size: 48px;
+    -fx-opacity: 0.9;
+}
+
+.certificat-card .header-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: 800;
+    -fx-letter-spacing: 2px;
+}
+
+.certificat-card .header-date {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+
+/* Contenu */
+.certificat-card .card-content {
+    -fx-background-radius: 0 0 20 20;
+    -fx-padding: 25 20 20 20;
+    -fx-spacing: 15;
+}
+
+/* Badge obtenu */
+.certificat-card .badge-obtenu {
+    -fx-padding: 6 15;
+    -fx-background-radius: 50px;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+/* Titre du cours */
+.certificat-card .course-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+    -fx-max-width: 300;
+}
+
+/* Description */
+.certificat-card .course-description {
+    -fx-font-size: 13px;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+    -fx-max-width: 300;
+}
+
+/* Numéro et année */
+.certificat-card .cert-number,
+.certificat-card .cert-year {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.certificat-card .cert-number Label,
+.certificat-card .cert-year Label {
+    -fx-font-size: 11px;
+}
+
+/* Bouton téléchargement */
+.certificat-card .btn-download {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-padding: 12 20;
+    -fx-background-radius: 50px;
+    -fx-cursor: hand;
+    -fx-min-width: 200;
+    -fx-pref-height: 45;
+    -fx-max-width: Infinity;
+}
+
+/* Bouton partage */
+.certificat-card .btn-share {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-padding: 8 15;
+    -fx-background-radius: 50px;
+    -fx-cursor: hand;
+    -fx-pref-height: 35;
+    -fx-max-width: Infinity;
+}
+
+/* Pied de page */
+.certificat-card .footer {
+    -fx-font-size: 10px;
+    -fx-font-weight: 300;
+}
+
+/* Séparateur */
+.certificat-card .separator {
+    -fx-max-width: 200;
+    -fx-pref-height: 1;
+}
+
+/* Effet de survol commun */
+.certificat-card:hover {
+    -fx-translate-y: -3;
+}
+
+
+/* ============================================
+   2. MODE CLAIR - COULEURS PAR DÉFAUT (sans préfixe)
+   ============================================ */
+
+/* Carte */
+.certificat-card {
+    -fx-background-color: white;
+    -fx-border-color: rgba(94,84,142,0.15);
+}
+
+/* En-tête */
+.certificat-card .header-container {
+    -fx-background-color: linear-gradient(to bottom, #5E548E, #231942);
+}
+
+.certificat-card .header-icon {
+    -fx-text-fill: #E0B1CB;
+}
+
+.certificat-card .header-title {
+    -fx-text-fill: white;
+}
+
+.certificat-card .header-date {
+    -fx-text-fill: #E0B1CB;
+}
+
+/* Contenu */
+.certificat-card .card-content {
+    -fx-background-color: white;
+}
+
+/* Badge */
+.certificat-card .badge-obtenu {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+}
+
+/* Titre */
+.certificat-card .course-title {
+    -fx-text-fill: #231942;
+}
+
+/* Description */
+.certificat-card .course-description {
+    -fx-text-fill: #6b7280;
+}
+
+/* Numéro et année */
+.certificat-card .cert-number,
+.certificat-card .cert-year {
+    -fx-text-fill: #5E548E;
+}
+
+.certificat-card .cert-number Label,
+.certificat-card .cert-year Label {
+    -fx-text-fill: #9ca3af;
+}
+
+/* Bouton téléchargement */
+.certificat-card .btn-download {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+}
+
+.certificat-card .btn-download:hover {
+    -fx-background-color: #7a6ba5;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.3), 10, 0, 0, 2);
+}
+
+.certificat-card .btn-download:disabled {
+    -fx-background-color: #9ca3af;
+    -fx-text-fill: white;
+}
+
+/* Bouton partage */
+.certificat-card .btn-share {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+}
+
+.certificat-card .btn-share:hover {
+    -fx-background-color: #0ea271;
+}
+
+.certificat-card .btn-share:disabled {
+    -fx-background-color: #9ca3af;
+    -fx-text-fill: white;
+}
+
+/* Pied de page */
+.certificat-card .footer {
+    -fx-text-fill: #d1d5db;
+}
+
+/* Séparateur */
+.certificat-card .separator {
+    -fx-background-color: #E0B1CB;
+    -fx-opacity: 0.3;
+}
+
+/* Effet de survol clair */
+.certificat-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.3), 20, 0, 0, 5);
+}

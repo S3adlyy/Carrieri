@@ -171,7 +171,7 @@
                     <Label fx:id="lblCount" text="0 cours" styleClass="count-badge"/>
                     <Region HBox.hgrow="ALWAYS"/>
                     <TextField fx:id="txtSearch" promptText="Rechercher un cours..." styleClass="search-field"/>
-                    <Button text="🤖 GÉNÉRER TEST FINAL" styleClass="btn-generate-test"/>
+                    <Button text="🤖 GÉNÉRER TEST FINAL" styleClass="btn-generate-test" onAction="#genererTestFinalAutomatique"/>
                     <Button text="➕" onAction="#toggleForm" styleClass="btn-add-course" prefWidth="100"/>
                 </HBox>
 
