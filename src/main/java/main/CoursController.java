@@ -263,11 +263,37 @@ public class CoursController implements Initializable {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
         errorLabel.setManaged(true);
+        errorLabel.setStyle("-fx-text-fill: #ff6b6b; -fx-font-size: 11px; -fx-font-weight: 600;");
+        // Ajouter la classe 'error' au champ correspondant
+        if (errorLabel == errorTitre) {
+            txtTitre.getStyleClass().add("error");
+        } else if (errorLabel == errorDescription) {
+            txtDescription.getStyleClass().add("error");
+        } else if (errorLabel == errorDuree) {
+            txtDuree.getStyleClass().add("error");
+        } else if (errorLabel == errorNiveau) {
+            comboNiveau.getStyleClass().add("error");
+        } else if (errorLabel == errorCompetences) {
+            txtCompetences.getStyleClass().add("error");
+        }
     }
 
     private void hideError(Label errorLabel) {
         errorLabel.setVisible(false);
         errorLabel.setManaged(false);
+
+        // Retirer la classe 'error' du champ
+        if (errorLabel == errorTitre) {
+            txtTitre.getStyleClass().remove("error");
+        } else if (errorLabel == errorDescription) {
+            txtDescription.getStyleClass().remove("error");
+        } else if (errorLabel == errorDuree) {
+            txtDuree.getStyleClass().remove("error");
+        } else if (errorLabel == errorNiveau) {
+            comboNiveau.getStyleClass().remove("error");
+        } else if (errorLabel == errorCompetences) {
+            txtCompetences.getStyleClass().remove("error");
+        }
     }
 
     private boolean isOnlyDigits(String text) {
@@ -791,6 +817,13 @@ public class CoursController implements Initializable {
         lblImageNom.setText("Aucune image");
         coursSelectionne = null;
         tableCours.getSelectionModel().clearSelection();
+
+        // ✅ RETIRER LES CLASSES ERROR
+        txtTitre.getStyleClass().remove("error");
+        txtDescription.getStyleClass().remove("error");
+        txtDuree.getStyleClass().remove("error");
+        txtCompetences.getStyleClass().remove("error");
+        comboNiveau.getStyleClass().remove("error");
 
         hideError(errorTitre);
         hideError(errorNiveau);

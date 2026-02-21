@@ -103,11 +103,26 @@ public class ModuleController implements Initializable {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
         errorLabel.setManaged(true);
+        errorLabel.setStyle("-fx-text-fill: #ff6b6b; -fx-font-size: 11px; -fx-font-weight: 600;");
+        // Ajouter la classe 'error' au champ correspondant
+        if (errorLabel == errorTitre) {
+            txtTitre.getStyleClass().add("error");
+        } else if (errorLabel == errorDescription) {
+            txtDescription.getStyleClass().add("error");
+        }
     }
 
+    // ✅ MODIFIEZ hideError() pour RETIRER la classe error
     private void hideError(Label errorLabel) {
         errorLabel.setVisible(false);
         errorLabel.setManaged(false);
+
+        // Retirer la classe 'error' du champ
+        if (errorLabel == errorTitre) {
+            txtTitre.getStyleClass().remove("error");
+        } else if (errorLabel == errorDescription) {
+            txtDescription.getStyleClass().remove("error");
+        }
     }
 
     private boolean isOnlyDigits(String text) {
@@ -337,16 +352,12 @@ public class ModuleController implements Initializable {
 
         String titre = txtTitre.getText().trim();
         if (titre.isEmpty()) {
-            errors.append("• Le titre est obligatoire\n");
             showError(errorTitre, "Le titre est obligatoire");
         } else if (titre.length() < 3) {
-            errors.append("• Le titre doit contenir au moins 3 caractères\n");
             showError(errorTitre, "Le titre doit contenir au moins 3 caractères");
         } else if (titre.length() > 200) {
-            errors.append("• Le titre ne peut pas dépasser 200 caractères\n");
             showError(errorTitre, "Le titre ne peut pas dépasser 200 caractères");
         } else if (isOnlyDigits(titre)) {
-            errors.append("• Le titre ne peut pas être composé uniquement de chiffres\n");
             showError(errorTitre, "Le titre ne peut pas être composé uniquement de chiffres");
         } else {
             hideError(errorTitre);
@@ -354,21 +365,16 @@ public class ModuleController implements Initializable {
 
         String description = txtDescription.getText().trim();
         if (description.isEmpty()) {
-            errors.append("• La description est obligatoire\n");
             showError(errorDescription, "La description est obligatoire");
         } else if (description.length() < 10) {
-            errors.append("• La description doit contenir au moins 10 caractères\n");
             showError(errorDescription, "La description doit contenir au moins 10 caractères");
         } else if (description.length() > 1000) {
-            errors.append("• La description ne peut pas dépasser 1000 caractères\n");
             showError(errorDescription, "La description ne peut pas dépasser 1000 caractères");
         } else if (isOnlyDigits(description)) {
-            errors.append("• La description ne peut pas être composée uniquement de chiffres\n");
             showError(errorDescription, "La description ne peut pas être composée uniquement de chiffres");
         } else {
             hideError(errorDescription);
         }
-
         if (errors.length() > 0) {
             AlertUtils.showWarning("⚠️ Formulaire incomplet", errors.toString());
             return false;
@@ -381,6 +387,10 @@ public class ModuleController implements Initializable {
         txtDescription.clear();
         tableModules.getSelectionModel().clearSelection();
         moduleSelectionne = null;
+
+        // ✅ RETIRER LES CLASSES ERROR
+        txtTitre.getStyleClass().remove("error");
+        txtDescription.getStyleClass().remove("error");
 
         hideError(errorTitre);
         hideError(errorDescription);

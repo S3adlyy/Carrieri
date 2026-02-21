@@ -636,11 +636,28 @@
     -fx-background-radius: 20;
 }
 
+/* ============================================
+   STYLES POUR LES ERREURS DE VALIDATION - MODE SOMBRE
+   ============================================ */
+/* ✅ PAR CECI */
 .root.dark .error-label {
     -fx-text-fill: #ff8a8a;
-    -fx-font-size: 12px;
+    -fx-font-size: 11px;
     -fx-font-weight: 600;
-    -fx-padding: 2 0 0 0;
+    -fx-padding: 4 0 0 5;
+}
+
+/* ✅ AJOUTEZ CES NOUVEAUX STYLES APRÈS */
+.root.dark .text-field.error,
+.root.dark .text-area.error,
+.root.dark .combo-box.error {
+    -fx-border-color: #ff8a8a !important;
+    -fx-border-width: 2px !important;
+    -fx-background-color: #4a2a2a;
+}
+
+.root.dark .combo-box.error .arrow-button {
+    -fx-background-color: #4a2a2a;
 }
 
 .root.dark .status-label {
@@ -2449,10 +2466,7 @@
     -fx-text-fill: #a0a0c0 !important;
 }
 
-.root.dark #boxEmpty .label:first-child {
-    -fx-text-fill: #5E548E !important;
-    -fx-opacity: 0.5;
-}
+
 
 .root.dark #boxEmpty .button {
     -fx-background-color: linear-gradient(to right, #2d2a4e, #5E548E) !important;
@@ -2568,4 +2582,361 @@
 .root.dark .certificat-card:hover {
     -fx-effect: dropshadow(gaussian, rgba(224, 177, 203, 0.2), 15, 0, 0, 5);
     -fx-border-color: #E0B1CB;
+}
+
+/* ============================================
+   STYLES POUR LA PAGE RECOMMANDATIONS - MODE SOMBRE
+   ============================================ */
+
+.root.dark .recommandation-root {
+    -fx-background-color: #1a1a2e;
+}
+
+.root.dark .recommandation-header {
+    -fx-background-color: linear-gradient(to right, #0f0f1f, #1a1a2e);
+    -fx-effect: dropshadow(gaussian, rgba(224,177,203,0.2), 20, 0, 0, 8);
+}
+
+.root.dark .recommandation-header .label {
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .recommandation-header-title {
+    -fx-text-fill: #E0B1CB !important;
+}
+
+.root.dark .recommandation-header-subtitle {
+    -fx-text-fill: #a0a0c0 !important;
+}
+
+/* Profil card sombre */
+.root.dark .profile-card {
+    -fx-background-color: #2d2d44;
+    -fx-border-color: #5E548E;
+}
+
+.root.dark .profile-card .label {
+    -fx-text-fill: #e0e0e0;
+}
+
+.root.dark .profile-avatar {
+    -fx-background-color: linear-gradient(to bottom right, #2d2a4e, #5E548E);
+}
+
+/* Cartes de recommandation sombres */
+.root.dark .recommandation-card {
+    -fx-background-color: #2d2d44;
+    -fx-border-color: #5E548E;
+}
+
+.root.dark .recommandation-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(224,177,203,0.2), 15, 0, 0, 5);
+    -fx-border-color: #E0B1CB;
+}
+
+.root.dark .recommandation-card .card-number {
+    -fx-text-fill: #4a4a6a;
+}
+
+.root.dark .recommandation-card .card-title {
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .recommandation-card .card-description {
+    -fx-text-fill: #b0b0b0;
+}
+
+/* Tags de compétences sombres */
+.root.dark .competence-tag {
+    -fx-background-color: #35354f;
+    -fx-text-fill: #E0B1CB;
+}
+
+/* Badges de niveau sombres */
+.root.dark .level-debutant {
+    -fx-background-color: #1a4030;
+    -fx-text-fill: #a3e0c0;
+}
+
+.root.dark .level-intermediaire {
+    -fx-background-color: #4a3a1a;
+    -fx-text-fill: #ffb86b;
+}
+
+.root.dark .level-avance {
+    -fx-background-color: #4a2a2a;
+    -fx-text-fill: #ffb3b3;
+}
+
+.root.dark .level-expert {
+    -fx-background-color: #35354f;
+    -fx-text-fill: #E0B1CB;
+}
+
+/* Stats et badges sombres */
+.root.dark .stats-label {
+    -fx-background-color: #2d2d44;
+    -fx-text-fill: #E0B1CB;
+    -fx-border-color: #5E548E;
+}
+
+/* Boutons de la page recommandation sombres */
+.root.dark .btn-recommandation-retour {
+    -fx-text-fill: #E0B1CB;
+    -fx-border-color: #5E548E;
+}
+
+.root.dark .btn-recommandation-retour:hover {
+    -fx-background-color: rgba(224,177,203,0.1);
+    -fx-border-color: #E0B1CB;
+}
+
+.root.dark .btn-recommandation-voir {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+}
+
+.root.dark .btn-recommandation-voir:hover {
+    -fx-background-color: #7a6ba5;
+}
+
+/* État vide sombre */
+.root.dark .empty-state-icon {
+    -fx-text-fill: #5E548E;
+    -fx-opacity: 0.5;
+}
+
+.root.dark .empty-state-title {
+    -fx-text-fill: #a0a0c0;
+}
+
+.root.dark .empty-state-subtitle {
+    -fx-text-fill: #5E548E;
+}
+
+/* Durée et métadonnées sombres */
+.root.dark .duration-icon {
+    -fx-text-fill: #a0a0c0;
+}
+
+.root.dark .duration-text {
+    -fx-text-fill: #b0b0b0;
+}
+
+/* Progression sombre */
+.root.dark .progression-bar {
+    -fx-accent: #E0B1CB;
+}
+
+.root.dark .progression-bar .track {
+    -fx-background-color: #40405c;
+}
+
+.root.dark .progression-text {
+    -fx-text-fill: #a0a0c0;
+}
+
+/* TextArea sombre */
+.root.dark .text-area {
+    -fx-background-color: #35354f !important;
+    -fx-text-fill: #e0e0e0 !important;
+    -fx-border-color: #5E548E !important;
+}
+
+.root.dark .text-area .content {
+    -fx-background-color: #35354f !important;
+}
+
+/* ListView sombre */
+.root.dark .list-view {
+    -fx-background-color: #2d2d44 !important;
+    -fx-border-color: #5E548E !important;
+}
+
+.root.dark .list-cell {
+    -fx-background-color: #2d2d44 !important;
+    -fx-text-fill: #e0e0e0 !important;
+}
+
+.root.dark .list-cell:odd {
+    -fx-background-color: #35354f !important;
+}
+
+.root.dark .list-cell:hover {
+    -fx-background-color: #40405c !important;
+}
+
+/* ScrollPane sombre */
+.root.dark .scroll-pane {
+    -fx-background-color: transparent !important;
+}
+
+.root.dark .scroll-pane .viewport {
+    -fx-background-color: transparent !important;
+}
+
+/* Séparateurs */
+.root.dark .separator {
+    -fx-background-color: #5E548E !important;
+}
+
+/* ============================================
+   STYLES POUR LE CHATBOT - MODE SOMBRE
+   ============================================ */
+
+.root.dark .chatbot-floating {
+    -fx-background-color: #2d2d44;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 20, 0, 0, 5);
+    -fx-border-color: #5E548E;
+    -fx-border-width: 1;
+}
+
+.root.dark .chatbot-header {
+    -fx-background-color: linear-gradient(to right, #0f0f1f, #1a1a2e);
+    -fx-border-color: transparent transparent #5E548E transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.root.dark .chatbot-header .label {
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .chatbot-header .button {
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .chatbot-header .button:hover {
+    -fx-text-fill: #f5e6f0;
+    -fx-background-color: rgba(224,177,203,0.1);
+    -fx-background-radius: 50%;
+}
+
+.root.dark .chatbot-contexte {
+    -fx-text-fill: #a0a0c0;
+}
+
+/* Zone de messages sombre */
+.root.dark .chatbot-messages {
+    -fx-background-color: #1a1a2e;
+}
+
+.root.dark .chatbot-messages .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.root.dark .chatbot-messages .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.root.dark .chatbot-messages .scroll-bar:vertical {
+    -fx-background-color: #2d2d44;
+}
+
+.root.dark .chatbot-messages .scroll-bar .thumb {
+    -fx-background-color: #5E548E;
+}
+
+.root.dark .chatbot-messages .scroll-bar .thumb:hover {
+    -fx-background-color: #E0B1CB;
+}
+
+/* Bulle utilisateur sombre */
+.root.dark .message-bulle-utilisateur {
+    -fx-background-color: #5E548E;
+}
+
+.root.dark .message-bulle-utilisateur .label {
+    -fx-text-fill: white;
+}
+
+.root.dark .message-heure-utilisateur {
+    -fx-text-fill: rgba(255,255,255,0.5);
+}
+
+/* Bulle bot sombre */
+.root.dark .message-bulle-bot {
+    -fx-background-color: #35354f;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 1;
+}
+
+.root.dark .message-bulle-bot .label {
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .message-heure-bot {
+    -fx-text-fill: #a0a0c0;
+}
+
+/* Avatar du bot - reste le même (logo) */
+
+/* Avatar utilisateur sombre */
+.root.dark .user-avatar-text {
+    -fx-text-fill: #E0B1CB;
+}
+
+/* Pied du chatbot sombre */
+.root.dark .chatbot-footer {
+    -fx-background-color: #2d2d44;
+    -fx-border-color: #5E548E;
+    -fx-border-width: 1 0 0 0;
+}
+
+.root.dark .chatbot-footer .separator {
+    -fx-background-color: #5E548E;
+}
+
+/* Champ de texte sombre */
+.root.dark .chatbot-input {
+    -fx-background-color: #35354f;
+    -fx-border-color: #5E548E;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #a0a0c0;
+}
+
+.root.dark .chatbot-input:focused {
+    -fx-border-color: #E0B1CB;
+    -fx-effect: dropshadow(gaussian, rgba(224,177,203,0.2), 10, 0, 0, 2);
+}
+
+.root.dark .chatbot-input .prompt-text {
+    -fx-text-fill: #a0a0c0;
+}
+
+/* Bouton envoyer sombre */
+.root.dark .chatbot-send-button {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+}
+
+.root.dark .chatbot-send-button:hover {
+    -fx-background-color: #7a6ba5;
+}
+
+.root.dark .chatbot-send-button:disabled {
+    -fx-background-color: #40405c;
+    -fx-text-fill: #a0a0c0;
+}
+
+/* Statut sombre */
+.root.dark .chatbot-status {
+    -fx-text-fill: #a0a0c0;
+}
+
+/* Messages d'exemple (boutons) sombres */
+.root.dark .btn-chatbot-exemple {
+    -fx-text-fill: #E0B1CB;
+    -fx-border-color: #5E548E;
+}
+
+.root.dark .btn-chatbot-exemple:hover {
+    -fx-background-color: #35354f;
+    -fx-border-color: #E0B1CB;
+}
+
+/* Effet de survol pour les messages du bot */
+.root.dark .message-bulle-bot:hover {
+    -fx-border-color: #E0B1CB;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(224,177,203,0.2), 8, 0, 0, 2);
 }

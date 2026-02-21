@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.AlertUtils;
@@ -49,6 +50,9 @@ public class CandidatShellController implements Initializable {
     // Variables pour suivre le contexte
     private Cours coursActif = null;
     private int candidatId = 1; // À remplacer par l'ID connecté
+    public void setCandidatId(int id) {
+        this.candidatId = id;
+    }
 
     private Timeline expandAnimation;
     private Timeline collapseAnimation;
@@ -431,5 +435,51 @@ public class CandidatShellController implements Initializable {
             contentPane.getChildren().remove(chatbot);
             System.out.println("✅ Chatbot fermé via bouton X");
         }
+    }
+    @FXML
+    private void ouvrirRecommandation() {
+        try {
+            // Chercher si la vue recommandation existe déjà
+            Node existingView = contentPane.lookup("#recommandationView");
+
+            if (existingView != null) {
+                // Si elle existe déjà, on la ferme (toggle)
+                animateContentChange(getCurrentView()); // Retour à la vue précédente
+                return;
+            }
+
+            // Sauvegarder la vue actuelle si ce n'est pas déjà fait
+            if (contentPane.getChildren().isEmpty()) {
+                showCatalogue(); // Au cas où
+                return;
+            }
+
+            // Charger la vue recommandation
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/recommandation.fxml"));
+            Node recommandationView = loader.load();
+            recommandationView.setId("recommandationView");
+
+            // Récupérer le contrôleur et passer l'ID du candidat
+            RecommandationController controller = loader.getController();
+            controller.setCandidatId(this.candidatId);
+
+            // Remplacer le contenu avec animation
+            animateContentChange(recommandationView);
+
+            // Mettre à jour le bouton actif (optionnel)
+            // setActiveButton(btnRecommandation); // Si vous avez un bouton dédié
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            AlertUtils.showError("❌ Erreur", "Impossible d'ouvrir les recommandations.");
+        }
+    }
+
+    // Méthode utilitaire pour obtenir la vue actuelle
+    private Node getCurrentView() {
+        if (!contentPane.getChildren().isEmpty()) {
+            return contentPane.getChildren().get(0);
+        }
+        return null;
     }
 }

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.shape.Rectangle?>
+
+<VBox fx:id="rootContainer" spacing="25" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="main.RecommandationController"
+      styleClass="recommandation-root"
+      prefWidth="1000" prefHeight="600"
+      stylesheets="/css/theme-unified.css">
+
+    <!-- HEADER MODERNE AVEC LOGO -->
+    <VBox styleClass="recommandation-header">
+        <HBox alignment="CENTER_LEFT" spacing="15">
+            <ImageView fitWidth="50" fitHeight="50" preserveRatio="true">
+                <Image url="/images/logo.png" />
+            </ImageView>
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="🎯 RECOMMANDATIONS PERSONNALISÉES" styleClass="recommandation-header-title"/>
+                <Label text="Découvrez les cours adaptés à votre profil et à vos objectifs" styleClass="recommandation-header-subtitle"/>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <!-- STATISTIQUES RAPIDES -->
+    <HBox spacing="15" alignment="CENTER">
+        <HBox styleClass="stats-label" spacing="10">
+            <Label text="🎓"/>
+            <Label fx:id="lblStats" text="0 recommandations"/>
+        </HBox>
+        <Region HBox.hgrow="ALWAYS"/>
+
+    </HBox>
+
+    <!-- CONTENU PRINCIPAL EN 2 COLONNES -->
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+
+        <!-- COLONNE GAUCHE - PROFIL DU CANDIDAT -->
+        <VBox spacing="15" HBox.hgrow="ALWAYS" maxWidth="300">
+            <Label text="👤 VOTRE PROFIL" styleClass="section-title-small"/>
+
+            <VBox styleClass="profile-card" spacing="15">
+                <!-- Avatar et infos principales -->
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <StackPane styleClass="profile-avatar">
+                        <Rectangle width="60" height="60" arcWidth="20" arcHeight="20" fill="transparent"/>
+                        <Label text="👤" style="-fx-font-size: 30px; -fx-text-fill: white;"/>
+                    </StackPane>
+                    <VBox spacing="5">
+                        <Label text="Candidat" style="-fx-font-size: 12px; -fx-text-fill: #6b7280;"/>
+                        <Label fx:id="lblDetails" text="ID: 1" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #231942;"/>
+                    </VBox>
+                </HBox>
+
+                <Separator/>
+
+                <!-- Détails complets -->
+                <TextArea fx:id="txtDetailsCandidat"
+                          editable="false"
+                          wrapText="true"
+                          prefHeight="100"
+                          style="-fx-background-color: #f8f9fa; -fx-border-color: #e9ecef; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10;"/>
+
+                <!-- Barre de progression globale -->
+                <VBox spacing="5">
+                    <Label text="Progression globale" style="-fx-font-size: 12px; -fx-text-fill: #6b7280;"/>
+                    <ProgressBar fx:id="progressionBar" prefWidth="200" progress="0" prefHeight="8" styleClass="progression-bar"/>
+                    <Label fx:id="lblProgression" text="0% du catalogue exploré" styleClass="progression-text"/>
+                </VBox>
+            </VBox>
+
+            <!-- COURS SUIVIS -->
+            <Label text="📚 COURS DÉJÀ SUIVIS" styleClass="section-title-small" style="-fx-padding: 10 0 0 0;"/>
+            <ListView fx:id="listCoursSuivis"
+                      prefHeight="150"
+                      style="-fx-background-color: white; -fx-border-color: #e9ecef; -fx-border-radius: 10; -fx-background-radius: 10;">
+                <placeholder>
+                    <Label text="📭 Aucun cours suivi" style="-fx-text-fill: #9ca3af;"/>
+                </placeholder>
+            </ListView>
+        </VBox>
+
+        <!-- COLONNE DROITE - RECOMMANDATIONS -->
+        <VBox spacing="15" HBox.hgrow="ALWAYS">
+            <Label text="🎯 RECOMMANDATIONS POUR VOUS" styleClass="section-title-small"/>
+
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-background: transparent;">
+                <VBox fx:id="recommandationsContainer" spacing="10" style="-fx-padding: 5; -fx-background-color: transparent;">
+                    <!-- Les recommandations seront ajoutées dynamiquement ici -->
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </HBox>
+
+</VBox>

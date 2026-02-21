@@ -163,15 +163,32 @@ public class LeconController {
         });
     }
 
+    // ✅ MODIFIEZ showError()
     private void showError(Label errorLabel, String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
         errorLabel.setManaged(true);
+        errorLabel.setStyle("-fx-text-fill: #ff6b6b; -fx-font-size: 11px; -fx-font-weight: 600;");
+        if (errorLabel == errorTitre) {
+            txtTitre.getStyleClass().add("error");
+        } else if (errorLabel == errorContenu) {
+            txtContenu.getStyleClass().add("error");
+        } else if (errorLabel == errorModule) {
+            comboModules.getStyleClass().add("error");
+        }
     }
 
     private void hideError(Label errorLabel) {
         errorLabel.setVisible(false);
         errorLabel.setManaged(false);
+
+        if (errorLabel == errorTitre) {
+            txtTitre.getStyleClass().remove("error");
+        } else if (errorLabel == errorContenu) {
+            txtContenu.getStyleClass().remove("error");
+        } else if (errorLabel == errorModule) {
+            comboModules.getStyleClass().remove("error");
+        }
     }
 
     private boolean isOnlyDigits(String text) {
@@ -482,16 +499,12 @@ public class LeconController {
 
         String titre = txtTitre.getText().trim();
         if (titre.isEmpty()) {
-            errors.append("• Le titre est obligatoire\n");
             showError(errorTitre, "Le titre est obligatoire");
         } else if (titre.length() < 3) {
-            errors.append("• Le titre doit contenir au moins 3 caractères\n");
             showError(errorTitre, "Le titre doit contenir au moins 3 caractères");
         } else if (titre.length() > 200) {
-            errors.append("• Le titre ne peut pas dépasser 200 caractères\n");
             showError(errorTitre, "Le titre ne peut pas dépasser 200 caractères");
         } else if (isOnlyDigits(titre)) {
-            errors.append("• Le titre ne peut pas être composé uniquement de chiffres\n");
             showError(errorTitre, "Le titre ne peut pas être composé uniquement de chiffres");
         } else {
             hideError(errorTitre);
@@ -499,16 +512,12 @@ public class LeconController {
 
         String contenu = txtContenu.getText().trim();
         if (contenu.isEmpty()) {
-            errors.append("• Le contenu est obligatoire\n");
             showError(errorContenu, "Le contenu est obligatoire");
         } else if (contenu.length() < 500) {
-            errors.append("• Le contenu doit contenir au moins 500 caractères\n");
             showError(errorContenu, "Le contenu doit contenir au moins 500 caractères");
         } else if (contenu.length() > 10000) {
-            errors.append("• Le contenu ne peut pas dépasser 10000 caractères\n");
             showError(errorContenu, "Le contenu ne peut pas dépasser 10000 caractères");
         } else if (isOnlyDigits(contenu)) {
-            errors.append("• Le contenu ne peut pas être composé uniquement de chiffres\n");
             showError(errorContenu, "Le contenu ne peut pas être composé uniquement de chiffres");
         } else {
             hideError(errorContenu);
@@ -524,6 +533,11 @@ public class LeconController {
     private void clearFields() {
         txtTitre.clear();
         txtContenu.clear();
+
+        // ✅ RETIRER LES CLASSES ERROR
+        txtTitre.getStyleClass().remove("error");
+        txtContenu.getStyleClass().remove("error");
+        comboModules.getStyleClass().remove("error");
 
         videoBytes = null;
         videoNom = null;

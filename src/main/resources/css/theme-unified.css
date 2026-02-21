@@ -702,11 +702,27 @@
     -fx-background-radius: 20;
 }
 
+/* ============================================
+   FORMULAIRES
+   ============================================ */
+/* ... le reste ... */
+
+/* ✅ PAR CECI */
 .error-label {
     -fx-text-fill: #ff6b6b;
-    -fx-font-size: 12px;
+    -fx-font-size: 11px;
     -fx-font-weight: 600;
-    -fx-padding: 2 0 0 0;
+    -fx-padding: 4 0 0 5;
+}
+
+/* ✅ AJOUTEZ CES NOUVEAUX STYLES APRÈS */
+.text-field.error, .text-area.error, .combo-box.error {
+    -fx-border-color: #ff6b6b !important;
+    -fx-border-width: 2px !important;
+}
+
+.combo-box.error .arrow-button {
+    -fx-background-color: #ffe5e5;
 }
 
 .status-label {
@@ -2019,4 +2035,420 @@
 .btn-chatbot:hover {
     -fx-background-color: #231942;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 3);
+}
+
+/* ============================================
+   STYLES POUR LA PAGE RECOMMANDATIONS - MODE CLAIR
+   ============================================ */
+
+/* Conteneur principal */
+.recommandation-root {
+    -fx-background-color: #f8fafc;
+    -fx-padding: 25;
+}
+
+/* En-tête */
+.recommandation-header {
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E);
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(35, 25, 66, 0.2), 15, 0, 0, 5);
+}
+
+.recommandation-header .label {
+    -fx-text-fill: white;
+}
+
+.recommandation-header-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.recommandation-header-subtitle {
+    -fx-font-size: 14px;
+    -fx-opacity: 0.8;
+}
+
+/* Profil card */
+.profile-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);
+    -fx-border-color: #e9ecef;
+    -fx-border-radius: 15;
+}
+
+.profile-card .label {
+    -fx-text-fill: #231942;
+}
+
+.profile-avatar {
+    -fx-background-color: linear-gradient(to bottom right, #231942, #5E548E);
+    -fx-background-radius: 15;
+    -fx-padding: 10;
+}
+
+/* Cartes de recommandation */
+.recommandation-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 18;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.03), 8, 0, 0, 2);
+    -fx-border-color: #f0f0f0;
+    -fx-border-radius: 15;
+    -fx-transition: all 0.2s ease;
+}
+
+.recommandation-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.15), 15, 0, 0, 5);
+    -fx-border-color: #5E548E;
+    -fx-translate-y: -2;
+}
+
+.recommandation-card .card-number {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #d1d5db;
+    -fx-min-width: 35;
+}
+
+.recommandation-card .card-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1f2937;
+}
+
+.recommandation-card .card-description {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6b7280;
+    -fx-wrap-text: true;
+    -fx-max-height: 40;
+}
+
+/* Tags de compétences */
+.competence-tag {
+    -fx-background-color: #f3e8ff;
+    -fx-background-radius: 15;
+    -fx-padding: 4 12;
+    -fx-font-size: 11px;
+    -fx-text-fill: #5E548E;
+}
+
+/* Badges de niveau */
+.level-badge {
+    -fx-background-radius: 12;
+    -fx-padding: 3 10;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.level-debutant {
+    -fx-background-color: #d8f3dc;
+    -fx-text-fill: #2d6a4f;
+}
+
+.level-intermediaire {
+    -fx-background-color: #fff3bf;
+    -fx-text-fill: #b67118;
+}
+
+.level-avance {
+    -fx-background-color: #f8d7da;
+    -fx-text-fill: #b02a37;
+}
+
+.level-expert {
+    -fx-background-color: #e2d5f1;
+    -fx-text-fill: #5E548E;
+}
+
+/* Stats et badges */
+.stats-label {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 25;
+    -fx-padding: 10 20;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #231942;
+    -fx-border-color: #e9ecef;
+    -fx-border-radius: 25;
+}
+
+/* Boutons de la page recommandation */
+.btn-recommandation-retour {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-border-color: rgba(255,255,255,0.3);
+    -fx-border-radius: 25;
+    -fx-padding: 8 20;
+}
+
+.btn-recommandation-retour:hover {
+    -fx-background-color: rgba(255,255,255,0.1);
+    -fx-border-color: white;
+}
+
+.btn-recommandation-voir {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 5 15;
+    -fx-cursor: hand;
+}
+
+.btn-recommandation-voir:hover {
+    -fx-background-color: #231942;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.3), 10, 0, 0, 2);
+}
+
+/* État vide */
+.empty-state {
+    -fx-alignment: center;
+    -fx-pref-height: 300;
+}
+
+.empty-state-icon {
+    -fx-font-size: 60px;
+    -fx-opacity: 0.3;
+    -fx-text-fill: #9ca3af;
+}
+
+.empty-state-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #9ca3af;
+}
+
+.empty-state-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #d1d5db;
+}
+
+/* Durée et métadonnées */
+.duration-box {
+    -fx-alignment: center-left;
+    -fx-spacing: 5;
+}
+
+.duration-icon {
+    -fx-font-size: 12px;
+    -fx-text-fill: #9ca3af;
+}
+
+.duration-text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6b7280;
+}
+
+/* Progression */
+.progression-bar {
+    -fx-accent: #5E548E;
+}
+
+.progression-bar .track {
+    -fx-background-color: #e9ecef;
+    -fx-background-radius: 10;
+}
+
+.progression-bar .bar {
+    -fx-background-radius: 10;
+}
+
+.progression-text {
+    -fx-font-size: 11px;
+    -fx-text-fill: #9ca3af;
+}
+
+
+/* ============================================
+   STYLES POUR LE CHATBOT - MODE CLAIR
+   ============================================ */
+
+/* Conteneur flottant du chatbot */
+.chatbot-floating {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 20, 0, 0, 5);
+}
+
+/* En-tête du chatbot */
+.chatbot-header {
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E);
+    -fx-background-radius: 15 15 0 0;
+    -fx-padding: 15;
+}
+
+.chatbot-header .label {
+    -fx-text-fill: white;
+}
+
+.chatbot-header .button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+}
+
+.chatbot-header .button:hover {
+    -fx-text-fill: #ffcccc;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+/* Contexte dans l'en-tête */
+.chatbot-contexte {
+    -fx-font-size: 11px;
+    -fx-text-fill: rgba(255,255,255,0.8);
+}
+
+/* Zone de messages */
+.chatbot-messages {
+    -fx-background-color: #f8fafc;
+    -fx-padding: 15;
+}
+
+.chatbot-messages .scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.chatbot-messages .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Bulle utilisateur */
+.message-bulle-utilisateur {
+    -fx-background-color: #5E548E;
+    -fx-background-radius: 15 0 15 15;
+    -fx-padding: 10;
+    -fx-max-width: 300;
+}
+
+.message-bulle-utilisateur .label {
+    -fx-text-fill: white;
+    -fx-wrap-text: true;
+}
+
+.message-heure-utilisateur {
+    -fx-font-size: 10px;
+    -fx-text-fill: rgba(255,255,255,0.7);
+}
+
+/* Bulle bot */
+.message-bulle-bot {
+    -fx-background-color: #f3e8ff;
+    -fx-background-radius: 0 15 15 15;
+    -fx-padding: 10;
+    -fx-max-width: 300;
+}
+
+.message-bulle-bot .label {
+    -fx-text-fill: #231942;
+    -fx-wrap-text: true;
+}
+
+.message-heure-bot {
+    -fx-font-size: 10px;
+    -fx-text-fill: #6b7280;
+}
+
+/* Avatar du bot */
+.bot-avatar {
+    -fx-fit-width: 35px;
+    -fx-fit-height: 35px;
+    -fx-preserve-ratio: true;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+/* Avatar utilisateur */
+.user-avatar-text {
+    -fx-font-size: 20px;
+}
+
+/* Pied du chatbot */
+.chatbot-footer {
+    -fx-background-color: white;
+    -fx-background-radius: 0 0 15 15;
+    -fx-padding: 15;
+}
+
+.chatbot-footer .separator {
+    -fx-background-color: #d8c9f0;
+}
+
+/* Champ de texte */
+.chatbot-input {
+    -fx-background-color: #f5f5f5;
+    -fx-border-color: #d8c9f0;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 8 12;
+    -fx-font-size: 13px;
+}
+
+.chatbot-input:focused {
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.2), 10, 0, 0, 2);
+}
+
+.chatbot-input .prompt-text {
+    -fx-text-fill: #a09bb3;
+}
+
+/* Bouton envoyer */
+.chatbot-send-button {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 8 15;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.chatbot-send-button:hover {
+    -fx-background-color: #231942;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.3), 10, 0, 0, 2);
+}
+
+.chatbot-send-button:disabled {
+    -fx-opacity: 0.5;
+    -fx-background-color: #9ca3af;
+}
+
+/* Statut */
+.chatbot-status {
+    -fx-font-size: 10px;
+    -fx-text-fill: #9ca3af;
+    -fx-alignment: center;
+}
+
+/* Messages d'exemple (boutons) */
+.chatbot-exemples {
+    -fx-spacing: 5;
+    -fx-alignment: center;
+}
+
+.btn-chatbot-exemple {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5E548E;
+    -fx-border-color: #9F86C0;
+    -fx-border-width: 1;
+    -fx-font-size: 11px;
+    -fx-padding: 5 10;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-cursor: hand;
+}
+
+.btn-chatbot-exemple:hover {
+    -fx-background-color: #f3e8ff;
+    -fx-border-color: #5E548E;
 }

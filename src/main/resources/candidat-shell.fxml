@@ -66,6 +66,16 @@
                         </HBox>
                     </graphic>
                 </Button>
+                <Button fx:id="btnRecommandation"
+                        onAction="#ouvrirRecommandation"
+                        styleClass="nav-button">
+                    <graphic>
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Label text="🎯" styleClass="nav-icon"/>
+                            <Label text="Recommandations" styleClass="nav-text"/>
+                        </HBox>
+                    </graphic>
+                </Button>
 
                 <Button fx:id="btnProfil"
                         onAction="#showProfil"

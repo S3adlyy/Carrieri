@@ -4,63 +4,67 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
+
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="main.ChatbotController"
             stylesheets="/css/theme-unified.css"
             prefWidth="350" prefHeight="500"
-            styleClass="chatbot-floating"
-            style="-fx-background-color: white; -fx-background-radius: 15; -fx-border-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 20, 0, 0, 5);">
+            styleClass="chatbot-floating">
 
-    <!-- Header avec bouton de fermeture -->
+    <!-- Header avec styleClass -->
     <top>
-        <VBox spacing="10" style="-fx-padding: 15; -fx-background-color: linear-gradient(to right, #231942, #5E548E); -fx-background-radius: 15 15 0 0;">
+        <VBox styleClass="chatbot-header" spacing="10">
             <HBox alignment="CENTER_LEFT" spacing="10">
-                <ImageView fitWidth="50" fitHeight="50" preserveRatio="true">
+                <ImageView fitWidth="35" fitHeight="35" preserveRatio="true" styleClass="bot-avatar">
                     <Image url="/images/logo_chatbot.png" />
                 </ImageView>
-                <Label text="Carrieri Chatbot" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label text="Carrieri Chatbot" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="✖" onAction="#fermer" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 16px; -fx-cursor: hand;"/>
+                <Button text="✖" onAction="#fermer"/>
             </HBox>
-            <Label fx:id="lblContexte" text="Cours: Aucun" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            <Label fx:id="lblContexte" text="Cours: Aucun" styleClass="chatbot-contexte"/>
         </VBox>
     </top>
 
-    <!-- Le reste de votre FXML existant... -->
+    <!-- Zone des messages -->
     <center>
-        <ScrollPane fx:id="scrollPane" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
-            <VBox fx:id="messageContainer" spacing="10" style="-fx-padding: 15;">
-                <!-- Message de bienvenue -->
-                <HBox spacing="10">
-                    <ImageView fitWidth="50" fitHeight="50" preserveRatio="true">
-                        <Image url="/images/logo_chatbot.png" />
-                    </ImageView>
-                    <VBox spacing="5" style="-fx-background-color: #f3e8ff; -fx-background-radius: 15; -fx-padding: 10; -fx-max-width: 250;">
-                        <Label text="Bonjour ! Je suis votre assistant. Posez-moi des questions !" wrapText="true"
-                               style="-fx-text-fill: #231942;"/>
-                    </VBox>
-                    <Region HBox.hgrow="ALWAYS"/>
-                </HBox>
-            </VBox>
-        </ScrollPane>
+        <VBox styleClass="chatbot-messages" VBox.vgrow="ALWAYS">
+            <ScrollPane fx:id="scrollPane" fitToWidth="true" VBox.vgrow="ALWAYS">
+                <VBox fx:id="messageContainer" spacing="10" style="-fx-padding: 5;">
+                    <!-- Message de bienvenue avec styleClass -->
+                    <HBox spacing="10">
+                        <ImageView fitWidth="30" fitHeight="30" preserveRatio="true" styleClass="bot-avatar">
+                            <Image url="/images/logo_chatbot.png" />
+                        </ImageView>
+                        <VBox spacing="5" styleClass="message-bulle-bot" style="-fx-max-width: 250;">
+                            <Label text="Bonjour ! Je suis votre assistant. Posez-moi des questions !" wrapText="true"/>
+                            <Label text="Maintenant" styleClass="message-heure-bot"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+            </ScrollPane>
+        </VBox>
     </center>
 
+    <!-- Pied du chatbot -->
     <bottom>
-        <VBox spacing="10" style="-fx-padding: 15; -fx-background-color: white; -fx-background-radius: 0 0 15 15;">
+        <VBox styleClass="chatbot-footer" spacing="10">
             <Separator/>
             <HBox spacing="10" alignment="CENTER">
                 <TextField fx:id="txtQuestion" promptText="Posez votre question..."
-                           style="-fx-background-color: #f5f5f5; -fx-border-color: #d8c9f0; -fx-border-radius: 20; -fx-background-radius: 20; -fx-padding: 8 12;"
-                           HBox.hgrow="ALWAYS"
+                           HBox.hgrow="ALWAYS" styleClass="chatbot-input"
                            onAction="#envoyerQuestion"/>
                 <Button fx:id="btnEnvoyer" text="Envoyer" onAction="#envoyerQuestion"
-                        style="-fx-background-color: #5E548E; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 8 15; -fx-cursor: hand;"/>
+                        styleClass="chatbot-send-button"/>
             </HBox>
-            <Label fx:id="lblStatut" text="Prêt" style="-fx-font-size: 10px; -fx-text-fill: #9ca3af; -fx-alignment: center;"/>
+
+
+
+            <Label fx:id="lblStatut" text="Prêt" styleClass="chatbot-status"/>
         </VBox>
     </bottom>
 
