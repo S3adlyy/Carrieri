@@ -1503,6 +1503,12 @@
 /* ===== IMAGE CONTAINER ===== */
 .course-card .image-container {
     -fx-background-color: linear-gradient(to bottom, #231942, #5E548E);
+    -fx-background-radius: 20 20 0 0;
+    -fx-min-height: 160;
+    -fx-pref-height: 160;
+    -fx-max-height: 160;
+    -fx-alignment: center;
+    -fx-overflow: hidden;  /* Cache les débordements */
 }
 
 /* ===== BADGE CATÉGORIE ===== */

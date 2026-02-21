@@ -2,6 +2,7 @@ package main;
 
 import entities.Certification;
 import entities.Cours;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -122,37 +123,43 @@ public class CoursCandidatController {
         card.setMaxWidth(350);
         card.setEffect(new DropShadow(10, Color.rgb(94, 84, 142, 0.15)));
 
-        // --- IMAGE DE COUVERTURE ---
+        // --- IMAGE DE COUVERTURE AVEC COINS ARRONDIS ---
         StackPane imageContainer = new StackPane();
         imageContainer.setPrefHeight(160);
-        imageContainer.getStyleClass().add("image-container");
+        imageContainer.setMinHeight(160);
+        imageContainer.setMaxHeight(160);
+        imageContainer.setPrefWidth(350);
+        imageContainer.setMinWidth(350);
+        imageContainer.setMaxWidth(350);
+        imageContainer.setStyle("-fx-background-color: #5E548E; -fx-background-radius: 20 20 0 0;");
 
-        ImageView imageView;
         if (cours.getImageCouverture() != null && cours.getImageCouverture().length > 0) {
-            imageView = new ImageView(new Image(new ByteArrayInputStream(cours.getImageCouverture())));
-        } else {
-            Label defaultIcon = new Label("📚");
-            defaultIcon.getStyleClass().add("default-icon");
-            imageContainer.getChildren().add(defaultIcon);
-            imageView = new ImageView();
-        }
+            try {
+                Image image = new Image(new ByteArrayInputStream(cours.getImageCouverture()));
+                ImageView imageView = new ImageView(image);
 
-        if (imageView.getImage() != null) {
-            imageView.setFitWidth(350);
-            imageView.setFitHeight(160);
-            imageView.setPreserveRatio(true);
-            imageView.setSmooth(true);
+                // Configuration de l'image
+                imageView.setFitWidth(350);
+                imageView.setFitHeight(160);
+                imageView.setPreserveRatio(false);
+                imageView.setSmooth(true);
 
-            Rectangle clip = new Rectangle(350, 160);
-            clip.setArcWidth(20);
-            clip.setArcHeight(20);
-            imageView.setClip(clip);
-            imageContainer.getChildren().add(imageView);
+                // ✅ AJOUTER LE CLIP POUR LES COINS ARRONDIS
+                Rectangle clip = new Rectangle(350, 160);
+                clip.setArcWidth(20);
+                clip.setArcHeight(20);
+                imageView.setClip(clip);
+
+                imageContainer.getChildren().add(imageView);
+
+            } catch (Exception e) {
+                System.err.println("Erreur image: " + e.getMessage());
+            }
         }
 
         card.getChildren().add(imageContainer);
 
-        // --- CONTENU DE LA CARTE ---
+        // --- RESTE DU CODE INCHANGÉ ---
         VBox content = new VBox(15);
         content.setPadding(new Insets(20));
         content.getStyleClass().add("card-content");
@@ -207,7 +214,6 @@ public class CoursCandidatController {
 
         Button btnCommencer = new Button("Commencer");
         btnCommencer.getStyleClass().add("btn-commencer");
-
         btnCommencer.setOnAction(e -> ouvrirCours(cours));
         btnCommencer.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(btnCommencer, Priority.ALWAYS);
