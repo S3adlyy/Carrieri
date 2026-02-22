@@ -182,15 +182,27 @@ public class CoursPlayerController {
         boxModules.getChildren().clear();
         List<Module> modules = moduleService.getModulesByCours(coursActuel.getId());
 
-        for (Module module : modules) {
+        for (int i = 0; i < modules.size(); i++) {
+            Module module = modules.get(i);
+
+            // ✅ Vérifier si le module est accessible
+            boolean moduleAccessible = isModuleAccessible(module, modules);
+
             // Traduire le titre du module
             String moduleTitreTraduit = traductionService.traduire(
                     "Module " + module.getOrdre() + " : " + module.getTitre(),
                     langueTest
             );
 
+            // Label du module (toujours visible)
             Label moduleLabel = new Label(moduleTitreTraduit);
             moduleLabel.getStyleClass().add("module-label");
+
+            // Si le module n'est pas accessible, ajouter un indicateur de verrouillage
+            if (!moduleAccessible && i > 0) {
+                moduleLabel.setText(moduleLabel.getText() + " 🔒");
+                moduleLabel.setStyle("-fx-opacity: 0.7;");
+            }
             boxModules.getChildren().add(moduleLabel);
 
             List<Lecon> lecons = leconService.getLeconsByModule(module.getId());
@@ -208,14 +220,40 @@ public class CoursPlayerController {
                 Button btnLecon = new Button(texteBouton);
                 btnLecon.setMaxWidth(Double.MAX_VALUE);
                 btnLecon.setUserData(lecon);
-                btnLecon.setOnAction(e -> {
-                    Lecon l = (Lecon) btnLecon.getUserData();
-                    afficherLecon(l);
-                });
+
+                // ✅ Vérifier si la leçon est accessible (module accessible ET leçon accessible)
+                boolean leconAccessible = moduleAccessible && isLeconAccessible(lecon, lecons);
+
+                if (leconAccessible) {
+                    // Leçon accessible → normal
+                    btnLecon.setOnAction(e -> {
+                        Lecon l = (Lecon) btnLecon.getUserData();
+                        afficherLecon(l);
+                    });
+                    btnLecon.setStyle(null);
+                } else {
+                    // Leçon NON accessible → désactivée
+                    btnLecon.setDisable(true);
+                    btnLecon.setStyle("-fx-opacity: 0.4; -fx-background-color: #e0e0e0;");
+
+                    String tooltipText = moduleAccessible ?
+                            "Vous devez d'abord terminer les leçons précédentes" :
+                            "Vous devez d'abord terminer le module précédent et son quiz";
+                    btnLecon.setTooltip(new Tooltip(tooltipText));
+                }
+
                 boxModules.getChildren().add(btnLecon);
             }
 
-            verifierQuizModule(module,modules);
+            // ✅ Afficher le quiz seulement si le module est accessible
+            if (moduleAccessible) {
+                verifierQuizModule(module, modules);
+            } else if (i > 0) {
+                // Message indiquant que le module est verrouillé
+                Label lblLocked = new Label("   🔒 Module verrouillé - Terminez le module précédent");
+                lblLocked.setStyle("-fx-text-fill: #9ca3af; -fx-font-style: italic; -fx-padding: 5 0 5 20; -fx-font-size: 12px;");
+                boxModules.getChildren().add(lblLocked);
+            }
         }
 
         verifierEtatCours();
@@ -228,9 +266,11 @@ public class CoursPlayerController {
 
     private void verifierQuizModule(Module module, List<Module> tousModules) {
         boolean toutesLeconsTerminees = isAllLeconsTerminees(module.getId());
-        boolean moduleAccessible = isModuleAccessible(module, tousModules);
+        boolean moduleAccessible = isModuleAccessible(module, tousModules); // ← DÉJÀ UTILISÉ
 
         if (toutesLeconsTerminees && moduleAccessible) {
+            // ... reste du code
+
             boolean quizReussi = quizModuleService.isModuleReussi(candidatId, module.getId());
 
             if (!quizReussi) {
@@ -247,6 +287,9 @@ public class CoursPlayerController {
                 Label lblQuizReussi = new Label("   ✅ Quiz du module réussi");
                 lblQuizReussi.getStyleClass().add("label-quiz-reussi");
                 boxModules.getChildren().add(lblQuizReussi);
+
+                // ✅ Vérifier si le certificat peut être généré
+                verifierEtGenererCertificat();
             }
         } else if (!toutesLeconsTerminees) {
             // Message indiquant qu'il faut terminer toutes les leçons
@@ -292,11 +335,9 @@ public class CoursPlayerController {
                 btnTestFinal.getStyleClass().add("btn-test-final");
                 btnTestFinal.setOnAction(e -> lancerTestFinal());
                 boxModules.getChildren().add(btnTestFinal);
-
-                // ✅ Mettre à jour la progression pour montrer que le test manque
-                mettreAJourProgression();
-
             } else {
+                // ✅ Vérifier si le certificat peut être généré
+                verifierEtGenererCertificat();
                 afficherSuccesCours();
             }
         }
@@ -306,10 +347,21 @@ public class CoursPlayerController {
         Label lblCoursReussi = new Label("   🎓 FÉLICITATIONS ! VOUS AVEZ RÉUSSI LE COURS !");
         lblCoursReussi.getStyleClass().add("label-cours-reussi");
         boxModules.getChildren().add(lblCoursReussi);
-        Button btnCertificat = new Button("   📄 GÉNÉRER MON CERTIFICAT");
-        btnCertificat.setMaxWidth(Double.MAX_VALUE);
-        btnCertificat.getStyleClass().add("btn-certificat");
-        boxModules.getChildren().add(btnCertificat);
+
+        // Vérifier si un certificat existe déjà (AVEC TRY-CATCH)
+        try {
+            Certification existing = certificationService.readByCoursAndCandidat(coursActuel.getId(), candidatId);
+
+            if (existing != null) {
+                Label lblCertificat = new Label("   📄 Certificat généré le " +
+                        existing.getDateObtention().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                lblCertificat.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold; -fx-padding: 5 0 5 20;");
+                boxModules.getChildren().add(lblCertificat);
+            }
+        } catch (SQLException e) {
+            System.err.println("⚠️ Impossible de vérifier le certificat: " + e.getMessage());
+            // On n'affiche rien en cas d'erreur
+        }
     }
 
     private boolean isAllModulesReussis(int coursId) {
@@ -381,7 +433,7 @@ public class CoursPlayerController {
     private boolean isModuleAccessible(Module module, List<Module> tousModules) {
         // Trier les modules par ordre
         List<Module> modulesTries = tousModules.stream()
-                .sorted((m1, m2) -> Integer.compare(m1.getOrdre(), m2.getOrdre()))
+                .sorted(Comparator.comparingInt(Module::getOrdre))
                 .collect(Collectors.toList());
 
         // Trouver l'index du module actuel
@@ -396,23 +448,27 @@ public class CoursPlayerController {
         // Si c'est le premier module (index 0), il est accessible
         if (indexActuel == 0) return true;
 
-        // Vérifier que toutes les leçons du module précédent sont terminées
+        // Vérifier le module précédent
         Module modulePrecedent = modulesTries.get(indexActuel - 1);
-        List<Lecon> leconsModulePrecedent = leconService.getLeconsByModule(modulePrecedent.getId());
 
+        // 1. Toutes les leçons du module précédent doivent être terminées
+        List<Lecon> leconsModulePrecedent = leconService.getLeconsByModule(modulePrecedent.getId());
         for (Lecon lecon : leconsModulePrecedent) {
             if (!progressionLeconService.isLeconTerminee(candidatId, lecon.getId())) {
+                System.out.println("🔒 Module " + module.getOrdre() + " verrouillé : leçon " + lecon.getTitre() + " non terminée");
                 return false;
             }
         }
 
-        // Vérifier que le quiz du module précédent est réussi (s'il existe)
+        // 2. Le quiz du module précédent doit être réussi (s'il existe)
         if (quizModuleService.aDesQuestions(modulePrecedent.getId())) {
             if (!quizModuleService.isModuleReussi(candidatId, modulePrecedent.getId())) {
+                System.out.println("🔒 Module " + module.getOrdre() + " verrouillé : quiz du module précédent non réussi");
                 return false;
             }
         }
 
+        System.out.println("✅ Module " + module.getOrdre() + " accessible");
         return true;
     }
 
@@ -900,39 +956,318 @@ public class CoursPlayerController {
         modulesTraduits.put(moduleId, traduit);
         return traduit;
     }
-    @FXML
-    private void ouvrirAssistant() {
+    // ✅ Méthode pour vérifier et générer le certificat automatiquement
+    private void verifierEtGenererCertificat() {
+        if (coursActuel == null) return;
+
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/chatbot.fxml"));
-            Parent root = loader.load();
+            // 1. Vérifier que tous les modules sont réussis
+            boolean tousModulesReussis = isAllModulesReussis(coursActuel.getId());
 
-            ChatbotController controller = loader.getController();
+            // 2. Vérifier que le test final est réussi
+            boolean testReussi = testCoursService.isCoursReussi(candidatId, coursActuel.getId());
 
-            // Passer le contexte complet
-            String moduleTitre = "";
-            if (leconCourante != null) {
-                Module module = moduleService.getModuleById(leconCourante.getModuleId());
-                if (module != null) {
-                    moduleTitre = module.getTitre();
-                }
+            // 3. Vérifier qu'un certificat n'existe pas déjà (AVEC TRY-CATCH)
+            Certification existing = null;
+            try {
+                existing = certificationService.readByCoursAndCandidat(coursActuel.getId(), candidatId);
+            } catch (SQLException e) {
+                System.err.println("⚠️ Erreur vérification certificat existant: " + e.getMessage());
+                // Si erreur, on considère qu'il n'existe pas (on continue)
             }
 
-            controller.setContexte(
-                    coursActuel.getTitre(),
-                    moduleTitre,
-                    leconCourante != null ? leconCourante.getTitre() : ""
-            );
-
-            Stage stage = new Stage();
-            stage.setTitle("Assistant pédagogique");
-            stage.setScene(new Scene(root));
-            stage.setAlwaysOnTop(true);
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            AlertUtils.showError("❌ Erreur", "Impossible d'ouvrir l'assistant.");
+            if (tousModulesReussis && testReussi && existing == null) {
+                // ✅ Toutes les conditions sont remplies, on génère le certificat
+                genererCertificatAutomatique();
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Erreur vérification certificat: " + e.getMessage());
         }
     }
+
+    // ✅ Méthode pour générer le certificat automatiquement
+    private void genererCertificatAutomatique() {
+        try {
+            String nomCandidat = "Bilal El Eter"; // À récupérer de votre système
+
+            // Créer l'entrée en base
+            Certification certif = new Certification(
+                    candidatId,
+                    coursActuel.getId(),
+                    java.time.LocalDateTime.now()
+            );
+
+            int certificatId = certificationService.ajouterEtRetournerId(certif);
+
+            if (certificatId > 0) {
+                // Générer le PDF
+                byte[] pdfBytes = genererPDFProfessionnel(nomCandidat, coursActuel.getTitre(), certificatId);
+
+                // Stocker en base
+                String sql = "UPDATE certification SET fichier_pdf = ? WHERE id = ?";
+                try (java.sql.PreparedStatement ps = utils.MyDatabase.getInstance().getConnection().prepareStatement(sql)) {
+                    ps.setBytes(1, pdfBytes);
+                    ps.setInt(2, certificatId);
+                    ps.executeUpdate();
+                    System.out.println("✅ PDF stocké en base pour le certificat ID: " + certificatId);
+                }
+
+                // ✅ ENVOYER L'EMAIL (avec un chemin virtuel car le PDF est en base)
+                envoyerEmailNotification(nomCandidat, coursActuel.getTitre(), "certificat_" + certificatId + ".pdf");
+
+                // Notifier l'utilisateur
+                Platform.runLater(() -> {
+                    AlertUtils.showSuccessWithInstructions(
+                            "🎉 FÉLICITATIONS !",
+                            "Vous avez terminé le cours \"" + coursActuel.getTitre() + "\" avec succès.",
+                            "✅ Votre certificat a été généré automatiquement.\n" +
+                                    "📧 Un email de confirmation a été envoyé.\n\n" +
+                                    "Vous pouvez retrouver votre certificat dans la page 'Mes certificats'."
+                    );
+
+                    rechargerModules();
+                });
+            }
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur génération certificat: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // ============================================
+// ENVOI EMAIL DE NOTIFICATION
+// ============================================
+    private void envoyerEmailNotification(String nomCandidat, String titreCours, String cheminCertificat) {
+        try {
+            String emailDestinataire = "bilaleter05@gmail.com"; // Votre email
+
+            System.out.println("📧 Tentative d'envoi d'email depuis le catalogue...");
+
+            EmailService emailService = new EmailService();
+
+            boolean envoye = emailService.envoyerNotificationCompletionCours(
+                    emailDestinataire,
+                    nomCandidat,
+                    titreCours,
+                    "file:///" + cheminCertificat.replace("\\", "/")
+            );
+
+            if (envoye) {
+                System.out.println("✅ Email envoyé avec succès depuis le catalogue");
+            } else {
+                System.err.println("❌ Échec envoi email depuis le catalogue");
+            }
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur envoi email: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // ✅ Méthode pour recharger les modules (pour mettre à jour l'affichage)
+    private void rechargerModules() {
+        Platform.runLater(() -> {
+            boxModules.getChildren().clear();
+            chargerModules();
+        });
+    }
+    private byte[] genererPDFProfessionnel(String nomCandidat, String titreCours, int certificatId) throws Exception {
+        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+        com.itextpdf.kernel.pdf.PdfWriter writer = new com.itextpdf.kernel.pdf.PdfWriter(baos);
+        com.itextpdf.kernel.pdf.PdfDocument pdf = new com.itextpdf.kernel.pdf.PdfDocument(writer);
+
+        // Format A4 portrait (une seule page)
+        pdf.setDefaultPageSize(com.itextpdf.kernel.geom.PageSize.A4);
+
+        com.itextpdf.layout.Document document = new com.itextpdf.layout.Document(pdf);
+        document.setMargins(40, 40, 40, 40);
+
+        // Couleurs de Carrieri
+        com.itextpdf.kernel.colors.Color violetFonce = new com.itextpdf.kernel.colors.DeviceRgb(35, 25, 66);  // #231942
+        com.itextpdf.kernel.colors.Color violet = new com.itextpdf.kernel.colors.DeviceRgb(94, 84, 142);      // #5E548E
+        com.itextpdf.kernel.colors.Color violetClair = new com.itextpdf.kernel.colors.DeviceRgb(159, 134, 192); // #9F86C0
+        com.itextpdf.kernel.colors.Color rose = new com.itextpdf.kernel.colors.DeviceRgb(224, 177, 203);      // #E0B1CB
+
+        // --- BORDURE DÉCORATIVE EN CADRE ---
+        float[] borderWidths = {1};
+        com.itextpdf.layout.element.Table borderTable = new com.itextpdf.layout.element.Table(borderWidths);
+        borderTable.setWidth(com.itextpdf.layout.properties.UnitValue.createPercentValue(100));
+
+        com.itextpdf.layout.element.Cell borderCell = new com.itextpdf.layout.element.Cell();
+        borderCell.setBorder(new com.itextpdf.layout.borders.SolidBorder(violet, 2));
+        borderCell.setPadding(20);
+
+        // --- LOGO IMAGE (DEPUIS LES RESSOURCES) ---
+        try {
+            // Charger l'image depuis les ressources
+            java.io.InputStream imageStream = getClass().getResourceAsStream("/images/logo.png");
+            if (imageStream != null) {
+                byte[] imageBytes = imageStream.readAllBytes();
+                com.itextpdf.io.image.ImageData imageData = com.itextpdf.io.image.ImageDataFactory.create(imageBytes);
+                com.itextpdf.layout.element.Image logo = new com.itextpdf.layout.element.Image(imageData);
+
+                // Redimensionner le logo (hauteur 60, largeur automatique)
+                logo.setHeight(60);
+                logo.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
+                logo.setMarginTop(10);
+                logo.setMarginBottom(5);
+
+                borderCell.add(logo);
+            } else {
+                // Fallback: texte si l'image n'est pas trouvée
+                com.itextpdf.layout.element.Paragraph fallbackLogo = new com.itextpdf.layout.element.Paragraph("Carrieri")
+                        .setFontSize(48)
+                        .setFontColor(violetFonce)
+                        .setBold()
+                        .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                        .setMarginTop(10)
+                        .setMarginBottom(5);
+                borderCell.add(fallbackLogo);
+                System.out.println("⚠️ Logo non trouvé, utilisation du texte par défaut");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Fallback en cas d'erreur
+            com.itextpdf.layout.element.Paragraph fallbackLogo = new com.itextpdf.layout.element.Paragraph("Carrieri")
+                    .setFontSize(48)
+                    .setFontColor(violetFonce)
+                    .setBold()
+                    .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                    .setMarginTop(10)
+                    .setMarginBottom(5);
+            borderCell.add(fallbackLogo);
+        }
+
+        // --- TITRE PRINCIPAL ---
+        com.itextpdf.layout.element.Paragraph titreCertif = new com.itextpdf.layout.element.Paragraph("CERTIFICAT DE RÉUSSITE")
+                .setFontSize(28)
+                .setFontColor(violet)
+                .setBold()
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(20);
+        borderCell.add(titreCertif);
+
+        // --- LIGNE DÉCORATIVE ---
+        com.itextpdf.layout.element.LineSeparator ligne = new com.itextpdf.layout.element.LineSeparator(
+                new com.itextpdf.kernel.pdf.canvas.draw.SolidLine(2f));
+        ligne.setWidth(150);
+        ligne.setMarginBottom(25);
+        ligne.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
+        borderCell.add(ligne);
+
+        // --- TEXTE "DÉCERNÉ À" ---
+        com.itextpdf.layout.element.Paragraph decerne = new com.itextpdf.layout.element.Paragraph("Ce certificat est décerné à")
+                .setFontSize(14)
+                .setFontColor(violetClair)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(5);
+        borderCell.add(decerne);
+
+        // --- NOM DU CANDIDAT (ENCADRÉ) ---
+        com.itextpdf.layout.element.Paragraph nom = new com.itextpdf.layout.element.Paragraph(nomCandidat)
+                .setFontSize(30)
+                .setFontColor(violetFonce)
+                .setBold()
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setBackgroundColor(new com.itextpdf.kernel.colors.DeviceRgb(250, 247, 252)) // Fond très léger
+                .setPadding(12)
+                .setMarginBottom(15);
+        borderCell.add(nom);
+
+        // --- TEXTE "POUR AVOIR COMPLÉTÉ" ---
+        com.itextpdf.layout.element.Paragraph pour = new com.itextpdf.layout.element.Paragraph("pour avoir complété avec succès le cours")
+                .setFontSize(14)
+                .setFontColor(violetClair)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(5);
+        borderCell.add(pour);
+
+        // --- TITRE DU COURS (STYLISÉ) ---
+        com.itextpdf.layout.element.Paragraph coursTitre = new com.itextpdf.layout.element.Paragraph(titreCours)
+                .setFontSize(22)
+                .setFontColor(violetFonce)
+                .setBold()
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(25);
+        borderCell.add(coursTitre);
+
+        // --- MENTION ---
+        com.itextpdf.layout.element.Paragraph mention = new com.itextpdf.layout.element.Paragraph("avec la mention ⭐ FÉLICITATIONS ⭐")
+                .setFontSize(14)
+                .setFontColor(rose)
+                .setBold()
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(30);
+        borderCell.add(mention);
+
+        // --- INFORMATIONS (DATE ET NUMÉRO) ---
+        float[] columnWidths = {1, 1};
+        com.itextpdf.layout.element.Table infoTable = new com.itextpdf.layout.element.Table(columnWidths);
+        infoTable.setWidth(com.itextpdf.layout.properties.UnitValue.createPercentValue(80));
+        infoTable.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
+        infoTable.setMarginBottom(25);
+
+        // Date d'obtention
+        com.itextpdf.layout.element.Cell dateCell = new com.itextpdf.layout.element.Cell();
+        String dateFormatee = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        dateCell.add(new com.itextpdf.layout.element.Paragraph("Date").setFontColor(violet).setFontSize(12).setBold());
+        dateCell.add(new com.itextpdf.layout.element.Paragraph(dateFormatee).setFontColor(violetFonce).setFontSize(14));
+        dateCell.setBorder(com.itextpdf.layout.borders.Border.NO_BORDER);
+        dateCell.setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER);
+        dateCell.setPadding(5);
+
+        // Numéro de certificat
+        com.itextpdf.layout.element.Cell numeroCell = new com.itextpdf.layout.element.Cell();
+        numeroCell.add(new com.itextpdf.layout.element.Paragraph("N° certificat").setFontColor(violet).setFontSize(12).setBold());
+        numeroCell.add(new com.itextpdf.layout.element.Paragraph("CERT-" + String.format("%04d", certificatId)).setFontColor(violetFonce).setFontSize(14));
+        numeroCell.setBorder(com.itextpdf.layout.borders.Border.NO_BORDER);
+        numeroCell.setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER);
+        numeroCell.setPadding(5);
+
+        infoTable.addCell(dateCell);
+        infoTable.addCell(numeroCell);
+
+        borderCell.add(infoTable);
+
+        // --- LIGNE DE SÉPARATION ---
+        com.itextpdf.layout.element.LineSeparator ligneFine = new com.itextpdf.layout.element.LineSeparator(
+                new com.itextpdf.kernel.pdf.canvas.draw.SolidLine(1f));
+        ligneFine.setWidth(400);
+        ligneFine.setMarginBottom(20);
+        ligneFine.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
+        borderCell.add(ligneFine);
+
+        // --- SIGNATURE UNIQUE (BILAL EL ETER) ---
+        com.itextpdf.layout.element.Paragraph signature = new com.itextpdf.layout.element.Paragraph("Bilal El Eter")
+                .setFontSize(18)
+                .setFontColor(violetFonce)
+                .setBold()
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(5);
+        borderCell.add(signature);
+
+        com.itextpdf.layout.element.Paragraph signatureTitre = new com.itextpdf.layout.element.Paragraph("Formateur & Directeur Pédagogique")
+                .setFontSize(12)
+                .setFontColor(violetClair)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(5);
+        borderCell.add(signatureTitre);
+
+        // --- PIED DE PAGE ---
+        com.itextpdf.layout.element.Paragraph footer = new com.itextpdf.layout.element.Paragraph("Carrieri · www.carrieri.com")
+                .setFontSize(10)
+                .setFontColor(com.itextpdf.kernel.colors.ColorConstants.GRAY)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginTop(10);
+        borderCell.add(footer);
+
+        borderTable.addCell(borderCell);
+        document.add(borderTable);
+        document.close();
+
+        return baos.toByteArray();
+    }
+
 }
 
