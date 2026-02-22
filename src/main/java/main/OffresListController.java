@@ -222,12 +222,33 @@ public class OffresListController {
         desc.getStyleClass().add("c-desc");
         desc.setWrapText(true);
 
-        // Meta: location + expiration (small row)
+        // Meta: location + map button
         HBox meta = new HBox(18);
         meta.setAlignment(Pos.CENTER_LEFT);
 
         String expSmall = (offre.getDateExpiration() == null) ? "—" : dateFmt.format(offre.getDateExpiration());
-        meta.getChildren().add(metaRowItem("📍", emptyAsDash(offre.getLocalisation())));
+
+        // Location with map button
+        HBox locationBox = new HBox(10);
+        locationBox.setAlignment(Pos.CENTER_LEFT);
+        locationBox.getChildren().add(metaRowItem("📍", emptyAsDash(offre.getLocalisation())));
+
+        // Add map button if location exists
+        if (offre.getLocalisation() != null && !offre.getLocalisation().trim().isEmpty()) {
+            Button btnMap = new Button("🗺️");
+            btnMap.getStyleClass().add("btn-map-mini");
+            btnMap.setTooltip(new Tooltip("Voir sur la carte"));
+            btnMap.setOnAction(e -> openMapForLocation(offre.getLocalisation()));
+
+            // Add hover animation
+            btnMap.setOnMouseEntered(e -> {
+                btnMap.setStyle("-fx-cursor: hand;");
+            });
+
+            locationBox.getChildren().add(btnMap);
+        }
+
+        meta.getChildren().add(locationBox);
 
         // Details grid (Expiration next to Contact)
         GridPane details = new GridPane();
@@ -534,6 +555,34 @@ public class OffresListController {
 
     private boolean isValidEmail(String email) {
         return email != null && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // ===================== OPEN MAP =====================
+
+    /**
+     * Ouvre une carte interactive avec OpenStreetMap + Leaflet.js
+     * Utilise Nominatim API pour la géolocalisation (gratuit, pas de clé API)
+     * La carte s'affiche dans une WebView JavaFX
+     */
+    private void openMapForLocation(String location) {
+        if (location == null || location.trim().isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Attention", "Aucune localisation disponible pour cette offre.");
+            return;
+        }
+
+        try {
+            // Utiliser le MapService pour afficher la carte interactive
+            services.MapService mapService = services.MapService.getInstance();
+            mapService.showMap(location.trim(), "Localisation - " + location);
+
+            System.out.println("✓ Carte interactive ouverte pour : " + location);
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors de l'ouverture de la carte: " + e.getMessage());
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                "Impossible d'ouvrir la carte interactive:\n" + e.getMessage());
+        }
     }
 
     private String trimTo(String s, int max) {
