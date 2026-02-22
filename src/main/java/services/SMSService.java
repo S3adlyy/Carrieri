@@ -84,8 +84,8 @@ public class SMSService {
 
             String messageBody = String.format(
                     "Bonjour %s,\n\n" +
-                            "Votre candidature pour l'offre '%s' a bien été envoyée ✓\n\n" +
-                            "Nous reviendrons vers vous prochainement.\n" +
+                            "Votre candidature pour l'offre '%s' a bien été envoyée ✓ " +
+                            "Nous reviendrons vers vous prochainement." +
                             "Bonne chance!\n\n" +
                             "- Équipe Carrieri",
                     candidatNom,

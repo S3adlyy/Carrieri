@@ -6,7 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import services.OffreEmploiService;
 import services.PostulationService;
-import services.SMSService;
+import services.SimpleSMSService;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -27,7 +27,7 @@ public class PostulerPopupController {
 
     private final PostulationService service = new PostulationService();
     private final OffreEmploiService offreService = new OffreEmploiService();
-    private final SMSService smsService = SMSService.getInstance();
+    private final SimpleSMSService smsService = SimpleSMSService.getInstance();
 
     private static final int MIN_WORDS = 5;
     private static final int MAX_CHARS = 1500;
@@ -217,7 +217,7 @@ public class PostulerPopupController {
                 System.out.println("   Numéro nettoyé: " + phoneClean);
                 System.out.println("   Service SMS activé: " + smsService.isEnabled());
 
-                boolean smsSent = smsService.envoyerSMSConfirmationPostulation(
+                boolean smsSent = smsService.envoyerSMS(
                     phoneClean,
                     candidatNom,
                     offreTitre
