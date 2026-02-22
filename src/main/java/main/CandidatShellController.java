@@ -44,6 +44,9 @@ public class CandidatShellController implements Initializable {
     @FXML private Label userRole;
     @FXML private Circle userAvatar;
     @FXML private Button btnTheme;
+    // Ajoutez ces déclarations avec les autres @FXML
+    @FXML private Button btnRecommandation;  // Note: sans 's' à la fin, comme dans le FXML
+    @FXML private Label recommandationText;   // Si vous voulez ajouter un label pour le texte
     private Button activeButton = null;
     private static CandidatShellController instance;
 
@@ -222,9 +225,8 @@ public class CandidatShellController implements Initializable {
     // ============================================
     @FXML
     public void showMesCours() {
-        AlertUtils.showInfo("📚 Mes cours",
-                "Cette fonctionnalité arrivera très bientôt !\n\n" +
-                        "Vous pourrez suivre votre progression dans tous vos cours.");
+        loadView("/mes_cours_candidat.fxml");
+        setActiveButton(btnMesCours);
     }
 
     // Modifiez la méthode showCertificats() :
@@ -466,8 +468,8 @@ public class CandidatShellController implements Initializable {
             // Remplacer le contenu avec animation
             animateContentChange(recommandationView);
 
-            // Mettre à jour le bouton actif (optionnel)
-            // setActiveButton(btnRecommandation); // Si vous avez un bouton dédié
+            // ✅ ACTIVER LE BOUTON RECOMMANDATION
+            setActiveButton(btnRecommandation);
 
         } catch (IOException e) {
             e.printStackTrace();
