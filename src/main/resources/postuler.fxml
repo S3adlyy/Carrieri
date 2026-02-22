@@ -9,12 +9,12 @@
 <VBox spacing="20" styleClass="postuler-card"
       xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="main.PostulerPopupController"
-      prefWidth="600" prefHeight="500">
+      prefWidth="650" prefHeight="720">
 
-    <padding><Insets top="30" right="40" bottom="40" left="40"/></padding>
+    <padding><Insets top="25" right="35" bottom="35" left="35"/></padding>
 
     <!-- Header -->
-    <VBox alignment="CENTER" spacing="12">
+    <VBox alignment="CENTER" spacing="10">
         <StackPane prefWidth="80" prefHeight="80" styleClass="postuler-icon-circle">
             <Label text="📨" style="-fx-font-size: 48; -fx-text-fill: white;"/>
         </StackPane>
@@ -24,7 +24,18 @@
     </VBox>
 
     <!-- Form fields -->
-    <VBox spacing="24">
+    <VBox spacing="18">
+
+        <!-- Numéro de téléphone -->
+        <VBox spacing="8">
+            <HBox spacing="6" alignment="CENTER_LEFT">
+                <Label text="Numéro de téléphone" styleClass="field-label"/>
+                <Label text="Pour SMS de confirmation" styleClass="badge-optional"/>
+            </HBox>
+            <TextField fx:id="txtPhone" promptText="+33 6 12 34 56 78" styleClass="elegant-field"/>
+            <Label fx:id="lblPhoneError" text="" styleClass="error-label" wrapText="true" managed="false" visible="false"/>
+            <Label text="Format international recommandé (ex: +33612345678)" styleClass="char-counter"/>
+        </VBox>
 
         <!-- Lettre de motivation -->
         <VBox spacing="8">
@@ -51,9 +62,9 @@
     </VBox>
 
     <!-- Buttons -->
-    <HBox spacing="24" alignment="CENTER">
-        <Button text="Annuler" onAction="#handleCancel" styleClass="btn-reset-elegant" prefWidth="180" prefHeight="54"/>
-        <Button text="Envoyer ma candidature" onAction="#handleSubmit" styleClass="btn-publish-elegant" prefWidth="260" prefHeight="58"/>
+    <HBox spacing="20" alignment="CENTER">
+        <Button text="Annuler" onAction="#handleCancel" styleClass="btn-reset-elegant" prefWidth="180" prefHeight="50"/>
+        <Button text="Envoyer ma candidature" onAction="#handleSubmit" styleClass="btn-publish-elegant" prefWidth="260" prefHeight="52"/>
     </HBox>
 
 </VBox>

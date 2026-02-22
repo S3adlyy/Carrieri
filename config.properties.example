@@ -1,0 +1,16 @@
+# Twilio Configuration EXAMPLE
+# Copiez ce fichier vers config.properties et remplacez les valeurs
+
+# Pour obtenir ces credentials, créez un compte gratuit sur https://www.twilio.com
+# 1. Account SID: Trouvez-le sur votre console Twilio
+# 2. Auth Token: Trouvez-le sur votre console Twilio
+# 3. Phone Number: Votre numéro Twilio (format: +1234567890)
+
+twilio.account.sid=YOUR_ACCOUNT_SID_HERE
+twilio.auth.token=YOUR_AUTH_TOKEN_HERE
+twilio.phone.number=YOUR_TWILIO_PHONE_NUMBER_HERE
+
+# SMS Configuration
+# Mettre à false pour désactiver l'envoi de SMS
+sms.enabled=true
+
