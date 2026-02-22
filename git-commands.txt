@@ -1,0 +1,7 @@
+git rm --cached src/main/java/services/SimpleSMSService.java
+git rm --cached src/main/resources/config.properties
+git add .gitignore
+git add .
+git commit -m "Remove Twilio credentials from tracking"
+git push --set-upstream origin "Gestion-des-Offres-d'Emploi"
+
