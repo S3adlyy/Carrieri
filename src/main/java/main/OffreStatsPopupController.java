@@ -3,20 +3,29 @@ package main;
 import entities.OffreEmploi;
 import entities.Postulation;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.chart.*;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.Priority;
 import services.PostulationService;
+import services.OffreAnalyticsService;
+import services.OffreAnalyticsService.OffreStatistics;
+import services.OffreAnalyticsService.Recommendation;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class OffreStatsPopupController {
 
+    // Éléments existants
     @FXML private Label lblOffreTitre;
     @FXML private Label lblOffreInfo;
     @FXML private Label lblTotalPostulations;
@@ -29,10 +38,24 @@ public class OffreStatsPopupController {
     @FXML private NumberAxis yAxis;
     @FXML private VBox vboxRecentPostulations;
 
+    // Nouveaux éléments pour analytics avancées
+    @FXML private Label lblTotalVues;
+    @FXML private Label lblTauxConversion;
+    @FXML private Label lblScoreQualite;
+    @FXML private Label lblTendance;
+    @FXML private LineChart<String, Number> lineChartVues;
+    @FXML private BarChart<String, Number> barChartHeures;
+    @FXML private BarChart<String, Number> barChartLocalisation;
+    @FXML private VBox vboxRecommandations;
+    @FXML private Label lblSalaireComparaison;
+    @FXML private ScrollPane scrollPane;
+
     private final PostulationService postulationService = new PostulationService();
+    private final OffreAnalyticsService analyticsService = new OffreAnalyticsService();
     private final DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private OffreEmploi offre;
     private List<Postulation> postulations;
+    private OffreStatistics statistics;
 
     public void setOffre(OffreEmploi offre) {
         this.offre = offre;
@@ -41,16 +64,194 @@ public class OffreStatsPopupController {
 
     private void loadStats() {
         try {
+            // Charger les données
             postulations = postulationService.afficherParOffre(offre.getId());
+            statistics = analyticsService.getStatistics(offre);
+
+            // Afficher les informations de base
             lblOffreTitre.setText(offre.getTitre());
             lblOffreInfo.setText(offre.getEntreprise() + " • " + offre.getTypeContrat() + " • " + offre.getLocalisation());
+
+            // Calculer les KPIs de base
             calculerKPIs();
+
+            // Nouveaux KPIs avancés
+            afficherKPIsAvances();
+
+            // Graphiques existants
             creerPieChart();
             creerBarChart();
+
+            // Nouveaux graphiques avancés
+            creerLineChartVues();
+            creerBarChartHeures();
+            // Répartition géographique supprimée pour simplifier l'interface
+
+            // Recommandations
+            afficherRecommandations();
+
+            // Postulations récentes
             afficherPostulationsRecentes();
+
         } catch (SQLException e) {
             lblOffreTitre.setText("Erreur lors du chargement des statistiques");
+            e.printStackTrace();
         }
+    }
+
+    private void afficherKPIsAvances() {
+        // Total vues
+        if (lblTotalVues != null) {
+            lblTotalVues.setText(String.valueOf(statistics.getTotalVues()));
+        }
+
+        // Taux de conversion
+        if (lblTauxConversion != null) {
+            lblTauxConversion.setText(String.format("%.1f%%", statistics.getTauxConversion()));
+        }
+
+        // Score de qualité
+        if (lblScoreQualite != null) {
+            int score = statistics.getScoreQualite();
+            lblScoreQualite.setText(score + "/100");
+        }
+
+        // Tendance
+        if (lblTendance != null) {
+            double variation = statistics.getVariationPourcentage();
+            String signe = variation > 0 ? "+" : "";
+            lblTendance.setText(signe + String.format("%.1f%%", variation));
+        }
+
+        // Comparaison salaire
+        if (lblSalaireComparaison != null) {
+            if (statistics.isSalaireCompetitif()) {
+                lblSalaireComparaison.setText("✅ Salaire compétitif (" +
+                    String.format("%.0f DT vs %.0f DT moyenne)", offre.getSalaire(), statistics.getSalaireMoyenSecteur()));
+            } else {
+                lblSalaireComparaison.setText("⚠️ En dessous du marché (" +
+                    String.format("%.0f DT vs %.0f DT moyenne)", offre.getSalaire(), statistics.getSalaireMoyenSecteur()));
+            }
+        }
+    }
+
+    private void creerLineChartVues() {
+        if (lineChartVues == null) return;
+
+        lineChartVues.getData().clear();
+        lineChartVues.setTitle("Évolution des Vues");
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Vues quotidiennes");
+
+        Map<LocalDate, Integer> vuesParJour = statistics.getVuesParJour();
+
+        // Prendre les 30 derniers jours
+        List<LocalDate> dates = new ArrayList<>(vuesParJour.keySet());
+        Collections.sort(dates);
+
+        int start = Math.max(0, dates.size() - 30);
+        for (int i = start; i < dates.size(); i++) {
+            LocalDate date = dates.get(i);
+            Integer vues = vuesParJour.get(date);
+            series.getData().add(new XYChart.Data<>(
+                date.format(DateTimeFormatter.ofPattern("dd/MM")),
+                vues
+            ));
+        }
+
+        lineChartVues.getData().add(series);
+    }
+
+    private void creerBarChartHeures() {
+        if (barChartHeures == null) return;
+
+        barChartHeures.getData().clear();
+        barChartHeures.setTitle("Vues par Heure");
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Distribution horaire");
+
+        Map<Integer, Integer> vuesParHeure = statistics.getVuesParHeure();
+
+        for (int heure = 0; heure < 24; heure++) {
+            Integer vues = vuesParHeure.getOrDefault(heure, 0);
+            series.getData().add(new XYChart.Data<>(heure + "h", vues));
+        }
+
+        barChartHeures.getData().add(series);
+    }
+
+    private void creerBarChartLocalisation() {
+        if (barChartLocalisation == null) return;
+
+        barChartLocalisation.getData().clear();
+        barChartLocalisation.setTitle("Candidatures par Localisation");
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Répartition géographique");
+
+        Map<String, Integer> parLocalisation = statistics.getCandidaturesParLocalisation();
+
+        // Trier par nombre décroissant
+        parLocalisation.entrySet().stream()
+            .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+            .forEach(entry -> {
+                series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+            });
+
+        barChartLocalisation.getData().add(series);
+    }
+
+    private void afficherRecommandations() {
+        if (vboxRecommandations == null) return;
+
+        vboxRecommandations.getChildren().clear();
+
+        List<Recommendation> recommendations = statistics.getRecommandations();
+
+        if (recommendations.isEmpty()) {
+            Label noReco = new Label("✅ Aucune recommandation - Votre offre est optimale !");
+            noReco.setStyle("-fx-text-fill: #10b981; -fx-font-size: 14; -fx-font-weight: 600;");
+            vboxRecommandations.getChildren().add(noReco);
+            return;
+        }
+
+        for (Recommendation reco : recommendations) {
+            vboxRecommandations.getChildren().add(creerItemRecommandation(reco));
+        }
+    }
+
+    private VBox creerItemRecommandation(Recommendation reco) {
+        VBox item = new VBox(8);
+        item.setPadding(new Insets(16));
+        item.setStyle("-fx-background-color: #fef3c7; -fx-background-radius: 12; -fx-border-color: #fbbf24; -fx-border-radius: 12; -fx-border-width: 2;");
+
+        // Si priorité haute, mettre en rouge
+        if ("haute".equals(reco.getPriorite())) {
+            item.setStyle("-fx-background-color: #fee2e2; -fx-background-radius: 12; -fx-border-color: #ef4444; -fx-border-radius: 12; -fx-border-width: 2;");
+        } else if ("basse".equals(reco.getPriorite())) {
+            item.setStyle("-fx-background-color: #d1fae5; -fx-background-radius: 12; -fx-border-color: #10b981; -fx-border-radius: 12; -fx-border-width: 2;");
+        }
+
+        HBox header = new HBox(12);
+        header.setAlignment(Pos.CENTER_LEFT);
+
+        Label icon = new Label(reco.getIcon());
+        icon.setStyle("-fx-font-size: 24;");
+
+        Label titre = new Label(reco.getTitre());
+        titre.setStyle("-fx-font-weight: 700; -fx-font-size: 15; -fx-text-fill: #1f2937;");
+
+        header.getChildren().addAll(icon, titre);
+
+        Label description = new Label(reco.getDescription());
+        description.setWrapText(true);
+        description.setStyle("-fx-font-size: 13; -fx-text-fill: #374151;");
+
+        item.getChildren().addAll(header, description);
+
+        return item;
     }
 
     private void calculerKPIs() {
@@ -74,21 +275,27 @@ public class OffreStatsPopupController {
 
         pieChartStatuts.getData().clear();
 
+        // Palette de couleurs violettes claires et contrastées
         Map<String, String> colors = new HashMap<>();
-        colors.put("En attente", "#f59e0b");
-        colors.put("En cours", "#3b82f6");
-        colors.put("Acceptée", "#10b981");
-        colors.put("Refusée", "#ef4444");
+        colors.put("En attente", "#fbbf24");   // Jaune-orangé doux
+        colors.put("En cours", "#a78bfa");     // Violet clair
+        colors.put("Acceptée", "#10b981");     // Vert émeraude
+        colors.put("Refusée", "#f87171");      // Rouge corail doux
 
         for (Map.Entry<String, Long> entry : countByStatut.entrySet()) {
             PieChart.Data slice = new PieChart.Data(entry.getKey() + " (" + entry.getValue() + ")", entry.getValue());
             pieChartStatuts.getData().add(slice);
         }
 
+        // Appliquer les couleurs avec une meilleure lisibilité
         pieChartStatuts.getData().forEach(data -> {
             String statut = data.getName().split(" \\(")[0];
-            String color = colors.getOrDefault(statut, "#6b7280");
-            data.getNode().setStyle("-fx-pie-color: " + color + ";");
+            String color = colors.getOrDefault(statut, "#9ca3af");
+            data.getNode().setStyle(
+                "-fx-pie-color: " + color + ";" +
+                "-fx-border-color: white;" +
+                "-fx-border-width: 2px;"
+            );
         });
     }
 
@@ -161,11 +368,11 @@ public class OffreStatsPopupController {
 
     private String getStatutColor(String statut) {
         switch (statut.toLowerCase()) {
-            case "en attente": return "#f59e0b";
-            case "en cours": return "#3b82f6";
-            case "acceptée": return "#10b981";
-            case "refusée": return "#ef4444";
-            default: return "#6b7280";
+            case "en attente": return "#fbbf24";   // Jaune-orangé doux
+            case "en cours": return "#a78bfa";     // Violet clair
+            case "acceptée": return "#10b981";     // Vert émeraude
+            case "refusée": return "#f87171";      // Rouge corail doux
+            default: return "#9ca3af";             // Gris par défaut
         }
     }
 

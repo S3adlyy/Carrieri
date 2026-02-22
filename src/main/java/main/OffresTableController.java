@@ -1209,10 +1209,11 @@ public class OffresTableController {
         return b;
     }
 
-    // ===================== SHOW STATS POPUP =====================
+    // ===================== SHOW STATS POPUP - ADVANCED =====================
 
     private void showStatsPopup(OffreEmploi offre) {
         try {
+            // Utiliser la nouvelle interface avancée
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/offre-stats-popup.fxml"));
             StackPane popupRoot = loader.load();
 
@@ -1222,17 +1223,22 @@ public class OffresTableController {
             Stage popupStage = new Stage();
             popupStage.initModality(Modality.APPLICATION_MODAL);
             popupStage.initStyle(StageStyle.TRANSPARENT);
-            popupStage.setTitle("Statistiques - " + offre.getTitre());
+            popupStage.setTitle("Analytics Avancées - " + offre.getTitre());
 
-            Scene scene = new Scene(popupRoot);
+            Scene scene = new Scene(popupRoot, 1250, 950);
             scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-            scene.getStylesheets().add(getClass().getResource("/app.css").toExternalForm());
+
+            try {
+                scene.getStylesheets().add(getClass().getResource("/app.css").toExternalForm());
+            } catch (Exception e) {
+                System.err.println("⚠️ Impossible de charger app.css");
+            }
 
             popupStage.setScene(scene);
             popupStage.showAndWait();
 
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir les statistiques : " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir les statistiques avancées : " + e.getMessage());
             e.printStackTrace();
         }
     }

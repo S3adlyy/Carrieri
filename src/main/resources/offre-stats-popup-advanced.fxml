@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="main.OffreStatsPopupController"
+           styleClass="popup-overlay">
+
+    <VBox styleClass="popup-container" maxWidth="1200" maxHeight="900">
+
+        <!-- Header -->
+        <HBox alignment="CENTER_LEFT" spacing="20" styleClass="popup-header">
+            <VBox HBox.hgrow="ALWAYS">
+                <Label fx:id="lblOffreTitre" text="Titre de l'offre" styleClass="popup-title"/>
+                <Label fx:id="lblOffreInfo" text="Info offre" styleClass="popup-subtitle"/>
+            </VBox>
+            <Button text="✕" onAction="#handleClose" styleClass="btn-close-popup"/>
+        </HBox>
+
+        <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="true"
+                    styleClass="scroll-pane-clean" VBox.vgrow="ALWAYS">
+            <VBox spacing="24" style="-fx-padding: 24;">
+
+                <!-- KPIs Section - 2 rows -->
+                <VBox spacing="16">
+                    <Label text="📊 Indicateurs Clés" styleClass="section-title"/>
+
+                    <!-- Row 1 : KPIs Principaux -->
+                    <GridPane hgap="20" vgap="16">
+                        <!-- Total Vues -->
+                        <VBox styleClass="kpi-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label text="👁️ Vues Totales" styleClass="kpi-label"/>
+                            <Label fx:id="lblTotalVues" text="0" styleClass="kpi-value"/>
+                        </VBox>
+
+                        <!-- Total Candidatures -->
+                        <VBox styleClass="kpi-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <Label text="📤 Candidatures" styleClass="kpi-label"/>
+                            <Label fx:id="lblTotalPostulations" text="0" styleClass="kpi-value"/>
+                        </VBox>
+
+                        <!-- Taux Conversion -->
+                        <VBox styleClass="kpi-card" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                            <Label text="🎯 Taux Conversion" styleClass="kpi-label"/>
+                            <Label fx:id="lblTauxConversion" text="0%" styleClass="kpi-value"/>
+                        </VBox>
+
+                        <!-- Score Qualité -->
+                        <VBox styleClass="kpi-card" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                            <Label text="⭐ Score Qualité" styleClass="kpi-label"/>
+                            <Label fx:id="lblScoreQualite" text="0/100" styleClass="kpi-value"/>
+                        </VBox>
+
+                        <!-- Row 2 : KPIs Secondaires -->
+
+                        <!-- En Attente -->
+                        <VBox styleClass="kpi-card-secondary" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <Label text="⏳ En Attente" styleClass="kpi-label-small"/>
+                            <Label fx:id="lblEnAttente" text="0" styleClass="kpi-value-small"/>
+                        </VBox>
+
+                        <!-- Acceptées -->
+                        <VBox styleClass="kpi-card-secondary" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <Label text="✅ Acceptées" styleClass="kpi-label-small"/>
+                            <Label fx:id="lblAcceptees" text="0" styleClass="kpi-value-small"/>
+                        </VBox>
+
+                        <!-- Taux Acceptation -->
+                        <VBox styleClass="kpi-card-secondary" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                            <Label text="📊 Taux Acceptation" styleClass="kpi-label-small"/>
+                            <Label fx:id="lblTauxAcceptation" text="0%" styleClass="kpi-value-small"/>
+                        </VBox>
+
+                        <!-- Tendance -->
+                        <VBox styleClass="kpi-card-secondary" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                            <Label text="📈 Tendance 7j" styleClass="kpi-label-small"/>
+                            <Label fx:id="lblTendance" text="--" styleClass="kpi-value-small"/>
+                        </VBox>
+                    </GridPane>
+                </VBox>
+
+                <!-- Charts Section - 2 columns -->
+                <VBox spacing="16">
+                    <Label text="📈 Graphiques Avancés" styleClass="section-title"/>
+
+                    <GridPane hgap="20" vgap="20">
+                        <!-- Évolution des vues (ligne) -->
+                        <VBox styleClass="chart-container" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label text="Évolution des Vues (30 derniers jours)" styleClass="chart-title"/>
+                            <LineChart fx:id="lineChartVues" legendVisible="false">
+                                <xAxis><CategoryAxis side="BOTTOM"/></xAxis>
+                                <yAxis><NumberAxis side="LEFT"/></yAxis>
+                            </LineChart>
+                        </VBox>
+
+                        <!-- Statuts (pie) -->
+                        <VBox styleClass="chart-container" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <Label text="Répartition par Statut" styleClass="chart-title"/>
+                            <PieChart fx:id="pieChartStatuts" legendVisible="true"/>
+                        </VBox>
+
+                        <!-- Vues par heure -->
+                        <VBox styleClass="chart-container" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <Label text="Distribution Horaire des Vues" styleClass="chart-title"/>
+                            <BarChart fx:id="barChartHeures" legendVisible="false">
+                                <xAxis><CategoryAxis side="BOTTOM"/></xAxis>
+                                <yAxis><NumberAxis side="LEFT"/></yAxis>
+                            </BarChart>
+                        </VBox>
+
+                        <!-- Évolution candidatures -->
+                        <VBox styleClass="chart-container" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <Label text="Évolution Candidatures" styleClass="chart-title"/>
+                            <BarChart fx:id="barChartEvolution" legendVisible="false">
+                                <xAxis><CategoryAxis fx:id="xAxis" side="BOTTOM"/></xAxis>
+                                <yAxis><NumberAxis fx:id="yAxis" side="LEFT"/></yAxis>
+                            </BarChart>
+                        </VBox>
+
+                        <!-- Localisation -->
+                        <VBox styleClass="chart-container" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                            <Label text="Répartition Géographique" styleClass="chart-title"/>
+                            <BarChart fx:id="barChartLocalisation" legendVisible="false">
+                                <xAxis><CategoryAxis side="BOTTOM"/></xAxis>
+                                <yAxis><NumberAxis side="LEFT"/></yAxis>
+                            </BarChart>
+                        </VBox>
+                    </GridPane>
+                </VBox>
+
+                <!-- Salaire Comparison -->
+                <VBox spacing="12" styleClass="info-section">
+                    <Label text="💰 Analyse Salariale" styleClass="section-title"/>
+                    <Label fx:id="lblSalaireComparaison" text="--" wrapText="true"
+                           styleClass="info-text"/>
+                </VBox>
+
+                <!-- Recommandations Section -->
+                <VBox spacing="12">
+                    <Label text="💡 Recommandations d'Optimisation" styleClass="section-title"/>
+                    <VBox fx:id="vboxRecommandations" spacing="12"/>
+                </VBox>
+
+                <!-- Recent Applications Section -->
+                <VBox spacing="12">
+                    <Label text="📋 Candidatures Récentes (Top 5)" styleClass="section-title"/>
+                    <VBox fx:id="vboxRecentPostulations" spacing="12"/>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+
+    </VBox>
+
+</StackPane>
+

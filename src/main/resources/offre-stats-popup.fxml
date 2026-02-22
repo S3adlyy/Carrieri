@@ -32,59 +32,148 @@
 
         <!-- Content -->
         <ScrollPane fitToWidth="true" styleClass="stats-scroll" VBox.vgrow="ALWAYS">
-            <VBox spacing="24" style="-fx-padding: 32;">
+            <VBox spacing="28" style="-fx-padding: 32;">
 
-                <!-- KPI Cards Row -->
+                <!-- KPI Cards Row 1 - Principaux -->
                 <HBox spacing="20" alignment="CENTER">
 
-                    <!-- Card 1: Total Postulations -->
+                    <!-- Card 1: Total Vues -->
                     <VBox styleClass="kpi-card" alignment="CENTER" spacing="12"
                           prefWidth="200" prefHeight="140">
-                        <Label text="👥" style="-fx-font-size: 42;"/>
+                        <Label text="👁️" style="-fx-font-size: 42; -fx-text-fill: #7c3aed;"/>
+                        <Label fx:id="lblTotalVues" text="0" styleClass="kpi-value"/>
+                        <Label text="Vues Totales" styleClass="kpi-label"/>
+                    </VBox>
+
+                    <!-- Card 2: Total Postulations -->
+                    <VBox styleClass="kpi-card" alignment="CENTER" spacing="12"
+                          prefWidth="200" prefHeight="140">
+                        <Label text="📤" style="-fx-font-size: 42; -fx-text-fill: #7c3aed;"/>
                         <Label fx:id="lblTotalPostulations" text="0" styleClass="kpi-value"/>
-                        <Label text="Postulations" styleClass="kpi-label"/>
+                        <Label text="Candidatures" styleClass="kpi-label"/>
                     </VBox>
 
-                    <!-- Card 2: En Attente -->
-                    <VBox styleClass="kpi-card kpi-pending" alignment="CENTER" spacing="12"
+                    <!-- Card 3: Taux Conversion -->
+                    <VBox styleClass="kpi-card" alignment="CENTER" spacing="12"
                           prefWidth="200" prefHeight="140">
-                        <Label text="⏳" style="-fx-font-size: 42;"/>
-                        <Label fx:id="lblEnAttente" text="0" styleClass="kpi-value"/>
-                        <Label text="En Attente" styleClass="kpi-label"/>
+                        <Label text="🎯" style="-fx-font-size: 42; -fx-text-fill: #7c3aed;"/>
+                        <Label fx:id="lblTauxConversion" text="0%" styleClass="kpi-value"/>
+                        <Label text="Taux Conversion" styleClass="kpi-label"/>
                     </VBox>
 
-                    <!-- Card 3: Acceptées -->
-                    <VBox styleClass="kpi-card kpi-accepted" alignment="CENTER" spacing="12"
+                    <!-- Card 4: Score Qualité -->
+                    <VBox styleClass="kpi-card" alignment="CENTER" spacing="12"
                           prefWidth="200" prefHeight="140">
-                        <Label text="✅" style="-fx-font-size: 42;"/>
-                        <Label fx:id="lblAcceptees" text="0" styleClass="kpi-value"/>
-                        <Label text="Acceptées" styleClass="kpi-label"/>
-                    </VBox>
-
-                    <!-- Card 4: Taux d'acceptation -->
-                    <VBox styleClass="kpi-card kpi-rate" alignment="CENTER" spacing="12"
-                          prefWidth="200" prefHeight="140">
-                        <Label text="📈" style="-fx-font-size: 42;"/>
-                        <Label fx:id="lblTauxAcceptation" text="0%" styleClass="kpi-value"/>
-                        <Label text="Taux d'acceptation" styleClass="kpi-label"/>
+                        <Label text="⭐" style="-fx-font-size: 42; -fx-text-fill: #7c3aed;"/>
+                        <Label fx:id="lblScoreQualite" text="0/100" styleClass="kpi-value"/>
+                        <Label text="Score Qualité" styleClass="kpi-label"/>
                     </VBox>
 
                 </HBox>
 
-                <!-- Charts Row -->
-                <HBox spacing="24" alignment="CENTER">
+                <!-- KPI Cards Row 2 - Secondaires -->
+                <HBox spacing="20" alignment="CENTER">
+
+                    <!-- Card 5: En Attente -->
+                    <VBox styleClass="kpi-card-secondary" alignment="CENTER" spacing="8"
+                          prefWidth="200" prefHeight="100">
+                        <Label text="⏳" style="-fx-font-size: 28; -fx-text-fill: #7c3aed;"/>
+                        <Label fx:id="lblEnAttente" text="0" styleClass="kpi-value-small"/>
+                        <Label text="En Attente" styleClass="kpi-label-small"/>
+                    </VBox>
+
+                    <!-- Card 6: Acceptées -->
+                    <VBox styleClass="kpi-card-secondary" alignment="CENTER" spacing="8"
+                          prefWidth="200" prefHeight="100">
+                        <Label text="✅" style="-fx-font-size: 28; -fx-text-fill: #7c3aed;"/>
+                        <Label fx:id="lblAcceptees" text="0" styleClass="kpi-value-small"/>
+                        <Label text="Acceptées" styleClass="kpi-label-small"/>
+                    </VBox>
+
+                    <!-- Card 7: Taux Acceptation -->
+                    <VBox styleClass="kpi-card-secondary" alignment="CENTER" spacing="8"
+                          prefWidth="200" prefHeight="100">
+                        <Label text="📊" style="-fx-font-size: 28; -fx-text-fill: #7c3aed;"/>
+                        <Label fx:id="lblTauxAcceptation" text="0%" styleClass="kpi-value-small"/>
+                        <Label text="Taux Acceptation" styleClass="kpi-label-small"/>
+                    </VBox>
+
+                    <!-- Card 8: Tendance -->
+                    <VBox styleClass="kpi-card-secondary" alignment="CENTER" spacing="8"
+                          prefWidth="200" prefHeight="100">
+                        <Label text="📈" style="-fx-font-size: 28; -fx-text-fill: #7c3aed;"/>
+                        <Label fx:id="lblTendance" text="--" styleClass="kpi-value-small"/>
+                        <Label text="Tendance 7j" styleClass="kpi-label-small"/>
+                    </VBox>
+
+                </HBox>
+
+                <!-- Séparateur -->
+                <Region styleClass="section-separator" prefHeight="2"/>
+
+                <!-- Section Titre : Graphiques -->
+                <Label text="📊 Graphiques de Performance" styleClass="section-title-large"
+                       style="-fx-padding: 16 0 0 0;"/>
+
+                <!-- Charts Row 1 -->
+                <HBox spacing="28" alignment="CENTER">
+
+                    <!-- Line Chart: Évolution des Vues -->
+                    <VBox styleClass="chart-card-enhanced" spacing="16" prefWidth="420" prefHeight="340">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <Label text="📈" style="-fx-font-size: 28;"/>
+                            <Label text="Évolution des Vues (30 derniers jours)" styleClass="chart-title-enhanced"/>
+                        </HBox>
+                        <LineChart fx:id="lineChartVues" legendVisible="false" animated="true"
+                                   prefHeight="280" styleClass="stats-line-chart">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis side="LEFT"/>
+                            </yAxis>
+                        </LineChart>
+                    </VBox>
 
                     <!-- Pie Chart: Répartition par statut -->
-                    <VBox styleClass="chart-card" spacing="16" prefWidth="400" prefHeight="350">
-                        <Label text="📊 Répartition par Statut" styleClass="chart-title"/>
-                        <PieChart fx:id="pieChartStatuts" legendVisible="true"
+                    <VBox styleClass="chart-card-enhanced" spacing="16" prefWidth="420" prefHeight="340">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <Label text="📊" style="-fx-font-size: 28;"/>
+                            <Label text="Répartition par Statut" styleClass="chart-title-enhanced"/>
+                        </HBox>
+                        <PieChart fx:id="pieChartStatuts" legendVisible="false" animated="true"
                                   prefHeight="280" styleClass="stats-pie-chart"/>
                     </VBox>
 
+                </HBox>
+
+                <!-- Charts Row 2 -->
+                <HBox spacing="28" alignment="CENTER">
+
+                    <!-- Bar Chart: Vues par Heure -->
+                    <VBox styleClass="chart-card-enhanced" spacing="16" prefWidth="420" prefHeight="340">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <Label text="⏰" style="-fx-font-size: 28;"/>
+                            <Label text="Distribution Horaire des Vues" styleClass="chart-title-enhanced"/>
+                        </HBox>
+                        <BarChart fx:id="barChartHeures" legendVisible="false" animated="true"
+                                  prefHeight="280" styleClass="stats-bar-chart">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis side="LEFT"/>
+                            </yAxis>
+                        </BarChart>
+                    </VBox>
+
                     <!-- Bar Chart: Évolution temporelle -->
-                    <VBox styleClass="chart-card" spacing="16" prefWidth="400" prefHeight="350">
-                        <Label text="📈 Postulations par Mois" styleClass="chart-title"/>
-                        <BarChart fx:id="barChartEvolution" legendVisible="false"
+                    <VBox styleClass="chart-card-enhanced" spacing="16" prefWidth="420" prefHeight="340">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <Label text="📅" style="-fx-font-size: 28;"/>
+                            <Label text="Candidatures par Mois" styleClass="chart-title-enhanced"/>
+                        </HBox>
+                        <BarChart fx:id="barChartEvolution" legendVisible="false" animated="true"
                                   prefHeight="280" styleClass="stats-bar-chart">
                             <xAxis>
                                 <CategoryAxis side="BOTTOM" fx:id="xAxis"/>
@@ -97,9 +186,33 @@
 
                 </HBox>
 
+                <!-- Salaire Comparison -->
+                <VBox styleClass="info-section" spacing="12">
+                    <Label text="💰 Analyse Salariale" styleClass="chart-title"/>
+                    <Label fx:id="lblSalaireComparaison" text="--" wrapText="true" styleClass="info-text"/>
+                </VBox>
+
+                <!-- Séparateur -->
+                <Region styleClass="section-separator" prefHeight="2"/>
+
+                <!-- Recommandations -->
+                <VBox spacing="12">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Label text="💡" style="-fx-font-size: 28;"/>
+                        <Label text="Recommandations d'Optimisation" styleClass="chart-title"/>
+                    </HBox>
+                    <VBox fx:id="vboxRecommandations" spacing="12"/>
+                </VBox>
+
+                <!-- Séparateur -->
+                <Region styleClass="section-separator" prefHeight="2"/>
+
                 <!-- Liste des postulations récentes -->
                 <VBox styleClass="recent-list-card" spacing="16">
-                    <Label text="🕒 Postulations Récentes (5 dernières)" styleClass="chart-title"/>
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Label text="🕒" style="-fx-font-size: 28;"/>
+                        <Label text="Postulations Récentes (5 dernières)" styleClass="chart-title"/>
+                    </HBox>
 
                     <VBox fx:id="vboxRecentPostulations" spacing="12">
                         <!-- Dynamic content -->
