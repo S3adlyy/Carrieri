@@ -39,3 +39,4 @@ build/
 
 ### Twilio Configuration (contains API credentials) ###
 src/main/resources/config.properties
+src/main/resources/config.properties
