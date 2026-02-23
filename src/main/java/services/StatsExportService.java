@@ -177,13 +177,18 @@ public class StatsExportService {
     public File exportToExcel(OffreEmploi offre, OffreAnalyticsService.OffreStatistics stats,
                               List<Postulation> postulations) throws Exception {
 
+        System.out.println("📊 [Excel Export] Démarrage...");
+
         String fileName = "Analytics_" + sanitizeFileName(offre.getTitre()) + "_" +
                          LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".xlsx";
 
         File file = new File(System.getProperty("user.home") + "/Downloads/" + fileName);
+        System.out.println("📁 [Excel Export] Fichier cible: " + file.getAbsolutePath());
 
+        System.out.println("📊 [Excel Export] Création du workbook...");
         Workbook workbook = new XSSFWorkbook();
 
+        System.out.println("🎨 [Excel Export] Création du style header...");
         // Style pour les headers
         CellStyle headerStyle = workbook.createCellStyle();
         Font headerFont = workbook.createFont();
@@ -195,33 +200,44 @@ public class StatsExportService {
         headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         headerStyle.setAlignment(HorizontalAlignment.CENTER);
 
+        System.out.println("📄 [Excel Export] Création Sheet 1: Informations...");
         // Sheet 1: Informations Générales
         Sheet infoSheet = workbook.createSheet("Informations");
         createInfoSheet(infoSheet, offre, stats, headerStyle);
 
+        System.out.println("📄 [Excel Export] Création Sheet 2: KPIs...");
         // Sheet 2: KPIs
         Sheet kpiSheet = workbook.createSheet("KPIs");
         createKpiSheet(kpiSheet, stats, headerStyle);
 
+        System.out.println("📄 [Excel Export] Création Sheet 3: Postulations...");
         // Sheet 3: Postulations
         Sheet postSheet = workbook.createSheet("Postulations");
         createPostulationsSheet(postSheet, postulations, headerStyle);
 
+        System.out.println("📏 [Excel Export] Auto-sizing colonnes...");
         // Auto-size columns
         for (int i = 0; i < 3; i++) {
             Sheet sheet = workbook.getSheetAt(i);
             for (int j = 0; j < 5; j++) {
-                sheet.autoSizeColumn(j);
+                try {
+                    sheet.autoSizeColumn(j);
+                } catch (Exception e) {
+                    System.err.println("⚠️ Impossible d'auto-size colonne " + j + " du sheet " + i);
+                }
             }
         }
 
+        System.out.println("💾 [Excel Export] Écriture du fichier...");
         // Save
         try (FileOutputStream fileOut = new FileOutputStream(file)) {
             workbook.write(fileOut);
         }
 
+        System.out.println("🔒 [Excel Export] Fermeture du workbook...");
         workbook.close();
 
+        System.out.println("✅ [Excel Export] Export terminé avec succès!");
         return file;
     }
 

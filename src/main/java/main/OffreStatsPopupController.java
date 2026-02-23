@@ -414,8 +414,16 @@ public class OffreStatsPopupController {
     @FXML
     private void handleExportExcel() {
         try {
+            System.out.println("🔍 Début export Excel...");
             StatsExportService exportService = new StatsExportService();
+
+            System.out.println("📊 Offre: " + offre.getTitre());
+            System.out.println("📊 Stats: " + (statistics != null ? "OK" : "NULL"));
+            System.out.println("📊 Postulations: " + (postulations != null ? postulations.size() : "NULL"));
+
             File file = exportService.exportToExcel(offre, statistics, postulations);
+
+            System.out.println("✅ Fichier créé: " + file.getAbsolutePath());
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Export Excel Réussi");
@@ -429,12 +437,29 @@ public class OffreStatsPopupController {
             }
 
         } catch (Exception e) {
+            System.err.println("❌ ERREUR EXPORT EXCEL:");
+            e.printStackTrace();
+
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Erreur d'Export");
-            alert.setHeaderText("❌ Échec de l'export");
-            alert.setContentText("Une erreur s'est produite lors de la création du fichier Excel :\n" + e.getMessage());
+            alert.setHeaderText("❌ Échec de l'export Excel");
+
+            // Message d'erreur détaillé
+            String errorDetails = "Erreur: " + e.getClass().getSimpleName() + "\n" +
+                                 "Message: " + e.getMessage() + "\n\n";
+
+            if (e.getCause() != null) {
+                errorDetails += "Cause: " + e.getCause().getMessage() + "\n\n";
+            }
+
+            errorDetails += "💡 Solutions possibles:\n" +
+                           "1. Vérifiez que Maven a téléchargé Apache POI\n" +
+                           "2. Essayez: mvn clean install\n" +
+                           "3. Rebuild le projet\n\n" +
+                           "Voir la console pour plus de détails.";
+
+            alert.setContentText(errorDetails);
             alert.showAndWait();
-            e.printStackTrace();
         }
     }
 }
