@@ -124,126 +124,74 @@ public class Main extends Application {
     private void createSplashScreen() {
         splashStage = new Stage();
         splashStage.initStyle(StageStyle.TRANSPARENT);
+        splashStage.setResizable(false);
+        splashStage.setAlwaysOnTop(true);
 
-        Rectangle background = new Rectangle(600, 400);
-        background.setArcWidth(30);
-        background.setArcHeight(30);
-        background.setFill(Color.web("#231942"));
+        // Fond violet directement sur le StackPane
+        StackPane splashLayout = new StackPane();
+        splashLayout.setStyle("-fx-background-color: #231942; -fx-background-radius: 30;");
+        splashLayout.setPrefSize(600, 400);
 
+        // Ombre portée
         DropShadow dropShadow = new DropShadow();
         dropShadow.setColor(Color.rgb(0, 0, 0, 0.3));
         dropShadow.setRadius(20);
         dropShadow.setOffsetY(5);
-        background.setEffect(dropShadow);
+        splashLayout.setEffect(dropShadow);
 
-        Node logoNode;
+        // Contenu
+        VBox content = new VBox(20);
+        content.setAlignment(Pos.CENTER);
+        content.setMaxWidth(500);
+
+        // ✅ LOGO (au lieu de l'emoji)
+        ImageView logoView = null;
         try {
             Image logoImage = new Image(getClass().getResourceAsStream("/images/logo.png"));
-            ImageView logoView = new ImageView(logoImage);
+            logoView = new ImageView(logoImage);
             logoView.setFitWidth(120);
             logoView.setFitHeight(120);
             logoView.setPreserveRatio(true);
 
+            // Petit effet de brillance
             Glow glow = new Glow();
             glow.setLevel(0.3);
             logoView.setEffect(glow);
-
-            logoNode = logoView;
         } catch (Exception e) {
+            System.err.println("Logo non trouvé, utilisation du fallback");
+            // Fallback si l'image n'est pas trouvée
             Label fallbackLogo = new Label("🎓");
-            fallbackLogo.setStyle(
-                    "-fx-font-size: 80px;" +
-                            "-fx-text-fill: white;"
-            );
-            logoNode = fallbackLogo;
+            fallbackLogo.setStyle("-fx-font-size: 80px; -fx-text-fill: white;");
+            content.getChildren().add(fallbackLogo);
+        }
+
+        if (logoView != null) {
+            content.getChildren().add(logoView);
         }
 
         Label titleLabel = new Label("Carrieri");
-        titleLabel.setStyle(
-                "-fx-font-size: 36px;" +
-                        "-fx-font-weight: 900;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-font-family: 'Segoe UI', 'System';" +
-                        "-fx-letter-spacing: 1px;"
-        );
+        titleLabel.setStyle("-fx-font-size: 36px; -fx-font-weight: 900; -fx-text-fill: white;");
 
         Label subtitleLabel = new Label("Gestion des Études");
-        subtitleLabel.setStyle(
-                "-fx-font-size: 16px;" +
-                        "-fx-text-fill: rgba(255,255,255,0.8);" +
-                        "-fx-font-weight: 500;" +
-                        "-fx-letter-spacing: 0.5px;"
-        );
-
-        Rectangle separator = new Rectangle(200, 2);
-        separator.setFill(Color.web("#E0B1CB"));
-        separator.setOpacity(0.5);
+        subtitleLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: rgba(255,255,255,0.8);");
 
         progressBar = new ProgressBar(0);
         progressBar.setPrefWidth(400);
         progressBar.setPrefHeight(10);
-        progressBar.setStyle(
-                "-fx-accent: #E0B1CB;" +
-                        "-fx-control-inner-background: rgba(255,255,255,0.15);" +
-                        "-fx-background-radius: 20;" +
-                        "-fx-border-radius: 20;"
-        );
+        progressBar.setStyle("-fx-accent: #E0B1CB; -fx-control-inner-background: rgba(255,255,255,0.15);");
 
         statusLabel = new Label("Initialisation...");
-        statusLabel.setStyle(
-                "-fx-text-fill: rgba(255,255,255,0.9);" +
-                        "-fx-font-size: 14px;" +
-                        "-fx-font-weight: 600;"
-        );
+        statusLabel.setStyle("-fx-text-fill: rgba(255,255,255,0.9); -fx-font-size: 14px;");
 
-        Label versionLabel = new Label("Version 1.0.0");
-        versionLabel.setStyle(
-                "-fx-text-fill: rgba(255,255,255,0.5);" +
-                        "-fx-font-size: 11px;"
-        );
-
-        VBox content = new VBox(20);
-        content.setAlignment(Pos.CENTER);
-        content.setMaxWidth(500);
-        content.getChildren().addAll(
-                logoNode,
-                titleLabel,
-                subtitleLabel,
-                separator,
-                progressBar,
-                statusLabel,
-                versionLabel
-        );
-
-        StackPane splashLayout = new StackPane();
-        splashLayout.getChildren().addAll(background, content);
-        StackPane.setAlignment(content, Pos.CENTER);
-
-        ScaleTransition scaleIn = new ScaleTransition(Duration.millis(400), splashLayout);
-        scaleIn.setFromX(0.8);
-        scaleIn.setFromY(0.8);
-        scaleIn.setToX(1);
-        scaleIn.setToY(1);
-
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(400), splashLayout);
-        fadeIn.setFromValue(0);
-        fadeIn.setToValue(1);
-
-        SequentialTransition entranceAnimation = new SequentialTransition(fadeIn, scaleIn);
+        content.getChildren().addAll(titleLabel, subtitleLabel, progressBar, statusLabel);
+        splashLayout.getChildren().add(content);
 
         Scene splashScene = new Scene(splashLayout, 600, 400);
         splashScene.setFill(Color.TRANSPARENT);
+
         splashStage.setScene(splashScene);
         splashStage.centerOnScreen();
-
-        try {
-            splashStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
-        } catch (Exception e) {
-            System.err.println("Logo non trouvé pour l'icône du splash");
-        }
-
         splashStage.show();
-        entranceAnimation.play();
     }
 
     // ============================================
