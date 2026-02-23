@@ -18,7 +18,6 @@ module com.exemple.grecrutement {
     opens com.exemple.grecrutement to javafx.fxml;
     opens services to com.fasterxml.jackson.databind, javafx.fxml;
     opens entities to com.fasterxml.jackson.databind, javafx.fxml;
-
     // Export packages
     exports com.exemple.grecrutement;
     exports services;

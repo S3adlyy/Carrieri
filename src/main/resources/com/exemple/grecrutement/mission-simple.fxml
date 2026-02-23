@@ -9,7 +9,7 @@
 <BorderPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.exemple.grecrutement.MissionController"
-            stylesheets="@mission-styles.css"
+            stylesheets="@Css/mission-styles.css"
             styleClass="mission-bg">
 
     <!-- Premium Header with Navigation -->

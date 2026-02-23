@@ -8,7 +8,7 @@
 <BorderPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.exemple.grecrutement.RenduAddController"
-            stylesheets="@rendu-styles.css"
+            stylesheets="@Css/rendu-styles.css"
             styleClass="root"
             fx:id="rootBorderPane">
 
@@ -163,7 +163,7 @@
                                 <Region HBox.hgrow="ALWAYS"/>
 
                                 <!-- Kernel Control Buttons - Redesigned -->
-                                <Button fx:id="btnExecute" text="▶ Execute" onAction="#executeWithKernel"
+                                <Button fx:id="btnExecute" text="▶ Execute" onAction="#executeWithPythonium"
                                         styleClass="console-btn-execute" disable="true"/>
                                 <Button fx:id="btnClearConsole" text="✕ Clear" onAction="#clearConsole"
                                         styleClass="console-btn-clear"/>

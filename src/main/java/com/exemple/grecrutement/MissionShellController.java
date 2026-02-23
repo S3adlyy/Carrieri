@@ -272,15 +272,50 @@ public class MissionShellController implements Initializable {
 
     public void showRenduAddWithMissionId(int missionId) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/exemple/grecrutement/rendu-add.fxml"));
+            System.out.println("📂 Loading rendu-add.fxml for mission ID: " + missionId);
+
+            // Try multiple possible paths
+            String[] possiblePaths = {
+                    "/com/exemple/grecrutement/rendu-add.fxml",
+                    "/rendu-add.fxml",
+                    "rendu-add.fxml"
+            };
+
+            URL fxmlUrl = null;
+            for (String path : possiblePaths) {
+                fxmlUrl = getClass().getResource(path);
+                if (fxmlUrl != null) {
+                    System.out.println("✅ FXML found at: " + path);
+                    break;
+                }
+            }
+
+            if (fxmlUrl == null) {
+                throw new IOException("Could not find rendu-add.fxml in any of the expected paths");
+            }
+
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
             Node view = loader.load();
+            System.out.println("✅ FXML loaded successfully");
+
             RenduAddController controller = loader.getController();
+            System.out.println("✅ Controller obtained");
+
             controller.setMissionId(missionId);
+            System.out.println("✅ Mission ID set to: " + missionId);
+
             animateContentChange(view);
             setActiveButton(btnRendu);
+            System.out.println("✅ View changed successfully");
+
         } catch (IOException e) {
+            System.err.println("❌ IOException loading rendu-add.fxml: " + e.getMessage());
             e.printStackTrace();
-            showErrorPlaceholder("Erreur chargement RenduAdd");
+            showErrorPlaceholder("Erreur chargement RenduAdd: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("❌ Unexpected error: " + e.getMessage());
+            e.printStackTrace();
+            showErrorPlaceholder("Erreur: " + e.getMessage());
         }
     }
 

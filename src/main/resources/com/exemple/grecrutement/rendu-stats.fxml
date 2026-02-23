@@ -8,7 +8,7 @@
 <BorderPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.exemple.grecrutement.RenduStatsController"
-            stylesheets="@rendu-stats.css"
+            stylesheets="@Css/rendu-stats.css"
             prefWidth="1200" prefHeight="800">
 
     <!-- Top: Header -->
