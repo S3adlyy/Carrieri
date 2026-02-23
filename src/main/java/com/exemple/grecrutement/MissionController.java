@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import services.MissionService;
+import utils.AlertUtils;
 
 import java.io.IOException;
 import java.net.URL;
@@ -99,7 +100,7 @@ public class MissionController implements Initializable {
             }
 
         } catch (Exception e) {
-            showAlert("Erreur", "Erreur d'initialisation: " + e.getMessage());
+            AlertUtils.showError("Erreur", "Erreur d'initialisation: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -110,7 +111,7 @@ public class MissionController implements Initializable {
             missionList.addAll(missionService.read());
             missionTable.setItems(missionList);
         } catch (SQLException e) {
-            showAlert("Erreur", "Erreur lors du chargement des missions: " + e.getMessage());
+            AlertUtils.showError("Erreur", "Erreur lors du chargement des missions: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -134,12 +135,12 @@ public class MissionController implements Initializable {
 
             // Validation
             if (description.isEmpty()) {
-                showAlert("Validation", "La description est requise!");
+                AlertUtils.showWarning("Validation", "La description est requise!");
                 return;
             }
 
             if (scoreText.isEmpty()) {
-                showAlert("Validation", "Le score minimum est requis!");
+                AlertUtils.showWarning("Validation", "Le score minimum est requis!");
                 return;
             }
 
@@ -147,11 +148,11 @@ public class MissionController implements Initializable {
             try {
                 score = Integer.parseInt(scoreText);
                 if (score < 0) {
-                    showAlert("Validation", "Le score doit être positif!");
+                    AlertUtils.showWarning("Validation", "Le score doit être positif!");
                     return;
                 }
             } catch (NumberFormatException e) {
-                showAlert("Erreur", "Le score doit être un nombre valide!");
+                AlertUtils.showError("Erreur", "Le score doit être un nombre valide!");
                 return;
             }
 
@@ -160,7 +161,7 @@ public class MissionController implements Initializable {
                 try {
                     createdById = Integer.parseInt(createdByIdText);
                 } catch (NumberFormatException e) {
-                    showAlert("Erreur", "L'ID créateur doit être un nombre valide!");
+                    AlertUtils.showError("Erreur", "L'ID créateur doit être un nombre valide!");
                     return;
                 }
             }
@@ -168,12 +169,12 @@ public class MissionController implements Initializable {
             Mission mission = new Mission(description, score, createdById);
             missionService.ajouter(mission);
 
-            showAlert("Succès", "Mission ajoutée avec succès!");
+            AlertUtils.showSuccess("Succès", "Mission ajoutée avec succès!");
             viderChamps();
             chargerMissions();
 
         } catch (SQLException e) {
-            showAlert("Erreur", "Erreur lors de l'ajout: " + e.getMessage());
+            AlertUtils.showError("Erreur", "Erreur lors de l'ajout: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -183,7 +184,7 @@ public class MissionController implements Initializable {
         try {
             String idText = idField.getText().trim();
             if (idText.isEmpty()) {
-                showAlert("Validation", "Veuillez sélectionner une mission à modifier!");
+                AlertUtils.showWarning("Validation", "Veuillez sélectionner une mission à modifier!");
                 return;
             }
 
@@ -193,12 +194,12 @@ public class MissionController implements Initializable {
             String createdByIdText = createdByIdField.getText().trim();
 
             if (description.isEmpty()) {
-                showAlert("Validation", "La description est requise!");
+                AlertUtils.showWarning("Validation", "La description est requise!");
                 return;
             }
 
             if (scoreText.isEmpty()) {
-                showAlert("Validation", "Le score minimum est requis!");
+                AlertUtils.showWarning("Validation", "Le score minimum est requis!");
                 return;
             }
 
@@ -208,21 +209,21 @@ public class MissionController implements Initializable {
             // Get existing mission to preserve creation date
             Mission existingMission = missionService.getById(id);
             if (existingMission == null) {
-                showAlert("Erreur", "Mission introuvable!");
+                AlertUtils.showError("Erreur", "Mission introuvable!");
                 return;
             }
 
             Mission mission = new Mission(id, description, score, existingMission.getCreated_at(), createdById);
             missionService.update(mission);
 
-            showAlert("Succès", "Mission modifiée avec succès!");
+            AlertUtils.showSuccess("Succès", "Mission modifiée avec succès!");
             viderChamps();
             chargerMissions();
 
         } catch (NumberFormatException e) {
-            showAlert("Erreur", "Veuillez entrer des nombres valides!");
+            AlertUtils.showError("Erreur", "Veuillez entrer des nombres valides!");
         } catch (SQLException e) {
-            showAlert("Erreur", "Erreur lors de la modification: " + e.getMessage());
+            AlertUtils.showError("Erreur", "Erreur lors de la modification: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -232,29 +233,24 @@ public class MissionController implements Initializable {
         try {
             String idText = idField.getText().trim();
             if (idText.isEmpty()) {
-                showAlert("Validation", "Veuillez sélectionner une mission à supprimer!");
+                AlertUtils.showWarning("Validation", "Veuillez sélectionner une mission à supprimer!");
                 return;
             }
 
             int id = Integer.parseInt(idText);
 
-            // Confirmation
-            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmation.setTitle("Confirmation");
-            confirmation.setHeaderText("Supprimer la mission");
-            confirmation.setContentText("Êtes-vous sûr de vouloir supprimer cette mission?");
-
-            if (confirmation.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            // Confirmation avec AlertUtils
+            if (AlertUtils.showConfirmation("Confirmation", "Êtes-vous sûr de vouloir supprimer cette mission?")) {
                 missionService.supprimer(id);
-                showAlert("Succès", "Mission supprimée avec succès!");
+                AlertUtils.showSuccess("Succès", "Mission supprimée avec succès!");
                 viderChamps();
                 chargerMissions();
             }
 
         } catch (NumberFormatException e) {
-            showAlert("Erreur", "ID invalide!");
+            AlertUtils.showError("Erreur", "ID invalide!");
         } catch (SQLException e) {
-            showAlert("Erreur", "Erreur lors de la suppression: " + e.getMessage());
+            AlertUtils.showError("Erreur", "Erreur lors de la suppression: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -284,14 +280,6 @@ public class MissionController implements Initializable {
         chargerMissions();
     }
 
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
     @FXML
     public void ouvrirEvaluationAI() {
         try {
@@ -309,17 +297,7 @@ public class MissionController implements Initializable {
 
         } catch (IOException e) {
             e.printStackTrace();
-            afficherAlert("Erreur", "Impossible d'ouvrir l'interface d'évaluation AI: " + e.getMessage());
+            AlertUtils.showError("Erreur", "Impossible d'ouvrir l'interface d'évaluation AI: " + e.getMessage());
         }
     }
-
-    // Helper method to show alerts
-    private void afficherAlert(String titre, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(titre);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
 }

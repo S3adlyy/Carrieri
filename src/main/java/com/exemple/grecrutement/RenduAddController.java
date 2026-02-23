@@ -6,8 +6,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.animation.Timeline;
@@ -20,6 +18,7 @@ import services.RenduMissionService;
 import services.MissionService;
 import entities.Mission;
 import utils.SimplePythonKernel;
+import utils.AlertUtils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -419,16 +418,8 @@ public class RenduAddController implements Initializable {
 
     @FXML
     private void restartKernel() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Restart Kernel");
-        confirm.setHeaderText("🔄 Restart Python Kernel");
-        confirm.setContentText("Are you sure you want to restart the kernel?\nAll variables will be lost.");
-
-        DialogPane dialogPane = confirm.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("confirmation");
-
-        if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+        if (AlertUtils.showConfirmation("Restart Kernel",
+                "Are you sure you want to restart the kernel?\nAll variables will be lost.")) {
             appendToConsole("🔄 Restarting kernel...", "#f59e0b");
 
             if (pythonKernel != null) {
@@ -1080,7 +1071,7 @@ public class RenduAddController implements Initializable {
                 lblResultat.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
             }
 
-            showWarningAlert("Time's Up", "You didn't submit any code before the timer ended.");
+            AlertUtils.showWarning("Time's Up", "You didn't submit any code before the timer ended.");
         }
     }
 
@@ -1175,7 +1166,7 @@ public class RenduAddController implements Initializable {
             if (!validateCode()) errors.append("• Invalid Python code\n");
             if (!validateMissionType()) errors.append("• Mission type required\n");
 
-            showWarningAlert("Validation Error", errors.toString());
+            AlertUtils.showWarning("Validation Error", errors.toString());
             return;
         }
 
@@ -1190,7 +1181,7 @@ public class RenduAddController implements Initializable {
             missionId = Integer.parseInt(txtMissionId.getText());
             candidatId = Integer.parseInt(txtCandidatId.getText());
         } catch (Exception e) {
-            showErrorAlert("Invalid IDs", "Please enter valid numbers for Mission ID and Candidate ID");
+            AlertUtils.showError("Invalid IDs", "Please enter valid numbers for Mission ID and Candidate ID");
             if (!isTimerFinished) {
                 startTimer(remainingSeconds > 0 ? remainingSeconds : DEFAULT_TIMER_MINUTES * 60);
             }
@@ -1237,14 +1228,14 @@ public class RenduAddController implements Initializable {
                         resultText += "✅ ACCEPTED! (Score meets minimum requirement)";
                         lblResultat.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold; -fx-font-size: 14px;");
 
-                        showSuccessAlert("Code Accepted",
+                        AlertUtils.showSuccess("Code Accepted",
                                 "Your code has been accepted with a score of " + r.getScore() + "%!");
 
                     } else {
                         resultText += "❌ REJECTED (Score below minimum requirement)";
                         lblResultat.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 14px;");
 
-                        showWarningAlert("Code Rejected",
+                        AlertUtils.showWarning("Code Rejected",
                                 "Your code scored " + r.getScore() + "%, which is below the minimum requirement.");
                     }
 
@@ -1272,7 +1263,7 @@ public class RenduAddController implements Initializable {
                     lblResultat.setText("❌ Error: " + e.getMessage());
                     lblResultat.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
 
-                    showErrorAlert("Evaluation Error", e.getMessage());
+                    AlertUtils.showError("Evaluation Error", e.getMessage());
                 });
             }
         }).start();
@@ -1292,109 +1283,5 @@ public class RenduAddController implements Initializable {
 
     public void setAutoSubmitEnabled(boolean enabled) {
         this.isAutoSubmitEnabled = enabled;
-    }
-
-    // ============================
-    // STYLED ALERT METHODS
-    // ============================
-
-    private void showSuccessAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText("✅ " + title);
-        alert.setContentText(message);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("information");
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.setStyle(
-                    "-fx-background-color: #10b981;" +
-                            "-fx-text-fill: white;" +
-                            "-fx-font-weight: bold;" +
-                            "-fx-background-radius: 8;" +
-                            "-fx-padding: 10 25;"
-            );
-        }
-
-        alert.showAndWait();
-    }
-
-    private void showWarningAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setHeaderText("⚠️ " + title);
-        alert.setContentText(message);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("warning");
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.setStyle(
-                    "-fx-background-color: #f59e0b;" +
-                            "-fx-text-fill: white;" +
-                            "-fx-font-weight: bold;" +
-                            "-fx-background-radius: 8;" +
-                            "-fx-padding: 10 25;"
-            );
-        }
-
-        alert.showAndWait();
-    }
-
-    private void showErrorAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText("❌ " + title);
-        alert.setContentText(message);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("error");
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.setStyle(
-                    "-fx-background-color: #ef4444;" +
-                            "-fx-text-fill: white;" +
-                            "-fx-font-weight: bold;" +
-                            "-fx-background-radius: 8;" +
-                            "-fx-padding: 10 25;"
-            );
-        }
-
-        alert.showAndWait();
-    }
-
-    private void showInfoAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText("ℹ️ " + title);
-        alert.setContentText(message);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("information");
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.setStyle(
-                    "-fx-background-color: #3b82f6;" +
-                            "-fx-text-fill: white;" +
-                            "-fx-font-weight: bold;" +
-                            "-fx-background-radius: 8;" +
-                            "-fx-padding: 10 25;"
-            );
-        }
-
-        alert.showAndWait();
-    }
-
-    private void alert(String title, String message) {
-        showInfoAlert(title, message);
     }
 }

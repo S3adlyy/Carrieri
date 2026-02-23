@@ -9,7 +9,9 @@ import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import services.MissionService;
 import javafx.application.Platform;
-import java.sql.SQLException; // Add this import
+import utils.AlertUtils;
+
+import java.sql.SQLException;
 
 public class MissionAddController {
 
@@ -201,7 +203,7 @@ public class MissionAddController {
             System.err.println("Erreur lors de la vérification de la description: " + e.getMessage());
             e.printStackTrace();
             // Show a temporary error but allow submission? Better to show error
-            showAlert(Alert.AlertType.ERROR, "Erreur de vérification",
+            AlertUtils.showError("Erreur de vérification",
                     "Impossible de vérifier l'unicité de la description. Veuillez réessayer.");
             return false;
         }
@@ -254,7 +256,7 @@ public class MissionAddController {
 
         if (!validateAllFields()) {
             System.out.println("Validation échouée");
-            showAlert(Alert.AlertType.ERROR, "Erreur de validation",
+            AlertUtils.showError("Erreur de validation",
                     "Veuillez corriger les erreurs dans le formulaire.");
             return;
         }
@@ -278,12 +280,12 @@ public class MissionAddController {
 
         } catch (NumberFormatException e) {
             System.err.println("Erreur de format: " + e.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Erreur de format",
+            AlertUtils.showError("Erreur de format",
                     "Veuillez entrer des nombres valides.");
         } catch (Exception e) {
             System.err.println("Erreur système: " + e.getMessage());
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erreur système",
+            AlertUtils.showError("Erreur système",
                     "Une erreur est survenue: " + e.getMessage());
         }
     }
@@ -304,19 +306,19 @@ public class MissionAddController {
                     } catch (Exception e) {
                         System.err.println("Erreur pendant la navigation: " + e.getMessage());
                         e.printStackTrace();
-                        showAlert(Alert.AlertType.ERROR, "Erreur de navigation",
+                        AlertUtils.showError("Erreur de navigation",
                                 "Impossible de retourner à la liste des missions.");
                     }
                 });
             } else {
                 System.err.println("MissionShellController.getInstance() a retourné null!");
-                showAlert(Alert.AlertType.ERROR, "Erreur de navigation",
+                AlertUtils.showError("Erreur de navigation",
                         "Impossible de trouver le contrôleur principal.");
             }
         } catch (Exception e) {
             System.err.println("Exception dans navigateToMissionList: " + e.getMessage());
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erreur de navigation",
+            AlertUtils.showError("Erreur de navigation",
                     "Une erreur est survenue: " + e.getMessage());
         }
     }
@@ -341,36 +343,12 @@ public class MissionAddController {
 
     @FXML
     private void showHelp() {
-        Alert helpAlert = new Alert(Alert.AlertType.INFORMATION);
-        helpAlert.setTitle("Aide - Ajout de mission");
-        helpAlert.setHeaderText("Instructions");
-        helpAlert.setContentText(
+        AlertUtils.showInfo("Aide - Ajout de mission",
                 "• Description : 50 à 1000 caractères\n" +
                         "• Score : Entre 0 et 100\n" +
                         "• ID Créateur : Nombre positif\n\n" +
                         "Tous les champs sont obligatoires."
         );
-        styleAlert(helpAlert);
-        helpAlert.showAndWait();
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        styleAlert(alert);
-        alert.showAndWait();
-    }
-
-    private void styleAlert(Alert alert) {
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setStyle("-fx-background-color: #2d2d2d;");
-        Label content = (Label) dialogPane.lookup(".content.label");
-        if (content != null) {
-            content.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
-        }
-        dialogPane.lookup(".header-panel").setStyle("-fx-background-color: #1e1e1e;");
     }
 
     @FXML

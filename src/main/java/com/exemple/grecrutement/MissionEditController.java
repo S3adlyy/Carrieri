@@ -2,10 +2,10 @@ package com.exemple.grecrutement;
 
 import entities.Mission;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import services.MissionService;
+import utils.AlertUtils;
 
 public class MissionEditController {
 
@@ -45,7 +45,7 @@ public class MissionEditController {
         try {
             // Validation
             if (descriptionField.getText().trim().isEmpty()) {
-                showAlert("Validation Error", "Description cannot be empty!");
+                AlertUtils.showWarning("Validation Error", "Description cannot be empty!");
                 return;
             }
 
@@ -53,11 +53,11 @@ public class MissionEditController {
             try {
                 score = Integer.parseInt(scoreField.getText());
                 if (score < 0 || score > 100) {
-                    showAlert("Validation Error", "Score must be between 0 and 100!");
+                    AlertUtils.showWarning("Validation Error", "Score must be between 0 and 100!");
                     return;
                 }
             } catch (NumberFormatException e) {
-                showAlert("Validation Error", "Score must be a valid number!");
+                AlertUtils.showWarning("Validation Error", "Score must be a valid number!");
                 return;
             }
 
@@ -65,11 +65,11 @@ public class MissionEditController {
             try {
                 creatorId = Integer.parseInt(creatorField.getText());
                 if (creatorId <= 0) {
-                    showAlert("Validation Error", "Creator ID must be positive!");
+                    AlertUtils.showWarning("Validation Error", "Creator ID must be positive!");
                     return;
                 }
             } catch (NumberFormatException e) {
-                showAlert("Validation Error", "Creator ID must be a valid number!");
+                AlertUtils.showWarning("Validation Error", "Creator ID must be a valid number!");
                 return;
             }
 
@@ -81,29 +81,17 @@ public class MissionEditController {
             missionService.update(mission);
 
             // Show success message
-            Alert success = new Alert(Alert.AlertType.INFORMATION);
-            success.setTitle("Success");
-            success.setHeaderText("Mission Updated");
-            success.setContentText("Mission #" + mission.getId() + " has been successfully updated!");
-            success.showAndWait();
+            AlertUtils.showSuccess("Success", "Mission #" + mission.getId() + " has been successfully updated!");
 
             MissionShellController.getInstance().showMissionList();
 
         } catch (Exception e) {
-            showAlert("Error", e.getMessage());
+            AlertUtils.showError("Error", e.getMessage());
         }
     }
 
     @FXML
     private void cancel() {
         MissionShellController.getInstance().showMissionList();
-    }
-
-    private void showAlert(String title, String msg) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
     }
 }

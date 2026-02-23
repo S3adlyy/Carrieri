@@ -12,6 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import services.RenduMissionService;
+import utils.AlertUtils;
 
 import java.io.IOException;
 import java.net.URL;
@@ -114,7 +115,7 @@ public class RenduMissionController implements Initializable {
         String code = txtCodeSolution.getText();
 
         if (code.isEmpty()) {
-            showAlert("Erreur", "Veuillez entrer le code à évaluer.");
+            AlertUtils.showError("Erreur", "Veuillez entrer le code à évaluer.");
             return;
         }
 
@@ -124,7 +125,7 @@ public class RenduMissionController implements Initializable {
             missionId = Integer.parseInt(txtMissionId.getText());
             candidatId = Integer.parseInt(txtCandidatId.getText());
         } catch (NumberFormatException e) {
-            showAlert("Erreur", "ID Mission et ID Candidat doivent être des nombres valides.");
+            AlertUtils.showError("Erreur", "ID Mission et ID Candidat doivent être des nombres valides.");
             return;
         }
 
@@ -147,10 +148,10 @@ public class RenduMissionController implements Initializable {
 
                     if (result.isAccepted()) {
                         lblResultat.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
-                        showAlert("Succès", "Code accepté! Le candidat est ajouté à la liste des acceptés.");
+                        AlertUtils.showSuccess("Succès", "Code accepté! Le candidat est ajouté à la liste des acceptés.");
                     } else {
                         lblResultat.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
-                        showAlert("Échec", "Code rejeté. Score insuffisant.");
+                        AlertUtils.showWarning("Échec", "Code rejeté. Score insuffisant.");
                     }
 
                     // Refresh table
@@ -173,19 +174,14 @@ public class RenduMissionController implements Initializable {
         RenduMission selected = tableRendu.getSelectionModel().getSelectedItem();
 
         if (selected == null) {
-            showAlert("Erreur", "Veuillez sélectionner un rendu à supprimer.");
+            AlertUtils.showWarning("Erreur", "Veuillez sélectionner un rendu à supprimer.");
             return;
         }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmation");
-        confirm.setHeaderText(null);
-        confirm.setContentText("Voulez-vous vraiment supprimer ce rendu?");
-
-        if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+        if (AlertUtils.showConfirmation("Confirmation", "Voulez-vous vraiment supprimer ce rendu?")) {
             renduMissionService.supprimerRenduMission(selected.getId());
             loadRenduMissions();
-            showAlert("Succès", "Rendu supprimé avec succès.");
+            AlertUtils.showSuccess("Succès", "Rendu supprimé avec succès.");
         }
     }
 
@@ -230,17 +226,10 @@ public class RenduMissionController implements Initializable {
 
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Erreur", "Impossible de retourner aux missions: " + e.getMessage());
+            AlertUtils.showError("Erreur", "Impossible de retourner aux missions: " + e.getMessage());
         }
     }
 
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
     private void runDiagnosticTest() {
         System.out.println("🩺 DIAGNOSTIC TEST");
 

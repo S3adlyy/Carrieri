@@ -42,8 +42,9 @@
                 </VBox>
             </VBox>
 
-            <!-- MAIN 3-COLUMN FORM -->
-            <HBox spacing="30" alignment="TOP_CENTER" styleClass="horizontal-form-large">
+            <!-- MAIN 3-COLUMN FORM - COMPLETELY CENTERED -->
+            <HBox spacing="30" alignment="CENTER" styleClass="horizontal-form-large"
+                  HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
 
                 <!-- COLUMN 1: Mission Description -->
                 <VBox spacing="20" styleClass="form-column-large" HBox.hgrow="ALWAYS" prefWidth="450">

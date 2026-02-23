@@ -15,6 +15,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.util.converter.IntegerStringConverter;
 import services.MissionService;
+import utils.AlertUtils;
 
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
@@ -171,7 +172,7 @@ public class MissionListController implements Initializable {
                 mission.setCreated_by_id(creatorId);
                 updateMission(mission);
             } catch (NumberFormatException e) {
-                showAlert(Alert.AlertType.ERROR, "Invalid ID", "Please enter a valid number");
+                AlertUtils.showError("Invalid ID", "Please enter a valid number");
                 loadMissions();
             }
         });
@@ -559,8 +560,7 @@ public class MissionListController implements Initializable {
             showQuickSuccess();
             calculateStats();
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Update Error",
-                    "Failed to update mission: " + e.getMessage());
+            AlertUtils.showError("Update Error", "Failed to update mission: " + e.getMessage());
             loadMissions();
         }
     }
@@ -606,7 +606,7 @@ public class MissionListController implements Initializable {
             );
             calculateStats();
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Load Error", e.getMessage());
+            AlertUtils.showError("Load Error", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -641,8 +641,7 @@ public class MissionListController implements Initializable {
             MissionShellController.getInstance().showRenduAddWithMissionId(mission.getId());
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error",
-                    "Could not load submission form: " + e.getMessage());
+            AlertUtils.showError("Navigation Error", "Could not load submission form: " + e.getMessage());
         }
     }
 
@@ -650,117 +649,18 @@ public class MissionListController implements Initializable {
      * Delete mission with styled confirmation dialog
      */
     private void deleteMission(Mission selected) {
-        // Create confirmation alert
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirm Deletion");
-        confirm.setHeaderText("⚠️ Delete Mission");
-        confirm.setContentText("Are you sure you want to delete this mission?\n\n" +
-                "📋 Description: " + selected.getDescription() + "\n" +
-                "📊 Minimum Score: " + selected.getScore_min() + "%\n\n" +
-                "❌ This action cannot be undone.");
-
-        // Apply styling using Alert.css
-        DialogPane dialogPane = confirm.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("confirmation"); // Add confirmation style class
-
-        // Style the buttons
-        ButtonBar buttonBar = (ButtonBar) dialogPane.lookup(".button-bar");
-        if (buttonBar != null) {
-            buttonBar.getButtons().forEach(button -> {
-                if (button instanceof Button) {
-                    Button btn = (Button) button;
-                    if (btn.getText().equals("OK") || btn.getText().equals("Yes")) {
-                        btn.getStyleClass().add("ok-button");
-                        btn.setStyle(
-                                "-fx-background-color: #ef4444;" +
-                                        "-fx-text-fill: white;" +
-                                        "-fx-font-weight: bold;" +
-                                        "-fx-background-radius: 8;" +
-                                        "-fx-padding: 10 25;"
-                        );
-                    } else {
-                        btn.getStyleClass().add("cancel-button");
-                        btn.setStyle(
-                                "-fx-background-color: transparent;" +
-                                        "-fx-text-fill: #e0e0e0;" +
-                                        "-fx-border-color: #3d3d5c;" +
-                                        "-fx-border-width: 1;" +
-                                        "-fx-border-radius: 8;" +
-                                        "-fx-background-radius: 8;" +
-                                        "-fx-padding: 10 25;"
-                        );
-                    }
-                }
-            });
-        }
-
-        // Show the confirmation dialog and handle response
-        if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+        if (AlertUtils.showDeleteConfirmation(
+                "mission",
+                selected.getDescription(),
+                "📊 Minimum Score: " + selected.getScore_min() + "%\n❌ This action cannot be undone."
+        )) {
             try {
                 missionService.supprimer(selected.getId());
                 loadMissions();
-
-                // Show success alert
-                Alert success = new Alert(Alert.AlertType.INFORMATION);
-                success.setTitle("Success");
-                success.setHeaderText("✅ Mission Deleted");
-                success.setContentText("Mission has been deleted successfully!");
-
-                // Style success alert
-                DialogPane successPane = success.getDialogPane();
-                successPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-                successPane.getStyleClass().add("information");
-
-                Button okButton = (Button) successPane.lookupButton(ButtonType.OK);
-                if (okButton != null) {
-                    okButton.setStyle(
-                            "-fx-background-color: #10b981;" +
-                                    "-fx-text-fill: white;" +
-                                    "-fx-font-weight: bold;" +
-                                    "-fx-background-radius: 8;" +
-                                    "-fx-padding: 10 25;"
-                    );
-                }
-
-                success.showAndWait();
-
+                AlertUtils.showSuccess("Success", "Mission has been deleted successfully!");
             } catch (Exception e) {
-                showAlert(Alert.AlertType.ERROR, "Delete Error", e.getMessage());
+                AlertUtils.showError("Delete Error", e.getMessage());
             }
         }
-    }
-
-    /**
-     * Show styled alert with Alert.css
-     */
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-
-        // Apply styling using Alert.css
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-
-        // Add appropriate style class based on alert type
-        if (type == Alert.AlertType.ERROR) {
-            dialogPane.getStyleClass().add("error");
-        } else if (type == Alert.AlertType.WARNING) {
-            dialogPane.getStyleClass().add("warning");
-        } else if (type == Alert.AlertType.INFORMATION) {
-            dialogPane.getStyleClass().add("information");
-        } else if (type == Alert.AlertType.CONFIRMATION) {
-            dialogPane.getStyleClass().add("confirmation");
-        }
-
-        // Style the OK button
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.getStyleClass().add("ok-button");
-        }
-
-        alert.showAndWait();
     }
 }

@@ -49,6 +49,7 @@
     #EDE9FE 65%,
     #E9D5FF 100%);
     -fx-padding: 0;
+    -fx-alignment: CENTER;
 }
 
 /* Animated Background Orbs - Solid Purple */

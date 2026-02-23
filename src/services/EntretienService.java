@@ -831,4 +831,20 @@ public class EntretienService {
             this.name = name;
         }
     }
+
+    private static List<Runnable> calendarRefreshListeners = new ArrayList<>();
+
+    public static void addCalendarRefreshListener(Runnable listener) {
+        calendarRefreshListeners.add(listener);
+    }
+
+    private void notifyCalendarRefresh() {
+        for (Runnable listener : calendarRefreshListeners) {
+            try {
+                listener.run();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

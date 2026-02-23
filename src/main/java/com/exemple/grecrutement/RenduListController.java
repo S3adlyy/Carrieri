@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import services.RenduMissionService;
+import utils.AlertUtils;
 
 import java.net.URL;
 import java.util.List;
@@ -375,17 +376,12 @@ public class RenduListController implements Initializable {
         table.refresh();
     }
 
-    // ============ UPDATED ALERT METHODS WITH Alert.css STYLING ============
+    // ============ UPDATED ALERT METHODS ============
 
     /**
      * Show styled submission details alert
      */
     private void viewDetails(RenduMission rendu) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Submission Details");
-        alert.setHeaderText("📋 Submission Details");
-
-        // Format the content with better visual structure
         String content = String.format(
                 "📊 Score: %d%%\n" +
                         "🏷️ Status: %s\n" +
@@ -403,26 +399,7 @@ public class RenduListController implements Initializable {
                 rendu.getLangue() != null ? rendu.getLangue() : "Python"
         );
 
-        alert.setContentText(content);
-
-        // Apply styling using Alert.css
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("information");
-
-        // Style the OK button
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.setStyle(
-                    "-fx-background-color: #10b981;" +
-                            "-fx-text-fill: white;" +
-                            "-fx-font-weight: bold;" +
-                            "-fx-background-radius: 8;" +
-                            "-fx-padding: 10 25;"
-            );
-        }
-
-        alert.showAndWait();
+        AlertUtils.showInfo("Submission Details", content);
     }
 
     /**
@@ -456,23 +433,6 @@ public class RenduListController implements Initializable {
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
         dialog.getDialogPane().setPrefSize(720, 600);
 
-        // Apply styling to dialog
-        DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("information");
-
-        // Style the close button
-        Button closeButton = (Button) dialogPane.lookupButton(ButtonType.CLOSE);
-        if (closeButton != null) {
-            closeButton.setStyle(
-                    "-fx-background-color: #8b5cf6;" +
-                            "-fx-text-fill: white;" +
-                            "-fx-font-weight: bold;" +
-                            "-fx-background-radius: 8;" +
-                            "-fx-padding: 10 25;"
-            );
-        }
-
         dialog.showAndWait();
     }
 
@@ -480,63 +440,25 @@ public class RenduListController implements Initializable {
      * Show styled delete confirmation alert
      */
     private void deleteRendu(RenduMission rendu) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirm Deletion");
-        confirm.setHeaderText("⚠️ Delete Submission");
-        confirm.setContentText(String.format(
-                "Are you sure you want to delete this submission?\n\n" +
-                        "📊 Score: %d%%\n" +
+        String details = String.format(
+                "📊 Score: %d%%\n" +
                         "🏷️ Status: %s\n" +
                         "🎯 Mission #%d\n" +
-                        "👤 Candidate #%d\n\n" +
-                        "❌ This action cannot be undone.",
+                        "👤 Candidate #%d",
                 rendu.getScore(),
                 rendu.getResultat(),
                 rendu.getMissionId(),
                 rendu.getCandidatId()
-        ));
+        );
 
-        // Apply styling using Alert.css
-        DialogPane dialogPane = confirm.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("confirmation");
-
-        // Style the buttons
-        ButtonBar buttonBar = (ButtonBar) dialogPane.lookup(".button-bar");
-        if (buttonBar != null) {
-            buttonBar.getButtons().forEach(button -> {
-                if (button instanceof Button) {
-                    Button btn = (Button) button;
-                    if (btn.getText().equals("OK") || btn.getText().equals("Yes")) {
-                        btn.setStyle(
-                                "-fx-background-color: #ef4444;" +
-                                        "-fx-text-fill: white;" +
-                                        "-fx-font-weight: bold;" +
-                                        "-fx-background-radius: 8;" +
-                                        "-fx-padding: 10 25;"
-                        );
-                    } else {
-                        btn.setStyle(
-                                "-fx-background-color: transparent;" +
-                                        "-fx-text-fill: #6b7280;" +
-                                        "-fx-border-color: #e2e8f0;" +
-                                        "-fx-border-width: 1;" +
-                                        "-fx-border-radius: 8;" +
-                                        "-fx-background-radius: 8;" +
-                                        "-fx-padding: 10 25;"
-                        );
-                    }
-                }
-            });
-        }
-
-        if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+        if (AlertUtils.showDeleteConfirmation("submission", details,
+                "❌ This action cannot be undone.")) {
             try {
                 service.supprimerRenduMission(rendu.getId());
                 load();
-                showSuccessAlert("Success", "Submission deleted successfully.");
+                AlertUtils.showSuccess("Success", "Submission deleted successfully.");
             } catch (Exception e) {
-                showErrorAlert("Delete Error", "Failed to delete submission: " + e.getMessage());
+                AlertUtils.showError("Delete Error", "Failed to delete submission: " + e.getMessage());
             }
         }
     }
@@ -548,61 +470,24 @@ public class RenduListController implements Initializable {
     private void deleteSelected() {
         List<RenduMission> selected = table.getSelectionModel().getSelectedItems();
         if (selected.isEmpty()) {
-            showWarningAlert("No Selection", "Please select one or more submissions to delete.");
+            AlertUtils.showWarning("No Selection", "Please select one or more submissions to delete.");
             return;
         }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirm Bulk Deletion");
-        confirm.setHeaderText("⚠️ Delete " + selected.size() + " Submission(s)");
-
-        StringBuilder content = new StringBuilder("Are you sure you want to delete the selected submissions?\n\n");
+        StringBuilder details = new StringBuilder();
         for (int i = 0; i < Math.min(selected.size(), 5); i++) {
             RenduMission r = selected.get(i);
-            content.append("• ").append(r.getResultat()).append(" - Score: ").append(r.getScore()).append("%\n");
+            details.append("• ").append(r.getResultat()).append(" - Score: ").append(r.getScore()).append("%\n");
         }
         if (selected.size() > 5) {
-            content.append("• ... and ").append(selected.size() - 5).append(" more\n");
-        }
-        content.append("\n❌ This action cannot be undone.");
-
-        confirm.setContentText(content.toString());
-
-        // Apply styling using Alert.css
-        DialogPane dialogPane = confirm.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("confirmation");
-
-        // Style the buttons
-        ButtonBar buttonBar = (ButtonBar) dialogPane.lookup(".button-bar");
-        if (buttonBar != null) {
-            buttonBar.getButtons().forEach(button -> {
-                if (button instanceof Button) {
-                    Button btn = (Button) button;
-                    if (btn.getText().equals("OK") || btn.getText().equals("Yes")) {
-                        btn.setStyle(
-                                "-fx-background-color: #ef4444;" +
-                                        "-fx-text-fill: white;" +
-                                        "-fx-font-weight: bold;" +
-                                        "-fx-background-radius: 8;" +
-                                        "-fx-padding: 10 25;"
-                        );
-                    } else {
-                        btn.setStyle(
-                                "-fx-background-color: transparent;" +
-                                        "-fx-text-fill: #6b7280;" +
-                                        "-fx-border-color: #e2e8f0;" +
-                                        "-fx-border-width: 1;" +
-                                        "-fx-border-radius: 8;" +
-                                        "-fx-background-radius: 8;" +
-                                        "-fx-padding: 10 25;"
-                        );
-                    }
-                }
-            });
+            details.append("• ... and ").append(selected.size() - 5).append(" more\n");
         }
 
-        if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+        if (AlertUtils.showDeleteConfirmation(
+                selected.size() + " submission(s)",
+                details.toString(),
+                "❌ This action cannot be undone.")) {
+
             int successCount = 0;
             int failCount = 0;
             StringBuilder errors = new StringBuilder();
@@ -621,10 +506,10 @@ public class RenduListController implements Initializable {
             load();
 
             if (failCount == 0) {
-                showSuccessAlert("Deletion Complete",
+                AlertUtils.showSuccess("Deletion Complete",
                         "✓ Successfully deleted " + successCount + " submission(s).");
             } else {
-                showWarningAlert("Deletion Partial",
+                AlertUtils.showWarning("Deletion Partial",
                         "✓ Successfully deleted: " + successCount + "\n" +
                                 "✗ Failed to delete: " + failCount + "\n\n" +
                                 errors.toString());
@@ -644,7 +529,7 @@ public class RenduListController implements Initializable {
             }
 
             if (itemsToExport.isEmpty()) {
-                showInfoAlert("Info", "No data to export.");
+                AlertUtils.showInfo("Info", "No data to export.");
                 return;
             }
 
@@ -669,13 +554,13 @@ public class RenduListController implements Initializable {
             if (file != null) {
                 try (java.io.FileWriter writer = new java.io.FileWriter(file)) {
                     writer.write(csv.toString());
-                    showSuccessAlert("Export Successful",
+                    AlertUtils.showSuccess("Export Successful",
                             "✓ Exported " + itemsToExport.size() + " submissions to:\n" + file.getAbsolutePath());
                 }
             }
 
         } catch (Exception e) {
-            showErrorAlert("Export Failed", "Failed to export: " + e.getMessage());
+            AlertUtils.showError("Export Failed", "Failed to export: " + e.getMessage());
         }
     }
 
@@ -684,159 +569,19 @@ public class RenduListController implements Initializable {
      */
     @FXML
     private void showFilter() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Filter Help");
-        alert.setHeaderText("🔍 Advanced Filter Options");
-        alert.setContentText(
+        AlertUtils.showInfo("Filter Help",
                 "Use the filter controls above to filter submissions:\n\n" +
                         "• Status: Filter by submission status\n" +
                         "• Mission: Filter by mission ID\n" +
                         "• Search: Search in candidate IDs and results\n\n" +
                         "💡 Tip: Double-click any row to schedule an interview!"
         );
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("information");
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.setStyle(
-                    "-fx-background-color: #8b5cf6;" +
-                            "-fx-text-fill: white;" +
-                            "-fx-font-weight: bold;" +
-                            "-fx-background-radius: 8;" +
-                            "-fx-padding: 10 25;"
-            );
-        }
-
-        alert.showAndWait();
     }
 
     /**
      * Show styled statistics info
      */
-    @FXML
-    private void showStatistics() {
-        MissionShellController.getInstance().showStatistics();
-    }
 
-    // ============ HELPER METHODS FOR STYLED ALERTS ============
-
-    /**
-     * Show styled success alert
-     */
-    private void showSuccessAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText("✅ " + title);
-        alert.setContentText(message);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("information");
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.setStyle(
-                    "-fx-background-color: #10b981;" +
-                            "-fx-text-fill: white;" +
-                            "-fx-font-weight: bold;" +
-                            "-fx-background-radius: 8;" +
-                            "-fx-padding: 10 25;"
-            );
-        }
-
-        alert.showAndWait();
-    }
-
-    /**
-     * Show styled warning alert
-     */
-    private void showWarningAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setHeaderText("⚠️ " + title);
-        alert.setContentText(message);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("warning");
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.setStyle(
-                    "-fx-background-color: #f59e0b;" +
-                            "-fx-text-fill: white;" +
-                            "-fx-font-weight: bold;" +
-                            "-fx-background-radius: 8;" +
-                            "-fx-padding: 10 25;"
-            );
-        }
-
-        alert.showAndWait();
-    }
-
-    /**
-     * Show styled error alert
-     */
-    private void showErrorAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText("❌ " + title);
-        alert.setContentText(message);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("error");
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.setStyle(
-                    "-fx-background-color: #ef4444;" +
-                            "-fx-text-fill: white;" +
-                            "-fx-font-weight: bold;" +
-                            "-fx-background-radius: 8;" +
-                            "-fx-padding: 10 25;"
-            );
-        }
-
-        alert.showAndWait();
-    }
-
-    /**
-     * Show styled info alert
-     */
-    private void showInfoAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText("ℹ️ " + title);
-        alert.setContentText(message);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("information");
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.setStyle(
-                    "-fx-background-color: #3b82f6;" +
-                            "-fx-text-fill: white;" +
-                            "-fx-font-weight: bold;" +
-                            "-fx-background-radius: 8;" +
-                            "-fx-padding: 10 25;"
-            );
-        }
-
-        alert.showAndWait();
-    }
-
-    /**
-     * Legacy showAlert method - updated to use styled alerts
-     */
-    private void showAlert(String title, String message) {
-        showInfoAlert(title, message);
-    }
 
     // ============ ALL YOUR ORIGINAL METHODS BELOW - UNCHANGED ============
 
@@ -853,7 +598,7 @@ public class RenduListController implements Initializable {
             populateMissionFilter();
             System.out.println("✅ Loaded " + rendus.size() + " submissions");
         } catch (Exception e) {
-            showErrorAlert("Error", "Failed to load submissions: " + e.getMessage());
+            AlertUtils.showError("Error", "Failed to load submissions: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -992,7 +737,7 @@ public class RenduListController implements Initializable {
         if (selected != null) {
             viewDetails(selected);
         } else {
-            showWarningAlert("No Selection", "Please select a submission first.");
+            AlertUtils.showWarning("No Selection", "Please select a submission first.");
         }
     }
 
@@ -1006,7 +751,7 @@ public class RenduListController implements Initializable {
             MissionShellController.getInstance().showScheduleInterview(rendu);
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorAlert("Navigation Error",
+            AlertUtils.showError("Navigation Error",
                     "Could not load interview scheduling form: " + e.getMessage());
         }
     }
@@ -1086,5 +831,9 @@ public class RenduListController implements Initializable {
         container.setAlignment(Pos.CENTER_LEFT);
 
         return container;
+    }
+    @FXML
+    private void showStatistics() {
+        MissionShellController.getInstance().showStatistics();
     }
 }
