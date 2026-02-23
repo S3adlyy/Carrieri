@@ -1095,41 +1095,39 @@ public class RenduAddController implements Initializable {
                     if (accepted) {
                         resultText += "✅ ACCEPTED! (Score meets minimum requirement)\n";
                         lblResultat.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold; -fx-font-size: 14px;");
+
+                        // Show success alert with SMS status
+                        if (finalSmsSent) {
+                            AlertUtils.showSuccess("Code Accepted",
+                                    "Your code has been accepted with a score of " + finalScore + "%!\n" +
+                                            "📱 SMS confirmation sent to 93039271");
+                        } else {
+                            AlertUtils.showSuccess("Code Accepted",
+                                    "Your code has been accepted with a score of " + finalScore + "%!\n" +
+                                            "(SMS notification was not sent)");
+                        }
+
                     } else {
                         resultText += "❌ REJECTED (Score below minimum requirement)\n";
                         lblResultat.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 14px;");
-                    }
 
-                    // Add SMS status to result
-                    if (finalSmsSent) {
-                        resultText += "📱 SMS notification sent to 93039271 with score " + finalScore + "% ✓";
-
-                        // Show detailed alert with SMS info
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Submission Complete");
-                        alert.setHeaderText(accepted ? "✅ Code Accepted & SMS Sent" : "❌ Code Rejected & SMS Sent");
-                        alert.setContentText(String.format(
-                                "Your code has been evaluated with a score of %d%%!\n\n" +
-                                        "📱 An SMS notification has been sent from:\n%s (Twilio Trial)\n\n" +
-                                        "To:\n%s\n\n" +
-                                        "The recipient has been notified of your result for Mission #%d.",
-                                finalScore,
-                                fromNumber,
-                                toNumber,
-                                missionIdForSms
-                        ));
-                        alert.showAndWait();
-                    } else {
-                        resultText += "📱 SMS notification could not be sent (service unavailable)";
-                        if (accepted) {
-                            AlertUtils.showSuccess("Code Accepted",
-                                    "Your code has been accepted with a score of " + finalScore + "%!\n" +
-                                            "(SMS notification was not sent - check Twilio configuration)");
+                        // Show warning alert with SMS status
+                        if (finalSmsSent) {
+                            AlertUtils.showWarning("Code Rejected",
+                                    "Your code scored " + finalScore + "%, which is below the minimum requirement.\n" +
+                                            "📱 SMS notification sent to 93039271");
                         } else {
                             AlertUtils.showWarning("Code Rejected",
                                     "Your code scored " + finalScore + "%, which is below the minimum requirement.\n" +
-                                            "(SMS notification was not sent - check Twilio configuration)");
+                                            "(SMS notification was not sent)");
                         }
+                    }
+
+                    // Add SMS status to result text
+                    if (finalSmsSent) {
+                        resultText += "📱 SMS notification sent to 93039271 with score " + finalScore + "% ✓";
+                    } else {
+                        resultText += "📱 SMS notification could not be sent";
                     }
 
                     lblResultat.setText(resultText);
