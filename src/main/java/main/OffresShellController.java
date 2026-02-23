@@ -109,6 +109,17 @@ public class OffresShellController {
     }
 
     /**
+     * Afficher les statistiques d'une offre (interface complète au lieu de popup)
+     */
+    public void showOffreStats(entities.OffreEmploi offre) {
+        loadViewWithFadeAndInit("/offre-stats-popup.fxml", controller -> {
+            if (controller instanceof OffreStatsPopupController statsCtrl) {
+                statsCtrl.setOffre(offre);
+            }
+        });
+    }
+
+    /**
      * Main loading method - tries to load FXML and shows error in UI if it fails
      */
     private void loadViewWithFade(String fxmlFileName) {

@@ -11,9 +11,13 @@
     -fx-background-color: #f5f0fa;
 }
 
+/* =========================================================
+   SMOOTH SCROLL - ScrollPane Clean & Smooth
+   ========================================================= */
 .scroll-pane-clean {
     -fx-background: transparent;
     -fx-background-color: transparent;
+    -fx-focus-traversable: false;
 }
 
 .scroll-pane-clean .viewport {
@@ -23,16 +27,42 @@
 .scroll-pane-clean .scroll-bar:vertical,
 .scroll-pane-clean .scroll-bar:horizontal {
     -fx-background-color: transparent;
+    -fx-pref-width: 12;
+    -fx-pref-height: 12;
+}
+
+.scroll-pane-clean .scroll-bar .track {
+    -fx-background-color: transparent;
 }
 
 .scroll-pane-clean .scroll-bar .thumb {
-    -fx-background-color: #c4b5e0;
+    -fx-background-color: rgba(196, 181, 224, 0.6);
     -fx-background-radius: 10;
-    -fx-background-insets: 3;
+    -fx-background-insets: 2;
+    -fx-transition: background-color 0.3s ease;
 }
 
 .scroll-pane-clean .scroll-bar .thumb:hover {
     -fx-background-color: #a78bfa;
+}
+
+.scroll-pane-clean .scroll-bar .thumb:pressed {
+    -fx-background-color: #7c3aed;
+}
+
+/* Hide scroll bar buttons (arrows) */
+.scroll-pane-clean .scroll-bar .increment-button,
+.scroll-pane-clean .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+}
+
+.scroll-pane-clean .scroll-bar .increment-arrow,
+.scroll-pane-clean .scroll-bar .decrement-arrow {
+    -fx-shape: "";
+    -fx-padding: 0;
 }
 
 /* =========================================================
@@ -237,6 +267,32 @@
     -fx-text-fill: #5c5470;
     -fx-font-family: "Segoe UI";
     -fx-padding: 1 0 1 8;
+}
+
+/* Alias pour tip-item (sans le 's') */
+.tip-item {
+    -fx-font-size: 12.5px;
+    -fx-text-fill: #5c5470;
+    -fx-font-family: "Segoe UI";
+    -fx-padding: 1 0 1 8;
+}
+
+/* Elegant field (same as field-input) */
+.elegant-field {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 10 14;
+    -fx-font-size: 13px;
+    -fx-prompt-text-fill: #a094b0;
+    -fx-font-family: "Segoe UI";
+}
+
+.elegant-field:focused {
+    -fx-border-color: #7c3aed;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.15), 6, 0, 0, 0);
 }
 
 /* =========================================================
@@ -1352,7 +1408,6 @@
     -fx-font-size: 12.5;
     -fx-font-weight: 800;
     -fx-padding: 6 10;
-    -fx-background-radius: 999;
 }
 
 .offer-sep-premium {
@@ -1962,7 +2017,6 @@
     -fx-background-radius: 8 8 0 0;
 }
 
-
 .stats-bar-chart .axis {
     -fx-tick-label-fill: #6b7280;
     -fx-font-size: 12;
@@ -1971,6 +2025,62 @@
 .stats-bar-chart .axis-label {
     -fx-text-fill: #374151;
     -fx-font-weight: 600;
+}
+
+/* Line Chart Styling */
+.stats-line-chart {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.stats-line-chart .chart-plot-background {
+    -fx-background-color: #fafafa;
+}
+
+.stats-line-chart .chart-series-line {
+    -fx-stroke: #7c3aed;
+    -fx-stroke-width: 3px;
+}
+
+.stats-line-chart .chart-line-symbol {
+    -fx-background-color: #7c3aed, white;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+}
+
+/* Export Buttons */
+.btn-export-pdf,
+.btn-export-excel {
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20;
+}
+
+.btn-export-pdf {
+    -fx-background-color: #7c3aed;
+    -fx-text-fill: white;
+}
+
+.btn-export-pdf:hover {
+    -fx-background-color: #6d28d9;
+}
+
+.btn-export-excel {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+}
+
+.btn-export-excel:hover {
+    -fx-background-color: #059669;
+}
+
+/* Section Separator */
+.section-separator {
+    -fx-background-color: rgba(124, 58, 237, 0.15);
+    -fx-pref-height: 2;
 }
 
 /* Icon button for stats */
@@ -2238,4 +2348,24 @@
     -fx-scale-y: 1.08;
 }
 
+/* =========================================================
+   BACK ARROW BUTTON - Bouton retour violet
+   ========================================================= */
+.back-arrow-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 8;
+    -fx-background-radius: 50%;
+}
 
+.back-arrow-btn:hover {
+    -fx-background-color: #f3f4f6;
+    -fx-background-radius: 50%;
+}
+
+.back-arrow-btn:pressed {
+    -fx-background-color: #e5e7eb;
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}

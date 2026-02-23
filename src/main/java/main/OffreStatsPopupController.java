@@ -9,6 +9,7 @@ import javafx.scene.chart.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Region;
@@ -40,6 +41,7 @@ public class OffreStatsPopupController {
     @FXML private CategoryAxis xAxis;
     @FXML private NumberAxis yAxis;
     @FXML private VBox vboxRecentPostulations;
+    @FXML private Button btnBack;
 
     // Nouveaux éléments pour analytics avancées
     @FXML private Label lblTotalVues;
@@ -382,6 +384,17 @@ public class OffreStatsPopupController {
     @FXML
     private void handleClose() {
         lblOffreTitre.getScene().getWindow().hide();
+    }
+
+    /**
+     * Retour à la table des offres
+     */
+    @FXML
+    public void handleBack() {
+        OffresShellController shell = OffresShellController.getInstance();
+        if (shell != null) {
+            shell.showOffresTable();
+        }
     }
 
     @FXML

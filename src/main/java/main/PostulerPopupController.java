@@ -19,6 +19,9 @@ public class PostulerPopupController {
     @FXML private Label lblCharCount;
     @FXML private Label lblPhoneError;
     @FXML private Label lblMotivationError;
+    @FXML private Button btnBack;
+    @FXML private Button btnCancel;
+    @FXML private Button btnSubmit;
 
     private int offreId;
     private String offreTitre; // Pour le SMS
@@ -255,9 +258,21 @@ public class PostulerPopupController {
         }
     }
 
+    /**
+     * Retour à la liste des offres
+     */
+    @FXML
+    public void handleBack() {
+        OffresShellController shell = OffresShellController.getInstance();
+        if (shell != null) {
+            shell.showOffresList();
+        }
+    }
+
     @FXML
     private void handleCancel() {
-        txtMotivation.getScene().getWindow().hide();
+        // Retourner à la liste des offres au lieu de fermer la fenêtre
+        handleBack();
     }
 
     private void showAlert(Alert.AlertType type, String title, String msg) {

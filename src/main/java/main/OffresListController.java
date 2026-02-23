@@ -401,7 +401,13 @@ public class OffresListController {
         btnPostuler.setPrefWidth(140);
         btnPostuler.setPrefHeight(45);
         btnPostuler.setStyle("-fx-font-size: 15px; -fx-font-weight: bold;");
-        btnPostuler.setOnAction(e -> openPostulerPopup(offre)); // ✅ popup + insert postulation
+        btnPostuler.setOnAction(e -> {
+            // Naviguer vers l'interface postuler via le shell
+            OffresShellController shell = OffresShellController.getInstance();
+            if (shell != null) {
+                shell.showPostuler(offre.getId(), offre.getTitre());
+            }
+        });
 
         footer.getChildren().addAll(salary, spacer, btnFavorite, btnPostuler);
 
@@ -455,40 +461,6 @@ public class OffresListController {
         return box;
     }
 
-    // ===================== ✅ POSTULER POPUP (Motivation only) =====================
-
-    private void openPostulerPopup(OffreEmploi offre) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/postuler.fxml"));
-            Parent root = loader.load();
-
-            // Your controller class: PostulerPopupController
-            PostulerPopupController ctrl = loader.getController();
-            ctrl.setOffreInfo(offre.getId(), offre.getTitre());
-
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-
-            Window owner = (flowOffers.getScene() != null) ? flowOffers.getScene().getWindow() : null;
-            if (owner != null) stage.initOwner(owner);
-
-            stage.setTitle("Postuler • " + safe(offre.getTitre()));
-
-            Scene scene = new Scene(root);
-            try {
-                scene.getStylesheets().add(getClass().getResource("/app.css").toExternalForm());
-            } catch (Exception ignored) {}
-
-            stage.setScene(scene);
-            stage.setResizable(false);
-            stage.showAndWait();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Impossible d'ouvrir la fenêtre Postuler.\n" + ex.getMessage());
-        }
-    }
 
     // ===================== DELETE =====================
 

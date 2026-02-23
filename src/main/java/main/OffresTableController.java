@@ -1209,37 +1209,13 @@ public class OffresTableController {
         return b;
     }
 
-    // ===================== SHOW STATS POPUP - ADVANCED =====================
+    // ===================== SHOW STATS - Navigation complète =====================
 
     private void showStatsPopup(OffreEmploi offre) {
-        try {
-            // Utiliser la nouvelle interface avancée
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/offre-stats-popup.fxml"));
-            StackPane popupRoot = loader.load();
-
-            OffreStatsPopupController controller = loader.getController();
-            controller.setOffre(offre);
-
-            Stage popupStage = new Stage();
-            popupStage.initModality(Modality.APPLICATION_MODAL);
-            popupStage.initStyle(StageStyle.TRANSPARENT);
-            popupStage.setTitle("Analytics Avancées - " + offre.getTitre());
-
-            Scene scene = new Scene(popupRoot, 1250, 950);
-            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-
-            try {
-                scene.getStylesheets().add(getClass().getResource("/app.css").toExternalForm());
-            } catch (Exception e) {
-                System.err.println("⚠️ Impossible de charger app.css");
-            }
-
-            popupStage.setScene(scene);
-            popupStage.showAndWait();
-
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir les statistiques avancées : " + e.getMessage());
-            e.printStackTrace();
+        // Naviguer vers l'interface stats via le shell
+        OffresShellController shell = OffresShellController.getInstance();
+        if (shell != null) {
+            shell.showOffreStats(offre);
         }
     }
 

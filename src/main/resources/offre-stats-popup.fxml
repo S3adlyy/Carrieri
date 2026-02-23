@@ -5,43 +5,62 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.chart.*?>
 
-<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-           fx:controller="main.OffreStatsPopupController"
-           styleClass="dialog-overlay" prefWidth="900" prefHeight="650">
+<!-- offre-stats-popup.fxml - Interface complète avec design cohérent -->
+<ScrollPane fitToWidth="true" fitToHeight="false"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="scroll-pane-clean"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="main.OffreStatsPopupController">
 
-    <!-- Card principal avec effet -->
-    <VBox styleClass="stats-popup-card" spacing="0" maxWidth="880" maxHeight="630">
+    <VBox alignment="TOP_CENTER" spacing="0" styleClass="view-root">
 
-        <!-- Header -->
-        <HBox styleClass="stats-header" alignment="CENTER" spacing="16">
-            <padding><Insets top="24" right="32" bottom="24" left="32"/></padding>
+        <!-- ==================== HEADER GRADIENT ==================== -->
+        <VBox alignment="CENTER" spacing="16" styleClass="header-gradient" prefHeight="260">
+            <padding><Insets top="70" bottom="50"/></padding>
 
-            <StackPane prefWidth="70" prefHeight="70" styleClass="stats-icon-circle">
-                <Label text="📊" style="-fx-font-size: 48; -fx-text-fill: white;"/>
+            <!-- Icon circle with glow -->
+            <StackPane prefWidth="110" prefHeight="110" styleClass="header-icon-circle">
+                <Label text="📊" style="-fx-font-size: 80; -fx-text-fill: white; -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.75), 20, 0, 0, 0);"/>
             </StackPane>
 
-            <VBox spacing="4" HBox.hgrow="ALWAYS">
-                <Label fx:id="lblOffreTitre" text="Statistiques de l'offre"
-                       styleClass="stats-title"/>
-                <Label fx:id="lblOffreInfo" text="Entreprise • Type • Localisation"
-                       styleClass="stats-subtitle"/>
-            </VBox>
+            <Label text="Analytics Avancées" styleClass="header-title-big"/>
+            <Label fx:id="lblOffreTitre" text="Statistiques de l'offre"
+                   styleClass="header-subtitle" wrapText="true" textAlignment="CENTER"/>
+        </VBox>
 
-            <HBox spacing="12" alignment="CENTER_RIGHT">
-                <Button text="📄 PDF" onAction="#handleExportPDF" styleClass="btn-export-pdf"
-                        style="-fx-background-color: #7c3aed; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
-                <Button text="📊 Excel" onAction="#handleExportExcel" styleClass="btn-export-excel"
-                        style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
-                <Button text="✕" onAction="#handleClose" styleClass="btn-close-stats"/>
+        <!-- ==================== BACK BUTTON + ACTIONS ==================== -->
+        <VBox spacing="28" style="-fx-padding: 30 80 10 80; -fx-background-color: #faf7ff;">
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <!-- Back Arrow Button -->
+                <Button fx:id="btnBack" onAction="#handleBack" styleClass="btn-back-arrow-inline">
+                    <graphic>
+                        <Label text="←" style="-fx-font-size: 20; -fx-text-fill: #7c3aed;"/>
+                    </graphic>
+                </Button>
+                <Label text="Retour aux offres" style="-fx-text-fill: #6b7280; -fx-font-size: 14; -fx-font-weight: 600;"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Info Offre -->
+                <VBox spacing="2" alignment="CENTER_RIGHT">
+                    <Label fx:id="lblOffreInfo" text="Entreprise • Type • Localisation"
+                           style="-fx-text-fill: #6b7280; -fx-font-size: 13; -fx-font-weight: 600;"/>
+                </VBox>
+
+                <!-- Export Buttons -->
+                <HBox spacing="12">
+                    <Button text="📄 PDF" onAction="#handleExportPDF" styleClass="btn-export-pdf"/>
+                    <Button text="📊 Excel" onAction="#handleExportExcel" styleClass="btn-export-excel"/>
+                </HBox>
             </HBox>
-        </HBox>
+        </VBox>
 
-        <!-- Content -->
-        <ScrollPane fitToWidth="true" styleClass="stats-scroll" VBox.vgrow="ALWAYS">
-            <VBox spacing="28" style="-fx-padding: 32;">
+        <!-- ==================== STATS CONTENT ==================== -->
+        <!-- ==================== STATS CONTENT ==================== -->
+        <VBox spacing="40" alignment="TOP_CENTER" style="-fx-padding: 40 80 80 80; -fx-background-color: #faf7ff;">
 
-                <!-- KPI Cards Row 1 - Principaux -->
-                <HBox spacing="20" alignment="CENTER">
+            <!-- KPI Cards Row 1 - Principaux -->
+            <HBox spacing="20" alignment="CENTER">
 
                     <!-- Card 1: Total Vues -->
                     <VBox styleClass="kpi-card" alignment="CENTER" spacing="12"
@@ -226,9 +245,6 @@
                 </VBox>
 
             </VBox>
-        </ScrollPane>
 
     </VBox>
-
-</StackPane>
-
+</ScrollPane>
