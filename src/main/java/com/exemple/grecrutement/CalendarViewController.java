@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import services.EntretienService;
+import utils.AlertUtils;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -44,6 +45,7 @@ public class CalendarViewController implements Initializable {
     private final DateTimeFormatter monthYearFormatter = DateTimeFormatter.ofPattern("MMMM yyyy");
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern("EEEE dd MMMM yyyy", Locale.FRENCH);
 
     private EntretienService entretienService;
     private List<Entretien> allInterviews;
@@ -110,7 +112,7 @@ public class CalendarViewController implements Initializable {
             System.out.println("✅ Loaded " + allInterviews.size() + " interviews");
         } catch (SQLException e) {
             e.printStackTrace();
-            showAlert("Error", "Failed to load interviews: " + e.getMessage());
+            AlertUtils.showError("Erreur", "Impossible de charger les entretiens: " + e.getMessage());
         }
     }
 
@@ -350,12 +352,12 @@ public class CalendarViewController implements Initializable {
         Label typeLabel = new Label(interview.getType() != null ? interview.getType() : "Interview");
         typeLabel.getStyleClass().add("upcoming-type");
 
-        // Candidate name (placeholder)
-        Label nameLabel = new Label("Candidate #" + interview.getPostulationId());
+        // Candidate name (placeholder - you can enhance this with real data)
+        Label nameLabel = new Label("Candidat #" + interview.getPostulationId());
         nameLabel.getStyleClass().add("upcoming-name");
 
         // Status badge
-        Label statusLabel = new Label(interview.getStatus() != null ? interview.getStatus() : "Scheduled");
+        Label statusLabel = new Label(interview.getStatus() != null ? interview.getStatus() : "Planifié");
         statusLabel.getStyleClass().add("upcoming-status-badge");
 
         String status = interview.getStatus() != null ? interview.getStatus().toLowerCase() : "scheduled";
@@ -387,39 +389,65 @@ public class CalendarViewController implements Initializable {
 
     private void showDayDetails(LocalDate date, List<Entretien> interviews) {
         if (interviews.isEmpty()) {
-            showAlert("No Interviews", "No interviews scheduled for " + date.format(dateFormatter));
+            AlertUtils.showInfo("Aucun entretien",
+                    "Aucun entretien programmé pour le " + date.format(displayDateFormatter));
             return;
         }
 
-        // Create a simple dialog showing interviews for the day
-        StringBuilder message = new StringBuilder("Interviews for " + date.format(dateFormatter) + ":\n\n");
-        for (Entretien interview : interviews) {
-            message.append("• ")
-                    .append(interview.getDateEntretien().format(timeFormatter))
-                    .append(" - ")
-                    .append(interview.getType() != null ? interview.getType() : "Interview")
-                    .append(" (")
-                    .append(interview.getStatus() != null ? interview.getStatus() : "Scheduled")
-                    .append(")\n");
+        // Build a detailed message for the day
+        StringBuilder message = new StringBuilder();
+        message.append("📅 ").append(date.format(displayDateFormatter)).append("\n\n");
+        message.append("Total: ").append(interviews.size()).append(" entretien(s)\n\n");
+
+        for (int i = 0; i < interviews.size(); i++) {
+            Entretien interview = interviews.get(i);
+            String status = interview.getStatus() != null ? interview.getStatus() : "Planifié";
+            String statusEmoji = getStatusEmoji(status);
+
+            message.append(i + 1).append(". ")
+                    .append(statusEmoji).append(" ")
+                    .append(interview.getDateEntretien().format(timeFormatter)).append(" - ")
+                    .append(interview.getType() != null ? interview.getType() : "Entretien").append("\n")
+                    .append("   Statut: ").append(status).append("\n")
+                    .append("   Candidat #").append(interview.getPostulationId()).append("\n\n");
         }
 
-        showAlert("Day Details", message.toString());
+        AlertUtils.showInfo("Entretiens du " + date.format(dateFormatter), message.toString());
+    }
+
+    private String getStatusEmoji(String status) {
+        if (status == null) return "🟣";
+        switch (status.toLowerCase()) {
+            case "completed": return "✅";
+            case "cancelled": return "❌";
+            case "scheduled": return "🟣";
+            default: return "🟣";
+        }
     }
 
     private void showInterviewDetails(Entretien interview) {
-        // You can implement navigation to interview details view
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Interview Details");
-        alert.setHeaderText("Interview #" + interview.getId());
-        alert.setContentText(String.format(
-                "Date: %s\nTime: %s\nType: %s\nStatus: %s\nPostulation ID: %d",
-                interview.getDateEntretien().format(dateFormatter),
-                interview.getDateEntretien().format(timeFormatter),
-                interview.getType() != null ? interview.getType() : "N/A",
-                interview.getStatus() != null ? interview.getStatus() : "Scheduled",
-                interview.getPostulationId()
-        ));
-        alert.showAndWait();
+        String formattedDate = interview.getDateEntretien().format(displayDateFormatter);
+        String formattedTime = interview.getDateEntretien().format(timeFormatter);
+        String status = interview.getStatus() != null ? interview.getStatus() : "Planifié";
+        String type = interview.getType() != null ? interview.getType() : "Non spécifié";
+
+        String message = String.format(
+                "📅 Date: %s\n" +
+                        "⏰ Heure: %s\n" +
+                        "🎯 Type: %s\n" +
+                        "📊 Statut: %s %s\n" +
+                        "🆔 Postulation: %d\n" +
+                        "🆔 Entretien: %d",
+                formattedDate,
+                formattedTime,
+                type,
+                getStatusEmoji(status),
+                status,
+                interview.getPostulationId(),
+                interview.getId()
+        );
+
+        AlertUtils.showInfo("Détails de l'entretien", message);
     }
 
     @FXML
@@ -445,13 +473,17 @@ public class CalendarViewController implements Initializable {
         renderCalendar();
         updateStats();
         updateUpcomingList();
+        AlertUtils.showSuccess("Actualisation", "Le calendrier a été mis à jour avec succès");
     }
 
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
+    // Optional: Add a method to get candidate names from the database
+    private String getCandidateName(int postulationId) {
+        try {
+            // You can implement this method to fetch actual candidate names
+            // For now, return a placeholder
+            return "Candidat #" + postulationId;
+        } catch (Exception e) {
+            return "Candidat #" + postulationId;
+        }
     }
 }
