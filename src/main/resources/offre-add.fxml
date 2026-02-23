@@ -37,11 +37,23 @@
                 </HBox>
 
                 <HBox spacing="24" alignment="TOP_LEFT">
-                    <!-- Titre -->
+                    <!-- Titre avec bouton d'amélioration IA -->
                     <VBox spacing="10" HBox.hgrow="ALWAYS">
                         <Label text="Titre de l'offre" styleClass="field-label"/>
-                        <TextField fx:id="txtTitre" promptText="Ex: Développeur Full Stack Java"
-                                   styleClass="input-elegant"/>
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <TextField fx:id="txtTitre" promptText="Ex: Développeur Full Stack Java"
+                                       styleClass="input-elegant" HBox.hgrow="ALWAYS"/>
+                            <Button text="✨ Améliorer" onAction="#handleImproveTitle"
+                                    style="-fx-background-color: linear-gradient(to right, #ec4899, #f59e0b);
+                                           -fx-text-fill: white;
+                                           -fx-font-size: 13px;
+                                           -fx-font-weight: bold;
+                                           -fx-padding: 10 20;
+                                           -fx-background-radius: 8;
+                                           -fx-cursor: hand;
+                                           -fx-effect: dropshadow(gaussian, rgba(236,72,153,0.4), 6, 0, 0, 2);"
+                                    prefWidth="140" prefHeight="44"/>
+                        </HBox>
                         <Label fx:id="errTitre" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>
 
@@ -75,6 +87,16 @@
                 <Label fx:id="errDescription" styleClass="error-label" managed="false" visible="false"/>
                 <HBox alignment="CENTER_RIGHT" spacing="12">
                     <Label fx:id="lblCharCount" text="0/2000" styleClass="char-counter"/>
+                    <Button fx:id="btnGenerateIA" text="✨ Générer avec IA" onAction="#handleGenerateIA"
+                            style="-fx-background-color: linear-gradient(to right, #8b5cf6, #6366f1);
+                                   -fx-text-fill: white;
+                                   -fx-font-size: 14px;
+                                   -fx-font-weight: bold;
+                                   -fx-padding: 12 24;
+                                   -fx-background-radius: 8;
+                                   -fx-cursor: hand;
+                                   -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.4), 8, 0, 0, 2);"
+                            prefWidth="200"/>
                 </HBox>
             </VBox>
 

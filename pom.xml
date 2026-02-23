@@ -96,6 +96,13 @@
             <artifactId>javase</artifactId>
             <version>3.5.1</version>
         </dependency>
+
+        <!-- JSON for ML API communication -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+        </dependency>
     </dependencies>
 
     <build>

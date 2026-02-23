@@ -1,10 +1,12 @@
 package main;
 
 import entities.OffreEmploi;
+import javafx.concurrent.Task;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import services.OffreEmploiService;
+import services.AIGeneratorService;
 import javafx.util.StringConverter;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -25,6 +27,7 @@ public class OffreAddController {
     @FXML private TextField txtTitre;
     @FXML private TextArea txtDescription;
     @FXML private Label lblCharCount;
+    @FXML private Button btnGenerateIA;  // Bouton pour générer avec IA
 
     @FXML private TextField txtSalaire;
     @FXML private TextField txtLocalisation;
@@ -467,5 +470,234 @@ public class OffreAddController {
         alert.setHeaderText(null);
         alert.setContentText(msg);
         alert.showAndWait();
+    }
+
+    /**
+     * Génère une description d'offre avec l'IA Gemini
+     */
+    @FXML
+    private void handleGenerateIA() {
+        // Récupérer les valeurs nécessaires
+        String titre = safe(txtTitre.getText());
+        String secteur = safe(txtSecteur.getText());
+        String competences = safe(txtCompetences.getText());
+        String niveau = comboQualification.getValue();
+        String experience = safe(txtExperience.getText());
+
+        // Validation des champs requis
+        if (titre.isEmpty()) {
+            showError(errTitre, "Le titre est obligatoire pour générer une description.");
+            markError(txtTitre, true);
+            return;
+        }
+
+        if (secteur.isEmpty()) {
+            showError(errSecteur, "Le secteur est obligatoire pour générer une description.");
+            markError(txtSecteur, true);
+            return;
+        }
+
+        if (competences.isEmpty()) {
+            showError(errCompetences, "Les compétences sont obligatoires pour générer une description.");
+            markError(txtCompetences, true);
+            return;
+        }
+
+        // Vérifier que le service IA est disponible
+        if (!AIGeneratorService.isServiceAvailable()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Service IA indisponible");
+            alert.setHeaderText("Le service de génération IA n'est pas accessible");
+            alert.setContentText("Assurez-vous que le service Python est démarré :\n\n" +
+                    "cd ml_service\n" +
+                    "$env:GEMINI_API_KEY = \"votre_cle\"\n" +
+                    "python api_service_gemini.py");
+            alert.showAndWait();
+            return;
+        }
+
+        // Désactiver le bouton pendant la génération
+        if (btnGenerateIA != null) {
+            btnGenerateIA.setDisable(true);
+            btnGenerateIA.setText("⏳ Génération en cours...");
+        }
+
+        // Valeurs par défaut si non renseignées
+        String niveauFinal = (niveau == null || niveau.isEmpty()) ? "Bac+3/5" : niveau;
+        String experienceFinal = experience.isEmpty() ? "2-3 ans" : experience;
+
+        // Créer une tâche asynchrone pour ne pas bloquer l'interface
+        Task<String> generateTask = new Task<>() {
+            @Override
+            protected String call() {
+                return AIGeneratorService.generateDescription(
+                        titre,
+                        secteur,
+                        competences,
+                        niveauFinal,
+                        experienceFinal
+                );
+            }
+        };
+
+        // Gérer le succès
+        generateTask.setOnSucceeded(event -> {
+            String description = generateTask.getValue();
+
+            // Vérifier si c'est une erreur
+            if (description.startsWith("❌") || description.startsWith("Erreur")) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erreur de génération");
+                alert.setHeaderText("Impossible de générer la description");
+                alert.setContentText(description);
+                alert.showAndWait();
+            } else {
+                // Succès : mettre la description dans le TextArea
+                txtDescription.setText(description);
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Succès");
+                alert.setHeaderText("Description générée avec succès !");
+                alert.setContentText("La description a été générée par l'IA et insérée dans le champ.");
+                alert.showAndWait();
+            }
+
+            // Réactiver le bouton
+            if (btnGenerateIA != null) {
+                btnGenerateIA.setDisable(false);
+                btnGenerateIA.setText("✨ Générer avec IA");
+            }
+        });
+
+        // Gérer l'échec
+        generateTask.setOnFailed(event -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText("Erreur lors de la génération");
+            alert.setContentText("Une erreur inattendue s'est produite.");
+            alert.showAndWait();
+
+            // Réactiver le bouton
+            if (btnGenerateIA != null) {
+                btnGenerateIA.setDisable(false);
+                btnGenerateIA.setText("✨ Générer avec IA");
+            }
+        });
+
+        // Lancer la tâche dans un thread séparé
+        new Thread(generateTask).start();
+    }
+
+    /**
+     * Améliore le titre de l'offre avec l'IA Gemini
+     */
+    @FXML
+    private void handleImproveTitle() {
+        // Récupérer le titre actuel
+        String titreActuel = safe(txtTitre.getText());
+
+        // Validation
+        if (titreActuel.isEmpty()) {
+            showError(errTitre, "Veuillez d'abord saisir un titre à améliorer.");
+            markError(txtTitre, true);
+            return;
+        }
+
+        // Récupérer les infos contextuelles (optionnelles mais utiles pour l'IA)
+        String secteur = safe(txtSecteur.getText());
+        String typeContrat = comboTypeContrat.getValue();
+        String salaire = safe(txtSalaire.getText());
+
+        // Vérifier que le service IA est disponible
+        if (!AIGeneratorService.isServiceAvailable()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Service IA indisponible");
+            alert.setHeaderText("Le service de génération IA n'est pas accessible");
+            alert.setContentText("Assurez-vous que le service Python est démarré :\n\n" +
+                    "cd ml_service\n" +
+                    "$env:GEMINI_API_KEY = \"votre_cle\"\n" +
+                    "python api_service_gemini.py");
+            alert.showAndWait();
+            return;
+        }
+
+        // Désactiver temporairement le champ titre
+        txtTitre.setDisable(true);
+        String originalText = txtTitre.getText();
+        txtTitre.setPromptText("⏳ Amélioration en cours...");
+
+        // Créer une tâche asynchrone
+        Task<String> improveTask = new Task<>() {
+            @Override
+            protected String call() {
+                // Appeler l'API avec un prompt spécial pour améliorer le titre
+                return AIGeneratorService.generateTitleImprovement(
+                        titreActuel,
+                        secteur.isEmpty() ? "Non spécifié" : secteur,
+                        typeContrat == null ? "Non spécifié" : typeContrat,
+                        salaire.isEmpty() ? "Non spécifié" : salaire
+                );
+            }
+        };
+
+        // Gérer le succès
+        improveTask.setOnSucceeded(event -> {
+            String nouveauTitre = improveTask.getValue();
+
+            // Vérifier si c'est une erreur
+            if (nouveauTitre.startsWith("❌") || nouveauTitre.startsWith("Erreur")) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erreur d'amélioration");
+                alert.setHeaderText("Impossible d'améliorer le titre");
+                alert.setContentText(nouveauTitre);
+                alert.showAndWait();
+
+                // Restaurer le titre original
+                txtTitre.setText(originalText);
+            } else {
+                // Succès : proposer le nouveau titre
+                Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmation.setTitle("Titre amélioré par l'IA");
+                confirmation.setHeaderText("L'IA propose ce titre amélioré :");
+                confirmation.setContentText("Ancien titre :\n" + originalText +
+                                           "\n\n✨ Nouveau titre :\n" + nouveauTitre +
+                                           "\n\nVoulez-vous utiliser ce titre amélioré ?");
+
+                ButtonType btnOui = new ButtonType("✅ Oui, utiliser ce titre");
+                ButtonType btnNon = new ButtonType("❌ Non, garder l'ancien");
+                confirmation.getButtonTypes().setAll(btnOui, btnNon);
+
+                confirmation.showAndWait().ifPresent(response -> {
+                    if (response == btnOui) {
+                        txtTitre.setText(nouveauTitre);
+                        hideError(errTitre);
+                        markError(txtTitre, false);
+                    } else {
+                        txtTitre.setText(originalText);
+                    }
+                });
+            }
+
+            // Réactiver le champ
+            txtTitre.setDisable(false);
+            txtTitre.setPromptText("Ex: Développeur Full Stack Java");
+        });
+
+        // Gérer l'échec
+        improveTask.setOnFailed(event -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText("Erreur lors de l'amélioration du titre");
+            alert.setContentText("Une erreur inattendue s'est produite.");
+            alert.showAndWait();
+
+            // Restaurer
+            txtTitre.setText(originalText);
+            txtTitre.setDisable(false);
+            txtTitre.setPromptText("Ex: Développeur Full Stack Java");
+        });
+
+        // Lancer la tâche
+        new Thread(improveTask).start();
     }
 }
