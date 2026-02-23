@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="main.FavoritesListController"
+      styleClass="view-root"
+      stylesheets="@app.css"
+      spacing="0">
+
+    <!-- ========== HEADER ========== -->
+    <VBox styleClass="header-gradient" alignment="CENTER_LEFT">
+        <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+        <HBox alignment="CENTER_LEFT" spacing="20">
+            <!-- Icon circle -->
+            <StackPane styleClass="header-icon-circle">
+                <Label text="❤️" styleClass="header-icon-diamond"/>
+            </StackPane>
+
+            <VBox spacing="8">
+                <Label text="Mes Offres Favorites" styleClass="header-title-big"/>
+                <Label fx:id="lblCount" text="0 favori" styleClass="header-subtitle"/>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <!-- ========== CONTENT ========== -->
+    <ScrollPane fitToWidth="true" styleClass="scroll-pane-clean" VBox.vgrow="ALWAYS">
+        <VBox spacing="20">
+            <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
+
+            <!-- Search bar with back arrow -->
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <!-- Back Arrow Button - Same style as postulations -->
+                <Button fx:id="btnBack" onAction="#goBackToOffresList" styleClass="btn-back-arrow-inline">
+                    <graphic>
+                        <Label text="←" style="-fx-font-size: 20; -fx-text-fill: #7c3aed;"/>
+                    </graphic>
+                </Button>
+
+                <!-- Status label -->
+                <Label fx:id="lblStatus" text="Vos offres sauvegardées" styleClass="status-text"/>
+            </HBox>
+
+            <!-- Cards Container -->
+            <FlowPane fx:id="flowFavorites"
+                      hgap="24" vgap="24"
+                      alignment="CENTER"
+                      prefWrapLength="1000">
+            </FlowPane>
+
+        </VBox>
+    </ScrollPane>
+
+</VBox>
+

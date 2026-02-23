@@ -55,6 +55,12 @@ public class OffresShellController {
         setActiveButton(btnOffresList);
     }
 
+    // Afficher les favoris (accessible depuis OffresListController, pas de bouton navbar)
+    public void showFavorites() {
+        loadViewWithFade("favorites-list.fxml");
+        // Pas de setActiveButton car pas dans navbar
+    }
+
     @FXML
     public void showOffreAdd() {
         loadViewWithFade("offre-add.fxml");

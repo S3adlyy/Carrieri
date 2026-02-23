@@ -65,6 +65,7 @@
                 </graphic>
             </Button>
 
+
             <Button fx:id="btnPostulationsCandidats" text="Liste des Postulations" onAction="#showPostulationsCandidats"
                     styleClass="nav-btn" maxWidth="Infinity">
                 <graphic>

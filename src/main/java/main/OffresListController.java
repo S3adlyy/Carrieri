@@ -19,12 +19,14 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 import services.OffreEmploiService;
+import services.FavoriteOffreService;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.Set;
 
 public class OffresListController {
 
@@ -41,12 +43,19 @@ public class OffresListController {
     @FXML private Button btnResetFilters;
 
     private final OffreEmploiService service = new OffreEmploiService();
+    private final FavoriteOffreService favoriteService = new FavoriteOffreService();
     private final ObservableList<OffreEmploi> allData = FXCollections.observableArrayList();
     private final ObservableList<OffreEmploi> filtered = FXCollections.observableArrayList();
 
     private final DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private boolean filterPanelVisible = false;
+
+    // TODO: Remplacer par l'ID du candidat connecté (session utilisateur)
+    private final int CURRENT_CANDIDAT_ID = 1;
+
+    // Cache des IDs favoris pour optimiser l'affichage
+    private Set<Integer> favoriteOffreIds;
 
     @FXML
     public void initialize() {
@@ -73,13 +82,35 @@ public class OffresListController {
     }
 
     public void refreshList() {
+        System.out.println("🔄 Rafraîchissement de la liste des offres...");
         try {
             allData.setAll(service.read());
+            System.out.println("📋 " + allData.size() + " offres chargées");
+
+            // Charger les IDs favoris pour optimiser l'affichage
+            System.out.println("❤️ Chargement des favoris pour le candidat ID: " + CURRENT_CANDIDAT_ID);
+            favoriteOffreIds = favoriteService.getFavoriteOffreIds(CURRENT_CANDIDAT_ID);
+            System.out.println("✅ " + favoriteOffreIds.size() + " favoris trouvés: " + favoriteOffreIds);
+
             applyFilter();
         } catch (SQLException e) {
+            System.err.println("❌ Erreur lors du chargement des offres: " + e.getMessage());
+            e.printStackTrace();
             allData.clear();
             filtered.clear();
             renderEmpty("Impossible de charger les offres :\n" + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("❌ Erreur inattendue: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void showFavorites() {
+        // Naviguer vers l'interface des favoris via le shell
+        OffresShellController shell = OffresShellController.getInstance();
+        if (shell != null) {
+            shell.showFavorites();
         }
     }
 
@@ -275,14 +306,95 @@ public class OffresListController {
         sep.getStyleClass().add("c-sep");
 
         // Footer: Salary + actions
-        HBox footer = new HBox(12);
+        HBox footer = new HBox(10);
         footer.setAlignment(Pos.CENTER_LEFT);
 
         Label salary = new Label(String.format("%.0f DT", offre.getSalaire()));
         salary.getStyleClass().add("c-salary");
+        salary.setMinWidth(100);
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        // Bouton Favori - Cœur blanc si non favori, cœur brisé rouge si favori
+        Button btnFavorite = new Button();
+        boolean isFavorite = favoriteOffreIds != null && favoriteOffreIds.contains(offre.getId());
+
+        // Utiliser setText directement (plus simple et plus fiable)
+        String emojiText = isFavorite ? "💔" : "🤍";
+        btnFavorite.setText(emojiText);
+
+        // Style inline pour forcer la taille de la police - réduite pour affichage complet
+        btnFavorite.setStyle("-fx-font-size: 16px; -fx-font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji';");
+
+        // Classes CSS selon l'état
+        btnFavorite.getStyleClass().clear();
+        if (isFavorite) {
+            btnFavorite.getStyleClass().addAll("btn-favorite", "btn-favorite-remove"); // Fond rouge
+        } else {
+            btnFavorite.getStyleClass().addAll("btn-favorite", "btn-favorite-inactive"); // Fond blanc, bordure mauve
+        }
+
+        btnFavorite.setMinWidth(50);
+        btnFavorite.setPrefWidth(50);
+        btnFavorite.setMaxWidth(50);
+        btnFavorite.setPrefHeight(42);
+        btnFavorite.setTooltip(new Tooltip(isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"));
+
+        btnFavorite.setOnAction(e -> {
+            System.out.println("🔘 Clic sur bouton favori - Offre ID: " + offre.getId() + " - Candidat ID: " + CURRENT_CANDIDAT_ID);
+
+            try {
+                boolean success = favoriteService.toggleFavori(CURRENT_CANDIDAT_ID, offre.getId());
+                System.out.println("✅ Toggle favori result: " + success);
+
+                if (success) {
+                    boolean newState = favoriteService.isFavorite(CURRENT_CANDIDAT_ID, offre.getId());
+                    System.out.println("📊 Nouvel état favori: " + newState);
+
+                    // Mettre à jour le texte selon le nouvel état
+                    String newEmojiText = newState ? "💔" : "🤍";
+                    btnFavorite.setText(newEmojiText);
+
+                    // Mettre à jour les classes CSS selon le nouvel état
+                    btnFavorite.getStyleClass().clear();
+                    if (newState) {
+                        btnFavorite.getStyleClass().addAll("btn-favorite", "btn-favorite-remove"); // Fond rouge
+                    } else {
+                        btnFavorite.getStyleClass().addAll("btn-favorite", "btn-favorite-inactive"); // Fond blanc
+                    }
+                    btnFavorite.setTooltip(new Tooltip(newState ? "Retirer des favoris" : "Ajouter aux favoris"));
+
+                    // Mettre à jour le cache
+                    if (newState) {
+                        favoriteOffreIds.add(offre.getId());
+                        System.out.println("➕ Ajouté au cache des favoris");
+                    } else {
+                        favoriteOffreIds.remove(offre.getId());
+                        System.out.println("➖ Retiré du cache des favoris");
+                    }
+
+                    // Animation de feedback plus visible
+                    ScaleTransition pulse = new ScaleTransition(Duration.millis(150), btnFavorite);
+                    pulse.setToX(1.4);
+                    pulse.setToY(1.4);
+                    pulse.setAutoReverse(true);
+                    pulse.setCycleCount(2);
+                    pulse.play();
+
+                    // Afficher un message de succès
+                    String message = newState ? "Ajouté aux favoris ❤️" : "Retiré des favoris 💔";
+                    showQuickNotification(message);
+                } else {
+                    System.err.println("❌ Échec du toggle favori");
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de modifier le favori");
+                }
+            } catch (Exception ex) {
+                System.err.println("❌ Exception lors du toggle favori: " + ex.getMessage());
+                ex.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue: " + ex.getMessage());
+            }
+        });
 
         Button btnPostuler = new Button("Postuler");
         btnPostuler.getStyleClass().add("c-btn");
@@ -291,7 +403,7 @@ public class OffresListController {
         btnPostuler.setStyle("-fx-font-size: 15px; -fx-font-weight: bold;");
         btnPostuler.setOnAction(e -> openPostulerPopup(offre)); // ✅ popup + insert postulation
 
-        footer.getChildren().addAll(salary, spacer, btnPostuler);
+        footer.getChildren().addAll(salary, spacer, btnFavorite, btnPostuler);
 
         card.getChildren().addAll(header, companyRow, desc, meta, details, sep, footer);
 
@@ -597,5 +709,13 @@ public class OffresListController {
 
     private String emptyAsDash(String s) {
         return (s == null || s.trim().isEmpty()) ? "—" : s.trim();
+    }
+
+    /**
+     * Affiche une notification rapide à l'utilisateur
+     */
+    private void showQuickNotification(String message) {
+        // Pour l'instant, on utilise juste un print, mais on pourrait améliorer avec un toast
+        System.out.println("💬 Notification: " + message);
     }
 }
