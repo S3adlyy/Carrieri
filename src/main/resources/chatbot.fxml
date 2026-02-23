@@ -10,7 +10,7 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="main.ChatbotController"
-            stylesheets="/css/theme-unified.css"
+            stylesheets="/css/ThemeUnified.css"
             prefWidth="350" prefHeight="500"
             styleClass="chatbot-floating">
 

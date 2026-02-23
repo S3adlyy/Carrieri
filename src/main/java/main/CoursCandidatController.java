@@ -1,8 +1,6 @@
 package main;
 
-import entities.Certification;
 import entities.Cours;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -18,10 +16,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.Priority;
 import utils.AlertUtils;
-import javafx.stage.DirectoryChooser;
-import java.io.File;
 
-import main.LangueTest;
 import javafx.scene.control.ComboBox;
 import javafx.collections.FXCollections;
 
@@ -219,20 +214,19 @@ public class CoursCandidatController {
         if (cours.getPrix() > 0) {
             HBox prixBox = new HBox(5);
             prixBox.setAlignment(Pos.CENTER_LEFT);
-            Label euroIcon = new Label(dejaAchete ? "✅" : "💰");
-            euroIcon.setStyle("-fx-font-size: 14px;");
-            String textePrix = dejaAchete ? "Acheté" : String.format("%.2f €", cours.getPrix());
+
+            // Changer le nom de la variable et le texte
+            Label deviseIcon = new Label(dejaAchete ? "✅" : "🇹🇳"); // Ou "💰" si vous préférez
+            deviseIcon.setStyle("-fx-font-size: 14px;");
+
+            String textePrix = dejaAchete ? "Acheté" : String.format("%.2f TND", cours.getPrix()); // ← MODIFIÉ
             Label lblPrix = new Label(textePrix);
             lblPrix.setStyle(dejaAchete ?
                     "-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #10b981;" :
                     "-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #5E548E;");
-            prixBox.getChildren().addAll(euroIcon, lblPrix);
-            metaBox.getChildren().add(prixBox);
 
-            // LOG DE CONFIRMATION
-            System.out.println("   ✅ Prix AJOUTÉ à metaBox");
-        } else {
-            System.out.println("   ⚠️ Prix NON ajouté (prix <= 0)");
+            prixBox.getChildren().addAll(deviseIcon, lblPrix);
+            metaBox.getChildren().add(prixBox);
         }
 
         if (cours.isEst_obligatoire()) {
@@ -253,9 +247,9 @@ public class CoursCandidatController {
         // ✅ VERSION CORRECTE
         Button btnAction;
         if (cours.getPrix() > 0 && !dejaAchete) {
-            btnAction = new Button("Acheter " + String.format("%.2f €", cours.getPrix()));
+            btnAction = new Button("Acheter " + String.format("%.2f TND", cours.getPrix())); // ← MODIFIÉ
             btnAction.setStyle("-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 10 20; -fx-cursor: hand;");
-            btnAction.setOnAction(e -> acheterCours(cours));  // ✅ Pour les cours payants non achetés
+            btnAction.setOnAction(e -> acheterCours(cours));
         } else if (dejaAchete) {
             btnAction = new Button("Accéder au cours");
             btnAction.getStyleClass().add("btn-commencer");
@@ -294,7 +288,7 @@ public class CoursCandidatController {
                     "💰 Achat du cours",
                     "Vous allez acheter le cours :\n\n" +
                             "📚 " + cours.getTitre() + "\n" +
-                            "💰 Prix: " + String.format("%.2f €", cours.getPrix()) + "\n\n" +
+                            "💰 Prix: " + String.format("%.2f TND", cours.getPrix()) + "\n\n" + // ← MODIFIÉ
                             "Voulez-vous continuer ?",
                     "Oui, acheter",
                     "Non, annuler"
@@ -303,7 +297,7 @@ public class CoursCandidatController {
             if (!confirm) return;
 
             // Charger la vue paiement
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/paiement.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Paiement.fxml"));
             Node paiementView = loader.load();
 
             PaiementController controller = loader.getController();

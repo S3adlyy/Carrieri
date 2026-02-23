@@ -10,7 +10,7 @@
       fx:controller="main.PaiementController"
       style="-fx-padding: 25; -fx-background-color: #f8fafc;"
       prefWidth="900" prefHeight="600"
-      stylesheets="/css/theme-unified.css">
+      stylesheets="/css/ThemeUnified.css">
 
     <!-- En-tête -->
     <HBox alignment="CENTER_LEFT" spacing="15">

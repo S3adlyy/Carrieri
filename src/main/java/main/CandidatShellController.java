@@ -15,7 +15,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.AlertUtils;
@@ -103,7 +102,7 @@ public class CandidatShellController implements Initializable {
 
                 fadeOut.setOnFinished(e -> {
                     try {
-                        Parent newRoot = FXMLLoader.load(getClass().getResource("/main-shell.fxml"));
+                        Parent newRoot = FXMLLoader.load(getClass().getResource("/MainShell.fxml"));
                         newRoot.setOpacity(0);
 
                         Scene scene = new Scene(newRoot, width, height);
@@ -225,7 +224,7 @@ public class CandidatShellController implements Initializable {
     @FXML
     public void showCatalogue() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cours_candidat.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/CoursCandidat.fxml"));
             Node view = loader.load();
 
             // Récupérer le contrôleur et forcer le rechargement
@@ -244,14 +243,14 @@ public class CandidatShellController implements Initializable {
     // ============================================
     @FXML
     public void showMesCours() {
-        loadView("/mes_cours_candidat.fxml");
+        loadView("/MesCoursCandidat.fxml");
         setActiveButton(btnMesCours);
     }
 
     // Modifiez la méthode showCertificats() :
     @FXML
     public void showCertificats() {
-        loadView("/certificats_candidat.fxml");
+        loadView("/CertificatsCandidat.fxml");
         setActiveButton(btnCertificats);
     }
 
@@ -410,7 +409,7 @@ public class CandidatShellController implements Initializable {
             }
 
             // Charger le chatbot
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/chatbot.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Chatbot.fxml"));
             Node chatbotView = loader.load();
             chatbotView.setId("chatbotOverlay");
 
@@ -476,7 +475,7 @@ public class CandidatShellController implements Initializable {
             }
 
             // Charger la vue recommandation
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/recommandation.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Recommandation.fxml"));
             Node recommandationView = loader.load();
             recommandationView.setId("recommandationView");
 

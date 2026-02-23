@@ -47,7 +47,7 @@ public class PaiementService {
             String clientSecret = creerPaymentIntent(montant, titre, coursId, candidatId);
 
             String htmlContent;
-            try (InputStream inputStream = getClass().getResourceAsStream("/html/paiement_stripe.html")) {
+            try (InputStream inputStream = getClass().getResourceAsStream("/html/PaiementStripe.html")) {
                 if (inputStream == null) {
                     throw new IOException("Fichier HTML non trouvé");
                 }

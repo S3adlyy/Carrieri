@@ -13,7 +13,7 @@
       fx:controller="main.RecommandationController"
       styleClass="recommandation-root"
       prefWidth="1000" prefHeight="600"
-      stylesheets="/css/theme-unified.css">
+      stylesheets="/css/ThemeUnified.css">
 
     <!-- HEADER MODERNE AVEC LOGO -->
     <VBox styleClass="recommandation-header">

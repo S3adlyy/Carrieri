@@ -2966,3 +2966,45 @@
     -fx-border-color: #5E548E;
     -fx-text-fill: white;
 }
+/* ============================================
+   SÉLECTEUR DE LANGUE - MODE SOMBRE
+   ============================================ */
+
+.root.dark .langue-label {
+    -fx-text-fill: #E0B1CB;
+}
+
+.root.dark .langue-combo {
+    -fx-background-color: #35354f;
+    -fx-border-color: #5E548E;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.5);
+}
+
+.root.dark .langue-combo:focused {
+    -fx-border-color: #E0B1CB;
+    -fx-effect: dropshadow(gaussian, rgba(224,177,203,0.2), 10, 0, 0, 2);
+}
+
+.root.dark .langue-combo .arrow {
+    -fx-background-color: #E0B1CB;
+}
+
+.root.dark .langue-combo .list-view {
+    -fx-background-color: #35354f;
+    -fx-border-color: #5E548E;
+}
+
+.root.dark .langue-combo .list-cell {
+    -fx-text-fill: #e0e0e0;
+    -fx-background-color: #35354f;
+}
+
+.root.dark .langue-combo .list-cell:hover {
+    -fx-background-color: #4a4a6a;
+}
+
+.root.dark .langue-combo .list-cell:selected {
+    -fx-background-color: #5E548E;
+    -fx-text-fill: white;
+}

@@ -2019,7 +2019,7 @@
 }
 
 
-/* Dans theme-unified.css */
+/* Dans ThemeUnified.css */
 .chatbot-floating {
     -fx-max-width: 350px;
     -fx-max-height: 500px;
@@ -2459,70 +2459,11 @@
     -fx-border-color: #5E548E;
 }
 
+
 /* ============================================
    STYLES POUR LES COURS PAYANTS
    ============================================ */
 
-/* Badge de prix */
-.prix-badge {
-    -fx-background-color: #f59e0b;
-    -fx-text-fill: white;
-    -fx-padding: 4 12;
-    -fx-background-radius: 50px;
-    -fx-font-size: 12px;
-    -fx-font-weight: 700;
-    -fx-effect: dropshadow(gaussian, rgba(245,158,11,0.3), 5, 0, 0, 1);
-}
-
-/* Badge acheté */
-.achete-badge {
-    -fx-background-color: #10b981;
-    -fx-text-fill: white;
-    -fx-padding: 4 12;
-    -fx-background-radius: 50px;
-    -fx-font-size: 12px;
-    -fx-font-weight: 700;
-}
-
-/* Bouton d'achat */
-.btn-acheter {
-    -fx-background-color: #f59e0b;
-    -fx-text-fill: white;
-    -fx-font-weight: 700;
-    -fx-padding: 10 20;
-    -fx-background-radius: 50px;
-    -fx-cursor: hand;
-    -fx-font-size: 13px;
-    -fx-effect: dropshadow(gaussian, rgba(245,158,11,0.3), 10, 0, 0, 2);
-    -fx-transition: all 0.2s ease;
-}
-
-.btn-acheter:hover {
-    -fx-background-color: #e67e22;
-    -fx-effect: dropshadow(gaussian, rgba(230,126,34,0.4), 15, 0, 0, 5);
-    -fx-translate-y: -2;
-}
-
-.btn-acheter:disabled {
-    -fx-opacity: 0.5;
-    -fx-background-color: #9ca3af;
-}
-
-/* Champ de prix dans le formulaire admin */
-.prix-field {
-    -fx-background-color: white;
-    -fx-border-color: #d8c9f0;
-    -fx-border-radius: 12;
-    -fx-background-radius: 12;
-    -fx-padding: 8 16;
-    -fx-font-size: 14px;
-}
-
-.prix-field:focused {
-    -fx-border-color: #5E548E;
-    -fx-border-width: 2;
-    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.2), 10, 0, 0, 2);
-}
 /* ============================================
    STYLES POUR LES COURS PAYANTS
    ============================================ */
@@ -2585,13 +2526,13 @@
     -fx-text-fill: #10b981;
 }
 
-/* Icône euro */
-.euro-icon {
+/* Icône devise - changement de euro-icon à devise-icon */
+.devise-icon {
     -fx-font-size: 14px;
     -fx-text-fill: #f59e0b;
 }
 
-.euro-icon-achete {
+.devise-icon-achete {
     -fx-font-size: 14px;
     -fx-text-fill: #10b981;
 }
@@ -2600,4 +2541,68 @@
 .prix-container {
     -fx-spacing: 5;
     -fx-alignment: center-left;
+}
+.langue-container {
+    -fx-padding: 10 0;
+    -fx-alignment: center-right;
+    -fx-spacing: 10;
+}
+
+/* Label de langue */
+.langue-label {
+    -fx-font-weight: 600;
+    -fx-text-fill: #231942;
+}
+
+/* ComboBox de langue */
+.langue-combo {
+    -fx-background-color: white;
+    -fx-border-color: #d8c9f0;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 5 15;
+    -fx-pref-width: 200;
+    -fx-font-size: 13px;
+}
+
+/* État focus du ComboBox */
+.langue-combo:focused {
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.2), 10, 0, 0, 2);
+}
+
+/* Flèche du ComboBox */
+.langue-combo .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.langue-combo .arrow {
+    -fx-background-color: #5E548E;
+}
+
+/* Liste déroulante */
+.langue-combo .list-view {
+    -fx-background-color: white;
+    -fx-border-color: #d8c9f0;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.2), 10, 0, 0, 3);
+}
+
+/* Cellules de la liste */
+.langue-combo .list-cell {
+    -fx-text-fill: #231942;
+    -fx-background-color: white;
+    -fx-padding: 8 15;
+}
+
+.langue-combo .list-cell:hover {
+    -fx-background-color: #f3e8ff;
+}
+
+.langue-combo .list-cell:selected {
+    -fx-background-color: #f3e8ff;
+    -fx-font-weight: 600;
 }

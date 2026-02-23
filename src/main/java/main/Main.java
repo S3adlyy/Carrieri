@@ -1,13 +1,10 @@
 package main;
 
 import javafx.animation.FadeTransition;
-import javafx.animation.ScaleTransition;
-import javafx.animation.SequentialTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -19,7 +16,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -37,8 +33,8 @@ public class Main extends Application {
     private static Preferences prefs;
 
     // Chemins des fichiers CSS
-    private static final String CSS_LIGHT = "/css/theme-unified.css";
-    private static final String CSS_DARK = "/css/theme-dark.css";
+    private static final String CSS_LIGHT = "/css/ThemeUnified.css";
+    private static final String CSS_DARK = "/css/ThemeDark.css";
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -63,7 +59,7 @@ public class Main extends Application {
             Thread.sleep(400);
 
             updateProgress(0.8, "⚙️ Préparation de l'interface...");
-            Parent root = FXMLLoader.load(getClass().getResource("/main-shell.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/MainShell.fxml"));
 
             updateProgress(1.0, "🚀 Démarrage...");
             Thread.sleep(300);

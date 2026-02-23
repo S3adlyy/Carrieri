@@ -9,7 +9,7 @@
 <BorderPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="main.CandidatShellController"
-            stylesheets="/css/theme-unified.css"
+            stylesheets="/css/ThemeUnified.css"
             styleClass="shell-root"
             >
 

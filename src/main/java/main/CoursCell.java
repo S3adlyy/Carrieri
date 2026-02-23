@@ -161,7 +161,7 @@ public class CoursCell {
         @Override
         public void cancelEdit() {
             super.cancelEdit();
-            setText(getItem() != null ? getItem().substring(0, Math.min(20, getItem().length())) + "..." : "");
+            setText(getItem() != null ? getItem().substring(0, Math.min(40, getItem().length())) + "..." : "");
             setGraphic(null);
         }
 
@@ -177,7 +177,7 @@ public class CoursCell {
                     setText(null);
                     setGraphic(textArea);
                 } else {
-                    setText(item != null ? item.substring(0, Math.min(20, item.length())) + "..." : "");
+                    setText(item != null ? item.substring(0, Math.min(40, item.length())) + "..." : "");
                     setGraphic(null);
                 }
             }
@@ -714,7 +714,7 @@ public class CoursCell {
         @Override
         public void cancelEdit() {
             super.cancelEdit();
-            setText(getItem() != null ? getItem().substring(0, Math.min(20, getItem().length())) + "..." : "");
+            setText(getItem() != null ? getItem().substring(0, Math.min(20, getItem().length())) + "" : "");
             setGraphic(null);
         }
 
@@ -730,7 +730,7 @@ public class CoursCell {
                     setText(null);
                     setGraphic(textField);
                 } else {
-                    setText(item != null ? item.substring(0, Math.min(20, item.length())) + "..." : "");
+                    setText(item != null ? item.substring(0, Math.min(20, item.length())) + "" : "");
                     setGraphic(null);
                 }
             }
@@ -853,7 +853,7 @@ public class CoursCell {
 
             Label prixLabel = new Label();
             if (estPayant && item != null && item > 0) {
-                prixLabel.setText(String.format("%.2f €", item));
+                prixLabel.setText(String.format("%.2f TND", item));
                 prixLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #f59e0b;");
                 Label euroIcon = new Label("💰");
                 euroIcon.setStyle("-fx-font-size: 12px;");
@@ -922,15 +922,15 @@ public class CoursCell {
                 }
 
                 if (newValue > 10000) {
-                    AlertUtils.showWarning("⚠ Validation", "Le prix ne peut pas dépasser 10000 €.");
+                    AlertUtils.showWarning("⚠ Validation", "Le prix ne peut pas dépasser 1000 TND.");
                     cancelEdit();
                     return;
                 }
 
                 boolean confirmed = AlertUtils.showConfirmation(
                         "✏️ Confirmation",
-                        "De: " + (oldValue != null ? String.format("%.2f €", oldValue) : "0.00 €") +
-                                "\nVers: " + String.format("%.2f €", newValue),
+                        "De: " + (oldValue != null ? String.format("%.2f TND", oldValue) : "0.00 TND") +
+                                "\nVers: " + String.format("%.2f TND", newValue),
                         "Oui, modifier",
                         "Non, annuler"
                 );

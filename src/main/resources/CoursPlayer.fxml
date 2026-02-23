@@ -7,7 +7,7 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="main.CoursPlayerController"
-            stylesheets="/css/theme-unified.css"
+            stylesheets="/css/ThemeUnified.css"
             styleClass="candidat-root"
             prefWidth="1200" prefHeight="800">
 

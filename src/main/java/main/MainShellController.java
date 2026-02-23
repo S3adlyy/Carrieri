@@ -149,7 +149,7 @@ public class MainShellController implements Initializable {
 
     @FXML
     public void showCoursView() {
-        loadView("/cours.fxml");
+        loadView("/Cours.fxml");
         setActiveButton(btnCours);
     }
 
@@ -235,7 +235,7 @@ public class MainShellController implements Initializable {
 
     public void showModulesViewWithCours(int coursId, String coursTitre) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/module.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Module.fxml"));
             Node view = loader.load();
             ModuleController controller = loader.getController();
             controller.setCoursInfo(coursId, coursTitre);
@@ -248,7 +248,7 @@ public class MainShellController implements Initializable {
 
     public void showLeconsViewWithModule(int moduleId, String moduleTitre) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/lecon.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Lecon.fxml"));
             Node view = loader.load();
             LeconController controller = loader.getController();
             controller.setModuleInfo(moduleId, moduleTitre);
@@ -278,7 +278,7 @@ public class MainShellController implements Initializable {
 
                 fadeOut.setOnFinished(e -> {
                     try {
-                        Parent newRoot = FXMLLoader.load(getClass().getResource("/candidat-shell.fxml"));
+                        Parent newRoot = FXMLLoader.load(getClass().getResource("/CandidatShell.fxml"));
                         newRoot.setOpacity(0);
 
                         Scene scene = new Scene(newRoot, width, height);

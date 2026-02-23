@@ -26,9 +26,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import services.QuizAutoGenerator;
 import utils.AlertUtils;
-import main.Main;
-import main.MainShellController;
-import main.CoursCell;
 
 import java.io.*;
 import java.net.URL;
@@ -249,7 +246,7 @@ public class CoursController implements Initializable {
                     if (prix < 0) {
                         showError(errorPrix, "Le prix ne peut pas être négatif");
                     } else if (prix > 10000) {
-                        showError(errorPrix, "Le prix ne peut pas dépasser 10000 €");
+                        showError(errorPrix, "Le prix ne peut pas dépasser 10000 TND"); // ← MODIFIÉ
                     } else {
                         hideError(errorPrix);
                     }
@@ -392,7 +389,7 @@ public class CoursController implements Initializable {
         TableColumn<Cours, Double> colPrix = new TableColumn<>("PRIX");
         colPrix.setCellValueFactory(new PropertyValueFactory<>("prix"));
         colPrix.setCellFactory(column -> CoursCell.getPrixCell());
-        colPrix.setPrefWidth(100);
+        colPrix.setPrefWidth(120);
 
         // Ajouter la colonne au tableau (à la position souhaitée)
         tableCours.getColumns().add(4, colPrix); // Après la colonne durée par exemple
@@ -666,7 +663,7 @@ public class CoursController implements Initializable {
         try {
             System.out.println("📚 Ouverture gestion modules pour cours ID: " + cours.getId() + " - " + cours.getTitre());
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/module.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Module.fxml"));
             Parent root = loader.load();
 
             ModuleController controller = loader.getController();
@@ -690,7 +687,7 @@ public class CoursController implements Initializable {
         try {
             System.out.println("📖 Ouverture gestion leçons pour cours ID: " + cours.getId() + " - " + cours.getTitre());
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/lecon.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Lecon.fxml"));
             Parent root = loader.load();
 
             LeconController controller = loader.getController();
@@ -873,8 +870,8 @@ public class CoursController implements Initializable {
                         errors.append("• Le prix doit être supérieur à 0\n");
                         showError(errorPrix, "Le prix doit être supérieur à 0");
                     } else if (prix > 10000) {
-                        errors.append("• Le prix ne peut pas dépasser 10000 €\n");
-                        showError(errorPrix, "Le prix ne peut pas dépasser 10000 €");
+                        errors.append("• Le prix ne peut pas dépasser 10000 TND\n"); // ← MODIFIÉ
+                        showError(errorPrix, "Le prix ne peut pas dépasser 10000 TND");
                     } else {
                         hideError(errorPrix);
                     }

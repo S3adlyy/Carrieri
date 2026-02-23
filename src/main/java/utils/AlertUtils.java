@@ -11,8 +11,8 @@ import java.util.Optional;
 
 public final class AlertUtils {
 
-    private static final String ALERT_CSS = "/css/alert.css";
-    private static final String THEME_CSS = "/css/theme-unified.css";
+    private static final String ALERT_CSS = "/css/Alert.css";
+    private static final String THEME_CSS = "/css/ThemeUnified.css";
 
     private AlertUtils() {}
 
@@ -307,7 +307,7 @@ public final class AlertUtils {
                 dialogPane.getStylesheets().add(alertCss);
             }
         } catch (Exception e) {
-            System.err.println("⚠️ CSS alert.css non trouvé: " + ALERT_CSS);
+            System.err.println("⚠️ CSS Alert.css non trouvé: " + ALERT_CSS);
         }
 
         try {
@@ -316,7 +316,7 @@ public final class AlertUtils {
                 dialogPane.getStylesheets().add(themeCss);
             }
         } catch (Exception e) {
-            System.err.println("⚠️ CSS theme-unified.css non trouvé: " + THEME_CSS);
+            System.err.println("⚠️ CSS ThemeUnified.css non trouvé: " + THEME_CSS);
         }
     }
 
