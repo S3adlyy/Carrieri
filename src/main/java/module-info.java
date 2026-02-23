@@ -12,7 +12,8 @@ module com.exemple.grecrutement {
     requires kernel;
     requires layout;
     requires com.google.gson;
-    requires jeromq; // Required for ImageIO and BufferedImage
+    requires jeromq;
+    requires twilio; // Required for ImageIO and BufferedImage
 
     // Open ALL packages to Jackson and JavaFX
     opens com.exemple.grecrutement to javafx.fxml;

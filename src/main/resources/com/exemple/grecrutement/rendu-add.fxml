@@ -184,7 +184,7 @@
                             <ProgressIndicator fx:id="progress" visible="false" prefWidth="24" prefHeight="24" styleClass="custom-progress"/>
                             <Label fx:id="lblProcessing" text="Processing..." visible="false" styleClass="processing-label"/>
                             <Region HBox.hgrow="ALWAYS"/>
-                            <Label text="⌨️ Ctrl+Enter (Kernel) | Ctrl+Shift+Enter (Profile)" styleClass="shortcut-hint"/>
+                            <Label text="⌨️ Ctrl+Enter (Kernel) | SMS with score" styleClass="shortcut-hint"/>
                         </HBox>
 
                         <!-- Result Label -->
@@ -198,7 +198,7 @@
                             <Label text="⚡ Live execution" styleClass="status-item"/>
                             <Label text="⏱️ Auto-submit: 20:00" styleClass="status-item"/>
                             <Region HBox.hgrow="ALWAYS"/>
-                            <Label text="F11 fullscreen • Kernel ready" styleClass="shortcut"/>
+                            <Label text="F11 fullscreen • SMS with score" styleClass="shortcut"/>
                         </HBox>
                     </VBox>
                 </HBox>

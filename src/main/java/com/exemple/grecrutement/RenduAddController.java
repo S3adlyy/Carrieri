@@ -1,5 +1,6 @@
 package com.exemple.grecrutement;
 
+import services.SMSService;
 import entities.RenduMission;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -73,6 +74,7 @@ public class RenduAddController implements Initializable {
 
     private RenduMissionService service;
     private MissionService missionService;
+    private SMSService smsService;
     private StringBuilder currentOutput = new StringBuilder();
 
     // Timer variables
@@ -98,6 +100,17 @@ public class RenduAddController implements Initializable {
             pythoniumService = new PythoniumService();
             service = new RenduMissionService();
             missionService = new MissionService();
+
+            // Initialize SMS Service
+            smsService = SMSService.getInstance();
+            if (smsService != null && smsService.isEnabled()) {
+                System.out.println("✅ SMS Service initialized successfully");
+                System.out.println("   From: " + smsService.getFromPhoneNumber() + " (Twilio Trial)");
+                System.out.println("   To: " + smsService.getRecipientPhoneNumber() + " (Your phone)");
+            } else {
+                System.out.println("⚠️ SMS Service is disabled or not properly configured");
+            }
+
             System.out.println("✅ Services initialized successfully");
 
             // Setup mission types
@@ -976,7 +989,7 @@ public class RenduAddController implements Initializable {
     }
 
     // ============================
-    // EVALUATION METHOD
+    // EVALUATION METHOD WITH SMS FOR ALL SUBMISSIONS
     // ============================
 
     @FXML
@@ -997,9 +1010,11 @@ public class RenduAddController implements Initializable {
         }
 
         int missionId, candidatId;
+
         try {
             missionId = Integer.parseInt(txtMissionId.getText());
             candidatId = Integer.parseInt(txtCandidatId.getText());
+
         } catch (Exception e) {
             AlertUtils.showError("Invalid IDs", "Please enter valid numbers for Mission ID and Candidate ID");
             if (!isTimerFinished) {
@@ -1011,6 +1026,7 @@ public class RenduAddController implements Initializable {
         progress.setVisible(true);
         if (lblProcessing != null) {
             lblProcessing.setVisible(true);
+            lblProcessing.setText("Evaluating code and preparing SMS notification...");
         }
         lblResultat.setText("Evaluating code with AI system...");
 
@@ -1026,7 +1042,39 @@ public class RenduAddController implements Initializable {
 
         new Thread(() -> {
             try {
+                // Evaluate the code
                 RenduMission r = service.evaluerCodePython(txtCode.getText(), missionId, candidatId);
+
+                // Get mission details for SMS
+                Mission mission = missionService.getById(missionId);
+                int missionIdForSms = (mission != null) ? mission.getId() : missionId;
+
+                // Get candidate name (you might need to fetch this from a service)
+                String candidateName = "Candidate";
+
+                // Send SMS notification for ALL submissions (both accepted and rejected)
+                boolean smsSent = false;
+                if (smsService != null && smsService.isEnabled()) {
+                    // Use the new method that sends score and status
+                    smsSent = smsService.envoyerSMSResultat(
+                            candidateName,
+                            missionIdForSms,
+                            r.getScore(),
+                            r.isAccepted()
+                    );
+
+                    if (smsSent) {
+                        System.out.println("📱 SMS sent successfully to " + smsService.getRecipientPhoneNumber());
+                    } else {
+                        System.out.println("📱 SMS failed to send");
+                    }
+                }
+
+                final boolean finalSmsSent = smsSent;
+                final String fromNumber = smsService != null ? smsService.getFromPhoneNumber() : "+18122864465";
+                final String toNumber = smsService != null ? smsService.getRecipientPhoneNumber() : "+21693039271";
+                final int finalScore = r.getScore();
+                final boolean accepted = r.isAccepted();
 
                 Platform.runLater(() -> {
                     progress.setVisible(false);
@@ -1042,20 +1090,51 @@ public class RenduAddController implements Initializable {
                         fullScreenCodeEditor.setEditable(true);
                     }
 
-                    String resultText = "🎯 AI Score: " + r.getScore() + "% - " + r.getResultat() + "\n";
+                    String resultText = "🎯 AI Score: " + finalScore + "% - " + r.getResultat() + "\n";
 
-                    if (r.isAccepted()) {
-                        resultText += "✅ ACCEPTED! (Score meets minimum requirement)";
+                    if (accepted) {
+                        resultText += "✅ ACCEPTED! (Score meets minimum requirement)\n";
                         lblResultat.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold; -fx-font-size: 14px;");
-                        AlertUtils.showSuccess("Code Accepted", "Your code has been accepted with a score of " + r.getScore() + "%!");
                     } else {
-                        resultText += "❌ REJECTED (Score below minimum requirement)";
+                        resultText += "❌ REJECTED (Score below minimum requirement)\n";
                         lblResultat.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 14px;");
-                        AlertUtils.showWarning("Code Rejected", "Your code scored " + r.getScore() + "%, which is below the minimum requirement.");
+                    }
+
+                    // Add SMS status to result
+                    if (finalSmsSent) {
+                        resultText += "📱 SMS notification sent to 93039271 with score " + finalScore + "% ✓";
+
+                        // Show detailed alert with SMS info
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Submission Complete");
+                        alert.setHeaderText(accepted ? "✅ Code Accepted & SMS Sent" : "❌ Code Rejected & SMS Sent");
+                        alert.setContentText(String.format(
+                                "Your code has been evaluated with a score of %d%%!\n\n" +
+                                        "📱 An SMS notification has been sent from:\n%s (Twilio Trial)\n\n" +
+                                        "To:\n%s\n\n" +
+                                        "The recipient has been notified of your result for Mission #%d.",
+                                finalScore,
+                                fromNumber,
+                                toNumber,
+                                missionIdForSms
+                        ));
+                        alert.showAndWait();
+                    } else {
+                        resultText += "📱 SMS notification could not be sent (service unavailable)";
+                        if (accepted) {
+                            AlertUtils.showSuccess("Code Accepted",
+                                    "Your code has been accepted with a score of " + finalScore + "%!\n" +
+                                            "(SMS notification was not sent - check Twilio configuration)");
+                        } else {
+                            AlertUtils.showWarning("Code Rejected",
+                                    "Your code scored " + finalScore + "%, which is below the minimum requirement.\n" +
+                                            "(SMS notification was not sent - check Twilio configuration)");
+                        }
                     }
 
                     lblResultat.setText(resultText);
                 });
+
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     progress.setVisible(false);
