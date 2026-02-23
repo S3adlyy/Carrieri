@@ -4,9 +4,10 @@ import entities.Feedback;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import services.FeedbackService;
 
 import java.net.URL;
@@ -31,8 +32,6 @@ public class FeedbackFormController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("Initialisation du formulaire Feedback...");
-
         // Initialiser le slider avec un listener
         noteSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             noteLabel.setText(String.valueOf(newValue.intValue()));
@@ -40,9 +39,6 @@ public class FeedbackFormController implements Initializable {
 
         // Initialiser le DatePicker avec la date du jour
         datePicker.setValue(LocalDate.now());
-
-        // Valeurs par défaut
-        noteSlider.setValue(50);
     }
 
     public void setFeedback(Feedback feedback) {
@@ -70,103 +66,101 @@ public class FeedbackFormController implements Initializable {
 
     @FXML
     private void handleSave() {
-        System.out.println("🔵 handleSave() Feedback est appelé !");
-        System.out.println("Commentaire: " + commentaireArea.getText());
-        System.out.println("Note: " + (int) noteSlider.getValue());
-
-        if (!validateInput()) {
-            System.out.println("❌ Validation échouée");
-            return;
-        }
-
-        System.out.println("✅ Validation réussie");
+        if (!validateInput()) return;
 
         try {
             if (feedback == null) {
-                // Ajouter nouveau feedback
+                // Ajout d'un nouveau feedback
                 Feedback newFeedback = new Feedback();
                 newFeedback.setCommentaire(commentaireArea.getText().trim());
                 newFeedback.setNote((int) noteSlider.getValue());
                 newFeedback.setRenduId(Integer.parseInt(renduIdField.getText().trim()));
 
-                // Gestion de la date
                 if (datePicker != null && datePicker.getValue() != null) {
                     newFeedback.setCreatedAt(Date.from(datePicker.getValue()
-                            .atStartOfDay(ZoneId.systemDefault())
-                            .toInstant()));
+                            .atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 } else {
                     newFeedback.setCreatedAt(new Date());
                 }
 
-                System.out.println("📤 Envoi à la base de données (AJOUT FEEDBACK)...");
                 feedbackService.ajouter(newFeedback);
-                System.out.println("✅ Ajout feedback réussi en base !");
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Feedback ajouté avec succès !");
 
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Feedback ajouté",
-                        "Le feedback a été ajouté avec succès.");
-
-                closeDialog();
+                // ✅ RESTER SUR LE FORMULAIRE après ajout
+                clearForm();
 
             } else {
-                // Modifier feedback existant
-                System.out.println("🔄 Modification du feedback #" + feedback.getId());
-
+                // Modification d'un feedback existant
                 feedback.setCommentaire(commentaireArea.getText().trim());
                 feedback.setNote((int) noteSlider.getValue());
                 feedback.setRenduId(Integer.parseInt(renduIdField.getText().trim()));
 
                 if (datePicker != null && datePicker.getValue() != null) {
                     feedback.setCreatedAt(Date.from(datePicker.getValue()
-                            .atStartOfDay(ZoneId.systemDefault())
-                            .toInstant()));
+                            .atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 }
 
-                System.out.println("📤 Envoi à la base de données (MODIFICATION FEEDBACK)...");
                 feedbackService.update(feedback);
-                System.out.println("✅ Modification feedback réussie en base !");
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Feedback modifié avec succès !");
 
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Feedback modifié",
-                        "Le feedback a été modifié avec succès.");
-
-                closeDialog();
+                // ✅ POUR LA MODIFICATION : on peut soit rester, soit retourner à la liste
+                // goBackToList(); // Décommentez si vous voulez retourner à la liste après modification
+                // Ou rester sur le formulaire :
+                clearFormForModification();
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Erreur SQL: " + e.getMessage());
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de sauvegarde",
-                    "Détails: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de sauvegarde: " + e.getMessage());
         } catch (NumberFormatException e) {
-            System.err.println("❌ Erreur format: " + e.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Format invalide",
-                    "Le Rendu ID doit être un nombre valide.");
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Le Rendu ID doit être un nombre valide.");
         }
     }
 
+    // ✅ Réinitialiser le formulaire pour un nouvel ajout
+    private void clearForm() {
+        commentaireArea.clear();
+        noteSlider.setValue(50);
+        renduIdField.clear();
+        datePicker.setValue(LocalDate.now());
+        feedback = null;
+        dialogTitle.setText("Ajouter un nouveau feedback");
+    }
+
+    // ✅ Réinitialiser après modification (si on reste sur le formulaire)
+    private void clearFormForModification() {
+        commentaireArea.clear();
+        noteSlider.setValue(50);
+        renduIdField.clear();
+        datePicker.setValue(LocalDate.now());
+        feedback = null;
+        dialogTitle.setText("Ajouter un nouveau feedback");
+    }
+
     @FXML
-    private void handleCancel() {
-        System.out.println("Annulation...");
-        closeDialog();
+    private void goBackToList() {
+        try {
+            Parent listPage = FXMLLoader.load(getClass().getResource("/feedbackList.fxml"));
+            commentaireArea.getScene().setRoot(listPage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean validateInput() {
         if (commentaireArea.getText() == null || commentaireArea.getText().trim().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Champ requis",
-                    "Le champ 'Commentaire' est requis.");
+            showAlert(Alert.AlertType.WARNING, "Validation", "Le commentaire est requis.");
             commentaireArea.requestFocus();
             return false;
         }
 
         if (commentaireArea.getText().trim().length() < 5) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Commentaire trop court",
-                    "Le commentaire doit contenir au moins 5 caractères.");
+            showAlert(Alert.AlertType.WARNING, "Validation", "Le commentaire doit contenir au moins 5 caractères.");
             commentaireArea.requestFocus();
             return false;
         }
 
         if (renduIdField.getText() == null || renduIdField.getText().trim().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Champ requis",
-                    "Le champ 'Rendu ID' est requis.");
+            showAlert(Alert.AlertType.WARNING, "Validation", "Le Rendu ID est requis.");
             renduIdField.requestFocus();
             return false;
         }
@@ -174,43 +168,23 @@ public class FeedbackFormController implements Initializable {
         try {
             int renduId = Integer.parseInt(renduIdField.getText().trim());
             if (renduId <= 0) {
-                showAlert(Alert.AlertType.WARNING, "Validation", "ID invalide",
-                        "Le Rendu ID doit être un nombre positif.");
+                showAlert(Alert.AlertType.WARNING, "Validation", "Le Rendu ID doit être un nombre positif.");
                 renduIdField.requestFocus();
                 return false;
             }
         } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Format invalide",
-                    "Le Rendu ID doit être un nombre valide.");
+            showAlert(Alert.AlertType.WARNING, "Validation", "Le Rendu ID doit être un nombre valide.");
             renduIdField.requestFocus();
-            return false;
-        }
-
-        if (datePicker.getValue() == null) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Champ requis",
-                    "Veuillez sélectionner une date.");
-            datePicker.requestFocus();
             return false;
         }
 
         return true;
     }
 
-    // CORRECTION - Méthode closeDialog() qui fonctionne
-    private void closeDialog() {
-        try {
-            Stage stage = (Stage) commentaireArea.getScene().getWindow();
-            stage.close();
-            System.out.println("✅ Dialogue Feedback fermé");
-        } catch (Exception e) {
-            System.err.println("❌ Erreur lors de la fermeture: " + e.getMessage());
-        }
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+    private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
-        alert.setHeaderText(header);
+        alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
     }

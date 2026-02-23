@@ -6,11 +6,14 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 import services.ReclamationService;
 
@@ -38,6 +41,9 @@ public class ReclamationController implements Initializable {
         initializeTableColumns();
         loadFilterOptions();
         loadReclamations();
+
+        // Activer l'édition
+        reclamationTable.setEditable(true);
     }
 
     @SuppressWarnings("unchecked")
@@ -57,7 +63,7 @@ public class ReclamationController implements Initializable {
                 updateReclamation(reclamation);
             });
 
-            // Colonne Catégorie (éditable avec ComboBox)
+            // Colonne Catégorie (éditable)
             TableColumn<Reclamation, String> categorieCol = (TableColumn<Reclamation, String>) reclamationTable.getColumns().get(2);
             categorieCol.setCellValueFactory(new PropertyValueFactory<>("categorie"));
             categorieCol.setCellFactory(ComboBoxTableCell.forTableColumn("Technique", "Facturation", "Service", "Autre"));
@@ -67,7 +73,7 @@ public class ReclamationController implements Initializable {
                 updateReclamation(reclamation);
             });
 
-            // Colonne Statut (éditable avec ComboBox)
+            // Colonne Statut (éditable)
             TableColumn<Reclamation, String> statutCol = (TableColumn<Reclamation, String>) reclamationTable.getColumns().get(3);
             statutCol.setCellValueFactory(new PropertyValueFactory<>("statut"));
             statutCol.setCellFactory(ComboBoxTableCell.forTableColumn("Nouvelle", "En cours", "Résolue", "Fermée"));
@@ -77,7 +83,7 @@ public class ReclamationController implements Initializable {
                 updateReclamation(reclamation);
             });
 
-            // Colonne Priorité (éditable avec ComboBox)
+            // Colonne Priorité (éditable)
             TableColumn<Reclamation, String> prioriteCol = (TableColumn<Reclamation, String>) reclamationTable.getColumns().get(4);
             prioriteCol.setCellValueFactory(new PropertyValueFactory<>("priorite"));
             prioriteCol.setCellFactory(ComboBoxTableCell.forTableColumn("Haute", "Moyenne", "Basse"));
@@ -104,19 +110,25 @@ public class ReclamationController implements Initializable {
                 }
             });
 
-            // Colonne Actions (uniquement bouton Supprimer et Détails)
+            // Colonne Actions (boutons Traiter, Détails, Supprimer)
             TableColumn<Reclamation, Void> actionCol = (TableColumn<Reclamation, Void>) reclamationTable.getColumns().get(6);
             actionCol.setCellFactory(param -> new TableCell<>() {
-                private final Button deleteBtn = new Button("🗑️");
+                private final Button traiterBtn = new Button("⚡");
                 private final Button detailsBtn = new Button("📋");
+                private final Button deleteBtn = new Button("🗑️");
 
                 {
+                    traiterBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #f39c12; -fx-cursor: hand;");
+                    detailsBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #3498db; -fx-cursor: hand;");
                     deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #e74c3c; -fx-cursor: hand;");
-                    detailsBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #9b59b6; -fx-cursor: hand;");
 
-                    deleteBtn.setOnAction(event -> {
+                    traiterBtn.setTooltip(new Tooltip("Traiter cette réclamation"));
+                    detailsBtn.setTooltip(new Tooltip("Détails"));
+                    deleteBtn.setTooltip(new Tooltip("Supprimer"));
+
+                    traiterBtn.setOnAction(event -> {
                         Reclamation reclamation = getTableView().getItems().get(getIndex());
-                        deleteReclamation(reclamation);
+                        ouvrirFormulaireTraitement(reclamation);
                     });
 
                     detailsBtn.setOnAction(event -> {
@@ -124,8 +136,10 @@ public class ReclamationController implements Initializable {
                         showReclamationDetails(reclamation);
                     });
 
-                    deleteBtn.setTooltip(new Tooltip("Supprimer"));
-                    detailsBtn.setTooltip(new Tooltip("Détails"));
+                    deleteBtn.setOnAction(event -> {
+                        Reclamation reclamation = getTableView().getItems().get(getIndex());
+                        deleteReclamation(reclamation);
+                    });
                 }
 
                 @Override
@@ -134,31 +148,26 @@ public class ReclamationController implements Initializable {
                     if (empty) {
                         setGraphic(null);
                     } else {
-                        HBox buttons = new HBox(5, deleteBtn, detailsBtn);
+                        HBox buttons = new HBox(5, traiterBtn, detailsBtn, deleteBtn);
                         buttons.setStyle("-fx-alignment: center;");
                         setGraphic(buttons);
                     }
                 }
             });
 
-            // Activer l'édition sur la table
-            reclamationTable.setEditable(true);
-
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur d'initialisation",
-                    "Impossible d'initialiser les colonnes: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur d'initialisation: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    // Nouvelle méthode pour mettre à jour une réclamation après édition inline
     private void updateReclamation(Reclamation reclamation) {
         try {
             reclamationService.update(reclamation);
             System.out.println("✅ Réclamation #" + reclamation.getId() + " mise à jour");
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de mise à jour", e.getMessage());
-            loadReclamations(); // Recharger en cas d'erreur
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de mise à jour: " + e.getMessage());
+            loadReclamations();
         }
     }
 
@@ -179,15 +188,10 @@ public class ReclamationController implements Initializable {
             reclamationList.addAll(reclamationService.read());
             reclamationTable.setItems(reclamationList);
             updateTotalCount();
+            System.out.println("✅ " + reclamationList.size() + " réclamations chargées");
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de chargement",
-                    "Impossible de charger les réclamations: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger les réclamations: " + e.getMessage());
         }
-    }
-
-    @FXML
-    private void showAddReclamationForm() {
-        openReclamationForm(null);
     }
 
     @FXML
@@ -214,7 +218,7 @@ public class ReclamationController implements Initializable {
                 updateTotalCount();
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de filtrage", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de filtrage: " + e.getMessage());
         }
     }
 
@@ -235,20 +239,9 @@ public class ReclamationController implements Initializable {
                     updateTotalCount();
                 }
             } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de recherche", e.getMessage());
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de recherche: " + e.getMessage());
             }
         });
-    }
-
-    @FXML
-    private void deleteReclamation() {
-        Reclamation selected = reclamationTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            deleteReclamation(selected);
-        } else {
-            showAlert(Alert.AlertType.WARNING, "Attention", "Aucune sélection",
-                    "Veuillez sélectionner une réclamation à supprimer.");
-        }
     }
 
     private void deleteReclamation(Reclamation reclamation) {
@@ -264,22 +257,10 @@ public class ReclamationController implements Initializable {
                 reclamationService.supprimer(reclamation.getId());
                 reclamationList.remove(reclamation);
                 updateTotalCount();
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Réclamation supprimée",
-                        "La réclamation a été supprimée avec succès.");
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Réclamation supprimée avec succès.");
             } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de suppression", e.getMessage());
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de suppression: " + e.getMessage());
             }
-        }
-    }
-
-    @FXML
-    private void showReclamationDetails() {
-        Reclamation selected = reclamationTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            showReclamationDetails(selected);
-        } else {
-            showAlert(Alert.AlertType.WARNING, "Attention", "Aucune sélection",
-                    "Veuillez sélectionner une réclamation pour voir les détails.");
         }
     }
 
@@ -301,33 +282,63 @@ public class ReclamationController implements Initializable {
                 "⚠️ Priorité: " + reclamation.getPriorite() + "\n" +
                 "📅 Date: " + dateStr + "\n" +
                 "👤 Utilisateur ID: " + (reclamation.getUtilisateurId() != null ? reclamation.getUtilisateurId() : "N/A") + "\n" +
+                "📧 Email: " + (reclamation.getEmail() != null ? reclamation.getEmail() : "Non renseigné") + "\n" +
                 "═══════════════════════════════════════";
 
         alert.setContentText(content);
         alert.showAndWait();
     }
 
+    // ✅ Méthode pour ouvrir le formulaire de traitement
+    private void ouvrirFormulaireTraitement(Reclamation reclamation) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/traitementForm.fxml"));
+            Parent root = loader.load();
+
+            controllers.TraitementFormController controller = loader.getController();
+            controller.setReclamation(reclamation);
+            controller.setMode("TRAITEMENT");
+
+            // Remplacer le contenu de la fenêtre
+            reclamationTable.getScene().setRoot(root);
+
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le formulaire de traitement: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // ✅ Méthode pour ouvrir le formulaire de réclamation (ajout/modification)
     private void openReclamationForm(Reclamation reclamation) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/reclamationForm.fxml"));
-            DialogPane dialogPane = loader.load();
+            Parent root = loader.load();
 
             ReclamationFormController controller = loader.getController();
             controller.setReclamation(reclamation);
-            controller.setReclamationList(reclamationList);
 
-            Dialog<ButtonType> dialog = new Dialog<>();
-            dialog.setDialogPane(dialogPane);
-            dialog.setTitle(reclamation == null ? "Ajouter une réclamation" : "Modifier la réclamation");
+            // Créer une nouvelle fenêtre (Stage)
+            Stage stage = new Stage();
+            stage.setTitle(reclamation == null ? "Ajouter une réclamation" : "Modifier la réclamation");
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
 
-            dialog.showAndWait();
+            // Attendre la fermeture
+            stage.showAndWait();
 
+            // Recharger la liste après fermeture
             loadReclamations();
-            System.out.println("✅ Données rechargées");
+            System.out.println("✅ Données rechargées après fermeture du formulaire");
 
         } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le formulaire: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void showAddReclamationForm() {
+        openReclamationForm(null);
     }
 
     private void updateTotalCount() {
@@ -344,42 +355,19 @@ public class ReclamationController implements Initializable {
 
     @FXML
     private void exportToPDF() {
-        showAlert(Alert.AlertType.INFORMATION, "Info", "Export PDF",
-                "Fonctionnalité d'export PDF à implémenter");
+        showAlert(Alert.AlertType.INFORMATION, "Info", "Export PDF à implémenter");
     }
 
     @FXML
     private void exportToExcel() {
-        showAlert(Alert.AlertType.INFORMATION, "Info", "Export Excel",
-                "Fonctionnalité d'export Excel à implémenter");
+        showAlert(Alert.AlertType.INFORMATION, "Info", "Export Excel à implémenter");
     }
 
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+    private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
-        alert.setHeaderText(header);
+        alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
-    }
-
-    @FXML
-    private void testAjoutRapide() {
-        try {
-            Reclamation test = new Reclamation();
-            test.setObjet("Test rapide " + new Date());
-            test.setDescription("Description test");
-            test.setCategorie("Technique");
-            test.setStatut("Nouvelle");
-            test.setPriorite("Haute");
-            test.setDateCreation(new Date());
-
-            reclamationService.ajouter(test);
-            loadReclamations();
-
-            showAlert(Alert.AlertType.INFORMATION, "Succès", "Test réussi",
-                    "Une réclamation a été ajoutée directement !");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }

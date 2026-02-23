@@ -1,13 +1,19 @@
 package controllers;
 
+import entities.Reclamation;
 import entities.TraitementReclamation;
+import entities.User; // Vous devez créer cette entité
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
+import services.ReclamationService;
 import services.TraitementReclamationService;
+import services.UserService; // Service pour récupérer l'utilisateur
+import services.EmailService;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -24,30 +30,72 @@ public class TraitementFormController implements Initializable {
     @FXML private ComboBox<String> statutFinalCombo;
     @FXML private DatePicker datePicker;
     @FXML private TextArea reponseArea;
+    @FXML private Label reclamationObjetLabel;
+    @FXML private Label reclamationDescriptionLabel;
 
     private TraitementReclamation traitement;
+    private Reclamation reclamation;
+    private String mode = "AJOUT";
     private ObservableList<TraitementReclamation> traitementList;
     private TraitementReclamationService traitementService = new TraitementReclamationService();
+    private ReclamationService reclamationService = new ReclamationService();
+    private UserService userService = new UserService(); // À créer
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Initialiser la combo box des statuts
         statutFinalCombo.setItems(FXCollections.observableArrayList(
                 "Résolue", "En cours", "Fermée", "Rejetée"
         ));
-
-        // Date par défaut = aujourd'hui
         datePicker.setValue(LocalDate.now());
+    }
+
+    public void setReclamation(Reclamation reclamation) {
+        this.reclamation = reclamation;
+        this.mode = "TRAITEMENT";
+
+        if (reclamation != null) {
+            dialogTitle.setText("Traiter la réclamation #" + reclamation.getId());
+            reclamationIdField.setText(String.valueOf(reclamation.getId()));
+            reclamationIdField.setEditable(false);
+
+            if (reclamationObjetLabel != null) {
+                reclamationObjetLabel.setText("Objet: " + reclamation.getObjet());
+            }
+            if (reclamationDescriptionLabel != null) {
+                reclamationDescriptionLabel.setText("Description: " + reclamation.getDescription());
+            }
+
+            statutFinalCombo.setValue("En cours");
+            adminIdField.setText("1");
+        }
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
     }
 
     public void setTraitement(TraitementReclamation traitement) {
         this.traitement = traitement;
+        this.mode = "MODIFICATION";
 
         if (traitement != null) {
             dialogTitle.setText("Modifier le traitement #" + traitement.getId());
 
             if (traitement.getReclamationId() != null) {
                 reclamationIdField.setText(String.valueOf(traitement.getReclamationId()));
+                try {
+                    Reclamation rec = reclamationService.getById(traitement.getReclamationId());
+                    if (rec != null) {
+                        if (reclamationObjetLabel != null) {
+                            reclamationObjetLabel.setText("Objet: " + rec.getObjet());
+                        }
+                        if (reclamationDescriptionLabel != null) {
+                            reclamationDescriptionLabel.setText("Description: " + rec.getDescription());
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
 
             if (traitement.getAdminId() != null) {
@@ -62,9 +110,6 @@ public class TraitementFormController implements Initializable {
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate());
             }
-        } else {
-            dialogTitle.setText("Nouveau traitement");
-            statutFinalCombo.setValue("En cours");
         }
     }
 
@@ -74,32 +119,33 @@ public class TraitementFormController implements Initializable {
 
     @FXML
     private void handleSave() {
-        System.out.println("🔵 handleSave() est appelé !");
-
-        if (!validateInput()) {
-            return;
-        }
+        if (!validateInput()) return;
 
         try {
+            int recId;
+            String ancienStatut = "";
+            String nouveauStatut = statutFinalCombo.getValue();
+
+            if (mode.equals("TRAITEMENT") && reclamation != null) {
+                recId = reclamation.getId();
+                ancienStatut = reclamation.getStatut();
+            } else {
+                recId = Integer.parseInt(reclamationIdField.getText().trim());
+                // Récupérer l'ancien statut
+                Reclamation temp = reclamationService.getById(recId);
+                if (temp != null) {
+                    ancienStatut = temp.getStatut();
+                }
+            }
+
             if (traitement == null) {
-                // Ajouter nouveau traitement
+                // Ajout d'un nouveau traitement
                 TraitementReclamation newTraitement = new TraitementReclamation();
-
-                // Gestion de la date
-                if (datePicker != null && datePicker.getValue() != null) {
-                    newTraitement.setDateTraitement(Date.from(datePicker.getValue()
-                            .atStartOfDay(ZoneId.systemDefault())
-                            .toInstant()));
-                } else {
-                    newTraitement.setDateTraitement(new Date());
-                }
-
+                newTraitement.setDateTraitement(Date.from(datePicker.getValue()
+                        .atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 newTraitement.setReponseAdmin(reponseArea.getText().trim());
-                newTraitement.setStatutFinal(statutFinalCombo.getValue());
-
-                if (!reclamationIdField.getText().trim().isEmpty()) {
-                    newTraitement.setReclamationId(Integer.parseInt(reclamationIdField.getText().trim()));
-                }
+                newTraitement.setStatutFinal(nouveauStatut);
+                newTraitement.setReclamationId(recId);
 
                 if (!adminIdField.getText().trim().isEmpty()) {
                     newTraitement.setAdminId(Integer.parseInt(adminIdField.getText().trim()));
@@ -107,143 +153,137 @@ public class TraitementFormController implements Initializable {
 
                 traitementService.ajouter(newTraitement);
 
-                // Si c'est un traitement, mettre à jour le statut de la réclamation
-                if (newTraitement.getReclamationId() != null && newTraitement.getAdminId() != null) {
-                    traitementService.traiterReclamation(
-                            newTraitement.getReclamationId(),
-                            newTraitement.getReponseAdmin(),
-                            newTraitement.getStatutFinal(),
-                            newTraitement.getAdminId()
-                    );
+                // ✅ Mise à jour du statut de la réclamation
+                Reclamation rec = (reclamation != null) ? reclamation :
+                        reclamationService.getById(recId);
+                if (rec != null) {
+                    rec.setStatut(nouveauStatut);
+                    reclamationService.update(rec);
+
+                    // ✅ Envoi d'email si le statut est "Résolue" ou "Rejetée"
+                    if (nouveauStatut.equals("Résolue") || nouveauStatut.equals("Rejetée")) {
+                        envoyerEmailNotification(rec, nouveauStatut, reponseArea.getText().trim());
+                    }
                 }
 
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Traitement ajouté",
-                        "Le traitement a été ajouté avec succès.");
-
-                // Fermer le dialogue
-                closeDialog();
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Traitement ajouté avec succès !");
+                goToTraitementList();
 
             } else {
-                // Modifier traitement existant
-                if (datePicker != null && datePicker.getValue() != null) {
+                // Modification d'un traitement existant
+                if (datePicker.getValue() != null) {
                     traitement.setDateTraitement(Date.from(datePicker.getValue()
-                            .atStartOfDay(ZoneId.systemDefault())
-                            .toInstant()));
+                            .atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 }
-
                 traitement.setReponseAdmin(reponseArea.getText().trim());
-                traitement.setStatutFinal(statutFinalCombo.getValue());
+                traitement.setStatutFinal(nouveauStatut);
 
                 if (!reclamationIdField.getText().trim().isEmpty()) {
                     traitement.setReclamationId(Integer.parseInt(reclamationIdField.getText().trim()));
-                } else {
-                    traitement.setReclamationId(null);
                 }
 
                 if (!adminIdField.getText().trim().isEmpty()) {
                     traitement.setAdminId(Integer.parseInt(adminIdField.getText().trim()));
-                } else {
-                    traitement.setAdminId(null);
                 }
 
                 traitementService.update(traitement);
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Traitement modifié",
-                        "Le traitement a été modifié avec succès.");
 
-                // Fermer le dialogue
-                closeDialog();
+                // ✅ Mise à jour du statut de la réclamation
+                Reclamation rec = reclamationService.getById(recId);
+                if (rec != null) {
+                    rec.setStatut(nouveauStatut);
+                    reclamationService.update(rec);
+
+                    // ✅ Envoi d'email si le statut change vers "Résolue" ou "Rejetée"
+                    if ((nouveauStatut.equals("Résolue") || nouveauStatut.equals("Rejetée"))
+                            && !nouveauStatut.equals(ancienStatut)) {
+                        envoyerEmailNotification(rec, nouveauStatut, reponseArea.getText().trim());
+                    }
+                }
+
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Traitement modifié avec succès !");
+                goToTraitementList();
             }
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de sauvegarde",
-                    "Détails: " + e.getMessage());
-            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de sauvegarde: " + e.getMessage());
         } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Format invalide",
-                    "Les IDs doivent être des nombres valides.");
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Les IDs doivent être des nombres valides.");
+        }
+    }
+
+    // ✅ Nouvelle méthode pour envoyer l'email
+    private void envoyerEmailNotification(Reclamation reclamation, String nouveauStatut, String reponse) {
+        try {
+            // Vérifier si un email est fourni dans la réclamation
+            if (reclamation.getEmail() != null && !reclamation.getEmail().isEmpty()) {
+                // Récupérer le nom de l'utilisateur (si disponible)
+                String nom = "Utilisateur";
+                if (reclamation.getUtilisateurId() != null) {
+                    try {
+                        User user = userService.getById(reclamation.getUtilisateurId());
+                        if (user != null) {
+                            nom = user.getFirstName() + " " + user.getLastName();
+                        }
+                    } catch (Exception e) {
+                        // Ignorer, on garde "Utilisateur"
+                    }
+                }
+
+                // Envoyer l'email à l'adresse fournie
+                EmailService.envoyerEmailUtilisateur(
+                        reclamation.getEmail(),
+                        nom,
+                        reclamation.getObjet(),
+                        nouveauStatut,
+                        reponse
+                );
+            } else {
+                System.out.println("⚠️ Aucun email fourni pour la réclamation #" + reclamation.getId());
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors de l'envoi de l'email: " + e.getMessage());
+            // Ne pas bloquer le processus
+        }
+    }
+
+    private void goToTraitementList() {
+        try {
+            Parent listPage = FXMLLoader.load(getClass().getResource("/traitementList.fxml"));
+            reponseArea.getScene().setRoot(listPage);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     @FXML
-    private void handleCancel() {
-        closeDialog();
+    private void goBackToList() {
+        try {
+            Parent listPage = FXMLLoader.load(getClass().getResource("/traitementList.fxml"));
+            reponseArea.getScene().setRoot(listPage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean validateInput() {
-        if (reponseArea.getText() == null || reponseArea.getText().trim().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Champ requis",
-                    "La réponse admin est requise.");
+        if (reponseArea.getText().trim().isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Validation", "La réponse admin est requise.");
             reponseArea.requestFocus();
             return false;
         }
-
         if (statutFinalCombo.getValue() == null) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Champ requis",
-                    "Veuillez sélectionner un statut final.");
+            showAlert(Alert.AlertType.WARNING, "Validation", "Le statut final est requis.");
             statutFinalCombo.requestFocus();
             return false;
         }
-
-        if (datePicker.getValue() == null) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Champ requis",
-                    "Veuillez sélectionner une date.");
-            datePicker.requestFocus();
-            return false;
-        }
-
-        // Validation des IDs si présents
-        if (!reclamationIdField.getText().trim().isEmpty()) {
-            try {
-                int id = Integer.parseInt(reclamationIdField.getText().trim());
-                if (id <= 0) {
-                    showAlert(Alert.AlertType.WARNING, "Validation", "ID invalide",
-                            "L'ID de réclamation doit être positif.");
-                    reclamationIdField.requestFocus();
-                    return false;
-                }
-            } catch (NumberFormatException e) {
-                showAlert(Alert.AlertType.WARNING, "Validation", "Format invalide",
-                        "L'ID de réclamation doit être un nombre.");
-                reclamationIdField.requestFocus();
-                return false;
-            }
-        }
-
-        if (!adminIdField.getText().trim().isEmpty()) {
-            try {
-                int id = Integer.parseInt(adminIdField.getText().trim());
-                if (id <= 0) {
-                    showAlert(Alert.AlertType.WARNING, "Validation", "ID invalide",
-                            "L'ID admin doit être positif.");
-                    adminIdField.requestFocus();
-                    return false;
-                }
-            } catch (NumberFormatException e) {
-                showAlert(Alert.AlertType.WARNING, "Validation", "Format invalide",
-                        "L'ID admin doit être un nombre.");
-                adminIdField.requestFocus();
-                return false;
-            }
-        }
-
         return true;
     }
 
-    // CORRECTION ICI - Nouvelle méthode closeDialog()
-    private void closeDialog() {
-        try {
-            Stage stage = (Stage) reponseArea.getScene().getWindow();
-            stage.close();
-            System.out.println("✅ Dialogue fermé");
-        } catch (Exception e) {
-            System.err.println("❌ Erreur lors de la fermeture: " + e.getMessage());
-        }
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+    private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
-        alert.setHeaderText(header);
+        alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
     }

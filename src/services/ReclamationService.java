@@ -17,15 +17,14 @@ public class ReclamationService implements IReclamationService {
 
     @Override
     public void ajouter(Reclamation reclamation) throws SQLException {
-        String req = "INSERT INTO reclamation (objet, description, categorie, date_creation, statut, priorite, utilisateur_id) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String req = "INSERT INTO reclamation (objet, description, categorie, date_creation, statut, priorite, utilisateur_id, email) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = connection.prepareStatement(req);
         preparedStatement.setString(1, reclamation.getObjet());
         preparedStatement.setString(2, reclamation.getDescription());
         preparedStatement.setString(3, reclamation.getCategorie());
 
-        // CORRECTION: Vérifier que la date n'est pas null
         if (reclamation.getDateCreation() != null) {
             preparedStatement.setTimestamp(4, new Timestamp(reclamation.getDateCreation().getTime()));
         } else {
@@ -41,6 +40,12 @@ public class ReclamationService implements IReclamationService {
             preparedStatement.setNull(7, Types.INTEGER);
         }
 
+        if (reclamation.getEmail() != null && !reclamation.getEmail().isEmpty()) {
+            preparedStatement.setString(8, reclamation.getEmail());
+        } else {
+            preparedStatement.setNull(8, Types.VARCHAR);
+        }
+
         preparedStatement.executeUpdate();
         System.out.println("Reclamation added successfully.");
     }
@@ -48,7 +53,7 @@ public class ReclamationService implements IReclamationService {
     @Override
     public void update(Reclamation reclamation) throws SQLException {
         String sql = "UPDATE reclamation SET objet = ?, description = ?, categorie = ?, date_creation = ?, " +
-                "statut = ?, priorite = ?, utilisateur_id = ? WHERE id = ?";
+                "statut = ?, priorite = ?, utilisateur_id = ?, email = ? WHERE id = ?";
 
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, reclamation.getObjet());
@@ -64,7 +69,13 @@ public class ReclamationService implements IReclamationService {
             preparedStatement.setNull(7, Types.INTEGER);
         }
 
-        preparedStatement.setInt(8, reclamation.getId());
+        if (reclamation.getEmail() != null && !reclamation.getEmail().isEmpty()) {
+            preparedStatement.setString(8, reclamation.getEmail());
+        } else {
+            preparedStatement.setNull(8, Types.VARCHAR);
+        }
+
+        preparedStatement.setInt(9, reclamation.getId());
         preparedStatement.executeUpdate();
     }
 
@@ -98,6 +109,11 @@ public class ReclamationService implements IReclamationService {
                 reclamation.setUtilisateurId(userId);
             }
 
+            String email = rs.getString("email");
+            if (!rs.wasNull()) {
+                reclamation.setEmail(email);
+            }
+
             reclamations.add(reclamation);
         }
         return reclamations;
@@ -109,7 +125,6 @@ public class ReclamationService implements IReclamationService {
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, statut);
         ResultSet rs = preparedStatement.executeQuery();
-
         return parseResultSet(rs);
     }
 
@@ -119,7 +134,6 @@ public class ReclamationService implements IReclamationService {
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, priorite);
         ResultSet rs = preparedStatement.executeQuery();
-
         return parseResultSet(rs);
     }
 
@@ -129,7 +143,6 @@ public class ReclamationService implements IReclamationService {
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, utilisateurId);
         ResultSet rs = preparedStatement.executeQuery();
-
         return parseResultSet(rs);
     }
 
@@ -139,7 +152,6 @@ public class ReclamationService implements IReclamationService {
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, categorie);
         ResultSet rs = preparedStatement.executeQuery();
-
         return parseResultSet(rs);
     }
 
@@ -160,8 +172,39 @@ public class ReclamationService implements IReclamationService {
         preparedStatement.setString(1, searchPattern);
         preparedStatement.setString(2, searchPattern);
         ResultSet rs = preparedStatement.executeQuery();
-
         return parseResultSet(rs);
+    }
+
+    @Override
+    public Reclamation getById(int id) throws SQLException {
+        String sql = "SELECT * FROM reclamation WHERE id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet rs = preparedStatement.executeQuery();
+
+        if (rs.next()) {
+            Reclamation reclamation = new Reclamation();
+            reclamation.setId(rs.getInt("id"));
+            reclamation.setObjet(rs.getString("objet"));
+            reclamation.setDescription(rs.getString("description"));
+            reclamation.setCategorie(rs.getString("categorie"));
+            reclamation.setDateCreation(new Date(rs.getTimestamp("date_creation").getTime()));
+            reclamation.setStatut(rs.getString("statut"));
+            reclamation.setPriorite(rs.getString("priorite"));
+
+            int userId = rs.getInt("utilisateur_id");
+            if (!rs.wasNull()) {
+                reclamation.setUtilisateurId(userId);
+            }
+
+            String email = rs.getString("email");
+            if (!rs.wasNull()) {
+                reclamation.setEmail(email);
+            }
+
+            return reclamation;
+        }
+        return null;
     }
 
     private List<Reclamation> parseResultSet(ResultSet rs) throws SQLException {
@@ -180,6 +223,11 @@ public class ReclamationService implements IReclamationService {
             int userId = rs.getInt("utilisateur_id");
             if (!rs.wasNull()) {
                 reclamation.setUtilisateurId(userId);
+            }
+
+            String email = rs.getString("email");
+            if (!rs.wasNull()) {
+                reclamation.setEmail(email);
             }
 
             reclamations.add(reclamation);

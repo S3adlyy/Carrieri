@@ -4,7 +4,9 @@ import entities.Reclamation;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import services.ReclamationService;
@@ -23,12 +25,12 @@ public class ReclamationFormController implements Initializable {
     @FXML private ComboBox<String> categorieCombo;
     @FXML private ComboBox<String> prioriteCombo;
     @FXML private TextArea descriptionArea;
-    @FXML private ComboBox<String> statutCombo;
     @FXML private TextField utilisateurIdField;
     @FXML private DatePicker datePicker;
+    @FXML private TextField emailField;
 
     private Reclamation reclamation;
-    private ObservableList<Reclamation> reclamationList;
+    private boolean saved = false;
     private ReclamationService reclamationService = new ReclamationService();
 
     @Override
@@ -41,13 +43,8 @@ public class ReclamationFormController implements Initializable {
         categorieCombo.setItems(FXCollections.observableArrayList(
                 "Technique", "Facturation", "Service", "Autre"
         ));
-
         prioriteCombo.setItems(FXCollections.observableArrayList(
                 "Haute", "Moyenne", "Basse"
-        ));
-
-        statutCombo.setItems(FXCollections.observableArrayList(
-                "Nouvelle", "En cours", "Résolue", "Fermée"
         ));
     }
 
@@ -60,193 +57,134 @@ public class ReclamationFormController implements Initializable {
             categorieCombo.setValue(reclamation.getCategorie());
             prioriteCombo.setValue(reclamation.getPriorite());
             descriptionArea.setText(reclamation.getDescription());
-            statutCombo.setValue(reclamation.getStatut());
 
             if (reclamation.getUtilisateurId() != null) {
                 utilisateurIdField.setText(String.valueOf(reclamation.getUtilisateurId()));
             }
 
-            if (reclamation.getDateCreation() != null) {
-                // Solution 1: Convertir java.util.Date en LocalDate
-                datePicker.setValue(new java.sql.Date(reclamation.getDateCreation().getTime())
-                        .toLocalDate());
+            if (reclamation.getEmail() != null) {
+                emailField.setText(reclamation.getEmail());
+            }
 
-                // OU Solution 2 (plus simple) :
-                // datePicker.setValue(LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(reclamation.getDateCreation())));
+            if (reclamation.getDateCreation() != null) {
+                datePicker.setValue(reclamation.getDateCreation().toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate());
             }
         } else {
             dialogTitle.setText("Ajouter une nouvelle réclamation");
-            statutCombo.setValue("Nouvelle");
             prioriteCombo.setValue("Moyenne");
             categorieCombo.setValue("Technique");
         }
     }
 
-    public void setReclamationList(ObservableList<Reclamation> reclamationList) {
-        this.reclamationList = reclamationList;
+    public boolean isSaved() {
+        return saved;
     }
 
     @FXML
     private void handleSave() {
-        System.out.println("🔵 handleSave() est appelé !");
-        System.out.println("Objet: " + objetField.getText());
-        System.out.println("Catégorie: " + categorieCombo.getValue());
-
-        if (!validateInput()) {
-            System.out.println("❌ Validation échouée");
-            return;
-        }
-
-        System.out.println("✅ Validation réussie");
+        if (!validateInput()) return;
 
         try {
             if (reclamation == null) {
-                // Ajouter nouvelle réclamation
                 Reclamation newReclamation = new Reclamation();
                 newReclamation.setObjet(objetField.getText().trim());
                 newReclamation.setCategorie(categorieCombo.getValue());
                 newReclamation.setPriorite(prioriteCombo.getValue());
                 newReclamation.setDescription(descriptionArea.getText().trim());
-                newReclamation.setStatut(statutCombo.getValue());
+                newReclamation.setStatut("Nouvelle");
+                newReclamation.setDateCreation(Date.from(datePicker.getValue()
+                        .atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
-                // Gestion de la date
-                if (datePicker != null && datePicker.getValue() != null) {
-                    newReclamation.setDateCreation(Date.from(datePicker.getValue()
-                            .atStartOfDay(ZoneId.systemDefault())
-                            .toInstant()));
-                } else {
-                    newReclamation.setDateCreation(new Date());
-                }
-
-                // Gestion de l'utilisateur ID
                 if (!utilisateurIdField.getText().trim().isEmpty()) {
                     newReclamation.setUtilisateurId(Integer.parseInt(utilisateurIdField.getText().trim()));
                 }
 
-                System.out.println("📤 Envoi à la base de données (AJOUT)...");
+                if (emailField.getText() != null && !emailField.getText().trim().isEmpty()) {
+                    newReclamation.setEmail(emailField.getText().trim());
+                }
+
                 reclamationService.ajouter(newReclamation);
-                System.out.println("✅ Ajout réussi en base !");
-
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Réclamation ajoutée",
-                        "La réclamation a été ajoutée avec succès.");
-
-                closeDialog();
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Réclamation ajoutée avec succès !");
+                saved = true;
+                goBackToList(); // ← Retour à la liste après ajout
 
             } else {
-                // MODIFICATION réclamation existante (code ajouté)
-                System.out.println("🔄 Modification de la réclamation #" + reclamation.getId());
-
                 reclamation.setObjet(objetField.getText().trim());
                 reclamation.setCategorie(categorieCombo.getValue());
                 reclamation.setPriorite(prioriteCombo.getValue());
                 reclamation.setDescription(descriptionArea.getText().trim());
-                reclamation.setStatut(statutCombo.getValue());
 
-                // Gestion de la date
-                if (datePicker != null && datePicker.getValue() != null) {
+                if (datePicker.getValue() != null) {
                     reclamation.setDateCreation(Date.from(datePicker.getValue()
-                            .atStartOfDay(ZoneId.systemDefault())
-                            .toInstant()));
+                            .atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 }
 
-                // Gestion de l'utilisateur ID
                 if (!utilisateurIdField.getText().trim().isEmpty()) {
                     reclamation.setUtilisateurId(Integer.parseInt(utilisateurIdField.getText().trim()));
                 } else {
                     reclamation.setUtilisateurId(null);
                 }
 
-                System.out.println("📤 Envoi à la base de données (MODIFICATION)...");
+                if (emailField.getText() != null && !emailField.getText().trim().isEmpty()) {
+                    reclamation.setEmail(emailField.getText().trim());
+                } else {
+                    reclamation.setEmail(null);
+                }
+
                 reclamationService.update(reclamation);
-                System.out.println("✅ Modification réussie en base !");
-
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Réclamation modifiée",
-                        "La réclamation a été modifiée avec succès.");
-
-                closeDialog();
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Réclamation modifiée avec succès !");
+                saved = true;
+                goBackToList(); // ← Retour à la liste après modification
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Erreur SQL: " + e.getMessage());
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de sauvegarde",
-                    "Détails: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de sauvegarde: " + e.getMessage());
         } catch (NumberFormatException e) {
-            System.err.println("❌ Erreur format: " + e.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Format invalide",
-                    "L'ID utilisateur doit être un nombre valide.");
+            showAlert(Alert.AlertType.ERROR, "Erreur", "L'ID utilisateur doit être un nombre valide.");
         }
     }
 
     @FXML
     private void handleCancel() {
-        closeDialog();
+        goBackToList(); // ← Annuler retourne aussi à la liste
+    }
+
+    // ✅ MÉTHODE AJOUTÉE - Retour à la liste des réclamations
+    @FXML
+    private void goBackToList() {
+        try {
+            Parent listPage = FXMLLoader.load(getClass().getResource("/reclamationList.fxml"));
+            objetField.getScene().setRoot(listPage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de retourner à la liste");
+        }
     }
 
     private boolean validateInput() {
-        if (objetField.getText() == null || objetField.getText().trim().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Champ requis",
-                    "Le champ 'Objet' est requis.");
-            objetField.requestFocus();
+        if (objetField.getText().trim().isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Validation", "L'objet est requis.");
             return false;
         }
-
-        if (descriptionArea.getText() == null || descriptionArea.getText().trim().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Champ requis",
-                    "Le champ 'Description' est requis.");
-            descriptionArea.requestFocus();
+        if (descriptionArea.getText().trim().isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Validation", "La description est requise.");
             return false;
         }
-
-        if (descriptionArea.getText().trim().length() < 10) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Description trop courte",
-                    "La description doit contenir au moins 10 caractères.");
-            descriptionArea.requestFocus();
-            return false;
-        }
-
         if (categorieCombo.getValue() == null) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Champ requis",
-                    "Veuillez sélectionner une catégorie.");
-            categorieCombo.requestFocus();
+            showAlert(Alert.AlertType.WARNING, "Validation", "La catégorie est requise.");
             return false;
         }
-
         if (prioriteCombo.getValue() == null) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Champ requis",
-                    "Veuillez sélectionner une priorité.");
-            prioriteCombo.requestFocus();
+            showAlert(Alert.AlertType.WARNING, "Validation", "La priorité est requise.");
             return false;
         }
 
-        if (statutCombo.getValue() == null) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Champ requis",
-                    "Veuillez sélectionner un statut.");
-            statutCombo.requestFocus();
-            return false;
-        }
-
-        if (datePicker.getValue() == null) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Champ requis",
-                    "Veuillez sélectionner une date.");
-            datePicker.requestFocus();
-            return false;
-        }
-
-        // Validation de l'ID utilisateur si présent
-        if (!utilisateurIdField.getText().trim().isEmpty()) {
-            try {
-                int id = Integer.parseInt(utilisateurIdField.getText().trim());
-                if (id <= 0) {
-                    showAlert(Alert.AlertType.WARNING, "Validation", "ID invalide",
-                            "L'ID utilisateur doit être un nombre positif.");
-                    utilisateurIdField.requestFocus();
-                    return false;
-                }
-            } catch (NumberFormatException e) {
-                showAlert(Alert.AlertType.WARNING, "Validation", "Format invalide",
-                        "L'ID utilisateur doit être un nombre valide.");
-                utilisateurIdField.requestFocus();
+        if (emailField.getText() != null && !emailField.getText().trim().isEmpty()) {
+            String email = emailField.getText().trim();
+            if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                showAlert(Alert.AlertType.WARNING, "Validation", "L'email n'est pas valide.");
                 return false;
             }
         }
@@ -254,15 +192,10 @@ public class ReclamationFormController implements Initializable {
         return true;
     }
 
-    private void closeDialog() {
-        Stage stage = (Stage) objetField.getScene().getWindow();
-        stage.close();
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+    private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
-        alert.setHeaderText(header);
+        alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
     }

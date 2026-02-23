@@ -12,12 +12,14 @@ public class Reclamation {
     private String statut;
     private String priorite;
     private Integer utilisateurId;
+    private String email; // ← NOUVEAU CHAMP
 
-    public Reclamation() {
-    }
+    // Constructeurs
+    public Reclamation() {}
 
     public Reclamation(int id, String objet, String description, String categorie,
-                       Date dateCreation, String statut, String priorite, Integer utilisateurId) {
+                       Date dateCreation, String statut, String priorite,
+                       Integer utilisateurId, String email) {
         this.id = id;
         this.objet = objet;
         this.description = description;
@@ -26,82 +28,36 @@ public class Reclamation {
         this.statut = statut;
         this.priorite = priorite;
         this.utilisateurId = utilisateurId;
+        this.email = email;
     }
 
-    public Reclamation(String objet, String description, String categorie,
-                       Date dateCreation, String statut, String priorite, Integer utilisateurId) {
-        this.objet = objet;
-        this.description = description;
-        this.categorie = categorie;
-        this.dateCreation = dateCreation;
-        this.statut = statut;
-        this.priorite = priorite;
-        this.utilisateurId = utilisateurId;
-    }
+    // Getters et Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public int getId() {
-        return id;
-    }
+    public String getObjet() { return objet; }
+    public void setObjet(String objet) { this.objet = objet; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public String getObjet() {
-        return objet;
-    }
+    public String getCategorie() { return categorie; }
+    public void setCategorie(String categorie) { this.categorie = categorie; }
 
-    public void setObjet(String objet) {
-        this.objet = objet;
-    }
+    public Date getDateCreation() { return dateCreation; }
+    public void setDateCreation(Date dateCreation) { this.dateCreation = dateCreation; }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getStatut() { return statut; }
+    public void setStatut(String statut) { this.statut = statut; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getPriorite() { return priorite; }
+    public void setPriorite(String priorite) { this.priorite = priorite; }
 
-    public String getCategorie() {
-        return categorie;
-    }
+    public Integer getUtilisateurId() { return utilisateurId; }
+    public void setUtilisateurId(Integer utilisateurId) { this.utilisateurId = utilisateurId; }
 
-    public void setCategorie(String categorie) {
-        this.categorie = categorie;
-    }
-
-    public Date getDateCreation() {
-        return dateCreation;
-    }
-
-    public void setDateCreation(Date dateCreation) {
-        this.dateCreation = dateCreation;
-    }
-
-    public String getStatut() {
-        return statut;
-    }
-
-    public void setStatut(String statut) {
-        this.statut = statut;
-    }
-
-    public String getPriorite() {
-        return priorite;
-    }
-
-    public void setPriorite(String priorite) {
-        this.priorite = priorite;
-    }
-
-    public Integer getUtilisateurId() {
-        return utilisateurId;
-    }
-
-    public void setUtilisateurId(Integer utilisateurId) {
-        this.utilisateurId = utilisateurId;
-    }
+    public String getEmail() { return email; } // ← NOUVEAU
+    public void setEmail(String email) { this.email = email; } // ← NOUVEAU
 
     @Override
     public String toString() {
@@ -114,25 +70,7 @@ public class Reclamation {
                 ", statut='" + statut + '\'' +
                 ", priorite='" + priorite + '\'' +
                 ", utilisateurId=" + utilisateurId +
+                ", email='" + email + '\'' +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Reclamation that = (Reclamation) o;
-        return id == that.id &&
-                Objects.equals(objet, that.objet) &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(categorie, that.categorie) &&
-                Objects.equals(dateCreation, that.dateCreation) &&
-                Objects.equals(statut, that.statut) &&
-                Objects.equals(priorite, that.priorite) &&
-                Objects.equals(utilisateurId, that.utilisateurId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, objet, description, categorie, dateCreation, statut, priorite, utilisateurId);
     }
 }

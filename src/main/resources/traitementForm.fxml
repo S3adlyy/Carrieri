@@ -3,57 +3,65 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<DialogPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controllers.TraitementFormController" prefWidth="500">
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.TraitementFormController"
+      spacing="20" style="-fx-padding: 20;" alignment="TOP_CENTER"
+      prefWidth="600">
 
-    <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
-    </padding>
+    <!-- ✅ AJOUT du Label avec fx:id="dialogTitle" -->
+    <Label fx:id="dialogTitle" text="Formulaire de traitement"
+           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
-    <header>
-        <Label fx:id="dialogTitle" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 0 0 10 0;"/>
-    </header>
+    <Separator/>
 
-    <content>
-        <VBox spacing="15">
-            <!-- Réclamation ID -->
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Réclamation ID:" style="-fx-font-weight: bold; -fx-min-width: 120;"/>
-                <TextField fx:id="reclamationIdField" promptText="ID de la réclamation" HBox.hgrow="ALWAYS"/>
-            </HBox>
-
-            <!-- Admin ID -->
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Admin ID:" style="-fx-font-weight: bold; -fx-min-width: 120;"/>
-                <TextField fx:id="adminIdField" promptText="ID de l'administrateur" HBox.hgrow="ALWAYS"/>
-            </HBox>
-
-            <!-- Statut Final -->
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Statut Final:" style="-fx-font-weight: bold; -fx-min-width: 120;"/>
-                <ComboBox fx:id="statutFinalCombo" promptText="Sélectionner statut" HBox.hgrow="ALWAYS"/>
-            </HBox>
-
-            <!-- Date Traitement -->
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Date Traitement:" style="-fx-font-weight: bold; -fx-min-width: 120;"/>
-                <DatePicker fx:id="datePicker" promptText="jj/mm/aaaa" HBox.hgrow="ALWAYS"/>
-            </HBox>
-
-            <!-- Réponse Admin -->
-            <VBox spacing="5">
-                <Label text="Réponse Admin:" style="-fx-font-weight: bold;"/>
-                <TextArea fx:id="reponseArea" promptText="Réponse détaillée..."
-                          prefRowCount="4" wrapText="true"/>
-            </VBox>
-
-            <!-- Boutons -->
-            <HBox spacing="10" alignment="CENTER_RIGHT">
-                <Button text="Sauvegarder" onAction="#handleSave"
-                        style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 100; -fx-padding: 8 15;"/>
-                <Button text="Annuler" onAction="#handleCancel"
-                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 100; -fx-padding: 8 15;"/>
-            </HBox>
+    <!-- Section Informations de la réclamation -->
+    <TitledPane text="Informations de la réclamation" expanded="true">
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <Label fx:id="reclamationObjetLabel" text="Objet: "
+                   style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 14px;"/>
+            <Label fx:id="reclamationDescriptionLabel" text="Description: "
+                   wrapText="true" style="-fx-text-fill: #7f8c8d; -fx-font-size: 13px;"/>
         </VBox>
-    </content>
-</DialogPane>
+    </TitledPane>
+
+    <!-- Formulaire de traitement -->
+    <TitledPane text="Détails du traitement" expanded="true">
+        <GridPane vgap="15" hgap="10" alignment="CENTER" style="-fx-padding: 10;">
+
+            <Label text="Réclamation ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                   style="-fx-font-weight: bold;"/>
+            <TextField fx:id="reclamationIdField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                       prefWidth="350" promptText="ID de la réclamation" editable="false"
+                       style="-fx-background-color: #ecf0f1;"/>
+
+            <Label text="Admin ID:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                   style="-fx-font-weight: bold;"/>
+            <TextField fx:id="adminIdField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                       prefWidth="350" promptText="ID de l'administrateur" text="1"/>
+
+            <Label text="Statut Final:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                   style="-fx-font-weight: bold;"/>
+            <ComboBox fx:id="statutFinalCombo" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                      prefWidth="350" promptText="Sélectionner le statut"/>
+
+            <Label text="Date Traitement:" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                   style="-fx-font-weight: bold;"/>
+            <DatePicker fx:id="datePicker" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                        prefWidth="350" promptText="jj/mm/aaaa"/>
+
+            <Label text="Réponse Admin:" GridPane.rowIndex="4" GridPane.columnIndex="0"
+                   style="-fx-font-weight: bold;"/>
+            <TextArea fx:id="reponseArea" GridPane.rowIndex="4" GridPane.columnIndex="1"
+                      prefRowCount="5" prefWidth="350" wrapText="true"
+                      promptText="Écrivez votre réponse ici..."/>
+        </GridPane>
+    </TitledPane>
+
+    <HBox spacing="15" alignment="CENTER">
+        <Button text="✅ Sauvegarder le traitement" onAction="#handleSave"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-width: 180; -fx-padding: 10; -fx-cursor: hand;"/>
+        <Button text="⬅️ Retour à la liste" onAction="#goBackToList"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-width: 150; -fx-padding: 10; -fx-cursor: hand;"/>
+    </HBox>
+</VBox>

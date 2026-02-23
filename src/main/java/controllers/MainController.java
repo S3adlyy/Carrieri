@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.control.Alert;
 import java.io.IOException;
 
 public class MainController {
@@ -11,36 +12,32 @@ public class MainController {
     @FXML
     private StackPane contentPane;
 
+    // Réclamations
+    @FXML private void showReclamationList() { loadPage("/reclamationList.fxml"); }
+    @FXML private void showReclamationForm() { loadPage("/reclamationForm.fxml"); }
+
+    // Feedbacks
+    @FXML private void showFeedbackList() { loadPage("/feedbackList.fxml"); }
+    @FXML private void showFeedbackForm() { loadPage("/feedbackForm.fxml"); }
+
+    // Traitements
+    @FXML private void showTraitementList() { loadPage("/traitementList.fxml"); }
+    @FXML private void showTraitementForm() { loadPage("/traitementForm.fxml"); }
+
     private void loadPage(String fxmlPath) {
         try {
-            // Les fichiers FXML sont à la racine de resources
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent page = loader.load();
+            Parent page = FXMLLoader.load(getClass().getResource(fxmlPath));
             contentPane.getChildren().setAll(page);
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Erreur lors du chargement de: " + fxmlPath);
+            showAlert("Erreur", "Impossible de charger la page: " + fxmlPath);
         }
     }
 
-    @FXML
-    private void showReclamations() {
-        loadPage("/reclamationList.fxml");
-    }
-
-    @FXML
-    private void showFeedback() {
-        loadPage("/feedbackList.fxml");
-    }
-
-    @FXML
-    private void showTraitements() {
-        loadPage("/traitementList.fxml"); // Si vous avez ce fichier
-    }
-
-    @FXML
-    private void handleLogout() {
-        System.out.println("Déconnexion...");
-        // Logique de déconnexion si nécessaire
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        alert.show();
     }
 }

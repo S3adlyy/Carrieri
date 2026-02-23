@@ -6,7 +6,9 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
@@ -34,17 +36,20 @@ public class TraitementController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         initializeTableColumns();
         loadTraitements();
+
+        // Activer l'édition
+        traitementTable.setEditable(true);
     }
 
     @SuppressWarnings("unchecked")
     private void initializeTableColumns() {
         try {
-            // Colonne ID
+            // Colonne ID (non éditable)
             TableColumn<TraitementReclamation, Integer> idCol =
                     (TableColumn<TraitementReclamation, Integer>) traitementTable.getColumns().get(0);
             idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
 
-            // Colonne Date Traitement
+            // Colonne Date Traitement (non éditable)
             TableColumn<TraitementReclamation, Date> dateCol =
                     (TableColumn<TraitementReclamation, Date>) traitementTable.getColumns().get(1);
             dateCol.setCellValueFactory(new PropertyValueFactory<>("dateTraitement"));
@@ -73,40 +78,27 @@ public class TraitementController implements Initializable {
                 updateTraitement(traitement);
             });
 
-            // Colonne Statut Final (éditable avec ComboBox) - VERSION SIMPLIFIÉE
+            // Colonne Statut Final (éditable avec ComboBox)
             TableColumn<TraitementReclamation, String> statutCol =
                     (TableColumn<TraitementReclamation, String>) traitementTable.getColumns().get(3);
             statutCol.setCellValueFactory(new PropertyValueFactory<>("statutFinal"));
+            statutCol.setCellFactory(ComboBoxTableCell.forTableColumn("Résolue", "En cours", "Fermée", "Rejetée"));
+            statutCol.setOnEditCommit(event -> {
+                TraitementReclamation traitement = event.getRowValue();
+                traitement.setStatutFinal(event.getNewValue());
+                updateTraitement(traitement);
+            });
 
-            // Créer une ComboBox pour l'édition
-            ObservableList<String> statuts = FXCollections.observableArrayList(
-                    "Résolue", "En cours", "Fermée", "Rejetée"
-            );
-
+            // Colorer le statut
             statutCol.setCellFactory(column -> new TableCell<TraitementReclamation, String>() {
-                private final ComboBox<String> comboBox = new ComboBox<>(statuts);
-
-                {
-                    comboBox.setOnAction(event -> {
-                        TraitementReclamation traitement = getTableView().getItems().get(getIndex());
-                        traitement.setStatutFinal(comboBox.getValue());
-                        updateTraitement(traitement);
-                        setText(comboBox.getValue());
-                        setGraphic(null);
-                    });
-                }
-
                 @Override
                 protected void updateItem(String statut, boolean empty) {
                     super.updateItem(statut, empty);
                     if (empty || statut == null) {
                         setText(null);
-                        setGraphic(null);
+                        setStyle("");
                     } else {
                         setText(statut);
-                        setGraphic(null);
-
-                        // Colorer le texte selon le statut
                         switch (statut) {
                             case "Résolue":
                                 setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
@@ -121,24 +113,6 @@ public class TraitementController implements Initializable {
                                 setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
                         }
                     }
-                }
-
-                @Override
-                public void startEdit() {
-                    super.startEdit();
-                    TraitementReclamation traitement = getTableView().getItems().get(getIndex());
-                    if (traitement != null) {
-                        comboBox.setValue(getItem());
-                        setText(null);
-                        setGraphic(comboBox);
-                    }
-                }
-
-                @Override
-                public void cancelEdit() {
-                    super.cancelEdit();
-                    setText(getItem());
-                    setGraphic(null);
                 }
             });
 
@@ -164,19 +138,36 @@ public class TraitementController implements Initializable {
                 updateTraitement(traitement);
             });
 
-            // Colonne Actions
+            // Colonne Actions (boutons)
             TableColumn<TraitementReclamation, Void> actionCol =
                     (TableColumn<TraitementReclamation, Void>) traitementTable.getColumns().get(6);
             actionCol.setCellFactory(param -> new TableCell<>() {
+                private final Button editBtn = new Button("✏️");
                 private final Button deleteBtn = new Button("🗑️");
+                private final Button detailsBtn = new Button("📋");
 
                 {
+                    editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #3498db; -fx-cursor: hand;");
                     deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #e74c3c; -fx-cursor: hand;");
+                    detailsBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #9b59b6; -fx-cursor: hand;");
+
+                    editBtn.setTooltip(new Tooltip("Modifier"));
                     deleteBtn.setTooltip(new Tooltip("Supprimer"));
+                    detailsBtn.setTooltip(new Tooltip("Détails"));
+
+                    editBtn.setOnAction(event -> {
+                        TraitementReclamation traitement = getTableView().getItems().get(getIndex());
+                        openTraitementForm(traitement);
+                    });
 
                     deleteBtn.setOnAction(event -> {
                         TraitementReclamation traitement = getTableView().getItems().get(getIndex());
                         deleteTraitement(traitement);
+                    });
+
+                    detailsBtn.setOnAction(event -> {
+                        TraitementReclamation traitement = getTableView().getItems().get(getIndex());
+                        showTraitementDetails(traitement);
                     });
                 }
 
@@ -186,17 +177,17 @@ public class TraitementController implements Initializable {
                     if (empty) {
                         setGraphic(null);
                     } else {
-                        setGraphic(deleteBtn);
+                        HBox buttons = new HBox(5, editBtn, deleteBtn, detailsBtn);
+                        buttons.setStyle("-fx-alignment: center;");
+                        setGraphic(buttons);
                     }
                 }
             });
 
-            // Activer l'édition
-            traitementTable.setEditable(true);
             traitementTable.setItems(traitementList);
 
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur d'initialisation", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur d'initialisation: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -206,7 +197,7 @@ public class TraitementController implements Initializable {
             traitementService.update(traitement);
             System.out.println("✅ Traitement #" + traitement.getId() + " mis à jour");
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de mise à jour", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de mise à jour: " + e.getMessage());
             loadTraitements();
         }
     }
@@ -218,7 +209,7 @@ public class TraitementController implements Initializable {
             traitementList.addAll(traitementService.read());
             updateTotalCount();
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de chargement", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de chargement: " + e.getMessage());
         }
     }
 
@@ -240,11 +231,50 @@ public class TraitementController implements Initializable {
             traitementList.setAll(traitementService.getByReclamationId(reclamationId));
             updateTotalCount();
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de filtrage", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de filtrage: " + e.getMessage());
         } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.WARNING, "Attention", "Format invalide",
-                    "Veuillez entrer un ID valide.");
+            showAlert(Alert.AlertType.WARNING, "Attention", "Veuillez entrer un ID valide.");
         }
+    }
+
+    private void openTraitementForm(TraitementReclamation traitement) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/traitementForm.fxml"));
+            Parent root = loader.load();
+
+            TraitementFormController controller = loader.getController();
+            controller.setTraitement(traitement);
+            controller.setTraitementList(traitementList);
+
+            // Remplacer le contenu de la fenêtre principale par le formulaire
+            traitementTable.getScene().setRoot(root);
+
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le formulaire: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void showTraitementDetails(TraitementReclamation traitement) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Détails du traitement");
+        alert.setHeaderText("Traitement #" + traitement.getId());
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        String dateStr = traitement.getDateTraitement() != null ?
+                dateFormat.format(traitement.getDateTraitement()) : "Non définie";
+
+        String content = "═══════════════════════════════════════\n" +
+                "📅 Date: " + dateStr + "\n\n" +
+                "📝 RÉPONSE ADMIN:\n" + traitement.getReponseAdmin() + "\n\n" +
+                "═══════════════════════════════════════\n" +
+                "🏷️ Statut Final: " + traitement.getStatutFinal() + "\n" +
+                "🆔 Réclamation ID: " + traitement.getReclamationId() + "\n" +
+                "👤 Admin ID: " + traitement.getAdminId() + "\n" +
+                "═══════════════════════════════════════";
+
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
     private void deleteTraitement(TraitementReclamation traitement) {
@@ -259,34 +289,10 @@ public class TraitementController implements Initializable {
                 traitementService.supprimer(traitement.getId());
                 traitementList.remove(traitement);
                 updateTotalCount();
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Traitement supprimé",
-                        "Le traitement a été supprimé avec succès.");
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Traitement supprimé avec succès.");
             } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de suppression", e.getMessage());
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de suppression: " + e.getMessage());
             }
-        }
-    }
-
-    private void openTraitementForm(TraitementReclamation traitement) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/traitementForm.fxml"));
-            DialogPane dialogPane = loader.load();
-
-            TraitementFormController controller = loader.getController();
-            controller.setTraitement(traitement);
-            controller.setTraitementList(traitementList);
-
-            Dialog<ButtonType> dialog = new Dialog<>();
-            dialog.setDialogPane(dialogPane);
-            dialog.setTitle(traitement == null ? "Nouveau traitement" : "Modifier le traitement");
-
-            dialog.showAndWait();
-            loadTraitements();
-
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur d'interface",
-                    "Impossible d'ouvrir le formulaire: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -294,11 +300,22 @@ public class TraitementController implements Initializable {
         totalLabel.setText("Total: " + traitementList.size());
     }
 
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+    private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
-        alert.setHeaderText(header);
+        alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+    // Ajoutez cette méthode dans TraitementController.java
+    @FXML
+    private void goBackToReclamations() {
+        try {
+            Parent reclamationList = FXMLLoader.load(getClass().getResource("/reclamationList.fxml"));
+            traitementTable.getScene().setRoot(reclamationList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de retourner à la liste des réclamations");
+        }
     }
 }

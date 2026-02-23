@@ -3,33 +3,60 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<DialogPane xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controllers.ReclamationFormController"
-            prefWidth="400">
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.ReclamationFormController"
+      spacing="20" style="-fx-padding: 20;" alignment="TOP_CENTER"
+      prefWidth="500">
 
-    <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
-    </padding>
+    <!-- Label avec fx:id="dialogTitle" -->
+    <Label fx:id="dialogTitle" text="Ajouter une nouvelle réclamation"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
-    <content>
-        <VBox spacing="10">
-            <Label fx:id="dialogTitle" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-            <TextField fx:id="objetField" promptText="Objet"/>
-            <ComboBox fx:id="categorieCombo" promptText="Catégorie"/>
-            <ComboBox fx:id="prioriteCombo" promptText="Priorité"/>
-            <TextArea fx:id="descriptionArea" promptText="Description" prefRowCount="3"/>
-            <ComboBox fx:id="statutCombo" promptText="Statut"/>
-            <DatePicker fx:id="datePicker" promptText="Date"/>
-            <TextField fx:id="utilisateurIdField" promptText="Utilisateur ID"/>
+    <Separator/>
 
-            <!-- Boutons qui appellent handleSave et handleCancel -->
-            <HBox spacing="10" alignment="CENTER_RIGHT">
-                <Button text="Sauvegarder" onAction="#handleSave"
-                        style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 100;"/>
-                <Button text="Annuler" onAction="#handleCancel"
-                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 100;"/>
-            </HBox>
-        </VBox>
-    </content>
-</DialogPane>
+    <GridPane vgap="15" hgap="10" alignment="CENTER" maxWidth="500">
+        <!-- Objet -->
+        <Label text="Objet:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="objetField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                   prefWidth="350" promptText="Objet de la réclamation"/>
+
+        <!-- Catégorie -->
+        <Label text="Catégorie:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <ComboBox fx:id="categorieCombo" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                  prefWidth="350" promptText="Choisir catégorie"/>
+
+        <!-- Priorité -->
+        <Label text="Priorité:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <ComboBox fx:id="prioriteCombo" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                  prefWidth="350" promptText="Priorité"/>
+
+        <!-- Description -->
+        <Label text="Description:" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <TextArea fx:id="descriptionArea" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                  prefRowCount="4" prefWidth="350" wrapText="true" promptText="Description détaillée..."/>
+
+        <!-- Email -->
+        <Label text="Email de notification:" GridPane.rowIndex="4" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="emailField" GridPane.rowIndex="4" GridPane.columnIndex="1"
+                   prefWidth="350" promptText="exemple@email.com (optionnel)"/>
+
+        <!-- Date -->
+        <Label text="Date:" GridPane.rowIndex="5" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <DatePicker fx:id="datePicker" GridPane.rowIndex="5" GridPane.columnIndex="1"
+                    prefWidth="350" promptText="jj/mm/aaaa"/>
+
+        <!-- Utilisateur ID -->
+        <Label text="Utilisateur ID:" GridPane.rowIndex="6" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="utilisateurIdField" GridPane.rowIndex="6" GridPane.columnIndex="1"
+                   prefWidth="350" promptText="ID de l'utilisateur (optionnel)"/>
+    </GridPane>
+
+    <!-- Boutons -->
+    <HBox spacing="15" alignment="CENTER">
+        <Button text="Sauvegarder" onAction="#handleSave"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-width: 120; -fx-padding: 10; -fx-cursor: hand;"/>
+        <Button text="Retour à la liste" onAction="#goBackToList"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-width: 120; -fx-padding: 10; -fx-cursor: hand;"/>
+    </HBox>
+</VBox>

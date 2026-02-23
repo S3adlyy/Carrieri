@@ -3,27 +3,34 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controllers.TraitementController" spacing="10" style="-fx-padding: 20;">
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.TraitementController"
+      spacing="10" style="-fx-padding: 20;">
 
+    <!-- Titre et bouton retour -->
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="🛠️ Gestion des Traitements" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        <Label text="🛠️ Liste des traitements"
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button text="➕ Nouveau traitement" style="-fx-background-color: #27ae60; -fx-text-fill: white;"
-                onAction="#showAddTraitementForm"/>
-        <Button text="🔄 Rafraîchir" onAction="#loadTraitements"/>
+        <!-- ✅ BOUTON RETOUR AJOUTÉ -->
+        <Button text="⬅️ Retour aux réclamations" onAction="#goBackToReclamations"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 8 15;"/>
     </HBox>
 
     <Separator/>
 
+    <!-- Filtre -->
     <HBox spacing="10">
-        <Label text="Filtrer par réclamation ID:"/>
-        <TextField fx:id="filterReclamationField" promptText="ID réclamation" prefWidth="120"/>
-        <Button text="Filtrer" onAction="#filterByReclamation"/>
+        <Label text="Filtrer par Réclamation ID:" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="filterReclamationField" promptText="ID" prefWidth="100"/>
+        <Button text="Filtrer" onAction="#filterByReclamation"
+                style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Label text="Total: " fx:id="totalLabel" style="-fx-font-weight: bold;"/>
+        <Label fx:id="totalLabel" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
     </HBox>
 
+    <!-- Tableau des traitements -->
     <TableView fx:id="traitementTable" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn text="ID" prefWidth="50">
@@ -32,7 +39,7 @@
             <TableColumn text="Date Traitement" prefWidth="150">
                 <cellValueFactory><PropertyValueFactory property="dateTraitement"/></cellValueFactory>
             </TableColumn>
-            <TableColumn text="Réponse Admin" prefWidth="300">
+            <TableColumn text="Réponse Admin" prefWidth="200">
                 <cellValueFactory><PropertyValueFactory property="reponseAdmin"/></cellValueFactory>
             </TableColumn>
             <TableColumn text="Statut Final" prefWidth="100">
@@ -44,7 +51,9 @@
             <TableColumn text="Admin ID" prefWidth="80">
                 <cellValueFactory><PropertyValueFactory property="adminId"/></cellValueFactory>
             </TableColumn>
-            <TableColumn text="Actions" prefWidth="100"/>
+            <TableColumn text="Actions" prefWidth="50">
+                <!-- Colonne pour suppression uniquement -->
+            </TableColumn>
         </columns>
     </TableView>
 </VBox>

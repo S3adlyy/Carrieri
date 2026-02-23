@@ -3,55 +3,41 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<DialogPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controllers.FeedbackFormController" prefWidth="500">
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.FeedbackFormController"
+      spacing="20" style="-fx-padding: 20;" alignment="TOP_CENTER">
 
-    <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
-    </padding>
+    <Label text="Formulaire de feedback"
+           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
-    <header>
-        <Label fx:id="dialogTitle" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 0 0 10 0;"/>
-    </header>
+    <Separator/>
 
-    <content>
-        <VBox spacing="15">
-            <!-- Commentaire -->
-            <VBox spacing="5">
-                <Label text="Commentaire:" style="-fx-font-weight: bold;"/>
-                <TextArea fx:id="commentaireArea" promptText="Votre commentaire..."
-                          prefRowCount="4" wrapText="true"/>
-            </VBox>
+    <GridPane vgap="15" hgap="10" alignment="CENTER" maxWidth="500">
+        <Label text="Commentaire:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextArea fx:id="commentaireArea" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                  prefRowCount="4" prefWidth="300" wrapText="true" promptText="Votre commentaire..."/>
 
-            <!-- Note avec Slider -->
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Note (0-100):" style="-fx-font-weight: bold; -fx-min-width: 100;"/>
-                <Slider fx:id="noteSlider" min="0" max="100" value="50"
-                        showTickLabels="true" showTickMarks="true"
-                        majorTickUnit="25" minorTickCount="5"
-                        prefWidth="200" HBox.hgrow="ALWAYS"/>
-                <Label fx:id="noteLabel" text="50"
-                       style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-min-width: 30;"/>
-            </HBox>
+        <Label text="Note (0-100):" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <HBox spacing="10" alignment="CENTER_LEFT" GridPane.rowIndex="1" GridPane.columnIndex="1">
+            <Slider fx:id="noteSlider" min="0" max="100" value="50"
+                    showTickLabels="true" showTickMarks="true" prefWidth="200"/>
+            <Label fx:id="noteLabel" text="50" style="-fx-font-weight: bold; -fx-min-width: 30;"/>
+        </HBox>
 
-            <!-- Rendu ID et Date -->
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Rendu ID:" style="-fx-font-weight: bold; -fx-min-width: 100;"/>
-                <TextField fx:id="renduIdField" promptText="ID de la mission" HBox.hgrow="ALWAYS"/>
-            </HBox>
+        <Label text="Rendu ID:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="renduIdField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                   prefWidth="300" promptText="ID de la mission"/>
 
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Date:" style="-fx-font-weight: bold; -fx-min-width: 100;"/>
-                <DatePicker fx:id="datePicker" promptText="jj/mm/aaaa" HBox.hgrow="ALWAYS"/>
-            </HBox>
+        <Label text="Date:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="datePicker" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                    prefWidth="300" promptText="jj/mm/aaaa"/>
+    </GridPane>
 
-            <!-- Boutons -->
-            <HBox spacing="10" alignment="CENTER_RIGHT">
-                <Button text="Sauvegarder" onAction="#handleSave"
-                        style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 100; -fx-padding: 8 15;"/>
-                <Button text="Annuler" onAction="#handleCancel"
-                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 100; -fx-padding: 8 15;"/>
-            </HBox>
-        </VBox>
-    </content>
-</DialogPane>
+    <HBox spacing="15" alignment="CENTER">
+        <Button text="Sauvegarder" onAction="#handleSave"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-width: 120; -fx-padding: 10;"/>
+        <Button text="Retour à la liste" onAction="#goBackToList"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-width: 120; -fx-padding: 10;"/>
+    </HBox>
+</VBox>
