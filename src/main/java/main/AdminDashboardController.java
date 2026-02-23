@@ -54,6 +54,7 @@ public class AdminDashboardController {
     @FXML private TableColumn<Postulation, String> colPostulationDate;
     @FXML private TableColumn<Postulation, String> colPostulationStatut;
     @FXML private TableColumn<Postulation, String> colPostulationMotivation;
+    @FXML private TableColumn<Postulation, String> colPostulationCvPath;
     @FXML private TableColumn<Postulation, Void> colPostulationActions;
 
     private final OffreEmploiService offreService = new OffreEmploiService();
@@ -173,6 +174,13 @@ public class AdminDashboardController {
             // Validation: Maximum length
             if (!newValue.isEmpty() && newValue.length() > maxLength) {
                 showError("❌ Le champ " + column.getText() + " ne peut pas dépasser " + maxLength + " caractères\nActuellement: " + newValue.length() + " caractères");
+                tableOffres.refresh();
+                return;
+            }
+
+            // Validation: Ne peut pas commencer par un chiffre (pour titre et description)
+            if ((property.equals("titre") || property.equals("description")) && newValue.matches("^\\d.*")) {
+                showError("❌ Le champ " + column.getText() + " ne peut pas commencer par un chiffre");
                 tableOffres.refresh();
                 return;
             }
@@ -504,6 +512,38 @@ public class AdminDashboardController {
         colPostulationStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
         colPostulationMotivation.setCellValueFactory(new PropertyValueFactory<>("motivationCandidature"));
 
+        // CV Path column with clickable button
+        colPostulationCvPath.setCellValueFactory(new PropertyValueFactory<>("cvPath"));
+        colPostulationCvPath.setCellFactory(col -> new TableCell<>() {
+            private final Button btnOpenCV = new Button();
+
+            {
+                btnOpenCV.getStyleClass().add("btn-icon-view");
+                btnOpenCV.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; " +
+                                  "-fx-border-radius: 8; -fx-background-radius: 8; " +
+                                  "-fx-padding: 5 10; -fx-cursor: hand;");
+                btnOpenCV.setOnAction(e -> {
+                    Postulation postulation = getTableView().getItems().get(getIndex());
+                    handleOpenCV(postulation.getCvPath());
+                });
+            }
+
+            @Override
+            protected void updateItem(String cvPath, boolean empty) {
+                super.updateItem(cvPath, empty);
+                if (empty || cvPath == null || cvPath.isEmpty()) {
+                    setText("Aucun CV");
+                    setGraphic(null);
+                    setStyle("-fx-text-fill: #9ca3af; -fx-font-style: italic;");
+                } else {
+                    setText(null);
+                    btnOpenCV.setText("📄 Ouvrir CV");
+                    setGraphic(btnOpenCV);
+                    setStyle("");
+                }
+            }
+        });
+
         // Make motivation column wrap text
         colPostulationMotivation.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -689,6 +729,43 @@ public class AdminDashboardController {
             } catch (SQLException e) {
                 showError("Erreur lors de la suppression: " + e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Ouvre le fichier CV dans l'application par défaut du système
+     */
+    private void handleOpenCV(String cvPath) {
+        if (cvPath == null || cvPath.isEmpty()) {
+            showError("❌ Aucun CV disponible pour cette postulation");
+            return;
+        }
+
+        try {
+            java.io.File cvFile = new java.io.File(cvPath);
+
+            if (!cvFile.exists()) {
+                showError("❌ Fichier CV introuvable:\n" + cvPath +
+                         "\n\nLe fichier a peut-être été supprimé ou déplacé.");
+                return;
+            }
+
+            // Ouvrir le fichier avec l'application par défaut
+            if (java.awt.Desktop.isDesktopSupported()) {
+                java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+                if (desktop.isSupported(java.awt.Desktop.Action.OPEN)) {
+                    desktop.open(cvFile);
+                    showInfo("✅ Ouverture du CV: " + cvFile.getName());
+                } else {
+                    showError("❌ L'ouverture de fichiers n'est pas supportée sur ce système");
+                }
+            } else {
+                showError("❌ Desktop API non disponible sur ce système");
+            }
+        } catch (java.io.IOException e) {
+            showError("❌ Erreur lors de l'ouverture du CV:\n" + e.getMessage());
+        } catch (Exception e) {
+            showError("❌ Erreur inattendue:\n" + e.getMessage());
         }
     }
 

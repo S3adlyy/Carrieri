@@ -47,21 +47,9 @@
             <VBox spacing="20" styleClass="form-card" style="-fx-max-width: 700;">
 
                 <!-- Form fields -->
-                <!-- Form fields -->
                 <VBox spacing="18">
 
-                    <!-- Numéro de téléphone -->
-                    <VBox spacing="8">
-                        <HBox spacing="6" alignment="CENTER_LEFT">
-                            <Label text="Numéro de téléphone" styleClass="field-label"/>
-                            <Label text="Pour SMS de confirmation" styleClass="badge-optional"/>
-                        </HBox>
-                        <TextField fx:id="txtPhone" promptText="+33 6 12 34 56 78" styleClass="field-input"/>
-                        <Label fx:id="lblPhoneError" styleClass="error-label" wrapText="true" managed="false" visible="false"/>
-                        <Label text="Format international recommandé (ex: +33612345678)" styleClass="field-hint"/>
-                    </VBox>
-
-                    <!-- Lettre de motivation -->
+                    <!-- Lettre de motivation (EN PREMIER) -->
                     <VBox spacing="8">
                         <HBox spacing="6" alignment="CENTER_LEFT">
                             <Label text="Lettre de motivation" styleClass="field-label"/>
@@ -73,6 +61,31 @@
                         <HBox alignment="CENTER_RIGHT">
                             <Label fx:id="lblCharCount" text="0/1500 | 0 mots" styleClass="char-counter"/>
                         </HBox>
+                    </VBox>
+
+                    <!-- Upload CV (NOUVEAU - OBLIGATOIRE) -->
+                    <VBox spacing="8">
+                        <HBox spacing="6" alignment="CENTER_LEFT">
+                            <Label text="Curriculum Vitae (CV)" styleClass="field-label"/>
+                            <Label text="Requis" styleClass="badge-required"/>
+                        </HBox>
+                        <HBox spacing="12" alignment="CENTER_LEFT" style="-fx-padding: 12; -fx-background-color: #f9fafb; -fx-border-color: #e5e7eb; -fx-border-radius: 10; -fx-background-radius: 10;">
+                            <Button fx:id="btnSelectCV" text="📎 Choisir un fichier" onAction="#handleSelectCV" styleClass="btn-secondary" prefWidth="180"/>
+                            <Label fx:id="lblCVFileName" text="Aucun fichier sélectionné" style="-fx-text-fill: #9ca3af; -fx-font-size: 13;"/>
+                        </HBox>
+                        <Label fx:id="lblCVError" styleClass="error-label" wrapText="true" managed="false" visible="false"/>
+                        <Label text="Formats acceptés : PDF, DOC, DOCX (max 5 MB)" styleClass="field-hint"/>
+                    </VBox>
+
+                    <!-- Numéro de téléphone (EN DERNIER - OPTIONNEL) -->
+                    <VBox spacing="8">
+                        <HBox spacing="6" alignment="CENTER_LEFT">
+                            <Label text="Numéro de téléphone" styleClass="field-label"/>
+                            <Label text="Optionnel - Pour SMS de confirmation" styleClass="badge-optional"/>
+                        </HBox>
+                        <TextField fx:id="txtPhone" promptText="+33 6 12 34 56 78" styleClass="field-input"/>
+                        <Label fx:id="lblPhoneError" styleClass="error-label" wrapText="true" managed="false" visible="false"/>
+                        <Label text="Format international recommandé (ex: +33612345678)" styleClass="field-hint"/>
                     </VBox>
                 </VBox>
 

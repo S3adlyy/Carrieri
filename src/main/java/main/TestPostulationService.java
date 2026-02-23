@@ -18,11 +18,12 @@ public class TestPostulationService {
                     6, // offre_id
                     LocalDateTime.now(),
                     "en attente",
-                    "Je suis motivé(e) et prêt(e) à contribuer dès le premier jour."
+                    "Je suis motivé(e) et prêt(e) à contribuer dès le premier jour.",
+                    null  // cv_path (null pour les tests, ou mettre un chemin si vous voulez)
             );
 
             ps.postuler(p);
-            System.out.println(" Postulation ajoutée !");
+            System.out.println("✅ Postulation ajoutée !");
 
             System.out.println("===== POSTULATIONS (ALL) =====");
             for (Postulation x : ps.afficher()) {
@@ -30,7 +31,7 @@ public class TestPostulationService {
             }
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("❌ Erreur : " + e.getMessage());
         }
     }
 }

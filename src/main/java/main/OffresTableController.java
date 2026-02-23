@@ -164,7 +164,36 @@ public class OffresTableController {
         colTitre.setOnEditCommit(ev -> {
             OffreEmploi old = ev.getRowValue();
             String nv = safe(ev.getNewValue());
-            if (nv.isEmpty()) { showAlert(Alert.AlertType.ERROR, "Erreur", "Titre obligatoire."); refreshRow(old); return; }
+
+            // Validation: titre non vide
+            if (nv.isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Titre obligatoire.");
+                refreshRow(old);
+                return;
+            }
+
+            // Validation: ne commence pas par un chiffre
+            if (nv.matches("^\\d.*")) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Le titre ne peut pas commencer par un chiffre.");
+                refreshRow(old);
+                return;
+            }
+
+            // Validation: unicité du titre (si différent de l'ancien)
+            if (!nv.equals(old.getTitre())) {
+                try {
+                    if (offreService.existsByTitre(nv)) {
+                        showAlert(Alert.AlertType.ERROR, "Erreur", "Ce titre existe déjà. Veuillez choisir un titre différent.");
+                        refreshRow(old);
+                        return;
+                    }
+                } catch (SQLException e) {
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la vérification du titre:\n" + e.getMessage());
+                    refreshRow(old);
+                    return;
+                }
+            }
+
             OffreEmploi updated = copy(old, nv, null, null, null, null, null, null, null, null, null, null, null, null);
             saveInline(old, updated, "Titre");
         });
@@ -174,7 +203,21 @@ public class OffresTableController {
         colDescription.setOnEditCommit(ev -> {
             OffreEmploi old = ev.getRowValue();
             String nv = safe(ev.getNewValue());
-            if (nv.isEmpty()) { showAlert(Alert.AlertType.ERROR, "Erreur", "Description obligatoire."); refreshRow(old); return; }
+
+            // Validation: description non vide
+            if (nv.isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Description obligatoire.");
+                refreshRow(old);
+                return;
+            }
+
+            // Validation: ne commence pas par un chiffre
+            if (nv.matches("^\\d.*")) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "La description ne peut pas commencer par un chiffre.");
+                refreshRow(old);
+                return;
+            }
+
             OffreEmploi updated = copy(old, null, nv, null, null, null, null, null, null, null, null, null, null, null);
             saveInline(old, updated, "Description");
         });

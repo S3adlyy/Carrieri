@@ -182,10 +182,31 @@ public class OffreAddController {
             showError(errTitre, "Le titre est obligatoire.");
             markError(txtTitre, true);
             hasError = true;
+        } else if (titre.matches("^\\d.*")) {
+            showError(errTitre, "Le titre ne peut pas commencer par un chiffre.");
+            markError(txtTitre, true);
+            hasError = true;
+        } else {
+            // Vérifier l'unicité du titre
+            try {
+                if (service.existsByTitre(titre)) {
+                    showError(errTitre, "Ce titre existe déjà. Veuillez choisir un titre différent.");
+                    markError(txtTitre, true);
+                    hasError = true;
+                }
+            } catch (SQLException e) {
+                showError(errTitre, "Erreur lors de la vérification du titre.");
+                markError(txtTitre, true);
+                hasError = true;
+            }
         }
 
         if (description.isEmpty()) {
             showError(errDescription, "La description est obligatoire.");
+            markError(txtDescription, true);
+            hasError = true;
+        } else if (description.matches("^\\d.*")) {
+            showError(errDescription, "La description ne peut pas commencer par un chiffre.");
             markError(txtDescription, true);
             hasError = true;
         }

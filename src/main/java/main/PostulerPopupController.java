@@ -4,21 +4,32 @@ import entities.OffreEmploi;
 import entities.Postulation;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.FileChooser;
 import services.OffreEmploiService;
 import services.PostulationService;
 import services.SimpleSMSService;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class PostulerPopupController {
 
     @FXML private Label lblOfferTitle;
-    @FXML private TextField txtPhone;
     @FXML private TextArea txtMotivation;
     @FXML private Label lblCharCount;
-    @FXML private Label lblPhoneError;
     @FXML private Label lblMotivationError;
+    @FXML private Button btnSelectCV;
+    @FXML private Label lblCVFileName;
+    @FXML private Label lblCVError;
+    @FXML private TextField txtPhone;
+    @FXML private Label lblPhoneError;
     @FXML private Button btnBack;
     @FXML private Button btnCancel;
     @FXML private Button btnSubmit;
@@ -28,12 +39,16 @@ public class PostulerPopupController {
     private int candidatId = 1; // TODO: replace with real connected user id
     private String candidatNom = "Candidat"; // TODO: replace with real connected user name
 
+    private File selectedCVFile = null; // Fichier CV sélectionné
+
     private final PostulationService service = new PostulationService();
     private final OffreEmploiService offreService = new OffreEmploiService();
     private final SimpleSMSService smsService = SimpleSMSService.getInstance();
 
     private static final int MIN_WORDS = 5;
     private static final int MAX_CHARS = 1500;
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+    private static final String CV_STORAGE_DIR = "uploads/cv/"; // Dossier de stockage des CV
 
     @FXML
     public void initialize() {
@@ -143,6 +158,82 @@ public class PostulerPopupController {
         return true;
     }
 
+    private boolean validateCV(boolean showError) {
+        if (selectedCVFile == null) {
+            if (showError && lblCVError != null) {
+                lblCVError.setText("⚠ Le CV est obligatoire. Veuillez sélectionner un fichier.");
+                lblCVError.setManaged(true);
+                lblCVError.setVisible(true);
+            }
+            return false;
+        }
+
+        // Validation réussie
+        if (lblCVError != null) {
+            lblCVError.setText("");
+            lblCVError.setManaged(false);
+            lblCVError.setVisible(false);
+        }
+        return true;
+    }
+
+    @FXML
+    private void handleSelectCV() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Sélectionner votre CV");
+
+        // Extensions acceptées
+        FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("PDF Files", "*.pdf");
+        FileChooser.ExtensionFilter docFilter = new FileChooser.ExtensionFilter("Word Files", "*.doc", "*.docx");
+        FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("All Supported Files", "*.pdf", "*.doc", "*.docx");
+        fileChooser.getExtensionFilters().addAll(allFilter, pdfFilter, docFilter);
+        fileChooser.setSelectedExtensionFilter(allFilter);
+
+        // Ouvrir le dialogue de sélection
+        File file = fileChooser.showOpenDialog(btnSelectCV.getScene().getWindow());
+
+        if (file != null) {
+            // Vérifier la taille du fichier
+            if (file.length() > MAX_FILE_SIZE) {
+                if (lblCVError != null) {
+                    lblCVError.setText("⚠ Le fichier est trop volumineux. Taille maximale : 5 MB");
+                    lblCVError.setManaged(true);
+                    lblCVError.setVisible(true);
+                }
+                return;
+            }
+
+            // Vérifier l'extension
+            String fileName = file.getName().toLowerCase();
+            if (!fileName.endsWith(".pdf") && !fileName.endsWith(".doc") && !fileName.endsWith(".docx")) {
+                if (lblCVError != null) {
+                    lblCVError.setText("⚠ Format non supporté. Utilisez PDF, DOC ou DOCX");
+                    lblCVError.setManaged(true);
+                    lblCVError.setVisible(true);
+                }
+                return;
+            }
+
+            // Fichier valide
+            selectedCVFile = file;
+            if (lblCVFileName != null) {
+                lblCVFileName.setText("✓ " + file.getName() + " (" + formatFileSize(file.length()) + ")");
+                lblCVFileName.setStyle("-fx-text-fill: #10b981; -fx-font-size: 13; -fx-font-weight: 600;");
+            }
+            if (lblCVError != null) {
+                lblCVError.setText("");
+                lblCVError.setManaged(false);
+                lblCVError.setVisible(false);
+            }
+        }
+    }
+
+    private String formatFileSize(long size) {
+        if (size < 1024) return size + " B";
+        if (size < 1024 * 1024) return String.format("%.1f KB", size / 1024.0);
+        return String.format("%.1f MB", size / (1024.0 * 1024.0));
+    }
+
     // Called from OffresListController when opening the popup
     public void setOffreInfo(int id, String titre) {
         this.offreId = id;
@@ -160,12 +251,19 @@ public class PostulerPopupController {
             return;
         }
 
-        // Valider les champs avec affichage d'erreur
+        // Valider les champs dans l'ordre avec affichage d'erreur
         boolean motivationValid = validateMotivation(true);
+        boolean cvValid = validateCV(true);
         boolean phoneValid = validatePhone(true);
 
+        // Si une validation échoue, focus sur le premier champ invalide
         if (!motivationValid) {
             txtMotivation.requestFocus();
+            return;
+        }
+
+        if (!cvValid) {
+            btnSelectCV.requestFocus();
             return;
         }
 
@@ -178,12 +276,24 @@ public class PostulerPopupController {
         String phone = (txtPhone.getText() == null) ? "" : txtPhone.getText().trim();
         String statut = "En attente"; // default status
 
+        // Copier le fichier CV dans le dossier uploads
+        String cvPath = null;
+        try {
+            cvPath = saveCVFile(selectedCVFile);
+            System.out.println("✅ CV sauvegardé: " + cvPath);
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                "Impossible de sauvegarder le CV:\n" + e.getMessage());
+            return;
+        }
+
         Postulation postulation = new Postulation(
                 candidatId,
                 offreId,
                 LocalDateTime.now(),
                 statut,
-                motivation
+                motivation,
+                cvPath  // Ajouter le chemin du CV
         );
 
         try {
@@ -231,10 +341,14 @@ public class PostulerPopupController {
                 if (smsSent) {
                     showAlert(Alert.AlertType.INFORMATION, "Succès",
                         "Votre candidature a été envoyée !\n\n" +
-                        "✓ Un SMS de confirmation a été envoyé au " + phoneClean);
+                        "✓ Un SMS de confirmation a été envoyé au " + phoneClean + "\n" +
+                        "✓ Votre CV a été joint : " + selectedCVFile.getName() + "\n" +
+                        "✓ CV sauvegardé : " + cvPath);
                 } else {
                     showAlert(Alert.AlertType.WARNING, "Attention",
                         "Votre candidature a été envoyée !\n\n" +
+                        "✓ Votre CV a été joint : " + selectedCVFile.getName() + "\n" +
+                        "✓ CV sauvegardé : " + cvPath + "\n\n" +
                         "⚠ Le SMS de confirmation n'a pas pu être envoyé.\n\n" +
                         "Raisons possibles:\n" +
                         "- Numéro non vérifié dans Twilio (mode Trial)\n" +
@@ -243,7 +357,9 @@ public class PostulerPopupController {
                         "Consultez la console pour plus de détails.");
                 }
             } else {
-                String message = "Votre candidature a été envoyée !";
+                String message = "Votre candidature a été envoyée !\n\n" +
+                                "✓ Votre CV a été joint : " + selectedCVFile.getName() + "\n" +
+                                "✓ CV sauvegardé : " + cvPath;
                 if (phone.isEmpty()) {
                     message += "\n\nℹ Aucun numéro fourni, pas de SMS envoyé.";
                 } else if (!smsService.isEnabled()) {
@@ -256,6 +372,43 @@ public class PostulerPopupController {
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur base de données : " + e.getMessage());
         }
+    }
+
+    /**
+     * Sauvegarde le fichier CV dans le dossier uploads/cv/
+     * Retourne le chemin relatif du fichier sauvegardé
+     */
+    private String saveCVFile(File sourceFile) throws IOException {
+        // Créer le dossier uploads/cv s'il n'existe pas
+        Path uploadDir = Paths.get(CV_STORAGE_DIR);
+        if (!Files.exists(uploadDir)) {
+            Files.createDirectories(uploadDir);
+        }
+
+        // Générer un nom de fichier unique avec timestamp
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+        String extension = getFileExtension(sourceFile.getName());
+        String fileName = "CV_Candidat" + candidatId + "_Offre" + offreId + "_" + timestamp + extension;
+
+        // Chemin de destination
+        Path destinationPath = uploadDir.resolve(fileName);
+
+        // Copier le fichier
+        Files.copy(sourceFile.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+
+        // Retourner le chemin relatif
+        return CV_STORAGE_DIR + fileName;
+    }
+
+    /**
+     * Récupère l'extension d'un fichier
+     */
+    private String getFileExtension(String fileName) {
+        int lastDot = fileName.lastIndexOf('.');
+        if (lastDot > 0 && lastDot < fileName.length() - 1) {
+            return fileName.substring(lastDot);
+        }
+        return "";
     }
 
     /**

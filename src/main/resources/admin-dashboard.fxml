@@ -96,6 +96,7 @@
                                 <TableColumn fx:id="colPostulationDate" text="Date" prefWidth="140"/>
                                 <TableColumn fx:id="colPostulationStatut" text="Statut" prefWidth="120"/>
                                 <TableColumn fx:id="colPostulationMotivation" text="Motivation" prefWidth="200"/>
+                                <TableColumn fx:id="colPostulationCvPath" text="CV" prefWidth="150"/>
                                 <TableColumn fx:id="colPostulationActions" text="Actions" prefWidth="150"/>
                             </columns>
                         </TableView>

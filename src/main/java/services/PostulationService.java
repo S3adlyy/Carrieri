@@ -19,15 +19,16 @@ public class PostulationService implements IPostulationService {
     //  CREATE (métier)
     @Override
     public void postuler(Postulation p) throws SQLException {
-        String sql = "INSERT INTO postulation (date_postulation, statut, motivation_candidature, candidat_id, offre_id) " +
-                "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO postulation (date_postulation, statut, motivation_candidature, cv_path, candidat_id, offre_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
 
         PreparedStatement ps = cnx.prepareStatement(sql);
         ps.setTimestamp(1, p.getDatePostulation() == null ? null : Timestamp.valueOf(p.getDatePostulation()));
         ps.setString(2, p.getStatut());
         ps.setString(3, p.getMotivationCandidature());
-        ps.setInt(4, p.getCandidatId());
-        ps.setInt(5, p.getOffreId());
+        ps.setString(4, p.getCvPath());
+        ps.setInt(5, p.getCandidatId());
+        ps.setInt(6, p.getOffreId());
 
         ps.executeUpdate();
     }
@@ -128,9 +129,10 @@ public class PostulationService implements IPostulationService {
 
         String statut = rs.getString("statut");
         String motivation = rs.getString("motivation_candidature");
+        String cvPath = rs.getString("cv_path");
         int candidatId = rs.getInt("candidat_id");
         int offreId = rs.getInt("offre_id");
 
-        return new Postulation(id, candidatId, offreId, datePost, statut, motivation);
+        return new Postulation(id, candidatId, offreId, datePost, statut, motivation, cvPath);
     }
 }

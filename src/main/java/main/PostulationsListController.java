@@ -260,6 +260,37 @@ public class PostulationsListController {
 
         motivationRow.getChildren().addAll(motivationIcon, motivation);
 
+        // CV + icon with clickable button
+        HBox cvRow = new HBox(10);
+        cvRow.setAlignment(Pos.CENTER);
+
+        Label cvIcon = new Label("📄");
+        cvIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #7c3aed;");
+
+        if (p.getCvPath() != null && !p.getCvPath().isEmpty()) {
+            Button btnOpenCV = new Button("Ouvrir CV");
+            btnOpenCV.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; " +
+                              "-fx-border-radius: 8; -fx-background-radius: 8; " +
+                              "-fx-padding: 8 16; -fx-cursor: hand; -fx-font-weight: 600;");
+            btnOpenCV.setOnAction(e -> handleOpenCV(p.getCvPath()));
+
+            // Hover effect
+            btnOpenCV.setOnMouseEntered(e ->
+                btnOpenCV.setStyle("-fx-background-color: #7c3aed; -fx-text-fill: white; " +
+                                  "-fx-border-radius: 8; -fx-background-radius: 8; " +
+                                  "-fx-padding: 8 16; -fx-cursor: hand; -fx-font-weight: 600;"));
+            btnOpenCV.setOnMouseExited(e ->
+                btnOpenCV.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; " +
+                                  "-fx-border-radius: 8; -fx-background-radius: 8; " +
+                                  "-fx-padding: 8 16; -fx-cursor: hand; -fx-font-weight: 600;"));
+
+            cvRow.getChildren().addAll(cvIcon, btnOpenCV);
+        } else {
+            Label noCv = new Label("Aucun CV");
+            noCv.setStyle("-fx-text-fill: #9ca3af; -fx-font-style: italic;");
+            cvRow.getChildren().addAll(cvIcon, noCv);
+        }
+
         // Actions: only delete (as it's a postulation)
         HBox actions = new HBox(20);
         actions.setAlignment(Pos.CENTER);
@@ -273,7 +304,7 @@ public class PostulationsListController {
         actions.getChildren().add(btnDelete);
 
         // Assemble card
-        card.getChildren().addAll(title, offreRow, candidatRow, dateRow, statutRow, motivationRow, actions);
+        card.getChildren().addAll(title, offreRow, candidatRow, dateRow, statutRow, motivationRow, cvRow, actions);
 
         // Hover animation
         ScaleTransition scaleUp = new ScaleTransition(Duration.millis(220), card);
@@ -305,6 +336,49 @@ public class PostulationsListController {
             } catch (SQLException e) {
                 showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Ouvre le fichier CV dans l'application par défaut du système
+     */
+    private void handleOpenCV(String cvPath) {
+        if (cvPath == null || cvPath.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Aucun CV disponible pour cette postulation");
+            return;
+        }
+
+        try {
+            java.io.File cvFile = new java.io.File(cvPath);
+
+            if (!cvFile.exists()) {
+                showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Fichier CV introuvable:\n" + cvPath +
+                    "\n\nLe fichier a peut-être été supprimé ou déplacé.");
+                return;
+            }
+
+            // Ouvrir le fichier avec l'application par défaut
+            if (java.awt.Desktop.isDesktopSupported()) {
+                java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+                if (desktop.isSupported(java.awt.Desktop.Action.OPEN)) {
+                    desktop.open(cvFile);
+                    showAlert(Alert.AlertType.INFORMATION, "Succès",
+                        "Ouverture du CV: " + cvFile.getName());
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Erreur",
+                        "L'ouverture de fichiers n'est pas supportée sur ce système");
+                }
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Desktop API non disponible sur ce système");
+            }
+        } catch (java.io.IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                "Erreur lors de l'ouverture du CV:\n" + e.getMessage());
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                "Erreur inattendue:\n" + e.getMessage());
         }
     }
 
