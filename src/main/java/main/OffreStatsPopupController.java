@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.chart.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Region;
@@ -16,7 +17,9 @@ import services.PostulationService;
 import services.OffreAnalyticsService;
 import services.OffreAnalyticsService.OffreStatistics;
 import services.OffreAnalyticsService.Recommendation;
+import services.StatsExportService;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -380,5 +383,58 @@ public class OffreStatsPopupController {
     private void handleClose() {
         lblOffreTitre.getScene().getWindow().hide();
     }
-}
 
+    @FXML
+    private void handleExportPDF() {
+        try {
+            StatsExportService exportService = new StatsExportService();
+            File file = exportService.exportToPDF(offre, statistics, postulations);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Export PDF Réussi");
+            alert.setHeaderText("✅ Export terminé !");
+            alert.setContentText("Le fichier PDF a été créé avec succès :\n" + file.getAbsolutePath());
+            alert.showAndWait();
+
+            // Ouvrir le fichier
+            if (java.awt.Desktop.isDesktopSupported()) {
+                java.awt.Desktop.getDesktop().open(file);
+            }
+
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur d'Export");
+            alert.setHeaderText("❌ Échec de l'export");
+            alert.setContentText("Une erreur s'est produite lors de la création du PDF :\n" + e.getMessage());
+            alert.showAndWait();
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleExportExcel() {
+        try {
+            StatsExportService exportService = new StatsExportService();
+            File file = exportService.exportToExcel(offre, statistics, postulations);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Export Excel Réussi");
+            alert.setHeaderText("✅ Export terminé !");
+            alert.setContentText("Le fichier Excel a été créé avec succès :\n" + file.getAbsolutePath());
+            alert.showAndWait();
+
+            // Ouvrir le fichier
+            if (java.awt.Desktop.isDesktopSupported()) {
+                java.awt.Desktop.getDesktop().open(file);
+            }
+
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur d'Export");
+            alert.setHeaderText("❌ Échec de l'export");
+            alert.setContentText("Une erreur s'est produite lors de la création du fichier Excel :\n" + e.getMessage());
+            alert.showAndWait();
+            e.printStackTrace();
+        }
+    }
+}

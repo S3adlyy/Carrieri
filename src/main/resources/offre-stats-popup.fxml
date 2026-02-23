@@ -27,7 +27,13 @@
                        styleClass="stats-subtitle"/>
             </VBox>
 
-            <Button text="✕" onAction="#handleClose" styleClass="btn-close-stats"/>
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button text="📄 PDF" onAction="#handleExportPDF" styleClass="btn-export-pdf"
+                        style="-fx-background-color: #7c3aed; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
+                <Button text="📊 Excel" onAction="#handleExportExcel" styleClass="btn-export-excel"
+                        style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
+                <Button text="✕" onAction="#handleClose" styleClass="btn-close-stats"/>
+            </HBox>
         </HBox>
 
         <!-- Content -->
