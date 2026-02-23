@@ -432,14 +432,14 @@ public class OffreAnalyticsService {
         // Vérifier la description
         if (offre.getDescription() != null) {
             int descLength = offre.getDescription().length();
-            if (descLength < 200) {
+            if (descLength < 50) {
                 recommendations.add(new Recommendation(
                     "⚠️",
                     "Description trop courte",
                     "Ajoutez plus de détails (recommandé : 400-800 charactères)",
                     "haute"
                 ));
-            } else if (descLength > 1500) {
+            } else if (descLength > 200) {
                 recommendations.add(new Recommendation(
                     "⚠️",
                     "Description longue",
