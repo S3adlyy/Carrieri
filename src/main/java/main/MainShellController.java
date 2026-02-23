@@ -297,9 +297,17 @@ public class MainShellController implements Initializable {
                         fadeIn.setToValue(1);
                         fadeIn.play();
 
+                        // ✅ CORRECTION
+                        Platform.runLater(() -> {
+                            AlertUtils.showSuccess("✅ Bascule réussie",
+                                    "Vous êtes maintenant dans l'espace Candidat.");
+                        });
+
                     } catch (IOException ex) {
                         ex.printStackTrace();
-                        AlertUtils.showError("Erreur", "Impossible de charger l'espace candidat");
+                        Platform.runLater(() -> {
+                            AlertUtils.showError("Erreur", "Impossible de charger l'espace candidat");
+                        });
                     }
                 });
 
@@ -307,7 +315,9 @@ public class MainShellController implements Initializable {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                AlertUtils.showError("Erreur", "Impossible de basculer");
+                Platform.runLater(() -> {
+                    AlertUtils.showError("Erreur", "Impossible de basculer");
+                });
             }
         }
     }

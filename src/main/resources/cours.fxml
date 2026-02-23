@@ -144,7 +144,21 @@
 
                             <Label text="Cette image sera la couverture du cours" styleClass="field-hint"/>
                         </VBox>
+                        <!-- ✅ NOUVEAU : Prix du cours -->
+                        <VBox spacing="10" styleClass="form-field">
+                            <Label text="Prix du cours" styleClass="field-label"/>
 
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <TextField fx:id="txtPrix" promptText="0.00" prefWidth="150" styleClass="form-field"/>
+                                <Label text="€" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #5E548E;"/>
+                            </HBox>
+
+                            <CheckBox fx:id="chkEstPayant" text="Cours payant" styleClass="form-checkbox"/>
+                            <Label text="Laissez 0.00 pour un cours gratuit" styleClass="field-hint"/>
+
+                            <Label fx:id="errorPrix" text="" styleClass="error-label"
+                                   visible="false" managed="false"/>
+                        </VBox>
                         <!-- Obligatoire -->
                         <VBox spacing="10" styleClass="form-field">
                             <Label text="Statut du cours" styleClass="field-label"/>

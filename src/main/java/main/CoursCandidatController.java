@@ -4,14 +4,13 @@ import entities.Certification;
 import entities.Cours;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import services.CertificationService;
-import services.CoursService;
-import services.EmailService;
-import services.ProgressionCoursService;
+import services.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Rectangle;
@@ -21,10 +20,12 @@ import javafx.scene.layout.Priority;
 import utils.AlertUtils;
 import javafx.stage.DirectoryChooser;
 import java.io.File;
-import services.TraductionService;
+
 import main.LangueTest;
 import javafx.scene.control.ComboBox;
 import javafx.collections.FXCollections;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,13 +52,15 @@ public class CoursCandidatController {
     private List<Cours> tousLesCours;
     private int candidatId = 1;
 
+    // ✅ NOUVEAU : Service de paiement
+    private PaiementService paiementService = new PaiementService();
+    private List<Integer> coursAchetes = new ArrayList<>();
+
     @FXML
     public void initialize() {
         coursServices = new CoursService();
 
-
         comboNiveau.getItems().addAll("Tous", "Débutant", "Intermédiaire", "Avancé", "Expert", "Master");
-
 
         comboNiveau.setValue("Tous");
 
@@ -66,7 +69,20 @@ public class CoursCandidatController {
         loadCoursFromDatabase();
         chargerStatistiques();
 
+        // ✅ NOUVEAU : Charger les achats
+        chargerAchats();
+
         txtRecherche.textProperty().addListener((obs, oldVal, newVal) -> filtrerCours());
+    }
+
+    // ✅ NOUVELLE MÉTHODE : Charger les achats du candidat
+    private void chargerAchats() {
+        try {
+            coursAchetes = paiementService.getCoursAchetes(candidatId);
+            System.out.println("✅ Cours achetés chargés: " + coursAchetes.size());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadCoursFromDatabase() {
@@ -158,7 +174,7 @@ public class CoursCandidatController {
 
         card.getChildren().add(imageContainer);
 
-        // --- RESTE DU CODE INCHANGÉ ---
+        // --- CONTENU DE LA CARTE ---
         VBox content = new VBox(15);
         content.setPadding(new Insets(20));
         content.getStyleClass().add("card-content");
@@ -197,6 +213,28 @@ public class CoursCandidatController {
 
         metaBox.getChildren().add(durationBox);
 
+        // ✅ AFFICHER LE PRIX SI LE COURS EST PAYANT
+        boolean dejaAchete = coursAchetes.contains(cours.getId());
+
+        if (cours.getPrix() > 0) {
+            HBox prixBox = new HBox(5);
+            prixBox.setAlignment(Pos.CENTER_LEFT);
+            Label euroIcon = new Label(dejaAchete ? "✅" : "💰");
+            euroIcon.setStyle("-fx-font-size: 14px;");
+            String textePrix = dejaAchete ? "Acheté" : String.format("%.2f €", cours.getPrix());
+            Label lblPrix = new Label(textePrix);
+            lblPrix.setStyle(dejaAchete ?
+                    "-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #10b981;" :
+                    "-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #5E548E;");
+            prixBox.getChildren().addAll(euroIcon, lblPrix);
+            metaBox.getChildren().add(prixBox);
+
+            // LOG DE CONFIRMATION
+            System.out.println("   ✅ Prix AJOUTÉ à metaBox");
+        } else {
+            System.out.println("   ⚠️ Prix NON ajouté (prix <= 0)");
+        }
+
         if (cours.isEst_obligatoire()) {
             HBox obligBox = new HBox(5);
             obligBox.setAlignment(Pos.CENTER_LEFT);
@@ -211,13 +249,27 @@ public class CoursCandidatController {
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER);
 
-        Button btnCommencer = new Button("Commencer");
-        btnCommencer.getStyleClass().add("btn-commencer");
-        btnCommencer.setOnAction(e -> ouvrirCours(cours));
-        btnCommencer.setMaxWidth(Double.MAX_VALUE);
-        HBox.setHgrow(btnCommencer, Priority.ALWAYS);
+        // ✅ BOUTON DYNAMIQUE (Acheter ou Commencer)
+        // ✅ VERSION CORRECTE
+        Button btnAction;
+        if (cours.getPrix() > 0 && !dejaAchete) {
+            btnAction = new Button("Acheter " + String.format("%.2f €", cours.getPrix()));
+            btnAction.setStyle("-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 10 20; -fx-cursor: hand;");
+            btnAction.setOnAction(e -> acheterCours(cours));  // ✅ Pour les cours payants non achetés
+        } else if (dejaAchete) {
+            btnAction = new Button("Accéder au cours");
+            btnAction.getStyleClass().add("btn-commencer");
+            btnAction.setOnAction(e -> ouvrirCours(cours));   // ✅ Pour les cours déjà achetés
+        } else {
+            btnAction = new Button("Commencer");
+            btnAction.getStyleClass().add("btn-commencer");
+            btnAction.setOnAction(e -> ouvrirCours(cours));   // ✅ Pour les cours gratuits
+        }
 
-        buttonBox.getChildren().addAll(btnCommencer); // PLUS DE BOUTON PDF
+        btnAction.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(btnAction, Priority.ALWAYS);
+
+        buttonBox.getChildren().addAll(btnAction);
 
         content.getChildren().addAll(badges, lblTitre, lblDesc, metaBox, buttonBox);
         card.getChildren().add(content);
@@ -235,6 +287,45 @@ public class CoursCandidatController {
         return card;
     }
 
+    // ✅ NOUVELLE MÉTHODE POUR ACHETER UN COURS
+    private void acheterCours(Cours cours) {
+        try {
+            boolean confirm = AlertUtils.showConfirmation(
+                    "💰 Achat du cours",
+                    "Vous allez acheter le cours :\n\n" +
+                            "📚 " + cours.getTitre() + "\n" +
+                            "💰 Prix: " + String.format("%.2f €", cours.getPrix()) + "\n\n" +
+                            "Voulez-vous continuer ?",
+                    "Oui, acheter",
+                    "Non, annuler"
+            );
+
+            if (!confirm) return;
+
+            // Charger la vue paiement
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/paiement.fxml"));
+            Node paiementView = loader.load();
+
+            PaiementController controller = loader.getController();
+            controller.setCours(cours, candidatId, CandidatShellController.getInstance());
+
+            // Afficher la vue paiement
+            CandidatShellController.getInstance().showView(paiementView);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            AlertUtils.showError("❌ Erreur", "Erreur lors de l'achat : " + e.getMessage());
+        }
+    }
+    public void rafraichirAchats() {
+        try {
+            coursAchetes = paiementService.getCoursAchetes(candidatId);
+            System.out.println("✅ Achats rechargés: " + coursAchetes.size());
+            displayCours(tousLesCours);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     private String getLevelStyle(String niveau) {
         if (niveau == null) return "level-intermediaire";
         switch (niveau.toLowerCase()) {
@@ -274,24 +365,6 @@ public class CoursCandidatController {
         lblTotalCours.setText(filtered.size() + " cours disponibles");
     }
 
-    // ============================================
-    // GÉNÉRER CERTIFICAT - MODIFIÉ
-    // ============================================
-
-    /**
-     * Génère un certificat professionnel sur une seule page
-     */
-    /**
-     * Génère un certificat professionnel sur une seule page avec le logo Carrieri
-     */
-    /**
-     * Génère un certificat professionnel sur une seule page avec le logo Carrieri (image)
-     */
-
-    /**
-     * Génère un PDF de certificat professionnel avec le logo Carrieri
-     */
-
     @FXML
     private void rechercherCours() {
         filtrerCours();
@@ -328,6 +401,7 @@ public class CoursCandidatController {
 
         comboLangueTest.setOnAction(e -> changerLangue());
     }
+
     @FXML
     private void changerLangue() {
         String selection = comboLangueTest.getValue();
@@ -344,6 +418,7 @@ public class CoursCandidatController {
                     "Les cours sont maintenant en " + selection.split(" ")[0]);
         }
     }
+
     private void rechargerCoursAvecTraduction() {
         try {
             tousLesCours = coursServices.readAll();
@@ -355,6 +430,7 @@ public class CoursCandidatController {
             e.printStackTrace();
         }
     }
+
     private Cours traduireCours(Cours cours) {
         if (coursTraduits.containsKey(cours.getId())) {
             return coursTraduits.get(cours.getId());
@@ -370,9 +446,18 @@ public class CoursCandidatController {
                 cours.getCreatedBy(),
                 cours.getImageCouverture()
         );
-        coursTraduit.setId(cours.getId());
 
+        coursTraduit.setId(cours.getId());
+        // ✅ AJOUTER CES LIGNES
+        coursTraduit.setPrix(cours.getPrix());
+        coursTraduit.setEstPayant(cours.isEstPayant());
+
+        // Pour déboguer
+        System.out.println("   🔄 Traduction de " + cours.getTitre() +
+                " | Prix original: " + cours.getPrix() +
+                " | Prix copié: " + coursTraduit.getPrix());
         coursTraduits.put(cours.getId(), coursTraduit);
         return coursTraduit;
     }
+
 }

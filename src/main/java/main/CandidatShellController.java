@@ -126,12 +126,18 @@ public class CandidatShellController implements Initializable {
                         fadeIn.setToValue(1);
                         fadeIn.play();
 
-                        AlertUtils.showSuccess("✅ Bascule réussie", "Vous êtes maintenant dans l'espace Administrateur.");
+                        // ✅ CORRECTION : Utiliser Platform.runLater pour l'alerte
+                        Platform.runLater(() -> {
+                            AlertUtils.showSuccess("✅ Bascule réussie",
+                                    "Vous êtes maintenant dans l'espace Administrateur.");
+                        });
 
                     } catch (IOException ex) {
                         ex.printStackTrace();
-                        AlertUtils.showError("❌ Erreur de chargement",
-                                "Impossible de charger l'espace administrateur.\n\n" + ex.getMessage());
+                        Platform.runLater(() -> {
+                            AlertUtils.showError("❌ Erreur de chargement",
+                                    "Impossible de charger l'espace administrateur.\n\n" + ex.getMessage());
+                        });
                     }
                 });
 
@@ -139,7 +145,9 @@ public class CandidatShellController implements Initializable {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                AlertUtils.showError("❌ Erreur", "Impossible de basculer vers le mode Admin");
+                Platform.runLater(() -> {
+                    AlertUtils.showError("❌ Erreur", "Impossible de basculer vers le mode Admin");
+                });
             }
         }
     }
@@ -216,8 +224,19 @@ public class CandidatShellController implements Initializable {
 
     @FXML
     public void showCatalogue() {
-        loadView("/cours_candidat.fxml");
-        setActiveButton(btnCatalogue);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cours_candidat.fxml"));
+            Node view = loader.load();
+
+            // Récupérer le contrôleur et forcer le rechargement
+            CoursCandidatController controller = loader.getController();
+            controller.rafraichirAchats(); // Vous devez ajouter cette méthode
+
+            animateContentChange(view);
+            setActiveButton(btnCatalogue);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // ============================================
@@ -483,5 +502,8 @@ public class CandidatShellController implements Initializable {
             return contentPane.getChildren().get(0);
         }
         return null;
+    }
+    public void showView(Node view) {
+        animateContentChange(view); // Appelle la méthode privée existante
     }
 }

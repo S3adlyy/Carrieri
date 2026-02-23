@@ -19,17 +19,7 @@ public class CoursService implements ICoursService {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new Cours(
-                            rs.getInt("id"),
-                            rs.getString("titre"),
-                            rs.getString("description"),
-                            rs.getInt("duree"),
-                            rs.getString("niveau"),
-                            rs.getString("competences_visees"),
-                            rs.getBoolean("est_obligatoire"),
-                            rs.getInt("created_by"),
-                            rs.getBytes("image_couverture")
-                    );
+                    return mapResultSetToCours(rs);
                 }
             }
         }
@@ -38,7 +28,7 @@ public class CoursService implements ICoursService {
     @Override
     public void ajouter(Cours cours) throws SQLException {
         validateCours(cours);
-        String sql = "INSERT INTO cours (titre, description, duree, niveau, competences_visees, est_obligatoire, created_by, image_couverture) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO cours (titre, description, duree, niveau, competences_visees, est_obligatoire, created_by, image_couverture, prix, est_payant) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, cours.getTitre().trim());
             ps.setString(2, cours.getDescription().trim());
@@ -48,6 +38,8 @@ public class CoursService implements ICoursService {
             ps.setBoolean(6, cours.isEst_obligatoire());
             ps.setInt(7, cours.getCreatedBy());
             ps.setBytes(8, cours.getImageCouverture());
+            ps.setDouble(9, cours.getPrix());
+            ps.setBoolean(10, cours.isEstPayant());
             ps.executeUpdate();
         }
     }
@@ -55,7 +47,7 @@ public class CoursService implements ICoursService {
     @Override
     public void update(Cours cours) throws SQLException {
         validateCours(cours);
-        String sql = "UPDATE cours SET titre=?, description=?, duree=?, niveau=?, competences_visees=?, est_obligatoire=?, image_couverture=? WHERE id=?";
+        String sql = "UPDATE cours SET titre=?, description=?, duree=?, niveau=?, competences_visees=?, est_obligatoire=?, image_couverture=?, prix=?, est_payant=? WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, cours.getTitre());
             ps.setString(2, cours.getDescription());
@@ -64,7 +56,9 @@ public class CoursService implements ICoursService {
             ps.setString(5, cours.getCompetences_visees());
             ps.setBoolean(6, cours.isEst_obligatoire());
             ps.setBytes(7, cours.getImageCouverture());
-            ps.setInt(8, cours.getId());
+            ps.setDouble(8, cours.getPrix());
+            ps.setBoolean(9, cours.isEstPayant());
+            ps.setInt(10, cours.getId());
             ps.executeUpdate();
         }
     }
@@ -190,8 +184,10 @@ public class CoursService implements ICoursService {
     @Override
     public List<Cours> readAll() throws SQLException {
         List<Cours> list = new ArrayList<>();
+        String sql = "SELECT * FROM cours";
+
         try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM cours")) {
+             ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 list.add(mapResultSetToCours(rs));
             }
@@ -205,11 +201,12 @@ public class CoursService implements ICoursService {
     }
 
     @Override
-    public List<Cours> readByAdmin(int userId) throws SQLException {
+    public List<Cours> readByAdmin(int adminId) throws SQLException {
         List<Cours> list = new ArrayList<>();
         String sql = "SELECT * FROM cours WHERE created_by = ?";
+
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, userId);
+            ps.setInt(1, adminId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     list.add(mapResultSetToCours(rs));
@@ -220,7 +217,7 @@ public class CoursService implements ICoursService {
     }
 
     private Cours mapResultSetToCours(ResultSet rs) throws SQLException {
-        return new Cours(
+        Cours cours = new Cours(
                 rs.getInt("id"),
                 rs.getString("titre"),
                 rs.getString("description"),
@@ -231,6 +228,21 @@ public class CoursService implements ICoursService {
                 rs.getInt("created_by"),
                 rs.getBytes("image_couverture")
         );
+
+        // Gestion des nouvelles colonnes (peuvent ne pas exister encore)
+        try {
+            cours.setPrix(rs.getDouble("prix"));
+        } catch (SQLException e) {
+            cours.setPrix(0.0);
+        }
+
+        try {
+            cours.setEstPayant(rs.getBoolean("est_payant"));
+        } catch (SQLException e) {
+            cours.setEstPayant(false);
+        }
+
+        return cours;
     }
 
     private void validateCours(Cours cours) {

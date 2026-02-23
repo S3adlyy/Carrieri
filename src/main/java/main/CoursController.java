@@ -95,7 +95,10 @@ public class CoursController implements Initializable {
     private int currentUserId = 1;
     private byte[] imageBytesSelected;
     private Cours coursSelectionne = null;
-
+    @FXML private TextField txtPrix;
+    @FXML private CheckBox chkEstPayant;
+    @FXML private Label errorPrix;
+    @FXML private TableColumn<Cours, Double> colPrix;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         coursService = new CoursService();
@@ -237,6 +240,35 @@ public class CoursController implements Initializable {
                 hideError(errorDescription);
             }
         });
+        // Validation du prix
+        txtPrix.textProperty().addListener((obs, oldVal, newVal) -> {
+            String prixStr = newVal != null ? newVal.trim() : "";
+            if (!prixStr.isEmpty() && chkEstPayant.isSelected()) {
+                try {
+                    double prix = Double.parseDouble(prixStr);
+                    if (prix < 0) {
+                        showError(errorPrix, "Le prix ne peut pas être négatif");
+                    } else if (prix > 10000) {
+                        showError(errorPrix, "Le prix ne peut pas dépasser 10000 €");
+                    } else {
+                        hideError(errorPrix);
+                    }
+                } catch (NumberFormatException e) {
+                    showError(errorPrix, "Format de prix invalide");
+                }
+            } else {
+                hideError(errorPrix);
+            }
+        });
+
+// Lier le champ prix à la case à cocher
+        chkEstPayant.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            txtPrix.setDisable(!newVal);
+            if (!newVal) {
+                txtPrix.setText("0.00");
+                hideError(errorPrix);
+            }
+        });
 
         btnChoisirImage.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
@@ -275,6 +307,8 @@ public class CoursController implements Initializable {
             comboNiveau.getStyleClass().add("error");
         } else if (errorLabel == errorCompetences) {
             txtCompetences.getStyleClass().add("error");
+        } else if (errorLabel == errorPrix) {  // ✅ AJOUTER
+            txtPrix.getStyleClass().add("error");
         }
     }
 
@@ -293,6 +327,8 @@ public class CoursController implements Initializable {
             comboNiveau.getStyleClass().remove("error");
         } else if (errorLabel == errorCompetences) {
             txtCompetences.getStyleClass().remove("error");
+        } else if (errorLabel == errorPrix) {  // ✅ AJOUTER
+            txtPrix.getStyleClass().remove("error");
         }
     }
 
@@ -352,9 +388,17 @@ public class CoursController implements Initializable {
         colImage.setCellValueFactory(new PropertyValueFactory<>("imageCouverture"));
         colImage.setCellFactory(column -> CoursCell.getImageCell());
 
+        // ✅ AJOUTER CETTE COLONNE
+        TableColumn<Cours, Double> colPrix = new TableColumn<>("PRIX");
+        colPrix.setCellValueFactory(new PropertyValueFactory<>("prix"));
+        colPrix.setCellFactory(column -> CoursCell.getPrixCell());
+        colPrix.setPrefWidth(100);
+
+        // Ajouter la colonne au tableau (à la position souhaitée)
+        tableCours.getColumns().add(4, colPrix); // Après la colonne durée par exemple
+
         // Colonne Actions avec bouton de suppression
         colActions.setCellFactory(param -> new TableCell<>() {
-
             private final Button btnDelete = new Button("🗑️");
             private final HBox actions = new HBox(6, btnDelete);
 
@@ -396,6 +440,11 @@ public class CoursController implements Initializable {
         txtDescription.setText(cours.getDescription());
         comboNiveau.setValue(cours.getNiveau());
         chkObligatoire.setSelected(cours.isEst_obligatoire());
+
+        // ✅ AJOUTER CES LIGNES
+        txtPrix.setText(String.valueOf(cours.getPrix()));
+        chkEstPayant.setSelected(cours.isEstPayant());
+        txtPrix.setDisable(!cours.isEstPayant());
 
         if (cours.getImageCouverture() != null) {
             imageViewForm.setImage(new Image(new ByteArrayInputStream(cours.getImageCouverture())));
@@ -455,12 +504,20 @@ public class CoursController implements Initializable {
                     imageBytesSelected
             );
 
+            // ✅ AJOUTER CES LIGNES
+            nouveauCours.setPrix(Double.parseDouble(txtPrix.getText().trim()));
+            nouveauCours.setEstPayant(chkEstPayant.isSelected());
+
             coursService.ajouter(nouveauCours);
 
             // ✅ NOUVELLE ALERTE AVEC INSTRUCTIONS
+            String messagePrix = chkEstPayant.isSelected()
+                    ? "Prix: " + txtPrix.getText() + " €"
+                    : "Cours gratuit";
+
             AlertUtils.showSuccessWithInstructions(
                     "🎉 Cours créé avec succès",
-                    "Le cours \"" + txtTitre.getText() + "\" a été ajouté à la plateforme.",
+                    "Le cours \"" + txtTitre.getText() + "\" a été ajouté à la plateforme.\n" + messagePrix,
                     "Utilisez les icônes 📚 et 📖 pour ajouter des modules et des leçons à ce cours."
             );
 
@@ -515,6 +572,10 @@ public class CoursController implements Initializable {
             coursSelectionne.setNiveau(comboNiveau.getValue());
             coursSelectionne.setCompetences_visees(txtCompetences.getText());
             coursSelectionne.setEst_obligatoire(chkObligatoire.isSelected());
+
+            // ✅ AJOUTER CES LIGNES
+            coursSelectionne.setPrix(Double.parseDouble(txtPrix.getText().trim()));
+            coursSelectionne.setEstPayant(chkEstPayant.isSelected());
 
             if (imageBytesSelected != null) {
                 coursSelectionne.setImageCouverture(imageBytesSelected);
@@ -800,6 +861,32 @@ public class CoursController implements Initializable {
         } else {
             hideError(errorImage);
         }
+        if (chkEstPayant.isSelected()) {
+            String prixStr = txtPrix.getText().trim();
+            if (prixStr.isEmpty()) {
+                errors.append("• Le prix est obligatoire pour un cours payant\n");
+                showError(errorPrix, "Le prix est obligatoire");
+            } else {
+                try {
+                    double prix = Double.parseDouble(prixStr);
+                    if (prix <= 0) {
+                        errors.append("• Le prix doit être supérieur à 0\n");
+                        showError(errorPrix, "Le prix doit être supérieur à 0");
+                    } else if (prix > 10000) {
+                        errors.append("• Le prix ne peut pas dépasser 10000 €\n");
+                        showError(errorPrix, "Le prix ne peut pas dépasser 10000 €");
+                    } else {
+                        hideError(errorPrix);
+                    }
+                } catch (NumberFormatException e) {
+                    errors.append("• Format de prix invalide\n");
+                    showError(errorPrix, "Format de prix invalide");
+                }
+            }
+        } else {
+            txtPrix.setText("0.00");
+            hideError(errorPrix);
+        }
 
         return errors.length() == 0;
     }
@@ -818,12 +905,18 @@ public class CoursController implements Initializable {
         coursSelectionne = null;
         tableCours.getSelectionModel().clearSelection();
 
+        // ✅ AJOUTER CES LIGNES
+        txtPrix.setText("0.00");
+        chkEstPayant.setSelected(false);
+        txtPrix.setDisable(true);
+
         // ✅ RETIRER LES CLASSES ERROR
         txtTitre.getStyleClass().remove("error");
         txtDescription.getStyleClass().remove("error");
         txtDuree.getStyleClass().remove("error");
         txtCompetences.getStyleClass().remove("error");
         comboNiveau.getStyleClass().remove("error");
+        txtPrix.getStyleClass().remove("error");  // ✅ AJOUTER
 
         hideError(errorTitre);
         hideError(errorNiveau);
@@ -831,6 +924,7 @@ public class CoursController implements Initializable {
         hideError(errorCompetences);
         hideError(errorDescription);
         hideError(errorImage);
+        hideError(errorPrix);  // ✅ AJOUTER
 
         if (charCountLabel != null) {
             charCountLabel.setText("0/1000");

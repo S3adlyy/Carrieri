@@ -13,7 +13,25 @@ public class Cours {
     private byte[] imageCouverture;
     private int createdBy;
     private List<Module> modules;
+    private double prix;
+    private boolean estPayant;
 
+    // Getters et Setters
+    public double getPrix() {
+        return prix;
+    }
+
+    public void setPrix(double prix) {
+        this.prix = prix;
+    }
+
+    public boolean isEstPayant() {
+        return estPayant;
+    }
+
+    public void setEstPayant(boolean estPayant) {
+        this.estPayant = estPayant;
+    }
     public List<Module> getModules() {
         return modules;
     }
@@ -38,7 +56,9 @@ public class Cours {
     }
 
     public Cours(){}
-    public Cours(String titre, String description, int duree, String niveau, String competences_visees, boolean est_obligatoire,int createdBy,byte[] imageCouverture) {
+    public Cours(String titre, String description, int duree, String niveau,
+                 String competences_visees, boolean est_obligatoire, int createdBy,
+                 byte[] imageCouverture) {
         this.titre = titre;
         this.description = description;
         this.duree = duree;
@@ -47,10 +67,14 @@ public class Cours {
         this.est_obligatoire = est_obligatoire;
         this.createdBy = createdBy;
         this.imageCouverture = imageCouverture;
+        this.prix = 0.0;          // Par défaut gratuit
+        this.estPayant = false;    // Par défaut non payant
     }
 
+    // Constructeur avec ID
     public Cours(int id, String titre, String description, int duree, String niveau,
-                 String competences_visees, boolean est_obligatoire, int createdBy, byte[] imageCouverture) {
+                 String competences_visees, boolean est_obligatoire, int createdBy,
+                 byte[] imageCouverture) {
         this.id = id;
         this.titre = titre;
         this.description = description;
@@ -60,6 +84,8 @@ public class Cours {
         this.est_obligatoire = est_obligatoire;
         this.createdBy = createdBy;
         this.imageCouverture = imageCouverture;
+        this.prix = 0.0;
+        this.estPayant = false;
     }
 
     public int getId() {

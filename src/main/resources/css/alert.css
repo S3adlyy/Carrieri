@@ -262,3 +262,30 @@
 .dialog-pane.selection-alert .secondary-message {
     -fx-padding: 5px 0 0 0;
 }
+
+.root.dark .prix-label {
+    -fx-text-fill: #f59e0b;
+}
+
+.root.dark .prix-label-achete {
+    -fx-text-fill: #10b981;
+}
+
+.root.dark .btn-acheter {
+    -fx-background-color: #f59e0b;
+    -fx-text-fill: #1a1a2e;
+}
+
+.root.dark .btn-acheter:hover {
+    -fx-background-color: #e67e22;
+}
+
+.root.dark .prix-badge {
+    -fx-background-color: #f59e0b;
+    -fx-text-fill: #1a1a2e;
+}
+
+.root.dark .achete-badge {
+    -fx-background-color: #10b981;
+    -fx-text-fill: #1a1a2e;
+}

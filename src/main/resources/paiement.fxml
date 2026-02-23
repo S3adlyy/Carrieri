@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.WebView?>
+
+<VBox spacing="20" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="main.PaiementController"
+      style="-fx-padding: 25; -fx-background-color: #f8fafc;"
+      prefWidth="900" prefHeight="600"
+      stylesheets="/css/theme-unified.css">
+
+    <!-- En-tête -->
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Label text="💰" style="-fx-font-size: 40px;"/>
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label text="PAIEMENT SÉCURISÉ" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #231942;"/>
+            <Label fx:id="lblCours" text="Cours: ..." style="-fx-font-size: 14px; -fx-text-fill: #6b7280;"/>
+        </VBox>
+        <Button text="← Annuler" onAction="#retourAuCatalogue"
+                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-padding: 8 20; -fx-background-radius: 20; -fx-cursor: hand;"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- WebView pour Stripe -->
+    <WebView fx:id="webViewPaiement" VBox.vgrow="ALWAYS"
+             style="-fx-background-color: white; -fx-background-radius: 15; -fx-border-color: #e9ecef; -fx-border-radius: 15;"/>
+
+</VBox>

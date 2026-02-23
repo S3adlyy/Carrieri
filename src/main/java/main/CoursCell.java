@@ -763,7 +763,7 @@ public class CoursCell {
                 }
 
                 if (!newValue.isEmpty() && newValue.length() > 500) {
-                    AlertUtils.showWarning("⚠️ Validation",
+                    AlertUtils.showWarning("⚠ Validation",
                             "Les compétences ne peuvent pas dépasser 500 caractères.\n\n" +
                                     "Valeur saisie: " + newValue.length() + " caractères.");
                     cancelEdit();
@@ -789,6 +789,166 @@ public class CoursCell {
                         commitEdit(newValue);
                         getTableView().refresh();
                         AlertUtils.showSuccess("✅ Succès", "Compétences modifiées avec succès.");
+                    } catch (SQLException e) {
+                        AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
+                    }
+                }
+                cancelEdit();
+            } finally {
+                confirming = false;
+            }
+        }
+    }
+    // ============================================
+// CELLULE PRIX (NOUVEAU)
+// ============================================
+    public static TableCell<Cours, Double> getPrixCell() {
+        return new CoursPrixCellImpl();
+    }
+
+    private static class CoursPrixCellImpl extends TableCell<Cours, Double> {
+        private TextField textField;
+        private boolean confirming;
+
+        @Override
+        public void startEdit() {
+            if (!isEditable() || !getTableView().isEditable() || !getTableColumn().isEditable()) return;
+            super.startEdit();
+            createTextField();
+            setText(null);
+            setGraphic(textField);
+            textField.selectAll();
+            textField.requestFocus();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            updateDisplay(getItem());
+        }
+
+        @Override
+        protected void updateItem(Double item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) textField.setText(item != null ? String.format("%.2f", item) : "0.00");
+                    setText(null);
+                    setGraphic(textField);
+                } else {
+                    updateDisplay(item);
+                }
+            }
+        }
+
+        private void updateDisplay(Double item) {
+            HBox container = new HBox(8);
+            container.setAlignment(Pos.CENTER);
+
+            Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
+            boolean estPayant = cours != null && cours.isEstPayant();
+
+            Label prixLabel = new Label();
+            if (estPayant && item != null && item > 0) {
+                prixLabel.setText(String.format("%.2f €", item));
+                prixLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #f59e0b;");
+                Label euroIcon = new Label("💰");
+                euroIcon.setStyle("-fx-font-size: 12px;");
+                container.getChildren().addAll(euroIcon, prixLabel);
+            } else {
+                prixLabel.setText("Gratuit");
+                prixLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #10b981;");
+                Label freeIcon = new Label("🎁");
+                freeIcon.setStyle("-fx-font-size: 12px;");
+                container.getChildren().addAll(freeIcon, prixLabel);
+            }
+
+            setText(null);
+            setGraphic(container);
+        }
+
+        private void createTextField() {
+            Double currentValue = getItem();
+            textField = new TextField(currentValue != null ? String.format("%.2f", currentValue) : "0.00");
+
+            // Validation pour n'accepter que les nombres décimaux
+            textField.textProperty().addListener((obs, old, newVal) -> {
+                if (!newVal.matches("\\d*(\\.\\d{0,2})?")) {
+                    textField.setText(old);
+                }
+            });
+
+            textField.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                    try {
+                        confirmEdit(Double.parseDouble(textField.getText()));
+                    } catch (NumberFormatException ex) {
+                        AlertUtils.showWarning("⚠ Validation", "Veuillez entrer un prix valide.");
+                    }
+                } else if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+
+            textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    try {
+                        confirmEdit(Double.parseDouble(textField.getText()));
+                    } catch (NumberFormatException ex) {
+                        cancelEdit();
+                    }
+                }
+            });
+        }
+
+        private void confirmEdit(double newValue) {
+            if (confirming) return;
+            confirming = true;
+            try {
+                Double oldValue = getItem();
+
+                if (Math.abs(newValue - (oldValue != null ? oldValue : 0.0)) < 0.01) {
+                    cancelEdit();
+                    return;
+                }
+
+                if (newValue < 0) {
+                    AlertUtils.showWarning("⚠ Validation", "Le prix ne peut pas être négatif.");
+                    cancelEdit();
+                    return;
+                }
+
+                if (newValue > 10000) {
+                    AlertUtils.showWarning("⚠ Validation", "Le prix ne peut pas dépasser 10000 €.");
+                    cancelEdit();
+                    return;
+                }
+
+                boolean confirmed = AlertUtils.showConfirmation(
+                        "✏️ Confirmation",
+                        "De: " + (oldValue != null ? String.format("%.2f €", oldValue) : "0.00 €") +
+                                "\nVers: " + String.format("%.2f €", newValue),
+                        "Oui, modifier",
+                        "Non, annuler"
+                );
+
+                if (confirmed) {
+                    Cours cours = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (cours == null) {
+                        cancelEdit();
+                        return;
+                    }
+                    cours.setPrix(newValue);
+                    cours.setEstPayant(newValue > 0);
+
+                    try {
+                        coursService.update(cours);
+                        commitEdit(newValue);
+                        getTableView().refresh();
+                        AlertUtils.showSuccess("✅ Succès", "Prix modifié avec succès.");
                     } catch (SQLException e) {
                         AlertUtils.showError("❌ Erreur", "Erreur base de données:\n\n" + e.getMessage());
                     }
