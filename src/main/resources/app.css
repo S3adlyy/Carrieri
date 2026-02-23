@@ -2094,6 +2094,17 @@
     -fx-scale-y: 1.1;
 }
 
+/* Icon button for QR Code */
+.icon-btn-primary {
+    -fx-background-color: rgba(139, 92, 246, 0.15);
+}
+
+.icon-btn-primary:hover {
+    -fx-background-color: rgba(139, 92, 246, 0.3);
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
 
 /* =========================================================
    POSTULATION CARDS - NEW DESIGN

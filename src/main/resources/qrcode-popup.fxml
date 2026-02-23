@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="main.QRCodePopupController"
+      alignment="CENTER" spacing="20" prefWidth="500" prefHeight="650"
+      style="-fx-background-color: white; -fx-padding: 30;">
+
+    <!-- Header -->
+    <VBox alignment="CENTER" spacing="8" style="-fx-background-color: linear-gradient(to bottom, #8b5cf6, #7c3aed);
+                                                 -fx-background-radius: 12; -fx-padding: 20;">
+        <Label text="📱" style="-fx-font-size: 48;"/>
+        <Label text="QR Code de l'Offre" style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: white;"/>
+    </VBox>
+
+    <!-- Offre Info -->
+    <VBox alignment="CENTER" spacing="5" style="-fx-padding: 10 20;">
+        <Label fx:id="lblOffreTitre" text="Titre de l'Offre"
+               style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #1f2937;"/>
+        <HBox alignment="CENTER" spacing="8">
+            <Label text="🏢" style="-fx-font-size: 14;"/>
+            <Label fx:id="lblEntreprise" text="Nom de l'entreprise"
+                   style="-fx-font-size: 14; -fx-text-fill: #6b7280;"/>
+        </HBox>
+    </VBox>
+
+    <!-- QR Code Image -->
+    <StackPane style="-fx-background-color: #f9fafb; -fx-background-radius: 12;
+                      -fx-border-color: #e5e7eb; -fx-border-radius: 12; -fx-border-width: 2;">
+        <VBox.margin>
+            <Insets top="10" bottom="10"/>
+        </VBox.margin>
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <ImageView fx:id="qrImageView" fitWidth="350" fitHeight="350" preserveRatio="true"/>
+    </StackPane>
+
+    <!-- Instruction -->
+    <Label fx:id="lblInstruction" text="Scannez ce QR Code pour accéder à l'offre d'emploi"
+           wrapText="true" textAlignment="CENTER"
+           style="-fx-font-size: 14; -fx-text-fill: #6b7280; -fx-padding: 0 20;"/>
+
+    <!-- Actions Buttons -->
+    <HBox spacing="15" alignment="CENTER">
+        <VBox.margin>
+            <Insets top="10"/>
+        </VBox.margin>
+
+        <!-- Download Button -->
+        <Button fx:id="btnDownload" text="💾 Télécharger" onAction="#handleDownload"
+                style="-fx-background-color: #8b5cf6; -fx-text-fill: white;
+                       -fx-font-size: 14; -fx-font-weight: 600; -fx-padding: 12 24;
+                       -fx-background-radius: 8; -fx-cursor: hand;">
+            <tooltip>
+                <Tooltip text="Télécharger le QR Code en PNG"/>
+            </tooltip>
+        </Button>
+
+        <!-- Print Button (optional) -->
+        <Button text="🖨 Imprimer" onAction="#handlePrint"
+                style="-fx-background-color: #6b7280; -fx-text-fill: white;
+                       -fx-font-size: 14; -fx-font-weight: 600; -fx-padding: 12 24;
+                       -fx-background-radius: 8; -fx-cursor: hand;">
+            <tooltip>
+                <Tooltip text="Imprimer le QR Code"/>
+            </tooltip>
+        </Button>
+
+        <!-- Close Button -->
+        <Button fx:id="btnClose" text="❌ Fermer" onAction="#handleClose"
+                style="-fx-background-color: #ef4444; -fx-text-fill: white;
+                       -fx-font-size: 14; -fx-font-weight: 600; -fx-padding: 12 24;
+                       -fx-background-radius: 8; -fx-cursor: hand;">
+            <tooltip>
+                <Tooltip text="Fermer cette fenêtre"/>
+            </tooltip>
+        </Button>
+    </HBox>
+
+    <!-- Footer Note -->
+    <Label text="💡 Astuce: Vous pouvez partager ce QR Code sur vos réseaux sociaux, affiches, ou flyers"
+           wrapText="true" textAlignment="CENTER"
+           style="-fx-font-size: 12; -fx-text-fill: #9ca3af; -fx-padding: 10 20; -fx-font-style: italic;">
+        <VBox.margin>
+            <Insets top="5"/>
+        </VBox.margin>
+    </Label>
+
+</VBox>
+

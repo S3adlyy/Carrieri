@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
@@ -25,6 +26,7 @@ import javafx.util.StringConverter;
 import services.OffreEmploiService;
 import services.PostulationService;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -104,14 +106,15 @@ public class OffresTableController {
         // ===== Inline editing (cell factories + commit => DB update) =====
         enableInlineEditing();
 
-        // ===== Actions (4 icons) =====
+        // ===== Actions (5 icons) =====
         colActions.setCellFactory(col -> new TableCell<>() {
             private final Button btnPosts = iconBtn("👥", "Voir postulations");
             private final Button btnStats = iconBtn("📊", "Statistiques");
+            private final Button btnQR    = iconBtn("📱", "QR Code");
             private final Button btnEdit  = iconBtn("✏", "Modifier (dialog)");
             private final Button btnDel   = iconBtn("🗑", "Supprimer");
 
-            private final HBox box = new HBox(12, btnPosts, btnStats, btnEdit, btnDel);
+            private final HBox box = new HBox(12, btnPosts, btnStats, btnQR, btnEdit, btnDel);
 
             {
                 box.setAlignment(Pos.CENTER);
@@ -119,6 +122,7 @@ public class OffresTableController {
 
                 btnPosts.getStyleClass().addAll("icon-btn", "icon-btn-neutral");
                 btnStats.getStyleClass().addAll("icon-btn", "icon-btn-stats");
+                btnQR.getStyleClass().addAll("icon-btn", "icon-btn-primary");
                 btnEdit.getStyleClass().addAll("icon-btn", "icon-btn-edit");
                 btnDel.getStyleClass().addAll("icon-btn", "icon-btn-delete");
 
@@ -130,6 +134,11 @@ public class OffresTableController {
                 btnStats.setOnAction(e -> {
                     OffreEmploi o = getTableView().getItems().get(getIndex());
                     showStatsPopup(o);
+                });
+
+                btnQR.setOnAction(e -> {
+                    OffreEmploi o = getTableView().getItems().get(getIndex());
+                    showQRCodePopup(o);
                 });
 
                 btnEdit.setOnAction(e -> {
@@ -1259,6 +1268,40 @@ public class OffresTableController {
         OffresShellController shell = OffresShellController.getInstance();
         if (shell != null) {
             shell.showOffreStats(offre);
+        }
+    }
+
+    // ===================== SHOW QR CODE POPUP =====================
+
+    /**
+     * Affiche le popup du QR Code pour partager l'offre
+     */
+    private void showQRCodePopup(OffreEmploi offre) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/qrcode-popup.fxml"));
+            Parent root = loader.load();
+
+            // Passer les données de l'offre au contrôleur
+            QRCodePopupController controller = loader.getController();
+            controller.initData(offre);
+
+            // Créer le stage du popup
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("QR Code - " + offre.getTitre());
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+
+            // Centrer sur l'écran
+            stage.centerOnScreen();
+
+            // Afficher
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                "Impossible d'ouvrir le popup QR Code:\n" + e.getMessage());
+            e.printStackTrace();
         }
     }
 
