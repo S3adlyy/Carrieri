@@ -17,15 +17,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class QRCodePopupController {
+public class QRCodeController {
 
     @FXML private ImageView qrImageView;
     @FXML private Label lblOffreTitre;
-    @FXML private Label lblOffreTitreComplet;
+    @FXML private Label lblOffreTitreDetail;
     @FXML private Label lblEntreprise;
     @FXML private Label lblInstruction;
     @FXML private Button btnDownload;
-    @FXML private Button btnClose;
     @FXML private Button btnBack;
 
     private final QRCodeService qrCodeService = new QRCodeService();
@@ -35,18 +34,14 @@ public class QRCodePopupController {
     public void initData(OffreEmploi offre) {
         this.offre = offre;
 
-        // Afficher les infos de l'offre
-        lblOffreTitre.setText(offre.getTitre());
-        lblOffreTitreComplet.setText(offre.getTitre());
+        lblOffreTitre.setText("QR Code - " + offre.getTitre());
+        lblOffreTitreDetail.setText(offre.getTitre());
         lblEntreprise.setText(offre.getEntreprise());
-        lblInstruction.setText("Scannez ce QR Code pour accéder à l'offre d'emploi");
 
-        // Générer et afficher le QR Code
         try {
             generateAndDisplayQRCode();
         } catch (WriterException e) {
-            StyledAlert.showError("Erreur",
-                    "Impossible de générer le QR Code:\n" + e.getMessage());
+            StyledAlert.showError("Erreur", "Impossible de générer le QR Code:\n" + e.getMessage());
         }
     }
 
@@ -86,7 +81,8 @@ public class QRCodePopupController {
             fileChooser.setInitialDirectory(downloadsDir);
         }
 
-        File file = fileChooser.showSaveDialog(btnDownload.getScene().getWindow());
+        Stage stage = (Stage) btnDownload.getScene().getWindow();
+        File file = fileChooser.showSaveDialog(stage);
 
         if (file != null) {
             try {
@@ -94,8 +90,7 @@ public class QRCodePopupController {
                 StyledAlert.showSuccess("Succès",
                         "QR Code enregistré avec succès !\n\nEmplacement: " + file.getAbsolutePath());
             } catch (IOException e) {
-                StyledAlert.showError("Erreur",
-                        "Impossible d'enregistrer le QR Code:\n" + e.getMessage());
+                StyledAlert.showError("Erreur", "Impossible d'enregistrer le QR Code:\n" + e.getMessage());
             }
         }
     }
@@ -104,18 +99,11 @@ public class QRCodePopupController {
     private void handlePrint() {
         StyledAlert.showInfo("Info",
                 "Fonctionnalité d'impression à venir.\n\n" +
-                        "En attendant, vous pouvez télécharger le QR Code et l'imprimer manuellement.");
-    }
-
-    @FXML
-    private void handleClose() {
-        // Retour à la vue précédente (tableau des offres)
-        OffresShellController.getInstance().showOffresTable();
+                        "En attendant, téléchargez le QR Code et imprimez-le manuellement.");
     }
 
     @FXML
     private void handleBack() {
-        // Retour à la vue précédente (tableau des offres)
-        OffresShellController.getInstance().showOffresTable();
+        OffresShellController.getInstance().showOffresTable(); // ou showOffresList() selon le contexte
     }
 }

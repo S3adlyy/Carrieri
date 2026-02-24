@@ -439,7 +439,7 @@ public class OffreAnalyticsService {
                     "Ajoutez plus de détails (recommandé : 400-800 charactères)",
                     "haute"
                 ));
-            } else if (descLength > 200) {
+            } else if (descLength > 1000) {
                 recommendations.add(new Recommendation(
                     "⚠️",
                     "Description longue",

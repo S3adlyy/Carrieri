@@ -41,3 +41,11 @@ build/
 src/main/resources/config.properties
 src/main/java/services/SimpleSMSService.java
 src/main/java/services/SMSService.java
+
+# ML artifacts / big files
+ml_service/model_offres_final/
+ml_service/cached_*
+ml_service/train_data.txt
+ml_service/val_data.txt
+ml_service/*.backup*
+uploads/

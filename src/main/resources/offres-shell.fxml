@@ -85,7 +85,7 @@
                     <Circle fx:id="navAvatar" radius="20" styleClass="user-avatar-glow"/>
                 </StackPane>
                 <Label fx:id="navNameLabel" text="Ons Nagara" styleClass="user-name"/>
-                <Label text="Utilisateur" styleClass="user-role"/>
+                <Label text="Admin" styleClass="user-role"/>
                 <Button text="🚪" onAction="#logout" styleClass="logout-button"/>
             </VBox>
         </VBox>

@@ -30,7 +30,7 @@
                     <Label text="📱" styleClass="header-icon"/>
                 </StackPane>
                 <Label text="QR Code de l'Offre" styleClass="header-title"/>
-                <Label fx:id="lblOffreTitre" text="Statistiques de l'offre" styleClass="header-subtitle"/>
+                <Label fx:id="lblOffreTitre" text="QR Code - Titre" styleClass="header-subtitle"/>
             </VBox>
 
             <!-- Barre de navigation -->

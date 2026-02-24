@@ -1,59 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.control.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="main.FavoritesListController"
-      styleClass="view-root"
-      stylesheets="@app.css"
-      spacing="0">
+<ScrollPane fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="main-scroll"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="main.FavoritesListController">
 
-    <!-- ========== HEADER ========== -->
-    <VBox styleClass="header-gradient" alignment="CENTER_LEFT">
-        <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+    <StackPane>
+        <!-- Cercles décoratifs en arrière-plan -->
+        <Circle radius="250" fill="rgba(94,84,142,0.03)" mouseTransparent="true"
+                style="-fx-translate-y: -150; -fx-translate-x: -280;" styleClass="bg-orb"/>
+        <Circle radius="200" fill="rgba(159,134,192,0.02)" mouseTransparent="true"
+                style="-fx-translate-y: 200; -fx-translate-x: 250;" styleClass="bg-orb-purple"/>
+        <Circle radius="150" fill="rgba(224,177,203,0.02)" mouseTransparent="true"
+                style="-fx-translate-y: -100; -fx-translate-x: 180;" styleClass="bg-orb-pink"/>
 
-        <HBox alignment="CENTER_LEFT" spacing="20">
-            <!-- Icon circle -->
-            <StackPane styleClass="header-icon-circle">
-                <Label text="❤️" styleClass="header-icon-diamond"/>
-            </StackPane>
+        <VBox alignment="TOP_CENTER" spacing="30" style="-fx-padding: 40;">
 
-            <VBox spacing="8">
-                <Label text="Mes Offres Favorites" styleClass="header-title-big"/>
+            <!-- En-tête -->
+            <VBox spacing="15" alignment="CENTER" styleClass="header-section">
+                <StackPane styleClass="header-icon-container">
+                    <Label text="❤️" styleClass="header-icon"/>
+                </StackPane>
+                <Label text="Mes Offres Favorites" styleClass="header-title"/>
                 <Label fx:id="lblCount" text="0 favori" styleClass="header-subtitle"/>
             </VBox>
-        </HBox>
-    </VBox>
 
-    <!-- ========== CONTENT ========== -->
-    <ScrollPane fitToWidth="true" styleClass="scroll-pane-clean" VBox.vgrow="ALWAYS">
-        <VBox spacing="20">
-            <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
-
-            <!-- Search bar with back arrow -->
-            <HBox spacing="20" alignment="CENTER_LEFT">
-                <!-- Back Arrow Button - Same style as postulations -->
+            <!-- Barre de navigation et compteur -->
+            <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-max-width: 1200px;">
                 <Button fx:id="btnBack" onAction="#goBackToOffresList" styleClass="btn-back-arrow-inline">
                     <graphic>
                         <Label text="←" style="-fx-font-size: 20; -fx-text-fill: #7c3aed;"/>
                     </graphic>
                 </Button>
-
-                <!-- Status label -->
-                <Label fx:id="lblStatus" text="Vos offres sauvegardées" styleClass="status-text"/>
             </HBox>
 
-            <!-- Cards Container -->
+            <!-- Grille des cartes -->
             <FlowPane fx:id="flowFavorites"
                       hgap="24" vgap="24"
                       alignment="CENTER"
-                      prefWrapLength="1000">
-            </FlowPane>
-
+                      prefWrapLength="1200"
+                      style="-fx-padding: 10;"/>
         </VBox>
-    </ScrollPane>
-
-</VBox>
-
+    </StackPane>
+</ScrollPane>

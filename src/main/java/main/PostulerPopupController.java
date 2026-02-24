@@ -8,6 +8,7 @@ import javafx.stage.FileChooser;
 import services.OffreEmploiService;
 import services.PostulationService;
 import services.SimpleSMSService;
+import utils.StyledAlert;
 
 import java.io.File;
 import java.io.IOException;
@@ -247,7 +248,7 @@ public class PostulerPopupController {
     private void handleSubmit() {
         // Ensure offerId is set
         if (offreId <= 0) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Offre invalide. Veuillez réouvrir la fenêtre.");
+            StyledAlert.showError("Erreur", "Offre invalide. Veuillez réouvrir la fenêtre.");
             return;
         }
 
@@ -282,8 +283,7 @@ public class PostulerPopupController {
             cvPath = saveCVFile(selectedCVFile);
             System.out.println("✅ CV sauvegardé: " + cvPath);
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                "Impossible de sauvegarder le CV:\n" + e.getMessage());
+            StyledAlert.showError("Erreur", "Impossible de sauvegarder le CV:\n" + e.getMessage());
             return;
         }
 
@@ -293,7 +293,7 @@ public class PostulerPopupController {
                 LocalDateTime.now(),
                 statut,
                 motivation,
-                cvPath  // Ajouter le chemin du CV
+                cvPath
         );
 
         try {
@@ -331,46 +331,46 @@ public class PostulerPopupController {
                 System.out.println("   Service SMS activé: " + smsService.isEnabled());
 
                 boolean smsSent = smsService.envoyerSMS(
-                    phoneClean,
-                    candidatNom,
-                    offreTitre
+                        phoneClean,
+                        candidatNom,
+                        offreTitre
                 );
 
                 System.out.println("   Résultat envoi: " + (smsSent ? "SUCCÈS ✓" : "ÉCHEC ❌"));
 
                 if (smsSent) {
-                    showAlert(Alert.AlertType.INFORMATION, "Succès",
-                        "Votre candidature a été envoyée !\n\n" +
-                        "✓ Un SMS de confirmation a été envoyé au " + phoneClean + "\n" +
-                        "✓ Votre CV a été joint : " + selectedCVFile.getName() + "\n" +
-                        "✓ CV sauvegardé : " + cvPath);
+                    StyledAlert.showSuccess("Succès",
+                            "Votre candidature a été envoyée !\n\n" +
+                                    "✓ Un SMS de confirmation a été envoyé au " + phoneClean + "\n" +
+                                    "✓ Votre CV a été joint : " + selectedCVFile.getName() + "\n" +
+                                    "✓ CV sauvegardé : " + cvPath);
                 } else {
-                    showAlert(Alert.AlertType.WARNING, "Attention",
-                        "Votre candidature a été envoyée !\n\n" +
-                        "✓ Votre CV a été joint : " + selectedCVFile.getName() + "\n" +
-                        "✓ CV sauvegardé : " + cvPath + "\n\n" +
-                        "⚠ Le SMS de confirmation n'a pas pu être envoyé.\n\n" +
-                        "Raisons possibles:\n" +
-                        "- Numéro non vérifié dans Twilio (mode Trial)\n" +
-                        "- Problème de connexion réseau\n" +
-                        "- Crédit Twilio épuisé\n\n" +
-                        "Consultez la console pour plus de détails.");
+                    StyledAlert.showWarning("Attention",
+                            "Votre candidature a été envoyée !\n\n" +
+                                    "✓ Votre CV a été joint : " + selectedCVFile.getName() + "\n" +
+                                    "✓ CV sauvegardé : " + cvPath + "\n\n" +
+                                    "⚠ Le SMS de confirmation n'a pas pu être envoyé.\n\n" +
+                                    "Raisons possibles:\n" +
+                                    "- Numéro non vérifié dans Twilio (mode Trial)\n" +
+                                    "- Problème de connexion réseau\n" +
+                                    "- Crédit Twilio épuisé\n\n" +
+                                    "Consultez la console pour plus de détails.");
                 }
             } else {
                 String message = "Votre candidature a été envoyée !\n\n" +
-                                "✓ Votre CV a été joint : " + selectedCVFile.getName() + "\n" +
-                                "✓ CV sauvegardé : " + cvPath;
+                        "✓ Votre CV a été joint : " + selectedCVFile.getName() + "\n" +
+                        "✓ CV sauvegardé : " + cvPath;
                 if (phone.isEmpty()) {
                     message += "\n\nℹ Aucun numéro fourni, pas de SMS envoyé.";
                 } else if (!smsService.isEnabled()) {
                     message += "\n\nℹ Service SMS non configuré.";
                 }
-                showAlert(Alert.AlertType.INFORMATION, "Succès", message);
+                StyledAlert.showSuccess("Succès", message);
             }
 
-            handleCancel(); // close popup
+            handleRetour(); // fermer la vue
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur base de données : " + e.getMessage());
+            StyledAlert.showError("Erreur", "Erreur base de données : " + e.getMessage());
         }
     }
 
@@ -423,16 +423,7 @@ public class PostulerPopupController {
     }
 
     @FXML
-    private void handleCancel() {
-        // Retourner à la liste des offres au lieu de fermer la fenêtre
-        handleBack();
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String msg) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
+    private void handleRetour() {
+        OffresShellController.getInstance().showOffresList();
     }
 }

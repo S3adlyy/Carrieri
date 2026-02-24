@@ -3,110 +3,127 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
 
-<ScrollPane fitToWidth="true" fitToHeight="false"
+<ScrollPane fitToWidth="true" fitToHeight="true"
             hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
-            styleClass="scroll-pane-clean"
-            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            styleClass="main-scroll"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="main.AdminDashboardController">
 
-    <VBox alignment="TOP_CENTER" spacing="0" styleClass="view-root">
+    <StackPane>
+        <!-- Cercles décoratifs en arrière-plan (identiques à offres-table) -->
+        <Circle radius="250" fill="rgba(94,84,142,0.03)" mouseTransparent="true"
+                style="-fx-translate-y: -150; -fx-translate-x: -280;" styleClass="bg-orb"/>
+        <Circle radius="200" fill="rgba(159,134,192,0.02)" mouseTransparent="true"
+                style="-fx-translate-y: 200; -fx-translate-x: 250;" styleClass="bg-orb-purple"/>
+        <Circle radius="150" fill="rgba(224,177,203,0.02)" mouseTransparent="true"
+                style="-fx-translate-y: -100; -fx-translate-x: 180;" styleClass="bg-orb-pink"/>
 
-        <!-- ==================== HEADER ==================== -->
-        <VBox alignment="CENTER" spacing="16" styleClass="header-gradient" prefHeight="220">
-            <padding><Insets top="60" bottom="40"/></padding>
+        <VBox alignment="TOP_CENTER" spacing="30" style="-fx-padding: 40;">
 
-            <StackPane prefWidth="90" prefHeight="90" styleClass="header-icon-circle-large">
-                <Label text="👑" style="-fx-font-size: 64; -fx-text-fill: white;"/>
-            </StackPane>
+            <!-- En-tête moderne -->
+            <VBox spacing="15" alignment="CENTER" styleClass="header-section">
+                <StackPane styleClass="header-icon-container">
+                    <Label text="👑" styleClass="header-icon"/>
+                </StackPane>
+                <Label text="Tableau de Bord Admin" styleClass="header-title"/>
+                <Label text="Gérer toutes les offres et postulations" styleClass="header-subtitle"/>
+            </VBox>
 
-            <Label text="Tableau de Bord Admin" styleClass="header-title-big"/>
-            <Label text="Gérer toutes les offres et postulations"
-                   styleClass="header-subtitle" wrapText="true" textAlignment="CENTER"/>
-        </VBox>
-
-        <!-- ==================== TABS ==================== -->
-        <VBox spacing="0" style="-fx-padding: 30 80 80 80; -fx-background-color: #faf7ff;">
-
-            <TabPane fx:id="tabPane" styleClass="admin-tabs" tabClosingPolicy="UNAVAILABLE">
+            <!-- TabPane pour les deux onglets -->
+            <TabPane fx:id="tabPane" styleClass="admin-tabs" tabClosingPolicy="UNAVAILABLE" prefHeight="600">
 
                 <!-- TAB 1: OFFRES D'EMPLOI -->
                 <Tab text="📋 Offres d'Emploi">
-                    <VBox spacing="20" style="-fx-padding: 20;">
+                    <VBox spacing="25" style="-fx-padding: 20;">
 
-                        <!-- Search + Add Button -->
+                        <!-- Barre de recherche et bouton Ajouter -->
                         <HBox spacing="20" alignment="CENTER_LEFT">
-                            <TextField fx:id="txtSearchOffre" promptText="Rechercher une offre..."
-                                       styleClass="search-input" HBox.hgrow="ALWAYS" onKeyReleased="#handleSearchOffre"/>
-                            <Button text="➕ Ajouter Offre" onAction="#handleAddOffre" styleClass="btn-primary"/>
+                            <TextField fx:id="txtSearchOffre"
+                                       promptText="Rechercher une offre..."
+                                       HBox.hgrow="ALWAYS"
+                                       styleClass="search-input"/>
+                            <Button text="➕ Ajouter Offre" onAction="#handleAddOffre"
+                                    styleClass="btn-add-offre" prefWidth="180" prefHeight="48"/>
                         </HBox>
 
-                        <!-- Status Label -->
-                        <Label fx:id="lblOffresStatus" text="0 offres trouvées" styleClass="status-label"/>
+                        <!-- Compteur de résultats -->
+                        <Label fx:id="lblOffresStatus" text="0 offres trouvées" styleClass="status-text"/>
 
-                        <!-- Table -->
-                        <TableView fx:id="tableOffres" styleClass="styled-table" VBox.vgrow="ALWAYS">
+                        <!-- Tableau des offres -->
+                        <TableView fx:id="tableOffres" editable="true" prefHeight="500" prefWidth="3000" styleClass="styled-table">
                             <columns>
                                 <TableColumn fx:id="colOffreId" text="ID" prefWidth="60"/>
-                                <TableColumn fx:id="colOffreTitre" text="Titre" prefWidth="180"/>
-                                <TableColumn fx:id="colOffreDescription" text="Description" prefWidth="200"/>
-                                <TableColumn fx:id="colOffreEntreprise" text="Entreprise" prefWidth="150"/>
-                                <TableColumn fx:id="colOffreTypeContrat" text="Type Contrat" prefWidth="120"/>
-                                <TableColumn fx:id="colOffreLocalisation" text="Localisation" prefWidth="120"/>
-                                <TableColumn fx:id="colOffreSalaire" text="Salaire" prefWidth="100"/>
-                                <TableColumn fx:id="colOffreNiveauQualif" text="Niveau Qualif" prefWidth="120"/>
-                                <TableColumn fx:id="colOffreExperience" text="Expérience" prefWidth="120"/>
-                                <TableColumn fx:id="colOffreCompetences" text="Compétences" prefWidth="150"/>
-                                <TableColumn fx:id="colOffreSecteur" text="Secteur" prefWidth="120"/>
-                                <TableColumn fx:id="colOffreContact" text="Contact" prefWidth="150"/>
-                                <TableColumn fx:id="colOffreDatePub" text="Date Pub" prefWidth="120"/>
-                                <TableColumn fx:id="colOffreDateExp" text="Date Exp" prefWidth="120"/>
-                                <TableColumn fx:id="colOffreRecruteurId" text="Recruteur ID" prefWidth="100"/>
-                                <TableColumn fx:id="colOffreActions" text="Actions" prefWidth="150"/>
+                                <TableColumn fx:id="colOffreTitre" text="Titre" prefWidth="250"/>
+                                <TableColumn fx:id="colOffreDescription" text="Description" prefWidth="350"/>
+                                <TableColumn fx:id="colOffreEntreprise" text="Entreprise" prefWidth="200"/>
+                                <TableColumn fx:id="colOffreTypeContrat" text="Type" prefWidth="120"/>
+                                <TableColumn fx:id="colOffreLocalisation" text="Localisation" prefWidth="180"/>
+                                <TableColumn fx:id="colOffreSalaire" text="Salaire" prefWidth="120"/>
+                                <TableColumn fx:id="colOffreNiveauQualif" text="Niveau" prefWidth="150"/>
+                                <TableColumn fx:id="colOffreExperience" text="Expérience" prefWidth="150"/>
+                                <TableColumn fx:id="colOffreCompetences" text="Compétences" prefWidth="300"/>
+                                <TableColumn fx:id="colOffreSecteur" text="Secteur" prefWidth="200"/>
+                                <TableColumn fx:id="colOffreContact" text="Contact" prefWidth="250"/>
+                                <TableColumn fx:id="colOffreDatePub" text="Publication" prefWidth="150"/>
+                                <TableColumn fx:id="colOffreDateExp" text="Expiration" prefWidth="150"/>
+                                <TableColumn fx:id="colOffreRecruteurId" text="Recruteur" prefWidth="100"/>
+                                <TableColumn fx:id="colOffreActions" text="Actions" prefWidth="200"/>
                             </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                            </columnResizePolicy>
                         </TableView>
                     </VBox>
                 </Tab>
 
                 <!-- TAB 2: POSTULATIONS -->
                 <Tab text="👥 Postulations">
-                    <VBox spacing="20" style="-fx-padding: 20;">
+                    <VBox spacing="25" style="-fx-padding: 20;">
 
-                        <!-- Search + Filter -->
+                        <!-- Barre de recherche et bouton Filtrer -->
                         <HBox spacing="20" alignment="CENTER_LEFT">
-                            <TextField fx:id="txtSearchPostulation" promptText="Rechercher une postulation..."
-                                       styleClass="search-input" HBox.hgrow="ALWAYS" onKeyReleased="#handleSearchPostulation"/>
-                            <Button fx:id="btnFilterPostulation" text="Filtrer" onAction="#handleFilterPostulation" styleClass="btn-filter">
+                            <TextField fx:id="txtSearchPostulation"
+                                       promptText="Rechercher une postulation..."
+                                       HBox.hgrow="ALWAYS"
+                                       styleClass="search-input"/>
+                            <Button fx:id="btnFilterPostulation" text="Filtrer" onAction="#handleFilterPostulation"
+                                    styleClass="btn-filter" prefWidth="150" prefHeight="48">
                                 <graphic>
                                     <Label text="▼" style="-fx-font-size: 13; -fx-text-fill: #7c3aed;"/>
                                 </graphic>
                             </Button>
                         </HBox>
 
-                        <!-- Status Label -->
-                        <Label fx:id="lblPostulationsStatus" text="0 postulations trouvées" styleClass="status-label"/>
+                        <!-- Compteur de résultats -->
+                        <Label fx:id="lblPostulationsStatus" text="0 postulations trouvées" styleClass="status-text"/>
 
-                        <!-- Table -->
-                        <TableView fx:id="tablePostulations" styleClass="styled-table" VBox.vgrow="ALWAYS">
+                        <!-- Tableau des postulations -->
+                        <TableView fx:id="tablePostulations" editable="false" styleClass="styled-table">
                             <columns>
                                 <TableColumn fx:id="colPostulationId" text="ID" prefWidth="60"/>
                                 <TableColumn fx:id="colPostulationOffreId" text="Offre ID" prefWidth="80"/>
-                                <TableColumn fx:id="colPostulationOffreTitre" text="Titre Offre" prefWidth="180"/>
+                                <TableColumn fx:id="colPostulationOffreTitre" text="Titre Offre" prefWidth="200"/>
                                 <TableColumn fx:id="colPostulationCandidatId" text="Candidat ID" prefWidth="100"/>
                                 <TableColumn fx:id="colPostulationDate" text="Date" prefWidth="140"/>
                                 <TableColumn fx:id="colPostulationStatut" text="Statut" prefWidth="120"/>
-                                <TableColumn fx:id="colPostulationMotivation" text="Motivation" prefWidth="200"/>
+                                <TableColumn fx:id="colPostulationMotivation" text="Motivation" prefWidth="250"/>
                                 <TableColumn fx:id="colPostulationCvPath" text="CV" prefWidth="150"/>
-                                <TableColumn fx:id="colPostulationActions" text="Actions" prefWidth="150"/>
+                                <TableColumn fx:id="colPostulationActions" text="Actions" prefWidth="180"/>
                             </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                            </columnResizePolicy>
                         </TableView>
                     </VBox>
                 </Tab>
 
             </TabPane>
 
+            <!-- Espace en bas -->
+            <Region prefHeight="20"/>
         </VBox>
-
-    </VBox>
+    </StackPane>
 </ScrollPane>
-

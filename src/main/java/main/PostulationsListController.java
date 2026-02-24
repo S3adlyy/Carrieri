@@ -7,10 +7,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
 import services.PostulationService;
+import utils.StyledAlert;
 
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
@@ -30,7 +32,7 @@ public class PostulationsListController {
 
     private final DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    //  ADDED: filter state
+    // État du filtre par offre
     private Integer filterOffreId = null;
     private String filterOffreTitre = null;
 
@@ -41,21 +43,18 @@ public class PostulationsListController {
 
     @FXML
     private void handleBack() {
-        // Retour au tableau des offres pour recruteur
         OffresShellController shellController = OffresShellController.getInstance();
         if (shellController != null) {
             shellController.showOffresTable();
         }
     }
 
-    //  ADDED: called by Shell when user clicks 👥 on an offer
     public void setOffreFilter(int offreId, String offreTitre) {
         this.filterOffreId = offreId;
         this.filterOffreTitre = (offreTitre == null) ? "" : offreTitre;
         if (txtSearch != null) txtSearch.clear();
         refreshTable();
     }
-
 
     @FXML
     private void handleRefresh() {
@@ -70,30 +69,20 @@ public class PostulationsListController {
         } else {
             data.setAll(allData.filtered(p ->
                     String.valueOf(p.getId()).contains(search) ||
-                    String.valueOf(p.getOffreId()).contains(search) ||
-                    String.valueOf(p.getCandidatId()).contains(search) ||
-                    p.getStatut().toLowerCase().contains(search) ||
-                    p.getMotivationCandidature().toLowerCase().contains(search) ||
-                    p.getDatePostulation().toString().contains(search)
+                            String.valueOf(p.getOffreId()).contains(search) ||
+                            String.valueOf(p.getCandidatId()).contains(search) ||
+                            p.getStatut().toLowerCase().contains(search) ||
+                            p.getMotivationCandidature().toLowerCase().contains(search) ||
+                            p.getDatePostulation().toString().contains(search)
             ));
         }
 
-        //  keep label consistent with filter
-        if (filterOffreId != null) {
-            String titlePart = (filterOffreTitre == null || filterOffreTitre.isBlank())
-                    ? ("Offre #" + filterOffreId)
-                    : (filterOffreTitre + " (ID " + filterOffreId + ")");
-            lblStatus.setText(data.size() + " postulations — " + titlePart);
-        } else {
-            lblStatus.setText(data.size() + " postulations trouvées");
-        }
-
+        mettreAJourLabelStatut();
         renderCards();
     }
 
     @FXML
     private void handleFilter() {
-        // Créer un menu contextuel pour filtrer par statut
         ContextMenu filterMenu = new ContextMenu();
 
         MenuItem allItem = new MenuItem("Toutes les postulations");
@@ -117,9 +106,8 @@ public class PostulationsListController {
         refusedItem.setOnAction(e -> filterByStatut("Refusée"));
 
         filterMenu.getItems().addAll(allItem, new SeparatorMenuItem(),
-                                     pendingItem, progressItem, acceptedItem, refusedItem);
+                pendingItem, progressItem, acceptedItem, refusedItem);
 
-        // Afficher le menu sous le bouton filter
         if (btnFilter != null) {
             filterMenu.show(btnFilter, javafx.geometry.Side.BOTTOM, 0, 0);
         }
@@ -127,13 +115,12 @@ public class PostulationsListController {
 
     private void filterByStatut(String statut) {
         data.setAll(allData.filtered(p -> p.getStatut().equalsIgnoreCase(statut)));
-        lblStatus.setText(data.size() + " postulations (" + statut + ")");
+        mettreAJourLabelStatut();
         renderCards();
     }
 
     private void refreshTable() {
         try {
-            //  CHANGED: load filtered if filter is set
             if (filterOffreId != null) {
                 allData.setAll(service.afficherParOffre(filterOffreId));
             } else {
@@ -141,20 +128,22 @@ public class PostulationsListController {
             }
 
             data.setAll(allData);
-
-            if (filterOffreId != null) {
-                String titlePart = (filterOffreTitre == null || filterOffreTitre.isBlank())
-                        ? ("Offre #" + filterOffreId)
-                        : (filterOffreTitre + " (ID " + filterOffreId + ")");
-                lblStatus.setText(data.size() + " postulations — " + titlePart);
-            } else {
-                lblStatus.setText(data.size() + " postulations trouvées");
-            }
-
+            mettreAJourLabelStatut();
             renderCards();
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+            StyledAlert.showError("Erreur", e.getMessage());
+        }
+    }
+
+    private void mettreAJourLabelStatut() {
+        if (filterOffreId != null) {
+            String titlePart = (filterOffreTitre == null || filterOffreTitre.isBlank())
+                    ? ("Offre #" + filterOffreId)
+                    : (filterOffreTitre + " (ID " + filterOffreId + ")");
+            lblStatus.setText(data.size() + " postulations — " + titlePart);
+        } else {
+            lblStatus.setText(data.size() + " postulations trouvées");
         }
     }
 
@@ -178,47 +167,20 @@ public class PostulationsListController {
         card.setAlignment(Pos.TOP_CENTER);
         card.setMaxWidth(360);
 
-        // Title: "Postulation ID: X"
+        // Titre : ID postulation
         Label title = new Label("Postulation ID: " + p.getId());
         title.getStyleClass().add("offer-title");
 
-        // Offre + icon
-        HBox offreRow = new HBox(10);
-        offreRow.setAlignment(Pos.CENTER);
+        // Offre
+        HBox offreRow = createCenteredRow("📄", "Offre ID: " + p.getOffreId(), "#7c3aed", "offer-description");
 
-        Label offreIcon = new Label("📄");
-        offreIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #7c3aed;");
+        // Candidat
+        HBox candidatRow = createCenteredRow("👤", "Candidat ID: " + p.getCandidatId(), "#4c1d95", "offer-info");
 
-        Label offreLabel = new Label("Offre ID: " + p.getOffreId());
-        offreLabel.getStyleClass().add("offer-description");
+        // Date
+        HBox dateRow = createCenteredRow("📅", dateFmt.format(p.getDatePostulation()), "#6b7280", "offer-info");
 
-        offreRow.getChildren().addAll(offreIcon, offreLabel);
-
-        // Candidat + icon
-        HBox candidatRow = new HBox(10);
-        candidatRow.setAlignment(Pos.CENTER);
-
-        Label candidatIcon = new Label("👤");
-        candidatIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #4c1d95;");
-
-        Label candidatLabel = new Label("Candidat ID: " + p.getCandidatId());
-        candidatLabel.getStyleClass().add("offer-info");
-
-        candidatRow.getChildren().addAll(candidatIcon, candidatLabel);
-
-        // Date + icon
-        HBox dateRow = new HBox(10);
-        dateRow.setAlignment(Pos.CENTER);
-
-        Label dateIcon = new Label("📅");
-        dateIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #6b7280;");
-
-        Label dateLabel = new Label(dateFmt.format(p.getDatePostulation()));
-        dateLabel.getStyleClass().add("offer-info");
-
-        dateRow.getChildren().addAll(dateIcon, dateLabel);
-
-        // Statut with badge + modifier combo
+        // Statut avec ComboBox
         HBox statutRow = new HBox(12);
         statutRow.setAlignment(Pos.CENTER);
 
@@ -234,79 +196,37 @@ public class PostulationsListController {
             String newStatut = comboStatut.getValue();
             try {
                 service.changerStatut(p.getId(), newStatut);
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Statut mis à jour.");
+                StyledAlert.showSuccess("Succès", "Statut mis à jour.");
                 refreshTable();
             } catch (SQLException ex) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", ex.getMessage());
-                comboStatut.setValue(p.getStatut());  // Revert on error
+                StyledAlert.showError("Erreur", ex.getMessage());
+                comboStatut.setValue(p.getStatut()); // Revenir à l'ancienne valeur
             }
         });
 
         statutRow.getChildren().addAll(statutIcon, comboStatut);
 
-        // Motivation snippet + icon
-        HBox motivationRow = new HBox(10);
-        motivationRow.setAlignment(Pos.CENTER);
+        // Motivation
+        HBox motivationRow = createMotivationRow(p.getMotivationCandidature());
 
-        Label motivationIcon = new Label("📝");
-        motivationIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #374151;");
+        // CV
+        HBox cvRow = createCvRow(p.getCvPath());
 
-        String motivSnippet = p.getMotivationCandidature().length() > 80
-                ? p.getMotivationCandidature().substring(0, 80) + "..."
-                : p.getMotivationCandidature();
-        Label motivation = new Label(motivSnippet);
-        motivation.getStyleClass().add("offer-description");
-        motivation.setWrapText(true);
-
-        motivationRow.getChildren().addAll(motivationIcon, motivation);
-
-        // CV + icon with clickable button
-        HBox cvRow = new HBox(10);
-        cvRow.setAlignment(Pos.CENTER);
-
-        Label cvIcon = new Label("📄");
-        cvIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #7c3aed;");
-
-        if (p.getCvPath() != null && !p.getCvPath().isEmpty()) {
-            Button btnOpenCV = new Button("Ouvrir CV");
-            btnOpenCV.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; " +
-                              "-fx-border-radius: 8; -fx-background-radius: 8; " +
-                              "-fx-padding: 8 16; -fx-cursor: hand; -fx-font-weight: 600;");
-            btnOpenCV.setOnAction(e -> handleOpenCV(p.getCvPath()));
-
-            // Hover effect
-            btnOpenCV.setOnMouseEntered(e ->
-                btnOpenCV.setStyle("-fx-background-color: #7c3aed; -fx-text-fill: white; " +
-                                  "-fx-border-radius: 8; -fx-background-radius: 8; " +
-                                  "-fx-padding: 8 16; -fx-cursor: hand; -fx-font-weight: 600;"));
-            btnOpenCV.setOnMouseExited(e ->
-                btnOpenCV.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; " +
-                                  "-fx-border-radius: 8; -fx-background-radius: 8; " +
-                                  "-fx-padding: 8 16; -fx-cursor: hand; -fx-font-weight: 600;"));
-
-            cvRow.getChildren().addAll(cvIcon, btnOpenCV);
-        } else {
-            Label noCv = new Label("Aucun CV");
-            noCv.setStyle("-fx-text-fill: #9ca3af; -fx-font-style: italic;");
-            cvRow.getChildren().addAll(cvIcon, noCv);
-        }
-
-        // Actions: only delete (as it's a postulation)
+        // Actions : suppression
         HBox actions = new HBox(20);
         actions.setAlignment(Pos.CENTER);
         actions.getStyleClass().add("offer-actions");
 
         Button btnDelete = new Button();
-        btnDelete.getStyleClass().add("btn-icon-delete");
+        btnDelete.getStyleClass().addAll("icon-btn", "icon-btn-delete");
         btnDelete.setGraphic(new Label("🗑"));
         btnDelete.setOnAction(e -> handleDelete(p));
 
         actions.getChildren().add(btnDelete);
 
-        // Assemble card
         card.getChildren().addAll(title, offreRow, candidatRow, dateRow, statutRow, motivationRow, cvRow, actions);
 
-        // Hover animation
+        // Animation au survol
         ScaleTransition scaleUp = new ScaleTransition(Duration.millis(220), card);
         scaleUp.setToX(1.04);
         scaleUp.setToY(1.04);
@@ -321,30 +241,77 @@ public class PostulationsListController {
         return card;
     }
 
-    private void handleDelete(Postulation p) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmer suppression");
-        confirm.setHeaderText("Supprimer cette postulation ?");
-        confirm.setContentText("ID: " + p.getId());
+    private HBox createCenteredRow(String icon, String text, String iconColor, String styleClass) {
+        HBox row = new HBox(10);
+        row.setAlignment(Pos.CENTER);
 
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        Label iconLabel = new Label(icon);
+        iconLabel.setStyle("-fx-font-size: 20; -fx-text-fill: " + iconColor + ";");
+
+        Label textLabel = new Label(text != null ? text : "—");
+        textLabel.getStyleClass().add(styleClass);
+        textLabel.setWrapText(true);
+
+        row.getChildren().addAll(iconLabel, textLabel);
+        return row;
+    }
+
+    private HBox createMotivationRow(String motivation) {
+        HBox row = new HBox(10);
+        row.setAlignment(Pos.CENTER);
+
+        Label icon = new Label("📝");
+        icon.setStyle("-fx-font-size: 20; -fx-text-fill: #374151;");
+
+        String snippet = motivation.length() > 80 ? motivation.substring(0, 80) + "..." : motivation;
+        Label motivLabel = new Label(snippet);
+        motivLabel.getStyleClass().add("offer-description");
+        motivLabel.setWrapText(true);
+
+        row.getChildren().addAll(icon, motivLabel);
+        return row;
+    }
+
+    private HBox createCvRow(String cvPath) {
+        HBox row = new HBox(10);
+        row.setAlignment(Pos.CENTER);
+
+        Label icon = new Label("📄");
+        icon.setStyle("-fx-font-size: 20; -fx-text-fill: #7c3aed;");
+
+        if (cvPath != null && !cvPath.isEmpty()) {
+            Button btnOpenCV = new Button("Ouvrir CV");
+            btnOpenCV.getStyleClass().addAll("button", "btn-primary");
+            btnOpenCV.setPrefWidth(120);
+            btnOpenCV.setOnAction(e -> handleOpenCV(cvPath));
+            row.getChildren().addAll(icon, btnOpenCV);
+        } else {
+            Label noCv = new Label("Aucun CV");
+            noCv.setStyle("-fx-text-fill: #9ca3af; -fx-font-style: italic;");
+            row.getChildren().addAll(icon, noCv);
+        }
+        return row;
+    }
+
+    private void handleDelete(Postulation p) {
+        boolean confirmed = StyledAlert.showConfirmation(
+                "Confirmation de suppression",
+                "Supprimer la postulation ID " + p.getId() + " ?"
+        );
+        if (confirmed) {
             try {
                 service.supprimer(p.getId());
                 refreshTable();
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Postulation supprimée.");
+                StyledAlert.showSuccess("Succès", "Postulation supprimée.");
             } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+                StyledAlert.showError("Erreur", e.getMessage());
             }
         }
     }
 
-    /**
-     * Ouvre le fichier CV dans l'application par défaut du système
-     */
     private void handleOpenCV(String cvPath) {
         if (cvPath == null || cvPath.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Aucun CV disponible pour cette postulation");
+            StyledAlert.showError("Erreur", "Aucun CV disponible pour cette postulation");
             return;
         }
 
@@ -352,41 +319,31 @@ public class PostulationsListController {
             java.io.File cvFile = new java.io.File(cvPath);
 
             if (!cvFile.exists()) {
-                showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Fichier CV introuvable:\n" + cvPath +
-                    "\n\nLe fichier a peut-être été supprimé ou déplacé.");
+                StyledAlert.showError("Erreur",
+                        "Fichier CV introuvable:\n" + cvPath +
+                                "\n\nLe fichier a peut-être été supprimé ou déplacé.");
                 return;
             }
 
-            // Ouvrir le fichier avec l'application par défaut
             if (java.awt.Desktop.isDesktopSupported()) {
                 java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
                 if (desktop.isSupported(java.awt.Desktop.Action.OPEN)) {
                     desktop.open(cvFile);
-                    showAlert(Alert.AlertType.INFORMATION, "Succès",
-                        "Ouverture du CV: " + cvFile.getName());
+                    StyledAlert.showInfo("Ouverture du CV", "Ouverture de : " + cvFile.getName());
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Erreur",
-                        "L'ouverture de fichiers n'est pas supportée sur ce système");
+                    StyledAlert.showError("Erreur",
+                            "L'ouverture de fichiers n'est pas supportée sur ce système");
                 }
             } else {
-                showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Desktop API non disponible sur ce système");
+                StyledAlert.showError("Erreur",
+                        "Desktop API non disponible sur ce système");
             }
         } catch (java.io.IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                "Erreur lors de l'ouverture du CV:\n" + e.getMessage());
+            StyledAlert.showError("Erreur",
+                    "Erreur lors de l'ouverture du CV:\n" + e.getMessage());
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                "Erreur inattendue:\n" + e.getMessage());
+            StyledAlert.showError("Erreur",
+                    "Erreur inattendue:\n" + e.getMessage());
         }
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String msg) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
     }
 }

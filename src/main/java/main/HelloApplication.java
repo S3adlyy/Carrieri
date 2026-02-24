@@ -41,6 +41,7 @@ public class HelloApplication extends Application {
     private static final String CSS_LIGHT = "/css/theme-unified.css";
     private static final String CSS_DARK  = "/css/theme-dark.css";
 
+
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -80,6 +81,13 @@ public class HelloApplication extends Application {
                     scene.getStylesheets().add(getClass().getResource(CSS_LIGHT).toExternalForm());
                 } catch (Exception e) {
                     System.err.println("⚠️ CSS clair non trouvé: " + CSS_LIGHT);
+                }
+
+                // ✅ CSS pour les alertes (toujours chargé)
+                try {
+                    scene.getStylesheets().add(getClass().getResource("/css/alert.css").toExternalForm());
+                } catch (Exception e) {
+                    System.err.println("⚠️ CSS alerts non trouvé: /css/alert.css");
                 }
 
                 // ✅ CSS sombre si activé

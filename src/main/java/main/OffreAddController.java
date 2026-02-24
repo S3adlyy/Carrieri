@@ -5,15 +5,16 @@ import javafx.concurrent.Task;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.util.StringConverter;
 import services.OffreEmploiService;
 import services.AIGeneratorService;
-import javafx.util.StringConverter;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import utils.StyledAlert;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,12 +23,11 @@ public class OffreAddController {
     private static final PseudoClass ERROR_CLASS = PseudoClass.getPseudoClass("error");
     private static final DateTimeFormatter FR_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-
-    // === FXML ids (MUST match offre-add.fxml) ===
+    // FXML fields
     @FXML private TextField txtTitre;
     @FXML private TextArea txtDescription;
     @FXML private Label lblCharCount;
-    @FXML private Button btnGenerateIA;  // Bouton pour générer avec IA
+    @FXML private Button btnGenerateIA;
 
     @FXML private TextField txtSalaire;
     @FXML private TextField txtLocalisation;
@@ -46,7 +46,7 @@ public class OffreAddController {
     @FXML private Spinner<Integer> spExpirationTime;      // 0-23
     @FXML private Spinner<Integer> spExpirationMinute;    // 0-59
 
-    // Labels d'erreur
+    // Error labels
     @FXML private Label errTitre;
     @FXML private Label errDescription;
     @FXML private Label errTypeContrat;
@@ -61,9 +61,12 @@ public class OffreAddController {
     @FXML private Label errExpiration;
 
     private final OffreEmploiService service = new OffreEmploiService();
+    private boolean isDarkMode = false; // Par défaut en mode clair
 
     @FXML
     public void initialize() {
+        // Appliquer le thème au démarrage
+        applyTheme();
 
         // ====== combos ======
         comboTypeContrat.getItems().setAll("CDI", "CDD", "Stage", "Freelance", "Alternance");
@@ -79,7 +82,7 @@ public class OffreAddController {
         dpExpirationDate.setValue(LocalDate.now().plusDays(7));
         dpExpirationDate.setPromptText("jj/mm/aaaa");
 
-// Force l’affichage/saisie en dd/MM/yyyy
+        // Force l’affichage/saisie en dd/MM/yyyy
         dpExpirationDate.setConverter(new StringConverter<LocalDate>() {
             @Override
             public String toString(LocalDate date) {
@@ -91,23 +94,32 @@ public class OffreAddController {
                 if (text == null) return null;
                 String t = text.trim();
                 if (t.isEmpty()) return null;
-
                 try {
-                    return LocalDate.parse(t, FR_FORMAT); // vraie date (ex: 31/02 -> erreur)
+                    return LocalDate.parse(t, FR_FORMAT);
                 } catch (DateTimeParseException e) {
                     return null;
                 }
             }
         });
 
-// Bloquer les dates passées directement dans le calendrier
+        // Forcer la feuille de style sur le popup du DatePicker
+        dpExpirationDate.setOnShown(e -> {
+            if (dpExpirationDate.getEditor().getParent() != null &&
+                    dpExpirationDate.getEditor().getParent().getScene() != null &&
+                    dpExpirationDate.getEditor().getParent().getScene().getWindow() instanceof PopupControl popup) {
+                popup.getScene().getStylesheets().addAll(
+                        getClass().getResource("/css/theme-unified.css").toExternalForm(),
+                        getClass().getResource("/css/theme-dark.css").toExternalForm()
+                );
+            }
+        });
+
+        // Bloquer les dates passées dans le calendrier
         dpExpirationDate.setDayCellFactory(picker -> new DateCell() {
             @Override
             public void updateItem(LocalDate item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) return;
-
-                // interdit passé (et tu peux mettre <= si tu veux bloquer aujourd’hui aussi)
                 if (item.isBefore(LocalDate.now())) {
                     setDisable(true);
                     setOpacity(0.35);
@@ -115,12 +127,11 @@ public class OffreAddController {
             }
         });
 
-// Si l'utilisateur tape au clavier, vérifier quand il quitte le champ
+        // Validation quand on quitte le champ éditable
         dpExpirationDate.getEditor().focusedProperty().addListener((obs, was, isNow) -> {
             if (!isNow) {
                 LocalDate parsed = dpExpirationDate.getConverter().fromString(dpExpirationDate.getEditor().getText());
                 if (parsed == null) {
-                    // date invalide -> reset + erreur
                     dpExpirationDate.setValue(null);
                     dpExpirationDate.getEditor().clear();
                     showError(errExpiration, "Date invalide. Format attendu : jj/mm/aaaa (ex: 23/02/2026).");
@@ -160,7 +171,6 @@ public class OffreAddController {
     private void handleSave() {
         clearErrors();
 
-        // ====== read values ======
         String titre = safe(txtTitre.getText());
         String description = safe(txtDescription.getText());
         String typeContrat = comboTypeContrat.getValue() == null ? "" : comboTypeContrat.getValue().trim();
@@ -178,7 +188,6 @@ public class OffreAddController {
         Integer hours = spExpirationTime.getValue();
         Integer minutes = spExpirationMinute.getValue();
 
-        // ====== validations (precise + labels rouges) ======
         boolean hasError = false;
 
         if (titre.isEmpty()) {
@@ -190,7 +199,6 @@ public class OffreAddController {
             markError(txtTitre, true);
             hasError = true;
         } else {
-            // Vérifier l'unicité du titre
             try {
                 if (service.existsByTitre(titre)) {
                     showError(errTitre, "Ce titre existe déjà. Veuillez choisir un titre différent.");
@@ -312,7 +320,6 @@ public class OffreAddController {
                     hours,
                     minutes
             );
-
             if (datePart.equals(LocalDate.now()) && expirationDateTime.isBefore(LocalDateTime.now())) {
                 showError(errExpiration, "L'expiration doit être dans le futur (date + heure).");
                 markError(dpExpirationDate, true);
@@ -320,12 +327,10 @@ public class OffreAddController {
             }
         }
 
-        // Si au moins une erreur, on arrête
         if (hasError) {
             return;
         }
 
-        // ====== create + insert ======
         double salaire = Double.parseDouble(safe(txtSalaire.getText()));
         LocalDateTime expirationDateTime = LocalDateTime.of(
                 datePart.getYear(),
@@ -354,15 +359,14 @@ public class OffreAddController {
         try {
             service.ajouter(offre);
             handleReset();
-            showInfo("✅ Offre ajoutée avec succès !");
+            StyledAlert.showSuccess("✅ Succès", "Offre ajoutée avec succès !");
         } catch (SQLException e) {
-            // Vérifier si c'est une erreur d'unicité du titre
             if (e.getMessage().contains("existe déjà")) {
                 showError(errTitre, e.getMessage());
                 markError(txtTitre, true);
                 txtTitre.requestFocus();
             } else {
-                showErrorPopup("Erreur base de données : " + e.getMessage());
+                StyledAlert.showError("Erreur base de données", e.getMessage());
             }
         }
     }
@@ -416,7 +420,6 @@ public class OffreAddController {
     }
 
     private void clearErrors() {
-        // Clear all error labels
         hideError(errTitre);
         hideError(errDescription);
         hideError(errTypeContrat);
@@ -430,21 +433,11 @@ public class OffreAddController {
         hideError(errContact);
         hideError(errExpiration);
 
-        // Clear pseudo-class states
-        List<Control> all = new ArrayList<>();
-        all.add(txtTitre);
-        all.add(txtDescription);
-        all.add(txtSalaire);
-        all.add(txtLocalisation);
-        all.add(txtSecteur);
-        all.add(comboTypeContrat);
-        all.add(comboQualification);
-        all.add(txtExperience);
-        all.add(txtCompetences);
-        all.add(txtEntreprise);
-        all.add(txtContact);
-        all.add(dpExpirationDate);
-
+        List<Control> all = List.of(
+                txtTitre, txtDescription, txtSalaire, txtLocalisation, txtSecteur,
+                comboTypeContrat, comboQualification, txtExperience, txtCompetences,
+                txtEntreprise, txtContact, dpExpirationDate
+        );
         for (Control c : all) markError(c, false);
     }
 
@@ -456,181 +449,115 @@ public class OffreAddController {
         return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
 
-    private void showErrorPopup(String msg) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Erreur de saisie");
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
-    }
+    // ==================== IA ====================
 
-    private void showInfo(String msg) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Succès");
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
-    }
-
-    /**
-     * Génère une description d'offre avec l'IA Gemini
-     */
     @FXML
     private void handleGenerateIA() {
-        // Récupérer les valeurs nécessaires
         String titre = safe(txtTitre.getText());
         String secteur = safe(txtSecteur.getText());
         String competences = safe(txtCompetences.getText());
         String niveau = comboQualification.getValue();
         String experience = safe(txtExperience.getText());
 
-        // Validation des champs requis
         if (titre.isEmpty()) {
             showError(errTitre, "Le titre est obligatoire pour générer une description.");
             markError(txtTitre, true);
             return;
         }
-
         if (secteur.isEmpty()) {
             showError(errSecteur, "Le secteur est obligatoire pour générer une description.");
             markError(txtSecteur, true);
             return;
         }
-
         if (competences.isEmpty()) {
             showError(errCompetences, "Les compétences sont obligatoires pour générer une description.");
             markError(txtCompetences, true);
             return;
         }
 
-        // Vérifier que le service IA est disponible
         if (!AIGeneratorService.isServiceAvailable()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Service IA indisponible");
-            alert.setHeaderText("Le service de génération IA n'est pas accessible");
-            alert.setContentText("Assurez-vous que le service Python est démarré :\n\n" +
-                    "cd ml_service\n" +
-                    "$env:GEMINI_API_KEY = \"votre_cle\"\n" +
-                    "python api_service_gemini.py");
-            alert.showAndWait();
+            StyledAlert.showError(
+                    "Service IA indisponible",
+                    "Le service de génération IA n'est pas accessible.\n\n" +
+                            "Assurez-vous que le service Python est démarré :\n\n" +
+                            "cd ml_service\n" +
+                            "$env:GEMINI_API_KEY = \"votre_cle\"\n" +
+                            "python api_service_gemini.py"
+            );
             return;
         }
 
-        // Désactiver le bouton pendant la génération
         if (btnGenerateIA != null) {
             btnGenerateIA.setDisable(true);
             btnGenerateIA.setText("⏳ Génération en cours...");
         }
 
-        // Valeurs par défaut si non renseignées
         String niveauFinal = (niveau == null || niveau.isEmpty()) ? "Bac+3/5" : niveau;
         String experienceFinal = experience.isEmpty() ? "2-3 ans" : experience;
 
-        // Créer une tâche asynchrone pour ne pas bloquer l'interface
         Task<String> generateTask = new Task<>() {
             @Override
             protected String call() {
                 return AIGeneratorService.generateDescription(
-                        titre,
-                        secteur,
-                        competences,
-                        niveauFinal,
-                        experienceFinal
+                        titre, secteur, competences, niveauFinal, experienceFinal
                 );
             }
         };
 
-        // Gérer le succès
         generateTask.setOnSucceeded(event -> {
             String description = generateTask.getValue();
-
-            // Vérifier si c'est une erreur
             if (description.startsWith("❌") || description.startsWith("Erreur")) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erreur de génération");
-                alert.setHeaderText("Impossible de générer la description");
-                alert.setContentText(description);
-                alert.showAndWait();
+                StyledAlert.showError("Erreur de génération", description);
             } else {
-                // Succès : mettre la description dans le TextArea
                 txtDescription.setText(description);
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Succès");
-                alert.setHeaderText("Description générée avec succès !");
-                alert.setContentText("La description a été générée par l'IA et insérée dans le champ.");
-                alert.showAndWait();
+                StyledAlert.showSuccess("✅ Succès", "La description a été générée avec succès par l'IA.");
             }
-
-            // Réactiver le bouton
             if (btnGenerateIA != null) {
                 btnGenerateIA.setDisable(false);
                 btnGenerateIA.setText("✨ Générer avec IA");
             }
         });
 
-        // Gérer l'échec
         generateTask.setOnFailed(event -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erreur");
-            alert.setHeaderText("Erreur lors de la génération");
-            alert.setContentText("Une erreur inattendue s'est produite.");
-            alert.showAndWait();
-
-            // Réactiver le bouton
+            StyledAlert.showError("❌ Erreur", "Une erreur inattendue s'est produite.");
             if (btnGenerateIA != null) {
                 btnGenerateIA.setDisable(false);
                 btnGenerateIA.setText("✨ Générer avec IA");
             }
         });
 
-        // Lancer la tâche dans un thread séparé
         new Thread(generateTask).start();
     }
 
-    /**
-     * Améliore le titre de l'offre avec l'IA Gemini
-     */
     @FXML
     private void handleImproveTitle() {
-        // Récupérer le titre actuel
         String titreActuel = safe(txtTitre.getText());
-
-        // Validation
         if (titreActuel.isEmpty()) {
             showError(errTitre, "Veuillez d'abord saisir un titre à améliorer.");
             markError(txtTitre, true);
             return;
         }
 
-        // Récupérer les infos contextuelles (optionnelles mais utiles pour l'IA)
         String secteur = safe(txtSecteur.getText());
         String typeContrat = comboTypeContrat.getValue();
         String salaire = safe(txtSalaire.getText());
 
-        // Vérifier que le service IA est disponible
         if (!AIGeneratorService.isServiceAvailable()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Service IA indisponible");
-            alert.setHeaderText("Le service de génération IA n'est pas accessible");
-            alert.setContentText("Assurez-vous que le service Python est démarré :\n\n" +
-                    "cd ml_service\n" +
-                    "$env:GEMINI_API_KEY = \"votre_cle\"\n" +
-                    "python api_service_gemini.py");
-            alert.showAndWait();
+            StyledAlert.showError(
+                    "Service IA indisponible",
+                    "Le service de génération IA n'est pas accessible.\n\n" +
+                            "Assurez-vous que le service Python est démarré."
+            );
             return;
         }
 
-        // Désactiver temporairement le champ titre
         txtTitre.setDisable(true);
         String originalText = txtTitre.getText();
         txtTitre.setPromptText("⏳ Amélioration en cours...");
 
-        // Créer une tâche asynchrone
         Task<String> improveTask = new Task<>() {
             @Override
             protected String call() {
-                // Appeler l'API avec un prompt spécial pour améliorer le titre
                 return AIGeneratorService.generateTitleImprovement(
                         titreActuel,
                         secteur.isEmpty() ? "Non spécifié" : secteur,
@@ -640,32 +567,28 @@ public class OffreAddController {
             }
         };
 
-        // Gérer le succès
         improveTask.setOnSucceeded(event -> {
             String nouveauTitre = improveTask.getValue();
-
-            // Vérifier si c'est une erreur
             if (nouveauTitre.startsWith("❌") || nouveauTitre.startsWith("Erreur")) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erreur d'amélioration");
-                alert.setHeaderText("Impossible d'améliorer le titre");
-                alert.setContentText(nouveauTitre);
-                alert.showAndWait();
-
-                // Restaurer le titre original
+                StyledAlert.showError("Erreur d'amélioration", nouveauTitre);
                 txtTitre.setText(originalText);
             } else {
-                // Succès : proposer le nouveau titre
-                Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-                confirmation.setTitle("Titre amélioré par l'IA");
-                confirmation.setHeaderText("L'IA propose ce titre amélioré :");
-                confirmation.setContentText("Ancien titre :\n" + originalText +
-                                           "\n\n✨ Nouveau titre :\n" + nouveauTitre +
-                                           "\n\nVoulez-vous utiliser ce titre amélioré ?");
+                // Créer la confirmation stylée
+                Alert confirmation = StyledAlert.confirmation(
+                        "✨ Titre amélioré par l'IA",
+                        "L'IA propose ce titre amélioré :",
+                        "Ancien titre :\n" + originalText +
+                                "\n\n✨ Nouveau titre :\n" + nouveauTitre +
+                                "\n\nVoulez-vous utiliser ce titre amélioré ?"
+                );
 
-                ButtonType btnOui = new ButtonType("✅ Oui, utiliser ce titre");
-                ButtonType btnNon = new ButtonType("❌ Non, garder l'ancien");
+                // Boutons personnalisés
+                ButtonType btnOui = new ButtonType("✅ Oui, utiliser ce titre", ButtonBar.ButtonData.YES);
+                ButtonType btnNon = new ButtonType("❌ Non, garder l'ancien", ButtonBar.ButtonData.NO);
                 confirmation.getButtonTypes().setAll(btnOui, btnNon);
+
+                // Appliquer les styles de thème aux boutons (via la nouvelle méthode utilitaire)
+                StyledAlert.styleCustomButtons(confirmation, btnOui, btnNon);
 
                 confirmation.showAndWait().ifPresent(response -> {
                     if (response == btnOui) {
@@ -678,26 +601,48 @@ public class OffreAddController {
                 });
             }
 
-            // Réactiver le champ
             txtTitre.setDisable(false);
             txtTitre.setPromptText("Ex: Développeur Full Stack Java");
         });
 
-        // Gérer l'échec
         improveTask.setOnFailed(event -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erreur");
-            alert.setHeaderText("Erreur lors de l'amélioration du titre");
-            alert.setContentText("Une erreur inattendue s'est produite.");
-            alert.showAndWait();
-
-            // Restaurer
+            StyledAlert.showError("❌ Erreur", "Une erreur inattendue s'est produite.");
             txtTitre.setText(originalText);
             txtTitre.setDisable(false);
             txtTitre.setPromptText("Ex: Développeur Full Stack Java");
         });
 
-        // Lancer la tâche
         new Thread(improveTask).start();
+    }
+
+    // ==================== Thèmes ====================
+
+    private void applyTheme() {
+        if (txtTitre != null && txtTitre.getScene() != null && txtTitre.getScene().getRoot() != null) {
+            var root = txtTitre.getScene().getRoot();
+            root.getStylesheets().clear();
+            if (isDarkMode) {
+                root.getStylesheets().add(getClass().getResource("/css/theme-dark.css").toExternalForm());
+                root.getStyleClass().removeAll("light");
+                root.getStyleClass().add("dark");
+            } else {
+                root.getStylesheets().add(getClass().getResource("/css/theme-unified.css").toExternalForm());
+                root.getStyleClass().removeAll("dark");
+            }
+        }
+    }
+
+    public void toggleTheme() {
+        isDarkMode = !isDarkMode;
+        applyTheme();
+    }
+
+    public void setDarkMode(boolean dark) {
+        this.isDarkMode = dark;
+        applyTheme();
+    }
+
+    public boolean isDarkMode() {
+        return isDarkMode;
     }
 }

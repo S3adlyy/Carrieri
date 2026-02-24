@@ -1,9 +1,11 @@
 package main;
 
+import entities.OffreEmploi;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -59,7 +61,7 @@ public class OffresShellController {
         setupAnimations();
 
         // Tooltip pour l'avatar (optionnel)
-        Tooltip.install(navAvatar, new Tooltip("Utilisateur connecté"));
+        Tooltip.install(navAvatar, new Tooltip("Admin connecté"));
     }
 
     // ============================================
@@ -115,7 +117,7 @@ public class OffresShellController {
     }
 
     // ============================================
-    // NAVIGATION (inchangée)
+    // NAVIGATION PRINCIPALE (vues pleine page)
     // ============================================
     @FXML
     public void showOffresTable() {
@@ -161,22 +163,39 @@ public class OffresShellController {
         setActiveButton(btnPostulationsCandidats); // ou un autre bouton ?
     }
 
+    // ============================================
+    // NOUVELLES VUES (postuler, stats, qrcode) en pleine page
+    // ============================================
     public void showPostuler(int offreId, String offreTitre) {
         loadViewWithFadeAndInit("/postuler.fxml", controller -> {
-            if (controller instanceof PostulerPopupController postulerCtrl) {
-                postulerCtrl.setOffreInfo(offreId, offreTitre);
+            if (controller instanceof PostulerPopupController) {
+                ((PostulerPopupController) controller).setOffreInfo(offreId, offreTitre);
             }
         });
     }
 
     public void showOffreStats(entities.OffreEmploi offre) {
         loadViewWithFadeAndInit("/offre-stats-popup.fxml", controller -> {
-            if (controller instanceof OffreStatsPopupController statsCtrl) {
-                statsCtrl.setOffre(offre);
+            if (controller instanceof OffreStatsPopupController) {
+                ((OffreStatsPopupController) controller).setOffre(offre);
             }
         });
     }
 
+    // ============================================
+    // MÉTHODE POUR AFFICHER LE QR CODE (MISE À JOUR)
+    // ============================================
+    public void showQRCode(OffreEmploi offre) {
+        loadViewWithFadeAndInit("/qrcode.fxml", controller -> {
+            if (controller instanceof QRCodeController) {
+                ((QRCodeController) controller).initData(offre);
+            }
+        });
+    }
+
+    // ============================================
+    // CHARGEMENT DES VUES PRINCIPALES (sans overlay)
+    // ============================================
     private void loadViewWithFade(String fxmlFileName) {
         loadViewWithFadeAndInit("/" + fxmlFileName, null);
     }
@@ -198,7 +217,8 @@ public class OffresShellController {
             ft.setToValue(1);
             ft.play();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("❌ Erreur lors du chargement de la vue " + resourcePath + " : " + e.getMessage());
+            e.printStackTrace(System.err);
             Label errorLabel = new Label("Erreur de chargement de la page :\n" + e.getMessage());
             errorLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: #dc2626; -fx-padding: 40; -fx-alignment: center;");
             errorLabel.setWrapText(true);

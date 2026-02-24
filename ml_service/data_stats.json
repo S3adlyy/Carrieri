@@ -1,0 +1,7 @@
+{
+  "total_offres": 762,
+  "train_size": 609,
+  "val_size": 153,
+  "avg_input_length": 71.60367454068242,
+  "avg_output_length": 868.7532808398951
+}

@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -14,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import services.OffreEmploiService;
 import services.PostulationService;
+import utils.StyledAlert;
 
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
@@ -97,7 +99,7 @@ public class AdminDashboardController {
         colOffreDatePub.setCellValueFactory(cellData -> {
             if (cellData.getValue().getDatePublication() != null) {
                 return new javafx.beans.property.SimpleStringProperty(
-                    dateFmt.format(cellData.getValue().getDatePublication())
+                        dateFmt.format(cellData.getValue().getDatePublication())
                 );
             }
             return new javafx.beans.property.SimpleStringProperty("N/A");
@@ -106,7 +108,7 @@ public class AdminDashboardController {
         colOffreDateExp.setCellValueFactory(cellData -> {
             if (cellData.getValue().getDateExpiration() != null) {
                 return new javafx.beans.property.SimpleStringProperty(
-                    dateFmt.format(cellData.getValue().getDateExpiration())
+                        dateFmt.format(cellData.getValue().getDateExpiration())
                 );
             }
             return new javafx.beans.property.SimpleStringProperty("N/A");
@@ -114,7 +116,7 @@ public class AdminDashboardController {
 
         // Recruteur ID column (empty for now)
         colOffreRecruteurId.setCellValueFactory(cellData ->
-            new javafx.beans.property.SimpleObjectProperty<>(null)
+                new javafx.beans.property.SimpleObjectProperty<>(null)
         );
         colOffreRecruteurId.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -159,28 +161,30 @@ public class AdminDashboardController {
 
             // Validation: Required
             if (required && newValue.isEmpty()) {
-                showError("❌ Le champ " + column.getText() + " est obligatoire");
+                StyledAlert.showError("❌ Champ obligatoire", "Le champ " + column.getText() + " est obligatoire.");
                 tableOffres.refresh();
                 return;
             }
 
             // Validation: Minimum length
             if (required && newValue.length() < minLength) {
-                showError("❌ Le champ " + column.getText() + " doit contenir au moins " + minLength + " caractères\nActuellement: " + newValue.length() + " caractères");
+                StyledAlert.showError("❌ Longueur insuffisante",
+                        "Le champ " + column.getText() + " doit contenir au moins " + minLength + " caractères.\nActuellement: " + newValue.length() + " caractères.");
                 tableOffres.refresh();
                 return;
             }
 
             // Validation: Maximum length
             if (!newValue.isEmpty() && newValue.length() > maxLength) {
-                showError("❌ Le champ " + column.getText() + " ne peut pas dépasser " + maxLength + " caractères\nActuellement: " + newValue.length() + " caractères");
+                StyledAlert.showError("❌ Longueur excessive",
+                        "Le champ " + column.getText() + " ne peut pas dépasser " + maxLength + " caractères.\nActuellement: " + newValue.length() + " caractères.");
                 tableOffres.refresh();
                 return;
             }
 
             // Validation: Ne peut pas commencer par un chiffre (pour titre et description)
             if ((property.equals("titre") || property.equals("description")) && newValue.matches("^\\d.*")) {
-                showError("❌ Le champ " + column.getText() + " ne peut pas commencer par un chiffre");
+                StyledAlert.showError("❌ Format invalide", "Le champ " + column.getText() + " ne peut pas commencer par un chiffre.");
                 tableOffres.refresh();
                 return;
             }
@@ -191,7 +195,7 @@ public class AdminDashboardController {
                     case "titre":
                         // Check uniqueness
                         if (!newValue.equals(offre.getTitre()) && offreService.existsByTitre(newValue)) {
-                            showError("❌ Une offre avec le titre \"" + newValue + "\" existe déjà");
+                            StyledAlert.showError("❌ Titre existant", "Une offre avec le titre \"" + newValue + "\" existe déjà.");
                             tableOffres.refresh();
                             return;
                         }
@@ -208,10 +212,10 @@ public class AdminDashboardController {
                 }
 
                 offreService.modifier(offre);
-                showInfo("✅ Modification enregistrée avec succès");
+                StyledAlert.showSuccess("✅ Succès", "Modification enregistrée avec succès.");
                 tableOffres.refresh();
             } catch (SQLException e) {
-                showError("❌ Erreur: " + e.getMessage());
+                StyledAlert.showError("❌ Erreur", "Erreur lors de la modification :\n" + e.getMessage());
                 tableOffres.refresh();
             }
         });
@@ -225,21 +229,21 @@ public class AdminDashboardController {
 
             // Validation: Required
             if (newValue.isEmpty()) {
-                showError("❌ L'adresse email est obligatoire");
+                StyledAlert.showError("❌ Champ obligatoire", "L'adresse email est obligatoire.");
                 tableOffres.refresh();
                 return;
             }
 
             // Validation: Email format
             if (!isValidEmail(newValue)) {
-                showError("❌ Format d'email invalide\nExemple valide: exemple@domaine.com");
+                StyledAlert.showError("❌ Format invalide", "Format d'email invalide.\nExemple valide: exemple@domaine.com");
                 tableOffres.refresh();
                 return;
             }
 
             // Validation: Length
             if (newValue.length() < 5 || newValue.length() > 100) {
-                showError("❌ L'email doit contenir entre 5 et 100 caractères");
+                StyledAlert.showError("❌ Longueur invalide", "L'email doit contenir entre 5 et 100 caractères.");
                 tableOffres.refresh();
                 return;
             }
@@ -248,10 +252,10 @@ public class AdminDashboardController {
             try {
                 offre.setContactRecruteur(newValue);
                 offreService.modifier(offre);
-                showInfo("✅ Email modifié avec succès");
+                StyledAlert.showSuccess("✅ Succès", "Email modifié avec succès.");
                 tableOffres.refresh();
             } catch (SQLException e) {
-                showError("❌ Erreur: " + e.getMessage());
+                StyledAlert.showError("❌ Erreur", "Erreur lors de la modification :\n" + e.getMessage());
                 tableOffres.refresh();
             }
         });
@@ -308,7 +312,7 @@ public class AdminDashboardController {
 
                     // Validation: Not empty
                     if (value == null || value.trim().isEmpty()) {
-                        showError("❌ Le salaire est obligatoire");
+                        StyledAlert.showError("❌ Champ obligatoire", "Le salaire est obligatoire.");
                         cancelEdit();
                         return;
                     }
@@ -319,14 +323,14 @@ public class AdminDashboardController {
 
                         // Validation: Positive
                         if (salaire <= 0) {
-                            showError("❌ Le salaire doit être supérieur à 0");
+                            StyledAlert.showError("❌ Valeur invalide", "Le salaire doit être supérieur à 0.");
                             cancelEdit();
                             return;
                         }
 
                         // Validation: Reasonable range
                         if (salaire > 1000000) {
-                            showError("❌ Le salaire ne peut pas dépasser 1 000 000");
+                            StyledAlert.showError("❌ Valeur trop élevée", "Le salaire ne peut pas dépasser 1 000 000.");
                             cancelEdit();
                             return;
                         }
@@ -338,14 +342,14 @@ public class AdminDashboardController {
                         try {
                             offreService.modifier(offre);
                             commitEdit(salaire);
-                            showInfo("✅ Salaire modifié avec succès");
+                            StyledAlert.showSuccess("✅ Succès", "Salaire modifié avec succès.");
                         } catch (SQLException e) {
-                            showError("❌ Erreur: " + e.getMessage());
+                            StyledAlert.showError("❌ Erreur", "Erreur lors de la modification :\n" + e.getMessage());
                             cancelEdit();
                         }
 
                     } catch (NumberFormatException e) {
-                        showError("❌ Le salaire doit être un nombre valide\nExemple: 2500.50");
+                        StyledAlert.showError("❌ Format invalide", "Le salaire doit être un nombre valide.\nExemple: 2500.50");
                         cancelEdit();
                     }
                 });
@@ -408,7 +412,7 @@ public class AdminDashboardController {
             offresData.setAll(allOffresData);
             lblOffresStatus.setText(offresData.size() + " offres trouvées");
         } catch (SQLException e) {
-            showError("Erreur lors du chargement des offres: " + e.getMessage());
+            StyledAlert.showError("Erreur de chargement", "Impossible de charger les offres :\n" + e.getMessage());
         }
     }
 
@@ -420,11 +424,11 @@ public class AdminDashboardController {
             offresData.setAll(allOffresData);
         } else {
             offresData.setAll(allOffresData.filtered(o ->
-                o.getTitre().toLowerCase().contains(search) ||
-                o.getEntreprise().toLowerCase().contains(search) ||
-                o.getLocalisation().toLowerCase().contains(search) ||
-                o.getTypeContrat().toLowerCase().contains(search) ||
-                String.valueOf(o.getSalaire()).contains(search)
+                    o.getTitre().toLowerCase().contains(search) ||
+                            o.getEntreprise().toLowerCase().contains(search) ||
+                            o.getLocalisation().toLowerCase().contains(search) ||
+                            o.getTypeContrat().toLowerCase().contains(search) ||
+                            String.valueOf(o.getSalaire()).contains(search)
             ));
         }
 
@@ -433,56 +437,45 @@ public class AdminDashboardController {
 
     @FXML
     private void handleAddOffre() {
-        // Redirect to add offre view
         OffresShellController shell = OffresShellController.getInstance();
         if (shell != null) {
             shell.showOffreAdd();
+        } else {
+            StyledAlert.showError("Erreur", "Shell non disponible.");
         }
     }
 
     private void handleEditOffre(OffreEmploi offre) {
-        // Inline editing is already enabled via setEditable(true)
-        showInfo("Double-cliquez sur une cellule pour la modifier");
+        StyledAlert.showInfo("Édition", "Double-cliquez sur une cellule pour la modifier directement dans le tableau.");
     }
 
     private void handleDeleteOffre(OffreEmploi offre) {
-        // Vérifier s'il y a des postulations liées
         try {
             java.util.List<Postulation> postulations = postulationService.afficherParOffre(offre.getId());
 
             if (!postulations.isEmpty()) {
-                Alert warningAlert = new Alert(Alert.AlertType.WARNING);
-                warningAlert.setTitle("Impossible de supprimer");
-                warningAlert.setHeaderText("Cette offre ne peut pas être supprimée");
-                warningAlert.setContentText("Il existe " + postulations.size() +
-                    " postulation(s) liée(s) à cette offre.\n\n" +
-                    "Vous devez d'abord supprimer toutes les postulations associées.");
-                warningAlert.showAndWait();
+                StyledAlert.showWarning("Suppression impossible",
+                        "Cette offre ne peut pas être supprimée car elle a " + postulations.size() +
+                                " postulation(s) associée(s).\n\nSupprimez d'abord les postulations.");
                 return;
             }
         } catch (SQLException e) {
-            showError("Erreur lors de la vérification: " + e.getMessage());
+            StyledAlert.showError("Erreur", "Erreur lors de la vérification :\n" + e.getMessage());
             return;
         }
 
-        // Si pas de postulations, procéder à la suppression
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmer suppression");
-        confirm.setHeaderText("Supprimer cette offre ?");
-        confirm.setContentText("Titre: " + offre.getTitre() + "\nEntreprise: " + offre.getEntreprise());
-
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        boolean confirmed = StyledAlert.showConfirmation("Confirmer la suppression",
+                "Supprimer l'offre : " + offre.getTitre() + " ?");
+        if (confirmed) {
             try {
                 offreService.supprimer(offre.getId());
                 loadOffres();
-                showInfo("✅ Offre supprimée avec succès");
+                StyledAlert.showSuccess("Succès", "Offre supprimée avec succès.");
             } catch (SQLException e) {
-                showError("❌ Erreur lors de la suppression: " + e.getMessage());
+                StyledAlert.showError("Erreur", "Erreur lors de la suppression :\n" + e.getMessage());
             }
         }
     }
-
 
     // ==================== POSTULATIONS METHODS ====================
 
@@ -491,12 +484,11 @@ public class AdminDashboardController {
         colPostulationOffreId.setCellValueFactory(new PropertyValueFactory<>("offreId"));
         colPostulationCandidatId.setCellValueFactory(new PropertyValueFactory<>("candidatId"));
 
-        // Offre titre (fetch from service)
         colPostulationOffreTitre.setCellValueFactory(cellData -> {
             try {
                 OffreEmploi offre = offreService.findById(cellData.getValue().getOffreId());
                 return new javafx.beans.property.SimpleStringProperty(
-                    offre != null ? offre.getTitre() : "N/A"
+                        offre != null ? offre.getTitre() : "N/A"
                 );
             } catch (SQLException e) {
                 return new javafx.beans.property.SimpleStringProperty("Erreur");
@@ -504,15 +496,14 @@ public class AdminDashboardController {
         });
 
         colPostulationDate.setCellValueFactory(cellData ->
-            new javafx.beans.property.SimpleStringProperty(
-                dateFmt.format(cellData.getValue().getDatePostulation())
-            )
+                new javafx.beans.property.SimpleStringProperty(
+                        dateFmt.format(cellData.getValue().getDatePostulation())
+                )
         );
 
         colPostulationStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
         colPostulationMotivation.setCellValueFactory(new PropertyValueFactory<>("motivationCandidature"));
 
-        // CV Path column with clickable button
         colPostulationCvPath.setCellValueFactory(new PropertyValueFactory<>("cvPath"));
         colPostulationCvPath.setCellFactory(col -> new TableCell<>() {
             private final Button btnOpenCV = new Button();
@@ -520,8 +511,8 @@ public class AdminDashboardController {
             {
                 btnOpenCV.getStyleClass().add("btn-icon-view");
                 btnOpenCV.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; " +
-                                  "-fx-border-radius: 8; -fx-background-radius: 8; " +
-                                  "-fx-padding: 5 10; -fx-cursor: hand;");
+                        "-fx-border-radius: 8; -fx-background-radius: 8; " +
+                        "-fx-padding: 5 10; -fx-cursor: hand;");
                 btnOpenCV.setOnAction(e -> {
                     Postulation postulation = getTableView().getItems().get(getIndex());
                     handleOpenCV(postulation.getCvPath());
@@ -544,7 +535,6 @@ public class AdminDashboardController {
             }
         });
 
-        // Make motivation column wrap text
         colPostulationMotivation.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -558,7 +548,6 @@ public class AdminDashboardController {
             }
         });
 
-        // Actions column
         colPostulationActions.setCellFactory(createPostulationActionsColumn());
 
         tablePostulations.setItems(postulationsData);
@@ -600,17 +589,30 @@ public class AdminDashboardController {
     }
 
     private void handleEditPostulation(Postulation postulation) {
-        // Create a dialog to edit the status
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Modifier le statut");
         dialog.setHeaderText("Postulation ID: " + postulation.getId() +
-                           "\nCandidat: " + postulation.getCandidatId());
+                "\nCandidat: " + postulation.getCandidatId());
 
-        // Set the button types
+        dialog.getDialogPane().getStylesheets().addAll(
+                getClass().getResource("/css/theme-unified.css").toExternalForm(),
+                getClass().getResource("/css/theme-dark.css").toExternalForm()
+        );
+        dialog.getDialogPane().getStyleClass().add("glass-card");
+
         ButtonType confirmButtonType = new ButtonType("Modifier", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, ButtonType.CANCEL);
 
-        // Create the status choice
+        // Styliser les boutons manuellement
+        Node okButton = dialog.getDialogPane().lookupButton(confirmButtonType);
+        if (okButton != null) {
+            okButton.getStyleClass().addAll("button", "btn-primary");
+        }
+        Node cancelButton = dialog.getDialogPane().lookupButton(ButtonType.CANCEL);
+        if (cancelButton != null) {
+            cancelButton.getStyleClass().addAll("button", "btn-secondary");
+        }
+
         VBox content = new VBox(15);
         content.setStyle("-fx-padding: 20;");
 
@@ -625,7 +627,6 @@ public class AdminDashboardController {
         content.getChildren().addAll(label, statutCombo);
         dialog.getDialogPane().setContent(content);
 
-        // Convert the result
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == confirmButtonType) {
                 return statutCombo.getValue();
@@ -639,9 +640,9 @@ public class AdminDashboardController {
                 try {
                     postulationService.changerStatut(postulation.getId(), newStatut);
                     loadPostulations();
-                    showInfo("✅ Statut modifié avec succès");
+                    StyledAlert.showSuccess("✅ Succès", "Statut modifié avec succès.");
                 } catch (SQLException e) {
-                    showError("❌ Erreur lors de la modification: " + e.getMessage());
+                    StyledAlert.showError("❌ Erreur", "Erreur lors de la modification :\n" + e.getMessage());
                 }
             }
         });
@@ -653,7 +654,7 @@ public class AdminDashboardController {
             postulationsData.setAll(allPostulationsData);
             lblPostulationsStatus.setText(postulationsData.size() + " postulations trouvées");
         } catch (SQLException e) {
-            showError("Erreur lors du chargement des postulations: " + e.getMessage());
+            StyledAlert.showError("Erreur de chargement", "Impossible de charger les postulations :\n" + e.getMessage());
         }
     }
 
@@ -665,12 +666,12 @@ public class AdminDashboardController {
             postulationsData.setAll(allPostulationsData);
         } else {
             postulationsData.setAll(allPostulationsData.filtered(p ->
-                String.valueOf(p.getId()).contains(search) ||
-                String.valueOf(p.getOffreId()).contains(search) ||
-                String.valueOf(p.getCandidatId()).contains(search) ||
-                p.getStatut().toLowerCase().contains(search) ||
-                p.getMotivationCandidature().toLowerCase().contains(search) ||
-                p.getDatePostulation().toString().contains(search)
+                    String.valueOf(p.getId()).contains(search) ||
+                            String.valueOf(p.getOffreId()).contains(search) ||
+                            String.valueOf(p.getCandidatId()).contains(search) ||
+                            p.getStatut().toLowerCase().contains(search) ||
+                            p.getMotivationCandidature().toLowerCase().contains(search) ||
+                            p.getDatePostulation().toString().contains(search)
             ));
         }
 
@@ -700,7 +701,7 @@ public class AdminDashboardController {
         refusedItem.setOnAction(e -> filterByStatut("Refusée"));
 
         filterMenu.getItems().addAll(allItem, new SeparatorMenuItem(),
-                                     pendingItem, progressItem, acceptedItem, refusedItem);
+                pendingItem, progressItem, acceptedItem, refusedItem);
 
         if (btnFilterPostulation != null) {
             filterMenu.show(btnFilterPostulation, javafx.geometry.Side.BOTTOM, 0, 0);
@@ -709,35 +710,28 @@ public class AdminDashboardController {
 
     private void filterByStatut(String statut) {
         postulationsData.setAll(allPostulationsData.filtered(p ->
-            p.getStatut().equalsIgnoreCase(statut)
+                p.getStatut().equalsIgnoreCase(statut)
         ));
         lblPostulationsStatus.setText(postulationsData.size() + " postulations (" + statut + ")");
     }
 
     private void handleDeletePostulation(Postulation postulation) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmer suppression");
-        confirm.setHeaderText("Supprimer cette postulation ?");
-        confirm.setContentText("ID: " + postulation.getId() + " - Candidat: " + postulation.getCandidatId());
-
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        boolean confirmed = StyledAlert.showConfirmation("Confirmer la suppression",
+                "Supprimer la postulation ID " + postulation.getId() + " ?");
+        if (confirmed) {
             try {
                 postulationService.supprimer(postulation.getId());
                 loadPostulations();
-                showInfo("Postulation supprimée avec succès");
+                StyledAlert.showSuccess("Succès", "Postulation supprimée avec succès.");
             } catch (SQLException e) {
-                showError("Erreur lors de la suppression: " + e.getMessage());
+                StyledAlert.showError("Erreur", "Erreur lors de la suppression :\n" + e.getMessage());
             }
         }
     }
 
-    /**
-     * Ouvre le fichier CV dans l'application par défaut du système
-     */
     private void handleOpenCV(String cvPath) {
         if (cvPath == null || cvPath.isEmpty()) {
-            showError("❌ Aucun CV disponible pour cette postulation");
+            StyledAlert.showError("❌ CV absent", "Aucun CV disponible pour cette postulation.");
             return;
         }
 
@@ -745,46 +739,27 @@ public class AdminDashboardController {
             java.io.File cvFile = new java.io.File(cvPath);
 
             if (!cvFile.exists()) {
-                showError("❌ Fichier CV introuvable:\n" + cvPath +
-                         "\n\nLe fichier a peut-être été supprimé ou déplacé.");
+                StyledAlert.showError("❌ Fichier introuvable",
+                        "Le fichier CV n'existe pas :\n" + cvPath +
+                                "\n\nIl a peut-être été supprimé ou déplacé.");
                 return;
             }
 
-            // Ouvrir le fichier avec l'application par défaut
             if (java.awt.Desktop.isDesktopSupported()) {
                 java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
                 if (desktop.isSupported(java.awt.Desktop.Action.OPEN)) {
                     desktop.open(cvFile);
-                    showInfo("✅ Ouverture du CV: " + cvFile.getName());
+                    StyledAlert.showInfo("Ouverture du CV", "Ouverture de : " + cvFile.getName());
                 } else {
-                    showError("❌ L'ouverture de fichiers n'est pas supportée sur ce système");
+                    StyledAlert.showError("❌ Action non supportée", "L'ouverture de fichiers n'est pas supportée sur ce système.");
                 }
             } else {
-                showError("❌ Desktop API non disponible sur ce système");
+                StyledAlert.showError("❌ Desktop API non disponible", "L'ouverture de fichiers n'est pas supportée.");
             }
         } catch (java.io.IOException e) {
-            showError("❌ Erreur lors de l'ouverture du CV:\n" + e.getMessage());
+            StyledAlert.showError("❌ Erreur d'ouverture", "Erreur lors de l'ouverture du CV :\n" + e.getMessage());
         } catch (Exception e) {
-            showError("❌ Erreur inattendue:\n" + e.getMessage());
+            StyledAlert.showError("❌ Erreur inattendue", e.getMessage());
         }
     }
-
-    // ==================== UTILITY METHODS ====================
-
-    private void showInfo(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Erreur");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
 }
-

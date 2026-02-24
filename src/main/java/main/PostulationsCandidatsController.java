@@ -7,12 +7,15 @@ import javafx.animation.ScaleTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
 import services.OffreEmploiService;
 import services.PostulationService;
+import utils.StyledAlert;
 
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
@@ -46,28 +49,27 @@ public class PostulationsCandidatsController {
         if (search.isEmpty()) {
             renderAllCards();
         } else {
-            // Filtrer les postulations
             Map<Integer, List<Postulation>> filtered = new HashMap<>();
 
             for (Map.Entry<Integer, List<Postulation>> entry : postulationsByCandidat.entrySet()) {
                 List<Postulation> matchingPostulations = entry.getValue().stream()
-                    .filter(p -> {
-                        try {
-                            OffreEmploi offre = offreService.findById(p.getOffreId());
-                            if (offre == null) return false;
+                        .filter(p -> {
+                            try {
+                                OffreEmploi offre = offreService.findById(p.getOffreId());
+                                if (offre == null) return false;
 
-                            return String.valueOf(p.getCandidatId()).contains(search) ||
-                                   String.valueOf(p.getId()).contains(search) ||
-                                   offre.getTitre().toLowerCase().contains(search) ||
-                                   offre.getEntreprise().toLowerCase().contains(search) ||
-                                   p.getStatut().toLowerCase().contains(search) ||
-                                   p.getMotivationCandidature().toLowerCase().contains(search) ||
-                                   p.getDatePostulation().toString().contains(search);
-                        } catch (SQLException e) {
-                            return false;
-                        }
-                    })
-                    .collect(Collectors.toList());
+                                return String.valueOf(p.getCandidatId()).contains(search) ||
+                                        String.valueOf(p.getId()).contains(search) ||
+                                        offre.getTitre().toLowerCase().contains(search) ||
+                                        offre.getEntreprise().toLowerCase().contains(search) ||
+                                        p.getStatut().toLowerCase().contains(search) ||
+                                        p.getMotivationCandidature().toLowerCase().contains(search) ||
+                                        p.getDatePostulation().toString().contains(search);
+                            } catch (SQLException e) {
+                                return false;
+                            }
+                        })
+                        .collect(Collectors.toList());
 
                 if (!matchingPostulations.isEmpty()) {
                     filtered.put(entry.getKey(), matchingPostulations);
@@ -104,7 +106,7 @@ public class PostulationsCandidatsController {
         refusedItem.setOnAction(e -> filterByStatut("Refusée"));
 
         filterMenu.getItems().addAll(allItem, new SeparatorMenuItem(),
-                                     pendingItem, progressItem, acceptedItem, refusedItem);
+                pendingItem, progressItem, acceptedItem, refusedItem);
 
         if (btnFilter != null) {
             filterMenu.show(btnFilter, javafx.geometry.Side.BOTTOM, 0, 0);
@@ -116,8 +118,8 @@ public class PostulationsCandidatsController {
 
         for (Map.Entry<Integer, List<Postulation>> entry : postulationsByCandidat.entrySet()) {
             List<Postulation> matchingPostulations = entry.getValue().stream()
-                .filter(p -> p.getStatut().equalsIgnoreCase(statut))
-                .collect(Collectors.toList());
+                    .filter(p -> p.getStatut().equalsIgnoreCase(statut))
+                    .collect(Collectors.toList());
 
             if (!matchingPostulations.isEmpty()) {
                 filtered.put(entry.getKey(), matchingPostulations);
@@ -127,29 +129,28 @@ public class PostulationsCandidatsController {
         renderCards(filtered);
 
         int totalPostulations = filtered.values().stream().mapToInt(List::size).sum();
-        lblStatus.setText(totalPostulations + " postulations (" + statut + ") "  );
+        lblStatus.setText(totalPostulations + " postulations (" + statut + ") ");
     }
 
     private void refreshData() {
         try {
             allData.setAll(postulationService.read());
 
-            // Grouper les postulations par candidat
             postulationsByCandidat.clear();
             for (Postulation p : allData) {
                 postulationsByCandidat
-                    .computeIfAbsent(p.getCandidatId(), k -> new ArrayList<>())
-                    .add(p);
+                        .computeIfAbsent(p.getCandidatId(), k -> new ArrayList<>())
+                        .add(p);
             }
 
             renderAllCards();
 
             int totalCandidats = postulationsByCandidat.size();
             int totalPostulations = allData.size();
-            lblStatus.setText(totalPostulations + " postulations pour candidat:" + totalCandidats);
+            lblStatus.setText(totalPostulations + " postulations pour candidat 1");
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+            StyledAlert.showError("Erreur", e.getMessage());
         }
     }
 
@@ -182,152 +183,62 @@ public class PostulationsCandidatsController {
         card.setAlignment(Pos.TOP_CENTER);
         card.setMaxWidth(360);
 
-        // Title: Postulation ID uniquement
         Label title = new Label("Postulation ID: " + p.getId());
         title.getStyleClass().add("offer-title");
         title.setStyle("-fx-font-size: 18; -fx-font-weight: 700;");
 
-
-        // Récupérer l'offre pour afficher titre et entreprise
         try {
             OffreEmploi offre = offreService.findById(p.getOffreId());
 
             if (offre != null) {
-                // Titre de l'offre + icon
-                HBox offreRow = new HBox(10);
-                offreRow.setAlignment(Pos.CENTER);
+                // Titre de l'offre
+                HBox offreRow = createCenteredRow("📄", offre.getTitre(), "#7c3aed", "offer-description");
+                offreRow.getChildren().get(1).setStyle("-fx-font-weight: 700; -fx-font-size: 15;");
 
-                Label offreIcon = new Label("📄");
-                offreIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #7c3aed;");
+                // Entreprise
+                HBox entrepriseRow = createCenteredRow("🏢", offre.getEntreprise(), "#4c1d95", "offer-info");
 
-                Label offreLabel = new Label(offre.getTitre());
-                offreLabel.getStyleClass().add("offer-description");
-                offreLabel.setStyle("-fx-font-weight: 700; -fx-font-size: 15;");
+                // Date
+                HBox dateRow = createCenteredRow("📅", dateFmt.format(p.getDatePostulation()), "#6b7280", "offer-info");
 
-                offreRow.getChildren().addAll(offreIcon, offreLabel);
+                // Statut
+                HBox statutRow = createStatutRow(p.getStatut());
 
-                // Entreprise + icon
-                HBox entrepriseRow = new HBox(10);
-                entrepriseRow.setAlignment(Pos.CENTER);
+                // Motivation
+                HBox motivationRow = createMotivationRow(p.getMotivationCandidature());
 
-                Label entrepriseIcon = new Label("🏢");
-                entrepriseIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #4c1d95;");
+                // CV
+                HBox cvRow = createCvRow(p.getCvPath());
 
-                Label entrepriseLabel = new Label(offre.getEntreprise());
-                entrepriseLabel.getStyleClass().add("offer-info");
-                entrepriseLabel.setStyle("-fx-font-weight: 600;");
-
-                entrepriseRow.getChildren().addAll(entrepriseIcon, entrepriseLabel);
-
-                // Date + icon
-                HBox dateRow = new HBox(10);
-                dateRow.setAlignment(Pos.CENTER);
-
-                Label dateIcon = new Label("📅");
-                dateIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #6b7280;");
-
-                Label dateLabel = new Label(dateFmt.format(p.getDatePostulation()));
-                dateLabel.getStyleClass().add("offer-info");
-
-                dateRow.getChildren().addAll(dateIcon, dateLabel);
-
-                // Statut (NON MODIFIABLE - juste un Label)
-                HBox statutRow = new HBox(12);
-                statutRow.setAlignment(Pos.CENTER);
-
-                Label statutIcon = new Label("🔖");
-                statutIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #7c3aed;");
-
-                Label statutLabel = new Label(p.getStatut());
-                statutLabel.setStyle(
-                    "-fx-background-color: " + getStatutColor(p.getStatut()) + "; " +
-                    "-fx-text-fill: white; " +
-                    "-fx-font-size: 13; " +
-                    "-fx-font-weight: 700; " +
-                    "-fx-padding: 8 16; " +
-                    "-fx-background-radius: 12;"
-                );
-
-                statutRow.getChildren().addAll(statutIcon, statutLabel);
-
-                // Motivation snippet + icon
-                HBox motivationRow = new HBox(10);
-                motivationRow.setAlignment(Pos.CENTER);
-
-                Label motivationIcon = new Label("📝");
-                motivationIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #374151;");
-
-                String motivSnippet = p.getMotivationCandidature().length() > 80
-                        ? p.getMotivationCandidature().substring(0, 80) + "..."
-                        : p.getMotivationCandidature();
-                Label motivation = new Label(motivSnippet);
-                motivation.getStyleClass().add("offer-description");
-                motivation.setWrapText(true);
-
-                motivationRow.getChildren().addAll(motivationIcon, motivation);
-
-                // CV + icon with clickable button
-                HBox cvRow = new HBox(10);
-                cvRow.setAlignment(Pos.CENTER);
-
-                Label cvIcon = new Label("📄");
-                cvIcon.setStyle("-fx-font-size: 20; -fx-text-fill: #7c3aed;");
-
-                if (p.getCvPath() != null && !p.getCvPath().isEmpty()) {
-                    Button btnOpenCV = new Button("Ouvrir CV");
-                    btnOpenCV.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; " +
-                                      "-fx-border-radius: 8; -fx-background-radius: 8; " +
-                                      "-fx-padding: 8 16; -fx-cursor: hand; -fx-font-weight: 600;");
-                    btnOpenCV.setOnAction(e -> handleOpenCV(p.getCvPath()));
-
-                    // Hover effect
-                    btnOpenCV.setOnMouseEntered(e ->
-                        btnOpenCV.setStyle("-fx-background-color: #7c3aed; -fx-text-fill: white; " +
-                                          "-fx-border-radius: 8; -fx-background-radius: 8; " +
-                                          "-fx-padding: 8 16; -fx-cursor: hand; -fx-font-weight: 600;"));
-                    btnOpenCV.setOnMouseExited(e ->
-                        btnOpenCV.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; " +
-                                          "-fx-border-radius: 8; -fx-background-radius: 8; " +
-                                          "-fx-padding: 8 16; -fx-cursor: hand; -fx-font-weight: 600;"));
-
-                    cvRow.getChildren().addAll(cvIcon, btnOpenCV);
-                } else {
-                    Label noCv = new Label("Aucun CV");
-                    noCv.setStyle("-fx-text-fill: #9ca3af; -fx-font-style: italic;");
-                    cvRow.getChildren().addAll(cvIcon, noCv);
-                }
-
-                // Actions: delete button + details button
+                // Actions
                 HBox actions = new HBox(20);
                 actions.setAlignment(Pos.CENTER);
                 actions.getStyleClass().add("offer-actions");
 
                 Button btnDetails = new Button();
-                btnDetails.getStyleClass().add("btn-icon-edit");
+                btnDetails.getStyleClass().addAll("icon-btn", "icon-btn-edit");
                 btnDetails.setGraphic(new Label("ℹ️"));
                 btnDetails.setOnAction(e -> showOffreDetails(offre));
 
                 Button btnDelete = new Button();
-                btnDelete.getStyleClass().add("btn-icon-delete");
+                btnDelete.getStyleClass().addAll("icon-btn", "icon-btn-delete");
                 btnDelete.setGraphic(new Label("🗑"));
                 btnDelete.setOnAction(e -> handleDelete(p));
 
                 actions.getChildren().addAll(btnDetails, btnDelete);
 
-                // Assemble card
                 card.getChildren().addAll(
-                    title,
-                    offreRow,
-                    entrepriseRow,
-                    dateRow,
-                    statutRow,
-                    motivationRow,
-                    cvRow,
-                    actions
+                        title,
+                        offreRow,
+                        entrepriseRow,
+                        dateRow,
+                        statutRow,
+                        motivationRow,
+                        cvRow,
+                        actions
                 );
 
             } else {
-                // Si l'offre n'existe plus
                 Label errorLabel = new Label("⚠ Offre introuvable (ID: " + p.getOffreId() + ")");
                 errorLabel.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: 600;");
                 card.getChildren().addAll(title, errorLabel);
@@ -339,7 +250,7 @@ public class PostulationsCandidatsController {
             card.getChildren().addAll(title, errorLabel);
         }
 
-        // Hover animation
+        // Animation hover
         ScaleTransition scaleUp = new ScaleTransition(Duration.millis(220), card);
         scaleUp.setToX(1.04);
         scaleUp.setToY(1.04);
@@ -354,6 +265,79 @@ public class PostulationsCandidatsController {
         return card;
     }
 
+    private HBox createCenteredRow(String icon, String text, String iconColor, String styleClass) {
+        HBox row = new HBox(10);
+        row.setAlignment(Pos.CENTER);
+
+        Label iconLabel = new Label(icon);
+        iconLabel.setStyle("-fx-font-size: 20; -fx-text-fill: " + iconColor + ";");
+
+        Label textLabel = new Label(text != null ? text : "—");
+        textLabel.getStyleClass().add(styleClass);
+        textLabel.setWrapText(true);
+
+        row.getChildren().addAll(iconLabel, textLabel);
+        return row;
+    }
+
+    private HBox createStatutRow(String statut) {
+        HBox row = new HBox(12);
+        row.setAlignment(Pos.CENTER);
+
+        Label icon = new Label("🔖");
+        icon.setStyle("-fx-font-size: 20; -fx-text-fill: #7c3aed;");
+
+        Label statutLabel = new Label(statut);
+        statutLabel.setStyle(
+                "-fx-background-color: " + getStatutColor(statut) + "; " +
+                        "-fx-text-fill: white; " +
+                        "-fx-font-size: 13; " +
+                        "-fx-font-weight: 700; " +
+                        "-fx-padding: 8 16; " +
+                        "-fx-background-radius: 12;"
+        );
+
+        row.getChildren().addAll(icon, statutLabel);
+        return row;
+    }
+
+    private HBox createMotivationRow(String motivation) {
+        HBox row = new HBox(10);
+        row.setAlignment(Pos.CENTER);
+
+        Label icon = new Label("📝");
+        icon.setStyle("-fx-font-size: 20; -fx-text-fill: #374151;");
+
+        String snippet = motivation.length() > 80 ? motivation.substring(0, 80) + "..." : motivation;
+        Label motivLabel = new Label(snippet);
+        motivLabel.getStyleClass().add("offer-description");
+        motivLabel.setWrapText(true);
+
+        row.getChildren().addAll(icon, motivLabel);
+        return row;
+    }
+
+    private HBox createCvRow(String cvPath) {
+        HBox row = new HBox(10);
+        row.setAlignment(Pos.CENTER);
+
+        Label icon = new Label("📄");
+        icon.setStyle("-fx-font-size: 20; -fx-text-fill: #7c3aed;");
+
+        if (cvPath != null && !cvPath.isEmpty()) {
+            Button btnOpenCV = new Button("Ouvrir CV");
+            btnOpenCV.getStyleClass().addAll("button", "btn-primary");
+            btnOpenCV.setPrefWidth(120);
+            btnOpenCV.setOnAction(e -> handleOpenCV(cvPath));
+            row.getChildren().addAll(icon, btnOpenCV);
+        } else {
+            Label noCv = new Label("Aucun CV");
+            noCv.setStyle("-fx-text-fill: #9ca3af; -fx-font-style: italic;");
+            row.getChildren().addAll(icon, noCv);
+        }
+        return row;
+    }
+
     private String getStatutColor(String statut) {
         switch (statut.toLowerCase()) {
             case "en attente": return "#f59e0b";
@@ -365,157 +349,165 @@ public class PostulationsCandidatsController {
     }
 
     private void showOffreDetails(OffreEmploi offre) {
-        // Créer un dialog personnalisé
         Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle("Détails de l'Offre");
         dialog.setHeaderText(null);
 
-        // Créer le contenu du dialog
-        VBox content = new VBox(16);
-        content.setPadding(new javafx.geometry.Insets(20));
-        content.setStyle("-fx-background-color: #faf7ff;");
-        content.setMaxWidth(600);
+        DialogPane dialogPane = dialog.getDialogPane();
+        // Appliquer les feuilles de style du thème
+        dialogPane.getStylesheets().addAll(
+                getClass().getResource("/css/theme-unified.css").toExternalForm(),
+                getClass().getResource("/css/theme-dark.css").toExternalForm()
+        );
+        dialogPane.getStyleClass().add("glass-card");
+        dialogPane.setPrefWidth(700);
+        dialogPane.setPadding(new Insets(20));
 
-        // Titre de l'offre
+        VBox content = new VBox(20);
+        content.setStyle("-fx-background-color: transparent;");
+
+        // Titre
         Label titleLabel = new Label(offre.getTitre());
-        titleLabel.setStyle(
-            "-fx-font-size: 24; " +
-            "-fx-font-weight: 800; " +
-            "-fx-text-fill: #1e1133;"
-        );
+        titleLabel.getStyleClass().add("header-title");
+        titleLabel.setStyle("-fx-font-size: 28px; -fx-padding: 0 0 10 0;");
+        content.getChildren().add(titleLabel);
 
-        // Entreprise
-        HBox entrepriseBox = createDetailRow("🏢 Entreprise", offre.getEntreprise());
+        // Badge type de contrat
+        Label typeBadge = new Label(offre.getTypeContrat());
+        typeBadge.getStyleClass().add("offer-contract-badge");
+        HBox badgeBox = new HBox(typeBadge);
+        badgeBox.setAlignment(Pos.CENTER_LEFT);
+        content.getChildren().add(badgeBox);
 
-        // Type de contrat badge
-        Label typeContratLabel = new Label(offre.getTypeContrat());
-        typeContratLabel.setStyle(
-            "-fx-background-color: #f3e8ff; " +
-            "-fx-text-fill: #7c3aed; " +
-            "-fx-font-size: 14; " +
-            "-fx-font-weight: 700; " +
-            "-fx-padding: 8 16; " +
-            "-fx-background-radius: 12;"
-        );
+        // Informations principales en cartes
+        HBox mainInfo = new HBox(20);
+        mainInfo.setAlignment(Pos.CENTER_LEFT);
 
-        // Salaire
-        HBox salaireBox = createDetailRow("💰 Salaire", offre.getSalaire() + " TND");
+        VBox entrepriseCard = createInfoCard("🏢 Entreprise", offre.getEntreprise());
+        VBox salaireCard = createInfoCard("💰 Salaire", offre.getSalaire() + " TND");
+        VBox localisationCard = createInfoCard("📍 Localisation", offre.getLocalisation());
 
-        // Localisation
-        HBox localisationBox = createDetailRow("📍 Localisation", offre.getLocalisation());
+        mainInfo.getChildren().addAll(entrepriseCard, salaireCard, localisationCard);
+        content.getChildren().add(mainInfo);
+
+        content.getChildren().add(new Separator());
 
         // Description
-        VBox descBox = new VBox(8);
-        Label descTitle = new Label("📄 Description");
-        descTitle.setStyle("-fx-font-size: 15; -fx-font-weight: 700; -fx-text-fill: #4c1d95;");
+        VBox descCard = createTextCard("📄 Description", offre.getDescription());
+        content.getChildren().add(descCard);
 
-        Label descContent = new Label(offre.getDescription());
-        descContent.setWrapText(true);
-        descContent.setStyle("-fx-font-size: 14; -fx-text-fill: #374151; -fx-line-spacing: 4;");
-
-        descBox.getChildren().addAll(descTitle, descContent);
+        content.getChildren().add(new Separator());
 
         // Dates
-        HBox datePublicationBox = createDetailRow("📅 Date de publication",
-            offre.getDatePublication() != null ? dateFmt.format(offre.getDatePublication()) : "N/A");
-        HBox dateExpirationBox = createDetailRow("⏰ Date d'expiration",
-            offre.getDateExpiration() != null ? dateFmt.format(offre.getDateExpiration()) : "N/A");
+        HBox datesInfo = new HBox(20);
+        datesInfo.setAlignment(Pos.CENTER_LEFT);
 
-        // Qualification
-        HBox qualificationBox = createDetailRow("🎓 Niveau de qualification", offre.getNiveauQualification());
+        String pubDate = offre.getDatePublication() != null ? dateFmt.format(offre.getDatePublication()) : "N/A";
+        String expDate = offre.getDateExpiration() != null ? dateFmt.format(offre.getDateExpiration()) : "N/A";
 
-        // Expérience
-        HBox experienceBox = createDetailRow("💼 Expérience requise", offre.getExperienceRequise());
+        VBox pubCard = createInfoCard("📅 Date de publication", pubDate);
+        VBox expCard = createInfoCard("⏰ Date d'expiration", expDate);
+
+        datesInfo.getChildren().addAll(pubCard, expCard);
+        content.getChildren().add(datesInfo);
+
+        content.getChildren().add(new Separator());
+
+        // Niveau et Expérience
+        HBox niveauExpInfo = new HBox(20);
+        niveauExpInfo.setAlignment(Pos.CENTER_LEFT);
+
+        VBox niveauCard = createInfoCard("🎓 Niveau", offre.getNiveauQualification());
+        VBox expCard2 = createInfoCard("💼 Expérience", offre.getExperienceRequise());
+
+        niveauExpInfo.getChildren().addAll(niveauCard, expCard2);
+        content.getChildren().add(niveauExpInfo);
+
+        content.getChildren().add(new Separator());
 
         // Compétences
-        VBox competencesBox = new VBox(8);
-        Label compTitle = new Label("⚡ Compétences requises");
-        compTitle.setStyle("-fx-font-size: 15; -fx-font-weight: 700; -fx-text-fill: #4c1d95;");
+        VBox competencesCard = createTextCard("⚡ Compétences", offre.getCompetencesRequises());
+        content.getChildren().add(competencesCard);
 
-        Label compContent = new Label(offre.getCompetencesRequises());
-        compContent.setWrapText(true);
-        compContent.setStyle("-fx-font-size: 14; -fx-text-fill: #374151;");
+        content.getChildren().add(new Separator());
 
-        competencesBox.getChildren().addAll(compTitle, compContent);
+        // Secteur et Contact
+        HBox secteurContactInfo = new HBox(20);
+        secteurContactInfo.setAlignment(Pos.CENTER_LEFT);
 
-        // Secteur d'activité
-        HBox secteurBox = createDetailRow("🏭 Secteur d'activité", offre.getSecteurActivite());
+        VBox secteurCard = createInfoCard("🏭 Secteur", offre.getSecteurActivite());
+        VBox contactCard = createInfoCard("📧 Contact", offre.getContactRecruteur());
 
-        // Contact recruteur
-        HBox contactBox = createDetailRow("📧 Contact recruteur", offre.getContactRecruteur());
+        secteurContactInfo.getChildren().addAll(secteurCard, contactCard);
+        content.getChildren().add(secteurContactInfo);
 
-        // Séparateur
-        javafx.scene.control.Separator separator1 = new javafx.scene.control.Separator();
-        separator1.setStyle("-fx-opacity: 0.3;");
-
-        javafx.scene.control.Separator separator2 = new javafx.scene.control.Separator();
-        separator2.setStyle("-fx-opacity: 0.3;");
-
-        javafx.scene.control.Separator separator3 = new javafx.scene.control.Separator();
-        separator3.setStyle("-fx-opacity: 0.3;");
-
-        // Assembler tout le contenu
-        content.getChildren().addAll(
-            titleLabel,
-            typeContratLabel,
-            entrepriseBox,
-            salaireBox,
-            localisationBox,
-            separator1,
-            descBox,
-            separator2,
-            datePublicationBox,
-            dateExpirationBox,
-            qualificationBox,
-            experienceBox,
-            separator3,
-            competencesBox,
-            secteurBox,
-            contactBox
-        );
-
-        // ScrollPane pour le contenu
         ScrollPane scrollPane = new ScrollPane(content);
         scrollPane.setFitToWidth(true);
         scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
-        scrollPane.setPrefHeight(500);
+        scrollPane.setPrefHeight(600);
 
-        dialog.getDialogPane().setContent(scrollPane);
+        dialogPane.setContent(scrollPane);
 
-        // Bouton fermer
         ButtonType closeButton = new ButtonType("Fermer", ButtonBar.ButtonData.CANCEL_CLOSE);
-        dialog.getDialogPane().getButtonTypes().add(closeButton);
+        dialogPane.getButtonTypes().add(closeButton);
 
-        // Styliser le dialog
-        dialog.getDialogPane().setStyle(
-            "-fx-background-color: #faf7ff; " +
-            "-fx-border-color: #e0d4f5; " +
-            "-fx-border-width: 2; " +
-            "-fx-border-radius: 20; " +
-            "-fx-background-radius: 20;"
-        );
+        Node closeBtn = dialogPane.lookupButton(closeButton);
+        if (closeBtn != null) {
+            closeBtn.getStyleClass().addAll("button", "btn-secondary");
+        }
 
         dialog.showAndWait();
     }
+
+    /**
+     * Crée une petite carte d'information avec un titre et une valeur.
+     */
+    private VBox createInfoCard(String title, String value) {
+        VBox card = new VBox(8);
+        card.getStyleClass().add("kpi-card-secondary");
+        card.setPadding(new Insets(12));
+        card.setPrefWidth(200);
+
+        Label titleLabel = new Label(title);
+        titleLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: #7c3aed;");
+
+        Label valueLabel = new Label(value != null && !value.isEmpty() ? value : "—");
+        valueLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: 500; -fx-text-fill: #1f2937;");
+        valueLabel.setWrapText(true);
+
+        card.getChildren().addAll(titleLabel, valueLabel);
+        return card;
+    }
+
+    /**
+     * Crée une carte pour les textes longs (description, compétences).
+     */
+    private VBox createTextCard(String title, String text) {
+        VBox card = new VBox(8);
+        card.getStyleClass().add("kpi-card-secondary");
+        card.setPadding(new Insets(12));
+
+        Label titleLabel = new Label(title);
+        titleLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: #7c3aed;");
+
+        Label textLabel = new Label(text != null && !text.isEmpty() ? text : "—");
+        textLabel.setWrapText(true);
+        textLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: 400; -fx-text-fill: #374151;");
+
+        card.getChildren().addAll(titleLabel, textLabel);
+        return card;
+    }
+
 
     private HBox createDetailRow(String label, String value) {
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);
 
         Label labelNode = new Label(label);
-        labelNode.setStyle(
-            "-fx-font-size: 14; " +
-            "-fx-font-weight: 700; " +
-            "-fx-text-fill: #4c1d95; " +
-            "-fx-min-width: 200;"
-        );
+        labelNode.setStyle("-fx-font-size: 14; -fx-font-weight: 700; -fx-text-fill: #4c1d95; -fx-min-width: 160;");
 
-        Label valueNode = new Label(value);
-        valueNode.setStyle(
-            "-fx-font-size: 14; " +
-            "-fx-text-fill: #374151; " +
-            "-fx-wrap-text: true;"
-        );
+        Label valueNode = new Label(value != null ? value : "—");
+        valueNode.setStyle("-fx-font-size: 14; -fx-text-fill: #374151; -fx-wrap-text: true;");
         valueNode.setWrapText(true);
 
         row.getChildren().addAll(labelNode, valueNode);
@@ -523,72 +515,55 @@ public class PostulationsCandidatsController {
     }
 
     private void handleDelete(Postulation p) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmer suppression");
-        confirm.setHeaderText("Supprimer cette postulation ?");
-        confirm.setContentText("ID: " + p.getId() + " pour le candidat " + p.getCandidatId());
-
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        boolean confirmed = StyledAlert.showConfirmation(
+                "Confirmation de suppression",
+                "Supprimer la postulation ID " + p.getId() + " pour le candidat " + p.getCandidatId() + " ?"
+        );
+        if (confirmed) {
             try {
                 postulationService.supprimer(p.getId());
                 refreshData();
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Postulation supprimée.");
+                StyledAlert.showSuccess("Succès", "Postulation supprimée.");
             } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+                StyledAlert.showError("Erreur", e.getMessage());
             }
         }
     }
 
-    /**
-     * Ouvre le fichier CV dans l'application par défaut du système
-     */
     private void handleOpenCV(String cvPath) {
         if (cvPath == null || cvPath.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Aucun CV disponible pour cette postulation");
+            StyledAlert.showError("Erreur", "Aucun CV disponible pour cette postulation");
             return;
         }
 
         try {
             java.io.File cvFile = new java.io.File(cvPath);
-
             if (!cvFile.exists()) {
-                showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Fichier CV introuvable:\n" + cvPath +
-                    "\n\nLe fichier a peut-être été supprimé ou déplacé.");
+                StyledAlert.showError("Erreur",
+                        "Fichier CV introuvable:\n" + cvPath +
+                                "\n\nLe fichier a peut-être été supprimé ou déplacé.");
                 return;
             }
 
-            // Ouvrir le fichier avec l'application par défaut
             if (java.awt.Desktop.isDesktopSupported()) {
                 java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
                 if (desktop.isSupported(java.awt.Desktop.Action.OPEN)) {
                     desktop.open(cvFile);
-                    showAlert(Alert.AlertType.INFORMATION, "Succès",
-                        "Ouverture du CV: " + cvFile.getName());
+                    StyledAlert.showInfo("Ouverture du CV", "Ouverture de : " + cvFile.getName());
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Erreur",
-                        "L'ouverture de fichiers n'est pas supportée sur ce système");
+                    StyledAlert.showError("Erreur",
+                            "L'ouverture de fichiers n'est pas supportée sur ce système");
                 }
             } else {
-                showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Desktop API non disponible sur ce système");
+                StyledAlert.showError("Erreur",
+                        "Desktop API non disponible sur ce système");
             }
         } catch (java.io.IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                "Erreur lors de l'ouverture du CV:\n" + e.getMessage());
+            StyledAlert.showError("Erreur",
+                    "Erreur lors de l'ouverture du CV:\n" + e.getMessage());
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                "Erreur inattendue:\n" + e.getMessage());
+            StyledAlert.showError("Erreur",
+                    "Erreur inattendue:\n" + e.getMessage());
         }
     }
-
-    private void showAlert(Alert.AlertType type, String title, String msg) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
-    }
 }
-

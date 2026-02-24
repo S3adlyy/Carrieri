@@ -69,16 +69,18 @@
    HEADER GRADIENT
    ========================================================= */
 .header-gradient {
-    -fx-background-color: linear-gradient(to bottom right, #ede5f7, #e0d4f5, #d4c4f0);
-    -fx-background-radius: 0 0 24 24;
+    -fx-background-color: linear-gradient(135deg, #ede5f7 0%, #e0d4f5 50%, #d4c4f0 100%);
+    -fx-background-radius: 0 0 32 32;
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.15), 12, 0, 0, 4);
 }
 
 .header-icon-circle {
-    -fx-background-color: #1a1225;
+    -fx-background-color: linear-gradient(135deg, #1a1225 0%, #2d1b4e 100%);
     -fx-background-radius: 100;
-    -fx-pref-width: 56;
-    -fx-pref-height: 56;
+    -fx-pref-width: 80;
+    -fx-pref-height: 80;
     -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(26, 18, 37, 0.3), 16, 0, 0, 4);
 }
 
 .header-icon-diamond {
@@ -120,15 +122,16 @@
 }
 
 .badge-required {
-    -fx-background-color: #fef2f2;
+    -fx-background-color: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
     -fx-text-fill: #dc2626;
     -fx-font-size: 10px;
     -fx-font-weight: bold;
-    -fx-padding: 2 8;
-    -fx-background-radius: 8;
+    -fx-padding: 4 10;
+    -fx-background-radius: 10;
     -fx-border-color: #fecaca;
-    -fx-border-radius: 8;
+    -fx-border-radius: 10;
     -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.15), 4, 0, 0, 1);
 }
 
 .badge-optional {
@@ -205,9 +208,13 @@
 }
 
 .char-counter {
-    -fx-font-size: 11px;
-    -fx-text-fill: #a094b0;
-    -fx-font-family: "Courier New";
+    -fx-font-size: 12px;
+    -fx-text-fill: #9ca3af;
+    -fx-font-weight: 600;
+    -fx-font-family: "Segoe UI", "Courier New";
+    -fx-background-color: #f9fafb;
+    -fx-padding: 4 10;
+    -fx-background-radius: 8;
 }
 
 /* Error label styles */
@@ -613,9 +620,14 @@
     -fx-background-radius: 20;
     -fx-border-color: #e0d4f5;
     -fx-border-radius: 20;
-    -fx-border-width: 1;
+    -fx-border-width: 1.5;
     -fx-padding: 32;
-    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.12), 20, 0, 0, 6);
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.1), 16, 0, 0, 4);
+}
+
+.form-card:hover {
+    -fx-border-color: #d1c4e9;
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.15), 20, 0, 0, 6);
 }
 
 .card-title {
@@ -632,43 +644,121 @@
     -fx-border-width: 2;
     -fx-padding: 14 18;
     -fx-font-size: 15;
+    -fx-text-fill: #374151;
+}
+
+.input-elegant:hover, .textarea-elegant:hover, .combo-elegant:hover {
+    -fx-border-color: #a78bfa;
 }
 
 .input-elegant:focused, .textarea-elegant:focused, .combo-elegant:focused {
     -fx-border-color: #8b5cf6;
-    -fx-effect: dropshadow(gaussian, #c4b5fd66, 12, 0, 0, 4);
+    -fx-border-width: 2.5;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.2), 12, 0, 0, 4);
 }
 
 .btn-reset-elegant {
-    -fx-background-color: transparent;
+    -fx-background-color: white;
     -fx-border-color: #a78bfa;
     -fx-border-width: 2.5;
-    -fx-border-radius: 14;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
     -fx-text-fill: #6d28d9;
     -fx-font-size: 16;
     -fx-font-weight: 600;
-    -fx-pref-width: 180;
-    -fx-pref-height: 52;
+    -fx-cursor: hand;
+    -fx-pref-width: 200;
+    -fx-pref-height: 54;
+    -fx-effect: dropshadow(gaussian, rgba(167, 139, 250, 0.2), 8, 0, 0, 2);
 }
 
 .btn-reset-elegant:hover {
     -fx-background-color: #f3e8ff;
+    -fx-border-color: #7c3aed;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.3), 12, 0, 0, 3);
+}
+
+.btn-reset-elegant:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
 }
 
 .btn-publish-elegant {
     -fx-background-color: linear-gradient(to right, #7c3aed, #a78bfa);
     -fx-background-radius: 16;
     -fx-text-fill: white;
-    -fx-font-size: 17;
+    -fx-font-size: 18;
     -fx-font-weight: 700;
-    -fx-pref-width: 240;
-    -fx-pref-height: 56;
-    -fx-effect: dropshadow(gaussian, #7c3aed88, 16, 0, 0, 6);
+    -fx-cursor: hand;
+    -fx-pref-width: 280;
+    -fx-pref-height: 58;
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.4), 16, 0, 0, 6);
 }
 
 .btn-publish-elegant:hover {
-    -fx-scale-x: 1.04;
-    -fx-scale-y: 1.04;
+    -fx-background-color: linear-gradient(to right, #6d28d9, #9333ea);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.6), 20, 0, 0, 8);
+}
+
+.btn-publish-elegant:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* =========================================================
+   AI BUTTONS - Boutons IA avec animations fluides
+   ========================================================= */
+
+/* Bouton "Améliorer le titre" - Gradient Rose/Orange */
+.btn-ai-improve {
+    -fx-background-color: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
+    -fx-background-radius: 12;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 12 20;
+    -fx-effect: dropshadow(gaussian, rgba(236, 72, 153, 0.35), 10, 0, 0, 3);
+}
+
+.btn-ai-improve:hover {
+    -fx-background-color: linear-gradient(135deg, #db2777 0%, #ea580c 100%);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(236, 72, 153, 0.5), 14, 0, 0, 4);
+}
+
+.btn-ai-improve:pressed {
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+/* Bouton "Générer avec IA" - Gradient Violet */
+.btn-ai-generate {
+    -fx-background-color: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    -fx-background-radius: 12;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 14 28;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.4), 12, 0, 0, 4);
+}
+
+.btn-ai-generate:hover {
+    -fx-background-color: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.6), 16, 0, 0, 5);
+}
+
+.btn-ai-generate:pressed {
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
 }
 
 .preview-card {

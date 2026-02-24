@@ -8,17 +8,17 @@ import javafx.geometry.Pos;
 import javafx.scene.chart.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.Priority;
 import services.PostulationService;
 import services.OffreAnalyticsService;
 import services.OffreAnalyticsService.OffreStatistics;
 import services.OffreAnalyticsService.Recommendation;
 import services.StatsExportService;
+import utils.StyledAlert;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -50,7 +50,6 @@ public class OffreStatsPopupController {
     @FXML private Label lblTendance;
     @FXML private LineChart<String, Number> lineChartVues;
     @FXML private BarChart<String, Number> barChartHeures;
-    @FXML private BarChart<String, Number> barChartLocalisation;
     @FXML private VBox vboxRecommandations;
     @FXML private Label lblSalaireComparaison;
     @FXML private ScrollPane scrollPane;
@@ -90,7 +89,6 @@ public class OffreStatsPopupController {
             // Nouveaux graphiques avancés
             creerLineChartVues();
             creerBarChartHeures();
-            // Répartition géographique supprimée pour simplifier l'interface
 
             // Recommandations
             afficherRecommandations();
@@ -132,10 +130,10 @@ public class OffreStatsPopupController {
         if (lblSalaireComparaison != null) {
             if (statistics.isSalaireCompetitif()) {
                 lblSalaireComparaison.setText("✅ Salaire compétitif (" +
-                    String.format("%.0f DT vs %.0f DT moyenne)", offre.getSalaire(), statistics.getSalaireMoyenSecteur()));
+                        String.format("%.0f DT vs %.0f DT moyenne)", offre.getSalaire(), statistics.getSalaireMoyenSecteur()));
             } else {
                 lblSalaireComparaison.setText("⚠️ En dessous du marché (" +
-                    String.format("%.0f DT vs %.0f DT moyenne)", offre.getSalaire(), statistics.getSalaireMoyenSecteur()));
+                        String.format("%.0f DT vs %.0f DT moyenne)", offre.getSalaire(), statistics.getSalaireMoyenSecteur()));
             }
         }
     }
@@ -160,8 +158,8 @@ public class OffreStatsPopupController {
             LocalDate date = dates.get(i);
             Integer vues = vuesParJour.get(date);
             series.getData().add(new XYChart.Data<>(
-                date.format(DateTimeFormatter.ofPattern("dd/MM")),
-                vues
+                    date.format(DateTimeFormatter.ofPattern("dd/MM")),
+                    vues
             ));
         }
 
@@ -185,27 +183,6 @@ public class OffreStatsPopupController {
         }
 
         barChartHeures.getData().add(series);
-    }
-
-    private void creerBarChartLocalisation() {
-        if (barChartLocalisation == null) return;
-
-        barChartLocalisation.getData().clear();
-        barChartLocalisation.setTitle("Candidatures par Localisation");
-
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Répartition géographique");
-
-        Map<String, Integer> parLocalisation = statistics.getCandidaturesParLocalisation();
-
-        // Trier par nombre décroissant
-        parLocalisation.entrySet().stream()
-            .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
-            .forEach(entry -> {
-                series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
-            });
-
-        barChartLocalisation.getData().add(series);
     }
 
     private void afficherRecommandations() {
@@ -232,7 +209,6 @@ public class OffreStatsPopupController {
         item.setPadding(new Insets(16));
         item.setStyle("-fx-background-color: #fef3c7; -fx-background-radius: 12; -fx-border-color: #fbbf24; -fx-border-radius: 12; -fx-border-width: 2;");
 
-        // Si priorité haute, mettre en rouge
         if ("haute".equals(reco.getPriorite())) {
             item.setStyle("-fx-background-color: #fee2e2; -fx-background-radius: 12; -fx-border-color: #ef4444; -fx-border-radius: 12; -fx-border-width: 2;");
         } else if ("basse".equals(reco.getPriorite())) {
@@ -262,7 +238,7 @@ public class OffreStatsPopupController {
     private void calculerKPIs() {
         int total = postulations.size();
         Map<String, Long> countByStatut = postulations.stream()
-            .collect(Collectors.groupingBy(Postulation::getStatut, Collectors.counting()));
+                .collect(Collectors.groupingBy(Postulation::getStatut, Collectors.counting()));
 
         int enAttente = countByStatut.getOrDefault("En attente", 0L).intValue();
         int acceptees = countByStatut.getOrDefault("Acceptée", 0L).intValue();
@@ -276,30 +252,28 @@ public class OffreStatsPopupController {
 
     private void creerPieChart() {
         Map<String, Long> countByStatut = postulations.stream()
-            .collect(Collectors.groupingBy(Postulation::getStatut, Collectors.counting()));
+                .collect(Collectors.groupingBy(Postulation::getStatut, Collectors.counting()));
 
         pieChartStatuts.getData().clear();
 
-        // Palette de couleurs violettes claires et contrastées
         Map<String, String> colors = new HashMap<>();
-        colors.put("En attente", "#fbbf24");   // Jaune-orangé doux
-        colors.put("En cours", "#a78bfa");     // Violet clair
-        colors.put("Acceptée", "#10b981");     // Vert émeraude
-        colors.put("Refusée", "#f87171");      // Rouge corail doux
+        colors.put("En attente", "#fbbf24");
+        colors.put("En cours", "#a78bfa");
+        colors.put("Acceptée", "#10b981");
+        colors.put("Refusée", "#f87171");
 
         for (Map.Entry<String, Long> entry : countByStatut.entrySet()) {
             PieChart.Data slice = new PieChart.Data(entry.getKey() + " (" + entry.getValue() + ")", entry.getValue());
             pieChartStatuts.getData().add(slice);
         }
 
-        // Appliquer les couleurs avec une meilleure lisibilité
         pieChartStatuts.getData().forEach(data -> {
             String statut = data.getName().split(" \\(")[0];
             String color = colors.getOrDefault(statut, "#9ca3af");
             data.getNode().setStyle(
-                "-fx-pie-color: " + color + ";" +
-                "-fx-border-color: white;" +
-                "-fx-border-width: 2px;"
+                    "-fx-pie-color: " + color + ";" +
+                            "-fx-border-color: white;" +
+                            "-fx-border-width: 2px;"
             );
         });
     }
@@ -308,17 +282,17 @@ public class OffreStatsPopupController {
         barChartEvolution.getData().clear();
 
         Map<String, Long> countByMonth = postulations.stream()
-            .collect(Collectors.groupingBy(
-                p -> p.getDatePostulation().format(DateTimeFormatter.ofPattern("MM/yyyy")),
-                Collectors.counting()
-            ));
+                .collect(Collectors.groupingBy(
+                        p -> p.getDatePostulation().format(DateTimeFormatter.ofPattern("MM/yyyy")),
+                        Collectors.counting()
+                ));
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Postulations");
 
         countByMonth.entrySet().stream()
-            .sorted(Map.Entry.comparingByKey())
-            .forEach(entry -> series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue())));
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue())));
 
         barChartEvolution.getData().add(series);
         xAxis.setLabel("Mois");
@@ -329,9 +303,9 @@ public class OffreStatsPopupController {
         vboxRecentPostulations.getChildren().clear();
 
         List<Postulation> recentes = postulations.stream()
-            .sorted((p1, p2) -> p2.getDatePostulation().compareTo(p1.getDatePostulation()))
-            .limit(5)
-            .collect(Collectors.toList());
+                .sorted((p1, p2) -> p2.getDatePostulation().compareTo(p1.getDatePostulation()))
+                .limit(5)
+                .collect(Collectors.toList());
 
         if (recentes.isEmpty()) {
             Label noData = new Label("Aucune postulation pour le moment");
@@ -354,7 +328,7 @@ public class OffreStatsPopupController {
         icon.setStyle("-fx-font-size: 24;");
 
         VBox info = new VBox(4);
-        HBox.setHgrow(info, javafx.scene.layout.Priority.ALWAYS);
+        HBox.setHgrow(info, Priority.ALWAYS);
 
         Label candidatLabel = new Label("Candidat ID: " + p.getCandidatId());
         candidatLabel.setStyle("-fx-font-weight: 700; -fx-font-size: 14; -fx-text-fill: #1f2937;");
@@ -373,11 +347,11 @@ public class OffreStatsPopupController {
 
     private String getStatutColor(String statut) {
         switch (statut.toLowerCase()) {
-            case "en attente": return "#fbbf24";   // Jaune-orangé doux
-            case "en cours": return "#a78bfa";     // Violet clair
-            case "acceptée": return "#10b981";     // Vert émeraude
-            case "refusée": return "#f87171";      // Rouge corail doux
-            default: return "#9ca3af";             // Gris par défaut
+            case "en attente": return "#fbbf24";
+            case "en cours": return "#a78bfa";
+            case "acceptée": return "#10b981";
+            case "refusée": return "#f87171";
+            default: return "#9ca3af";
         }
     }
 
@@ -386,15 +360,9 @@ public class OffreStatsPopupController {
         lblOffreTitre.getScene().getWindow().hide();
     }
 
-    /**
-     * Retour à la table des offres
-     */
     @FXML
-    public void handleBack() {
-        OffresShellController shell = OffresShellController.getInstance();
-        if (shell != null) {
-            shell.showOffresTable();
-        }
+    private void handleRetour() {
+        OffresShellController.getInstance().showOffresTable();
     }
 
     @FXML
@@ -403,24 +371,16 @@ public class OffreStatsPopupController {
             StatsExportService exportService = new StatsExportService();
             File file = exportService.exportToPDF(offre, statistics, postulations);
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Export PDF Réussi");
-            alert.setHeaderText("✅ Export terminé !");
-            alert.setContentText("Le fichier PDF a été créé avec succès :\n" + file.getAbsolutePath());
-            alert.showAndWait();
+            StyledAlert.showSuccess("Export PDF Réussi",
+                    "Le fichier PDF a été créé avec succès :\n" + file.getAbsolutePath());
 
-            // Ouvrir le fichier
             if (java.awt.Desktop.isDesktopSupported()) {
                 java.awt.Desktop.getDesktop().open(file);
             }
-
         } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erreur d'Export");
-            alert.setHeaderText("❌ Échec de l'export");
-            alert.setContentText("Une erreur s'est produite lors de la création du PDF :\n" + e.getMessage());
-            alert.showAndWait();
             e.printStackTrace();
+            StyledAlert.showError("Erreur d'Export",
+                    "Une erreur s'est produite lors de la création du PDF :\n" + e.getMessage());
         }
     }
 
@@ -438,41 +398,25 @@ public class OffreStatsPopupController {
 
             System.out.println("✅ Fichier créé: " + file.getAbsolutePath());
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Export Excel Réussi");
-            alert.setHeaderText("✅ Export terminé !");
-            alert.setContentText("Le fichier Excel a été créé avec succès :\n" + file.getAbsolutePath());
-            alert.showAndWait();
+            StyledAlert.showSuccess("Export Excel Réussi",
+                    "Le fichier Excel a été créé avec succès :\n" + file.getAbsolutePath());
 
-            // Ouvrir le fichier
             if (java.awt.Desktop.isDesktopSupported()) {
                 java.awt.Desktop.getDesktop().open(file);
             }
-
         } catch (Exception e) {
             System.err.println("❌ ERREUR EXPORT EXCEL:");
             e.printStackTrace();
 
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erreur d'Export");
-            alert.setHeaderText("❌ Échec de l'export Excel");
-
-            // Message d'erreur détaillé
             String errorDetails = "Erreur: " + e.getClass().getSimpleName() + "\n" +
-                                 "Message: " + e.getMessage() + "\n\n";
+                    "Message: " + e.getMessage() + "\n\n" +
+                    "💡 Solutions possibles:\n" +
+                    "1. Vérifiez que Maven a téléchargé Apache POI\n" +
+                    "2. Essayez: mvn clean install\n" +
+                    "3. Rebuild le projet\n\n" +
+                    "Voir la console pour plus de détails.";
 
-            if (e.getCause() != null) {
-                errorDetails += "Cause: " + e.getCause().getMessage() + "\n\n";
-            }
-
-            errorDetails += "💡 Solutions possibles:\n" +
-                           "1. Vérifiez que Maven a téléchargé Apache POI\n" +
-                           "2. Essayez: mvn clean install\n" +
-                           "3. Rebuild le projet\n\n" +
-                           "Voir la console pour plus de détails.";
-
-            alert.setContentText(errorDetails);
-            alert.showAndWait();
+            StyledAlert.showError("Erreur d'Export Excel", errorDetails);
         }
     }
 }
