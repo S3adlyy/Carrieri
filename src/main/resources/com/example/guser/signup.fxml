@@ -6,6 +6,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.image.ImageView?>
 <StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.example.guser.controllers.SignupController"
            stylesheets="@app.css">
@@ -24,7 +25,10 @@
         <VBox spacing="14" styleClass="glass" prefWidth="430">
             <padding><Insets top="26" right="26" bottom="26" left="26"/></padding>
 
-            <Text text="Carrieri" styleClass="brand"/>
+            <HBox styleClass="sidebar-brand" alignment="CENTER_LEFT" spacing="12">
+                <ImageView fx:id="brandLogo" styleClass="brand-logo-signup"/>
+                <Label text="Carrieri" styleClass="brandText-signup"/>
+            </HBox>
             <Text text="A profile above your workspaces: the person + the proof."
                   wrappingWidth="380" styleClass="muted"/>
 
@@ -73,7 +77,6 @@
             </VBox>
 
             <Region VBox.vgrow="ALWAYS"/>
-            <Text text="Admins are created by DB (no signup)." styleClass="muted"/>
         </VBox>
 
         <!-- Wizard card -->
@@ -129,6 +132,10 @@
                             <PasswordField fx:id="confirmPasswordField" promptText="Repeat password" styleClass="input"/>
                         </VBox>
                     </HBox>
+                    <Label fx:id="passwordStrengthLabel"
+                           text=""
+                           styleClass="prf-muted"/>
+
 
                     <Label fx:id="errorLabel" text="" styleClass="error" visible="false" managed="false"/>
                 </VBox>

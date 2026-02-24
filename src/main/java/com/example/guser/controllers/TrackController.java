@@ -6,6 +6,7 @@ import entities.Snapshot;
 import entities.Track;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
@@ -56,10 +57,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
-
-
-
-
+import utils.AlertUtils;
 
 
 public class TrackController {
@@ -142,6 +140,8 @@ private enum ViewMode { CURRENT, PROGRESS }
 
     //video and audio preview
     private MediaPlayer currentPlayer;
+
+    @FXML private Button addArtifactBtn;
 
 
 
@@ -326,6 +326,10 @@ private enum ViewMode { CURRENT, PROGRESS }
         createSnapshotBtn.setVisible(ownerMode);
         createSnapshotBtn.setManaged(ownerMode);
 
+        addArtifactBtn.setVisible(ownerMode);
+        addArtifactBtn.setManaged(ownerMode);
+
+
         refreshCurrentArtifacts();
         setViewMode(ViewMode.CURRENT);
     }
@@ -376,17 +380,88 @@ private enum ViewMode { CURRENT, PROGRESS }
 
     @FXML
     private void onCreateSnapshot() {
-        if (!ownerMode) return;
+        if (!ownerMode || track == null) return;
 
-        TextInputDialog d = new TextInputDialog("Snapshot message");
-        d.setHeaderText("Create Snapshot");
-        d.setContentText("Message:");
-        Optional<String> res = d.showAndWait();
+        final PseudoClass ERROR_PC = PseudoClass.getPseudoClass("error");
+
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Create Snapshot");
+        dialog.setHeaderText(null);
+
+        DialogPane pane = dialog.getDialogPane();
+        pane.getStylesheets().add(Objects.requireNonNull(
+                getClass().getResource("/com/example/guser/workspace.css")
+        ).toExternalForm());
+        pane.getStyleClass().addAll("wsp-dialog", "wsp-signupDialog");
+        pane.getButtonTypes().setAll(ButtonType.CANCEL, ButtonType.OK);
+        pane.setPrefWidth(520);
+
+        Button okBtn = (Button) pane.lookupButton(ButtonType.OK);
+        if (okBtn != null) okBtn.setDisable(true);
+
+        Label title = new Label("Snapshot message");
+        title.getStyleClass().add("wsp-trackLabel");
+
+        TextArea msgArea = new TextArea();
+        msgArea.setPromptText("What did you accomplish today? (short summary)");
+        msgArea.setPrefRowCount(4);
+        msgArea.setWrapText(true);
+
+        Label hint = new Label("Tip: keep it short and specific (1–2 sentences).");
+        hint.getStyleClass().add("wsp-hint");
+
+        Label error = new Label();
+        error.getStyleClass().add("wsp-trackError");
+        error.setManaged(false);
+        error.setVisible(false);
+        error.setWrapText(true);
+
+        VBox card = new VBox(10, title, msgArea, hint, error);
+        card.getStyleClass().add("wsp-trackCard");
+        pane.setContent(card);
+
+        Runnable validate = () -> {
+            String msg = msgArea.getText() == null ? "" : msgArea.getText().trim();
+
+            msgArea.pseudoClassStateChanged(ERROR_PC, false);
+            error.setText("");
+            error.setManaged(false);
+            error.setVisible(false);
+
+            String emsg = null;
+            if (msg.isEmpty()) emsg = "Message is required.";
+            else if (msg.length() > 280) emsg = "Message is too long (max 280 characters).";
+
+            boolean ok = (emsg == null);
+            if (okBtn != null) okBtn.setDisable(!ok);
+
+            if (!ok) {
+                msgArea.pseudoClassStateChanged(ERROR_PC, true);
+                error.setText(emsg);
+                error.setManaged(true);
+                error.setVisible(true);
+            }
+        };
+
+        msgArea.textProperty().addListener((obs, o, v) -> validate.run());
+        validate.run();
+
+        dialog.setResultConverter(bt -> bt == ButtonType.OK ? msgArea.getText().trim() : null);
+
+        Optional<String> res = dialog.showAndWait();
         if (res.isEmpty()) return;
 
+        String message = res.get();
+
         try {
-            snapshotService.createSnapshot(candidateId, track.getId(), viewerUserId,
-                    "Snapshot", res.get(), false);
+            snapshotService.createSnapshot(
+                    candidateId,
+                    track.getId(),
+                    viewerUserId,
+                    "Snapshot",
+                    message,
+                    false
+            );
 
             if (viewMode == ViewMode.PROGRESS) {
                 refreshSnapshotsAndTimeline();
@@ -394,34 +469,42 @@ private enum ViewMode { CURRENT, PROGRESS }
             }
 
             setError(null);
+            AlertUtils.showSuccess("Snapshot created", "Your progress was recorded.");
+
         } catch (Exception e) {
             setError(e.getMessage());
+            AlertUtils.showError("Could not create snapshot", e.getMessage());
         }
     }
+
 
     @FXML
     private void onAddArtifact() {
         if (!ownerMode || track == null) return;
 
-        Dialog<ArtifactDraft> dialog = new Dialog<>();
-        dialog.getDialogPane().getStylesheets().add(
-                getClass().getResource("/com/example/guser/workspace.css").toExternalForm()
-        );
-        dialog.getDialogPane().getStyleClass().addAll("wsp-dialog", "wsp-addArtifactDialog");
+        final PseudoClass ERROR_PC = PseudoClass.getPseudoClass("error");
 
+        Dialog<ArtifactDraft> dialog = new Dialog<>();
         dialog.setTitle("Add Artifact");
         dialog.setHeaderText(null);
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
 
+        DialogPane pane = dialog.getDialogPane();
+        pane.getStylesheets().add(Objects.requireNonNull(
+                getClass().getResource("/com/example/guser/workspace.css")
+        ).toExternalForm());
+        pane.getStyleClass().addAll("wsp-dialog", "wsp-signupDialog");
+        pane.getButtonTypes().setAll(ButtonType.CANCEL, ButtonType.OK);
+        pane.setPrefWidth(560);
+
+        Button okBtn = (Button) pane.lookupButton(ButtonType.OK);
+        if (okBtn != null) okBtn.setDisable(true);
+
+        // --- Controls ---
         TextField nameField = new TextField();
         nameField.setPromptText("Artifact name (e.g., repo, report, demo)");
 
-        TextArea descArea = new TextArea();
-        descArea.setPromptText("Description (optional)");
-        descArea.setPrefRowCount(3);
-
         ComboBox<String> typeBox = new ComboBox<>(FXCollections.observableArrayList(
-                "CODE", "DOCUMENT", "IMAGE", "VIDEO","AUDIO", "TEXT", "LINK"
+                "CODE", "DOCUMENT", "IMAGE", "VIDEO", "AUDIO", "TEXT", "LINK"
         ));
         typeBox.getSelectionModel().select("CODE");
 
@@ -429,83 +512,125 @@ private enum ViewMode { CURRENT, PROGRESS }
         languageField.setPromptText("Language (optional, for CODE)");
 
         TextArea textArea = new TextArea();
-        textArea.setPromptText("Text / URL (for TEXT/LINK)");
+        textArea.setPromptText("Text (for TEXT) or URL (for LINK)");
         textArea.setPrefRowCount(4);
+        textArea.setWrapText(true);
 
-        Label uploadHint = new Label("For CODE/DOCUMENT/IMAGE/VIDEO/AUDIO you will upload a file (or folder→zip for CODE) after creating.");
-        uploadHint.getStyleClass().add("prf-muted");
+        TextArea descArea = new TextArea();
+        descArea.setPromptText("Description (optional)");
+        descArea.setPrefRowCount(3);
+        descArea.setWrapText(true);
 
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.getStyleClass().add("wsp-formGrid");
-        ColumnConstraints c1 = new ColumnConstraints();
-        c1.setMinWidth(120);
-        c1.setPrefWidth(140);
-        c1.setMaxWidth(180);
-        ColumnConstraints c2 = new ColumnConstraints();
-        c2.setHgrow(Priority.ALWAYS);
-        c2.setFillWidth(true);
-        grid.getColumnConstraints().setAll(c1, c2);
-        GridPane.setHgrow(nameField, Priority.ALWAYS);
-        GridPane.setHgrow(typeBox, Priority.ALWAYS);
-        GridPane.setHgrow(languageField, Priority.ALWAYS);
-        GridPane.setHgrow(textArea, Priority.ALWAYS);
-        GridPane.setHgrow(descArea, Priority.ALWAYS);
-
-
-        grid.getStyleClass().add("wsp-formGrid");
-        nameField.getStyleClass().add("wsp-input");
-        descArea.getStyleClass().add("wsp-input");
-        typeBox.getStyleClass().add("wsp-input");
-        languageField.getStyleClass().add("wsp-input");
-        textArea.getStyleClass().add("wsp-input");
+        Label uploadHint = new Label(
+                "For CODE/DOCUMENT/IMAGE/VIDEO/AUDIO you will upload a file (or folder→zip for CODE) after creating."
+        );
         uploadHint.getStyleClass().add("wsp-hint");
-        dialog.getDialogPane().setPrefWidth(520);
 
+        Label error = new Label();
+        error.getStyleClass().add("wsp-trackError");
+        error.setManaged(false);
+        error.setVisible(false);
+        error.setWrapText(true);
 
-        int r = 0;
-        grid.addRow(r++, new Label("Name"), nameField);
-        grid.addRow(r++, new Label("Type"), typeBox);
-        grid.addRow(r++, new Label("Language"), languageField);
-        grid.addRow(r++, new Label("Text/URL"), textArea);
-        grid.addRow(r++, new Label("Description"), descArea);
-        grid.add(uploadHint, 0, r++, 2, 1);
+        // Layout: signup-like (label above control)
+        VBox card = new VBox(12,
+                fieldBox("Name", nameField),
+                fieldBox("Type", typeBox),
+                fieldBox("Language", languageField),
+                fieldBox("Text / URL", textArea),
+                fieldBox("Description", descArea),
+                uploadHint,
+                error
+        );
+        card.getStyleClass().add("wsp-trackCard");
 
-        dialog.getDialogPane().setContent(grid);
+        pane.setContent(card);
 
+        // --- UX toggles based on type ---
         Runnable refreshFields = () -> {
             String type = safeUpper(typeBox.getValue());
-            boolean isCode = type.equals("CODE");
-            boolean isTextLike = type.equals("TEXT") || type.equals("LINK");
+            boolean isCode = "CODE".equals(type);
+            boolean isText = "TEXT".equals(type);
+            boolean isLink = "LINK".equals(type);
+            boolean isTextLike = isText || isLink;
 
             languageField.setDisable(!isCode);
             textArea.setDisable(!isTextLike);
 
-            if (!isTextLike) textArea.clear();
+            // Don't aggressively clear user input; only clear when field becomes irrelevant
             if (!isCode) languageField.clear();
+            if (!isTextLike) textArea.clear();
+
+            if (isText) textArea.setPromptText("Write the text content…");
+            else if (isLink) textArea.setPromptText("https://example.com");
+            else textArea.setPromptText("Text (for TEXT) or URL (for LINK)");
         };
         typeBox.valueProperty().addListener((obs, o, v) -> refreshFields.run());
         refreshFields.run();
 
-        Node okBtn = dialog.getDialogPane().lookupButton(ButtonType.OK);
-        okBtn.setDisable(true);
-
+        // --- Validation + data control ---
         Runnable validate = () -> {
+            // reset
+            error.setText("");
+            error.setManaged(false);
+            error.setVisible(false);
+
+            nameField.pseudoClassStateChanged(ERROR_PC, false);
+            typeBox.pseudoClassStateChanged(ERROR_PC, false);
+            languageField.pseudoClassStateChanged(ERROR_PC, false);
+            textArea.pseudoClassStateChanged(ERROR_PC, false);
+            descArea.pseudoClassStateChanged(ERROR_PC, false);
+
             String name = nameField.getText() == null ? "" : nameField.getText().trim();
             String type = safeUpper(typeBox.getValue());
+            String lang = languageField.getText() == null ? "" : languageField.getText().trim();
+            String txt = textArea.getText() == null ? "" : textArea.getText().trim();
+            String desc = descArea.getText() == null ? "" : descArea.getText().trim();
 
-            boolean ok = !name.isEmpty();
-            if (ok && ("TEXT".equals(type) || "LINK".equals(type))) {
-                String txt = textArea.getText() == null ? "" : textArea.getText().trim();
-                ok = !txt.isEmpty();
+            String emsg = null;
+
+            // common rules
+            if (name.isEmpty()) emsg = "Name is required.";
+            else if (name.length() > 60) emsg = "Name is too long (max 60 characters).";
+            else if (type.isEmpty()) emsg = "Type is required.";
+            else if (desc.length() > 600) emsg = "Description is too long (max 600 characters).";
+
+            // type-specific rules
+            if (emsg == null && "CODE".equals(type)) {
+                if (lang.length() > 40) emsg = "Language is too long (max 40 characters).";
             }
-            okBtn.setDisable(!ok);
+            if (emsg == null && ("TEXT".equals(type))) {
+                if (txt.isEmpty()) emsg = "Text content is required for type TEXT.";
+                else if (txt.length() > 5000) emsg = "Text is too long (max 5000 characters).";
+            }
+            if (emsg == null && ("LINK".equals(type))) {
+                if (txt.isEmpty()) emsg = "URL is required for type LINK.";
+                else if (!isValidHttpUrl(txt)) emsg = "Please enter a valid URL starting with http:// or https://";
+                else if (txt.length() > 1000) emsg = "URL is too long (max 1000 characters).";
+            }
+
+            boolean ok = (emsg == null);
+            if (okBtn != null) okBtn.setDisable(!ok);
+
+            if (!ok) {
+                // highlight likely culprit
+                if (emsg.startsWith("Name")) nameField.pseudoClassStateChanged(ERROR_PC, true);
+                else if (emsg.startsWith("Type")) typeBox.pseudoClassStateChanged(ERROR_PC, true);
+                else if (emsg.startsWith("Language")) languageField.pseudoClassStateChanged(ERROR_PC, true);
+                else if (emsg.contains("Text") || emsg.contains("URL")) textArea.pseudoClassStateChanged(ERROR_PC, true);
+                else if (emsg.startsWith("Description")) descArea.pseudoClassStateChanged(ERROR_PC, true);
+
+                error.setText(emsg);
+                error.setManaged(true);
+                error.setVisible(true);
+            }
         };
 
         nameField.textProperty().addListener((obs, o, v) -> validate.run());
         typeBox.valueProperty().addListener((obs, o, v) -> validate.run());
+        languageField.textProperty().addListener((obs, o, v) -> validate.run());
         textArea.textProperty().addListener((obs, o, v) -> validate.run());
+        descArea.textProperty().addListener((obs, o, v) -> validate.run());
         validate.run();
 
         dialog.setResultConverter(bt -> {
@@ -513,10 +638,10 @@ private enum ViewMode { CURRENT, PROGRESS }
 
             ArtifactDraft d = new ArtifactDraft();
             d.name = nameField.getText().trim();
-            d.description = descArea.getText();
+            d.description = emptyToNull(descArea.getText());
             d.type = safeUpper(typeBox.getValue());
-            d.language = (languageField.getText() == null) ? null : languageField.getText().trim();
-            d.textContent = textArea.getText();
+            d.language = emptyToNull(languageField.getText());
+            d.textContent = emptyToNull(textArea.getText());
             return d;
         });
 
@@ -531,39 +656,61 @@ private enum ViewMode { CURRENT, PROGRESS }
                     d.name,
                     d.description,
                     d.type,
-                    (d.type.equals("CODE") ? emptyToNull(d.language) : null),
-                    ((d.type.equals("TEXT") || d.type.equals("LINK")) ? emptyToNull(d.textContent) : null)
+                    ("CODE".equals(d.type) ? emptyToNull(d.language) : null),
+                    (("TEXT".equals(d.type) || "LINK".equals(d.type)) ? emptyToNull(d.textContent) : null)
             );
 
-            // Upload immediately for file-based artifacts
-            if (d.type.equals("CODE")) {
+            // Upload for file-based artifacts
+            if ("CODE".equals(d.type)) {
                 promptUploadForCode(created);
-            } else if (d.type.equals("DOCUMENT") || d.type.equals("IMAGE") || d.type.equals("VIDEO")|| d.type.equals("AUDIO")) {
+            } else if ("DOCUMENT".equals(d.type) || "IMAGE".equals(d.type) || "VIDEO".equals(d.type) || "AUDIO".equals(d.type)) {
                 promptUploadSingleFile(created, d.type);
             }
 
-            // Refresh UI depending on mode (CURRENT vs PROGRESS)
+            // Refresh UI depending on mode
             if (viewMode == ViewMode.CURRENT) {
                 refreshCurrentArtifacts();
                 showPlaceholder("Select an artifact.");
-                showInfo("Artifact added. Upload done (if selected). Create a snapshot when you want to record progress.");
+                AlertUtils.showSuccess("Artifact added", "Upload now if this artifact requires a file.");
             } else {
                 refreshSnapshotsAndTimeline();
-                if (!snapshots.isEmpty()) selectSnapshot(snapshots.get(0)); // oldest auto-selected (Option A)
+                if (!snapshots.isEmpty()) selectSnapshot(snapshots.get(0));
                 else {
                     selectedSnapshot = null;
                     artifactRows.clear();
                     showPlaceholder("No snapshots yet. Create one.");
                 }
-                showInfo("Artifact added. Create a new snapshot to include it in the timeline.");
+                AlertUtils.showSuccess("Artifact added", "Create a new snapshot to record it in your timeline.");
             }
 
             setError(null);
 
         } catch (Exception e) {
             setError(e.getMessage());
+            AlertUtils.showError("Could not add artifact", e.getMessage());
         }
     }
+
+    /* ------- helpers ------- */
+
+    private VBox fieldBox(String labelText, Node control) {
+        Label l = new Label(labelText);
+        l.getStyleClass().add("wsp-trackLabel");
+        VBox box = new VBox(6, l, control);
+        return box;
+    }
+
+    private boolean isValidHttpUrl(String s) {
+        try {
+            URI u = URI.create(s.trim());
+            String scheme = u.getScheme();
+            return (scheme != null) && (scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https"))
+                    && u.getHost() != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 
 
     private static class ArtifactDraft {

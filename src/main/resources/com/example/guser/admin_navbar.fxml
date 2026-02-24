@@ -27,37 +27,21 @@
         <Label text="Carrieri" styleClass="brand-text"/>
 
         <!-- optional; remove if you don't want it -->
-        <Label text="Gestion des Utilisateurs" styleClass="brand-subtext"/>
+        <Label text="Admin" styleClass="brand-subtext"/>
     </VBox>
 
     <!-- Navigation (keep same button ids + onAction) -->
     <VBox styleClass="nav-container" alignment="CENTER">
-        <Button fx:id="btnFeed" text="" onAction="#onFeed" styleClass="nav-button">
+        <Button fx:id="btnFeed" text="" onAction="#onAdmin" styleClass="nav-button">
             <graphic>
                 <HBox spacing="15" alignment="CENTER_LEFT">
                     <Label text="➕" styleClass="nav-icon"/>
-                    <Label text="Feed" styleClass="nav-text"/>
+                    <Label text="Manage Users" styleClass="nav-text"/>
                 </HBox>
             </graphic>
         </Button>
 
-        <Button fx:id="btnJobs" text="" onAction="#onJobs" styleClass="nav-button">
-            <graphic>
-                <HBox spacing="15" alignment="CENTER_LEFT">
-                    <Label text="📋" styleClass="nav-icon"/>
-                    <Label text="Jobs" styleClass="nav-text"/>
-                </HBox>
-            </graphic>
-        </Button>
 
-        <Button fx:id="btnConnect" text="" onAction="#onConnect" styleClass="nav-button">
-            <graphic>
-                <HBox spacing="15" alignment="CENTER_LEFT">
-                    <Label text="🤖" styleClass="nav-icon"/>
-                    <Label text="Connect" styleClass="nav-text"/>
-                </HBox>
-            </graphic>
-        </Button>
     </VBox>
 
     <Region VBox.vgrow="ALWAYS"/>
@@ -69,7 +53,7 @@
     <VBox styleClass="user-container" alignment="CENTER" spacing="10">
 
         <!-- Clickable profile block (keeps btnUserProfile) -->
-        <Button fx:id="btnUserProfile" onAction="#onProfile"
+        <Button fx:id="btnAdmin" onAction="#onAdmin"
                 styleClass="user-profile-btn" maxWidth="Infinity">
             <graphic>
                 <VBox alignment="CENTER" spacing="6">

@@ -8,7 +8,7 @@
       fx:controller="com.example.guser.controllers.WorkspaceController"
       stylesheets="@workspace.css"
       spacing="12"
-      styleClass="wsp-page">
+      styleClass="root wsp-page">
 
     <VBox styleClass="wsp-workspaceRoot" spacing="12">
 
@@ -23,12 +23,12 @@
             <Button fx:id="newTrackBtn"
                     text="+ New track"
                     onAction="#onNewTrack"
-                    styleClass="prf-actBtn wsp-addTrackBtn"/>
+                    styleClass="prf-actBtn"/>
         </HBox>
 
         <!-- Track list -->
         <VBox fx:id="tracksListPane" spacing="10">
-            <ListView fx:id="tracksListView" styleClass="wsp-list wsp-tracksList"/>
+            <ListView fx:id="tracksListView" styleClass="wsp-list wsp-tracksList wsp-trackCard"/>
         </VBox>
 
         <!-- Track detail include -->

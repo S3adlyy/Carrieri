@@ -2,40 +2,36 @@ package com.example.guser.controllers;
 
 import com.example.guser.SceneManager;
 import entities.User;
-import javafx.animation.FadeTransition;
+import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-import java.time.Duration;
+import javafx.scene.layout.VBox;
 import session.ProfileViewContext;
 import session.SessionContext;
 import utils.S3StorageService;
 
 import java.io.InputStream;
-import java.time.temporal.ChronoUnit;
+import java.time.Duration; // keep java.time.Duration ONLY
 
 public class AppNavController {
 
     private static final String S3_BUCKET = "carrieri-storage-dev-islem";
     private static final String S3_REGION = "eu-west-3";
 
-    public enum Route { PROFILE, PEOPLE, FEED, JOBS, CONNECT }
-
-    @FXML private StackPane contentPane;
+    public enum Route { PROFILE, PEOPLE, FEED, JOBS, CONNECT, ADMIN }
 
     @FXML private Button btnFeed;
     @FXML private Button btnJobs;
     @FXML private Button btnConnect;
     @FXML private Button btnUserProfile;
+    @FXML private Button btnAdmin;
     @FXML private Button logoutBtn;
 
     @FXML private Circle navAvatar;
@@ -44,34 +40,39 @@ public class AppNavController {
 
     @FXML private ImageView brandLogo;
 
+    @FXML private VBox sidebar;
+
+    private Timeline expandAnimation;
+    private Timeline collapseAnimation;
     private Button activeButton;
+    private static final double COLLAPSED_W = 70;
+    private static final double EXPANDED_W = 250;
+
+    private Timeline widthAnim;
+    private PauseTransition hoverDebounce;
 
     @FXML
     public void initialize() {
         loadLogoSafe("/com/example/guser/images/logo.png", "/images/logo.png");
         hydrateUserSection();
 
+        setupAnimations();
+        animateSidebarTo(COLLAPSED_W);
 
-        // Default page
-        //showAddMission();
-        //setActive(btnAddMission, Route.ADD_MISSION);
-        setActive(btnUserProfile, Route.PROFILE);
 
-        // nice fade in (nahit l content pane fel navbar.fxml raditha just VBOX DONC HEDHI TAAMEL ERREUR
-        /*contentPane.setOpacity(0);
-        FadeTransition ft = new FadeTransition(Duration.millis(250), contentPane);
-        ft.setFromValue(0);
-        ft.setToValue(1);
-        ft.play();*/
+        if(SessionContext.getCurrentUser().getRoles().equals("ADMIN"))
+            setActive(btnAdmin, Route.ADMIN);
+        else
+            setActive(btnUserProfile, Route.PROFILE);
     }
 
-
+    // ========== ROUTES ==========
     @FXML
     private void onProfile() {
         if (!SessionContext.isLoggedIn()) return;
         int meId = SessionContext.getCurrentUser().getId();
         ProfileViewContext.viewUser(meId);
-        SceneManager.switchTo("/com/example/guser/profile.fxml", "Carrieri • Sign in");
+        SceneManager.switchTo("/com/example/guser/profile.fxml", "Carrieri • Profile");
         setActive(btnUserProfile, Route.PROFILE);
     }
 
@@ -79,22 +80,46 @@ public class AppNavController {
     private void onLogout() {
         SessionContext.setCurrentUser(null);
         ProfileViewContext.viewUser(null);
-        // If you use SceneManager, call it here; otherwise load login into contentPane
         SceneManager.switchTo("/com/example/guser/login.fxml", "Carrieri • Sign in");
         clearActive();
         hydrateUserSection();
     }
 
+    @FXML
+    private void onJobs() {
+        setActive(btnJobs, Route.JOBS);
+        // SceneManager.switchTo("...", "Carrieri • Jobs");
+    }
+
+    @FXML
+    private void onFeed() {
+        setActive(btnFeed, Route.FEED);
+        // SceneManager.switchTo("...", "Carrieri • Feed");
+    }
+    @FXML
+    private void onAdmin() {
+        setActive(btnAdmin, Route.ADMIN);
+        SceneManager.switchTo("...", "Carrieri • Admin");
+    }
+
+    @FXML
+    private void onConnect() {
+        SceneManager.switchTo("/com/example/guser/connect.fxml", "Carrieri • Connect");
+        setActive(btnConnect, Route.CONNECT);
+    }
 
     // ========== ACTIVE STATE ==========
     void setActive(Button btn, Route route) {
         clearActive();
         activeButton = btn;
-        if (activeButton != null) activeButton.getStyleClass().add("nav-link-active");
+        if (activeButton != null) activeButton.getStyleClass().add("nav-button-active");
     }
 
     private void clearActive() {
-        if (activeButton != null) activeButton.getStyleClass().remove("nav-link-active");
+        if (activeButton != null) {
+            activeButton.getStyleClass().remove("nav-button-active");
+            activeButton.getStyleClass().remove("nav-link-active"); // backward compat if any
+        }
         activeButton = null;
     }
 
@@ -110,7 +135,10 @@ public class AppNavController {
         }
 
         User me = SessionContext.getCurrentUser();
-        btnUserProfile.setDisable(false);
+        if(btnUserProfile!=null)
+            btnUserProfile.setDisable(false);
+        else
+            btnAdmin.setDisable(true);
         logoutBtn.setDisable(false);
 
         String fullName = (safe(me.getFirstname()) + " " + safe(me.getLastname())).trim();
@@ -124,32 +152,45 @@ public class AppNavController {
     private void renderCircleFromS3Key(Circle circle, String s3Key) {
         try (S3StorageService s3 = new S3StorageService(S3_BUCKET, S3_REGION)) {
             if (s3Key == null || s3Key.isBlank()) return;
-            String url = s3.presignedGetUrl(s3Key, Duration.ofMinutes(10));
+            String url = s3.presignedGetUrl(s3Key, Duration.ofMinutes(10)); // java.time.Duration
             Image img = new Image(url, false);
             if (!img.isError()) circle.setFill(new ImagePattern(img));
         } catch (Exception ignored) {}
     }
 
-    @FXML
-    private void onPeople() {
-        // later: switch to candidate directory / recruiter directory
-        SceneManager.switchTo("/com/example/guser/profile.fxml", "Carrieri • Profile");
+    private void setupAnimations() {
+        widthAnim = new Timeline();
+        hoverDebounce = new PauseTransition(javafx.util.Duration.millis(60));
+    }
+
+    private void animateSidebarTo(double targetW) {
+        double current = sidebar.getWidth(); // real current width (smoother than prefWidth)
+
+        if (Math.abs(current - targetW) < 0.5) return;
+
+        widthAnim.stop();
+        widthAnim.getKeyFrames().setAll(
+                new KeyFrame(javafx.util.Duration.millis(220),
+                        new KeyValue(sidebar.prefWidthProperty(), targetW, Interpolator.EASE_OUT),
+                        new KeyValue(sidebar.minWidthProperty(),  targetW, Interpolator.EASE_OUT),
+                        new KeyValue(sidebar.maxWidthProperty(),  targetW, Interpolator.EASE_OUT)
+                )
+        );
+        widthAnim.playFromStart();
     }
 
     @FXML
-    private void onJobs() {
-        // placeholder
-        setActive(btnJobs, Route.JOBS);
+    public void expandSidebar() {
+        hoverDebounce.stop();
+        hoverDebounce.setOnFinished(e -> animateSidebarTo(EXPANDED_W));
+        hoverDebounce.playFromStart();
     }
+
     @FXML
-    private void onFeed() {
-        // placeholder
-        setActive(btnFeed, Route.FEED);
-    }
-    @FXML
-    private void onConnect() {
-        // placeholder
-        setActive(btnConnect, Route.CONNECT);
+    public void collapseSidebar() {
+        hoverDebounce.stop();
+        hoverDebounce.setOnFinished(e -> animateSidebarTo(COLLAPSED_W));
+        hoverDebounce.playFromStart();
     }
 
     // ========== SAFE RESOURCE LOADING ==========
@@ -163,8 +204,7 @@ public class AppNavController {
                     }
                 }
             }
-        } catch (Exception ignored) { }
-        // fallback: no image, keep empty (or set a default placeholder in CSS)
+        } catch (Exception ignored) {}
         brandLogo.setImage(null);
     }
 

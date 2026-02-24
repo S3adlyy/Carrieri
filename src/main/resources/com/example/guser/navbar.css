@@ -1,835 +1,215 @@
+/* =========================================================
+   NAVBAR — Animated Sidebar (new design)
+   ========================================================= */
 
-/* ========================
-   ROOT & SIDEBAR LAYOUT
-   ========================= */
-.root-container {
-    -fx-background-color: #F5F3F9;
+/* Tokens fallback (if ThemeUnified.css not loaded) */
+*{
+    -sidebar-bg: linear-gradient(to bottom, #f8f4ff, #e8daf5, #d4c2e6);
+    -shadow-color: rgba(94, 84, 142, 0.20);
 }
 
-/* Sidebar Styles */
-.sidebar {
-    -fx-background-color: #FFFFFF;
-    -fx-min-width: 280;
-    -fx-max-width: 280;
-    -fx-pref-width: 280;
-    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.1), 20, 0, 2, 0);
-    -fx-border-color: rgba(35,25,66,0.08);
-    -fx-border-width: 0 1 0 0;
+/* ============================================
+   SIDEBAR
+   ============================================ */
+.sidebar-animated {
+    -fx-background-color: -sidebar-bg;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 15, 0, 2, 0);
+    -fx-background-radius: 0 20 20 0;
+    -fx-padding: 20 0 20 0;
+    -fx-spacing: 30;
+
+    /* collapsed by default */
+    -fx-min-width: 70;
+    -fx-pref-width: 70;
+    -fx-max-width: 70;
 }
 
-.sidebar-brand {
-    -fx-padding: 32 24 32 24;  /* Increased padding */
-    -fx-background-color: linear-gradient(to right, rgba(139, 92, 246, 0.08), transparent);
-    -fx-border-color: rgba(35,25,66,0.1);
-    -fx-border-width: 0 0 2 0;  /* Thicker border */
-    -fx-alignment: CENTER_LEFT;
-    -fx-spacing: 18;  /* Increased spacing between logo and text */
-}
-.logo-wrapper {
-    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.4), 20, 0.3, 0, 5);
+
+/* ============================================
+   BRAND
+   ============================================ */
+.brand-container {
+    -fx-spacing: 5;
+    -fx-alignment: center;
+    -fx-padding: 0 0 20 0;
 }
 
-.brand-logo-premium {
-    -fx-fit-width: 52px;        /* Increased from 36px */
-    -fx-fit-height: 52px;        /* Increased from 36px */
-    -fx-preserve-ratio: true;
-    -fx-effect: dropshadow(gaussian, white, 8, 0.3, 0, 0);
-}
-
-.brandText-premium {
-    -fx-font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
-    -fx-font-size: 28px;         /* Increased from 22px */
-    -fx-font-weight: 900;        /* Bolder */
-    -fx-text-fill: #231942;
-    -fx-letter-spacing: 0.8px;   /* More spacing */
-    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.25), 8, 0, 2, 2);
-}
-
-.brand-badge {
-    -fx-background-color: #8B5CF6;
-    -fx-text-fill: white;
-    -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
-    -fx-font-size: 11px;         /* Increased from 9px */
-    -fx-font-weight: 800;
-    -fx-padding: 3 10 3 10;      /* Larger padding */
+.brand-icon {
+    -fx-background-color: rgba(94, 84, 142, 0.1);
     -fx-background-radius: 15;
-    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.5), 10, 0, 0, 3);
-}
-
-.brand-slogan {
-    -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
-    -fx-font-size: 13px;         /* Increased from 11px */
-    -fx-font-weight: 500;
-    -fx-text-fill: #9F86C0;
-    -fx-opacity: 0.95;
-    -fx-letter-spacing: 0.4px;
-}
-
-.brand-logo-premium:hover {
-    -fx-scale-x: 1.12;
-    -fx-scale-y: 1.12;
-    -fx-transition: all 0.3s ease;
-}
-
-.logo-wrapper {
-    -fx-min-width: 64;            /* Increased from 48 */
-    -fx-min-height: 64;           /* Increased from 48 */
-    -fx-max-width: 64;
-    -fx-max-height: 64;
-}
-
-.logo-background {
-    -fx-radius: 30;               /* Increased from 22 */
-}
-
-.brandText-premium:hover {
-    -fx-text-fill: #5E548E;
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-}
-
-.logo-background {
-    -fx-fill: linear-gradient(135deg, #231942, #5E548E, #9F86C0);
-    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.5), 20, 0.3, 0, 6);
-    -fx-stroke: rgba(255,255,255,0.4);
-    -fx-stroke-width: 2;
-}
-
-
-.brand-logo {
-    -fx-fit-width: 40px;
-    -fx-fit-height: 40px;
-    -fx-preserve-ratio: true;
-    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.4), 15, 0.3, 0, 4);
-    -fx-transition: all 0.3s ease;
-}
-.brand-logo:hover {
-    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.6), 20, 0.4, 0, 6);
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
+    -fx-padding: 10;
     -fx-cursor: hand;
 }
 
-
-.brandDot {
-    -fx-min-width: 36;
-    -fx-min-height: 36;
-    -fx-max-width: 36;
-    -fx-max-height: 36;
-    -fx-background-radius: 12;
-    -fx-background-color: linear-gradient(135deg, #231942, #5E548E, #9F86C0);
-    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.4), 15, 0.3, 0, 4);
+.brand-icon:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.25);
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 20, 0.3, 0, 0);
 }
 
-.brandText {
-    -fx-font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
-    -fx-font-size: 22px;
-    -fx-font-weight: 800;
+.brand-text {
     -fx-text-fill: #231942;
-    -fx-letter-spacing: 0.5px;
-    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.2), 5, 0, 1, 1);
-    -fx-transition: all 0.3s ease;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-opacity: 0;
+    -fx-translate-x: -10px;
 }
-.brandText:hover {
+
+.brand-subtext {
     -fx-text-fill: #5E548E;
-    -fx-scale-x: 1.02;
-    -fx-scale-y: 1.02;
-    -fx-cursor: hand;
-}
-
-.brandText-gradient {
-    -fx-font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
-    -fx-font-size: 22px;
-    -fx-font-weight: 800;
-    -fx-text-fill: linear-gradient(135deg, #231942 0%, #5E548E 50%, #9F86C0 100%);
-    -fx-letter-spacing: 0.5px;
-    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.2), 5, 0, 1, 1);
-}
-
-.brand-logo-container {
-    -fx-background-color: linear-gradient(135deg, #231942, #5E548E, #9F86C0);
-    -fx-background-radius: 14;
-    -fx-padding: 8;
-    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.4), 15, 0.3, 0, 4);
-}
-
-.brand-logo-circle {
-    -fx-stroke: white;
-    -fx-stroke-width: 2;
-    -fx-fill: transparent;
-}
-
-.brand-logo-shine {
-    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.3), 10, 0.2, 0, 0);
-}
-
-.brand-tagline {
-    -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
     -fx-font-size: 10px;
-    -fx-font-weight: 600;
-    -fx-text-fill: #9F86C0;
-    -fx-letter-spacing: 0.3px;
-    -fx-opacity: 0.8;
+    -fx-opacity: 0;
+    -fx-translate-x: -10px;
 }
 
-
-/* Navigation Links Container */
-.nav-links-container {
-    -fx-padding: 24 16 16 16;
-    -fx-spacing: 6;
+.sidebar-animated:hover .brand-text,
+.sidebar-animated:hover .brand-subtext {
+    -fx-opacity: 1;
+    -fx-translate-x: 0;
 }
 
-/* Navigation Link Buttons */
-.nav-link {
+/* ============================================
+   NAVIGATION
+   ============================================ */
+.nav-container {
+    -fx-spacing: 5;
+    -fx-padding: 0 0 20 0;
+    -fx-alignment: center;
+}
+
+.nav-button {
     -fx-background-color: transparent;
-    -fx-text-fill: rgba(35,25,66,0.75);
-    -fx-font-weight: 700;
-    -fx-font-size: 14px;
-    -fx-padding: 12 16 12 16;
-    -fx-background-radius: 12;
-    -fx-alignment: CENTER_LEFT;
+    -fx-text-fill: transparent;
+    -fx-padding: 10 15;
+    -fx-alignment: center-left;
     -fx-cursor: hand;
-    -fx-min-width: 200;
-    -fx-graphic-text-gap: 14;
-    -fx-content-display: LEFT;
-    -fx-border-color: transparent;
-    -fx-border-width: 1;
-    -fx-border-radius: 12;
-    -fx-transition: all 0.2s ease;
+    -fx-min-width: 250;
+    -fx-background-radius: 0 30 30 0;
 }
 
-.nav-link:hover {
-    -fx-background-color: rgba(159,134,192,0.15);
-    -fx-text-fill: #231942;
-    -fx-translate-x: 4;
-    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.3), 10, 0, 2, 2);
-}
-
-.liquid-btn-active {
-    -fx-background-color: rgba(94,84,142,0.18);
-    -fx-text-fill: #231942;
-    -fx-border-color: rgba(94,84,142,0.3);
-    -fx-border-width: 1.5;
-    -fx-border-radius: 12;
-    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.3), 12, 0, 2, 4);
-    -fx-font-weight: 800;
+.nav-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-scale-x: 1.02;
+    -fx-translate-x: 5px;
 }
 
 .nav-icon {
-    -fx-font-size: 18px;
-    -fx-min-width: 24;
-    -fx-alignment: CENTER;
+    -fx-font-size: 24px;
+    -fx-text-fill: #5E548E;
+    -fx-min-width: 40;
+    -fx-alignment: center;
 }
 
-/* User Section */
-.user-section {
-    -fx-padding: 20 16 24 16;
-    -fx-background-color: rgba(248,246,252,0.5);
-    -fx-border-color: rgba(35,25,66,0.05);
+.nav-button:hover .nav-icon {
+    -fx-text-fill: #231942;
+}
+
+.nav-text {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #231942;
+    -fx-opacity: 0;
+    -fx-translate-x: -10px;
+}
+
+.sidebar-animated:hover .nav-text {
+    -fx-opacity: 1;
+    -fx-translate-x: 0;
+}
+
+/* Active */
+.nav-button-active {
+    -fx-background-color: rgba(94, 84, 142, 0.15);
+    -fx-border-color: transparent transparent transparent #5E548E;
+    -fx-border-width: 0 0 0 3;
+}
+.nav-button-active .nav-icon {
+    -fx-text-fill: #E0B1CB;
+}
+
+/* Map your existing active class (if you still use it somewhere) */
+.liquid-btn-active {
+    -fx-background-color: rgba(94, 84, 142, 0.15);
+    -fx-border-color: transparent transparent transparent #5E548E;
+    -fx-border-width: 0 0 0 3;
+}
+
+/* ============================================
+   USER SECTION
+   ============================================ */
+.user-container {
+    -fx-spacing: 8;
+    -fx-alignment: center;
+    -fx-padding: 20 0 0 0;
+    -fx-border-color: rgba(94, 84, 142, 0.2);
     -fx-border-width: 1 0 0 0;
 }
 
-.sidebar-separator {
-    -fx-background-color: rgba(35,25,66,0.1);
-    -fx-pref-height: 1;
-    -fx-max-height: 1;
-    -fx-min-height: 1;
-    -fx-opacity: 0.5;
+/* Profile clickable block */
+.user-profile-btn {
+    -fx-background-color: transparent;
     -fx-padding: 0;
+    -fx-cursor: hand;
+}
+.user-profile-btn:hover {
+    -fx-background-color: rgba(255,255,255,0.12);
+    -fx-background-radius: 14;
 }
 
-.user-avatar {
-    -fx-fill: linear-gradient(to bottom right, #231942, #5E548E);
-    -fx-stroke: #FFFFFF;
-    -fx-stroke-width: 2.5;
-    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.25), 10, 0, 0, 2);
+.user-avatar-glow {
+    -fx-fill: linear-gradient(to bottom right, #9F86C0, #5E548E);
+    -fx-stroke: white;
+    -fx-stroke-width: 2;
+    -fx-cursor: hand;
+}
+
+.user-avatar-glow:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.5), 20, 0.3, 0, 0);
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
 }
 
 .user-name {
     -fx-text-fill: #231942;
-    -fx-font-weight: 800;
-    -fx-font-size: 14px;
-}
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
 
+    /* hidden until expand */
+    -fx-opacity: 0;
+}
 .user-role {
-    -fx-text-fill: rgba(94,84,142,0.75);
-    -fx-font-size: 11px;
-    -fx-font-weight: 600;
-    -fx-cursor: hand;
-}
-
-.user-role:hover {
     -fx-text-fill: #5E548E;
-    -fx-underline: true;
+    -fx-font-size: 11px;
+
+    /* hidden until expand */
+    -fx-opacity: 0;
 }
 
-/* Logout Button */
-.logout-btn {
-    -fx-background-color: rgba(225,110,110,0.08);
-    -fx-text-fill: #B13E3E;
-    -fx-font-weight: 700;
-    -fx-font-size: 13px;
-    -fx-padding: 10 16 10 16;
-    -fx-background-radius: 10;
-    -fx-alignment: CENTER_LEFT;
-    -fx-cursor: hand;
-    -fx-graphic-text-gap: 12;
-    -fx-border-color: rgba(177,62,62,0.2);
-    -fx-border-radius: 10;
-    -fx-border-width: 1;
-    -fx-margin: 12 0 0 0;
+.sidebar-animated:hover .user-name,
+.sidebar-animated:hover .user-role {
+    -fx-opacity: 1;
 }
 
-.logout-btn:hover {
-    -fx-background-color: rgba(225,110,110,0.15);
-    -fx-border-color: rgba(177,62,62,0.4);
-    -fx-effect: dropshadow(gaussian, rgba(177,62,62,0.2), 8, 0, 0, 2);
-}
-
-/* Content Area */
-.content-area {
-    -fx-background-color: #F5F3F9;
-    -fx-background-radius: 0;
-}
-
-/* =========================
-   CONTENT CARDS (from image)
-   ========================= */
-.mission-content-card {
-    -fx-background-color: #FFFFFF;
+/* Logout button (icon only) */
+.logout-button {
+    -fx-background-color: rgba(255, 107, 107, 0.1);
+    -fx-text-fill: #ff6b6b;
+    -fx-font-size: 20px;
+    -fx-padding: 8 15;
     -fx-background-radius: 20;
+    -fx-border-color: rgba(255, 107, 107, 0.3);
     -fx-border-radius: 20;
-    -fx-border-color: rgba(35,25,66,0.1);
-    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.06), 15, 0, 0, 6);
-    -fx-padding: 28;
-}
-
-.mission-content-title {
-    -fx-font-size: 28px;
-    -fx-font-weight: 900;
-    -fx-text-fill: #231942;
-}
-
-.mission-content-subtitle {
-    -fx-font-size: 15px;
-    -fx-text-fill: rgba(94,84,142,0.8);
-    -fx-font-weight: 600;
-    -fx-padding: 0 0 20 0;
-}
-
-/* Description Section */
-.description-section {
-    -fx-background-color: #F9F7FD;
-    -fx-background-radius: 16;
-    -fx-padding: 20;
-    -fx-border-color: rgba(94,84,142,0.15);
-    -fx-border-radius: 16;
-}
-
-.section-label {
-    -fx-font-size: 16px;
-    -fx-font-weight: 800;
-    -fx-text-fill: #231942;
-    -fx-padding: 0 0 8 0;
-}
-
-.required-badge {
-    -fx-background-color: #FFE5E5;
-    -fx-text-fill: #D43B3B;
-    -fx-font-weight: 700;
-    -fx-font-size: 11px;
-    -fx-padding: 4 10 4 10;
-    -fx-background-radius: 20;
-}
-
-.description-textarea {
-    -fx-background-color: #FFFFFF;
-    -fx-background-radius: 12;
-    -fx-border-color: rgba(94,84,142,0.2);
-    -fx-border-radius: 12;
-    -fx-padding: 12;
-    -fx-font-size: 13px;
-    -fx-wrap-text: true;
-}
-
-.description-textarea:focused {
-    -fx-border-color: #9F86C0;
-    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.3), 12, 0, 0, 2);
-}
-
-.char-counter {
-    -fx-text-fill: rgba(35,25,66,0.5);
-    -fx-font-size: 11px;
-    -fx-font-weight: 600;
-    -fx-padding: 8 0 0 0;
-}
-
-/* Best Practices Box */
-.best-practices {
-    -fx-background-color: #F0EBF8;
-    -fx-background-radius: 14;
-    -fx-padding: 16;
-    -fx-border-color: rgba(159,134,192,0.25);
-    -fx-border-radius: 14;
-}
-
-.best-practices-title {
-    -fx-font-size: 14px;
-    -fx-font-weight: 800;
-    -fx-text-fill: #5E548E;
-    -fx-padding: 0 0 8 0;
-}
-
-.practice-item {
-    -fx-text-fill: #231942;
-    -fx-font-size: 12px;
-    -fx-font-weight: 500;
-    -fx-padding: 4 0 4 16;
-    -fx-graphic-text-gap: 8;
-}
-
-/* Score Section */
-.score-section {
-    -fx-background-color: #FFFFFF;
-    -fx-background-radius: 16;
-    -fx-padding: 20;
-    -fx-border-color: rgba(35,25,66,0.1);
-    -fx-border-radius: 16;
-}
-
-.score-input {
-    -fx-background-color: #F5F3F9;
-    -fx-background-radius: 30;
-    -fx-padding: 10 18 10 18;
-    -fx-font-size: 14px;
-    -fx-prompt-text-fill: rgba(35,25,66,0.4);
-    -fx-border-color: rgba(94,84,142,0.2);
-    -fx-border-radius: 30;
-    -fx-pref-width: 150;
-}
-
-.score-input:focused {
-    -fx-border-color: #9F86C0;
-    -fx-background-color: #FFFFFF;
-    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.2), 8, 0, 0, 2);
-}
-
-.score-hint {
-    -fx-text-fill: rgba(35,25,66,0.6);
-    -fx-font-size: 12px;
-    -fx-padding: 4 0 0 18;
-}
-
-/* Score Levels */
-.score-levels {
-    -fx-background-color: #F5F3F9;
-    -fx-background-radius: 12;
-    -fx-padding: 15;
-}
-
-.level-badge {
-    -fx-background-radius: 20;
-    -fx-padding: 6 15 6 15;
-    -fx-font-size: 12px;
-    -fx-font-weight: 700;
-}
-
-.level-badge.fail {
-    -fx-background-color: #FFE5E5;
-    -fx-text-fill: #B13E3E;
-}
-
-.level-badge.pass {
-    -fx-background-color: #E3F2E9;
-    -fx-text-fill: #2E7D5E;
-}
-
-.level-badge.excellent {
-    -fx-background-color: #E8E2FF;
-    -fx-text-fill: #5E548E;
-}
-
-/* Creator Section */
-.creator-section {
-    -fx-background-color: #FFFFFF;
-    -fx-background-radius: 16;
-    -fx-padding: 20;
-    -fx-border-color: rgba(35,25,66,0.1);
-    -fx-border-radius: 16;
-}
-
-.user-id-field {
-    -fx-background-color: #F5F3F9;
-    -fx-background-radius: 12;
-    -fx-padding: 12;
-    -fx-font-size: 13px;
-    -fx-border-color: rgba(94,84,142,0.2);
-    -fx-border-radius: 12;
-    -fx-pref-width: 200;
-}
-
-.verified-checkbox {
-    -fx-font-size: 13px;
-    -fx-text-fill: #231942;
-    -fx-font-weight: 600;
-}
-
-.verified-checkbox .box {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #9F86C0;
-    -fx-border-radius: 4;
-    -fx-border-width: 2;
-}
-
-.verified-checkbox:selected .box {
-    -fx-background-color: #5E548E;
-}
-
-.tracking-badge {
-    -fx-background-color: #F0EBF8;
-    -fx-background-radius: 20;
-    -fx-padding: 6 12 6 12;
-    -fx-text-fill: #5E548E;
-    -fx-font-weight: 600;
-    -fx-font-size: 11px;
-}
-
-/* Mission Preview */
-.mission-preview {
-    -fx-background-color: #FFFFFF;
-    -fx-background-radius: 16;
-    -fx-padding: 20;
-    -fx-border-color: rgba(35,25,66,0.1);
-    -fx-border-radius: 16;
-    -fx-border-style: dashed;
-}
-
-.preview-title {
-    -fx-font-size: 16px;
-    -fx-font-weight: 800;
-    -fx-text-fill: #231942;
-}
-
-.preview-content {
-    -fx-background-color: #F9F7FD;
-    -fx-background-radius: 12;
-    -fx-padding: 15;
-    -fx-font-size: 13px;
-    -fx-text-fill: rgba(35,25,66,0.8);
-}
-
-/* Buttons */
-.primary-button {
-    -fx-background-color: linear-gradient(to right, #231942, #5E548E);
-    -fx-text-fill: #FFFFFF;
-    -fx-font-weight: 800;
-    -fx-font-size: 14px;
-    -fx-padding: 12 28 12 28;
-    -fx-background-radius: 30;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.4), 15, 0, 0, 4);
-}
-
-.primary-button:hover {
-    -fx-background-color: linear-gradient(to right, #2A1F4A, #6A5A9E);
-    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.5), 20, 0, 0, 6);
-    -fx-scale-x: 1.02;
-    -fx-scale-y: 1.02;
-}
-
-.secondary-button {
-    -fx-background-color: transparent;
-    -fx-text-fill: #5E548E;
-    -fx-font-weight: 700;
-    -fx-font-size: 14px;
-    -fx-padding: 12 28 12 28;
-    -fx-background-radius: 30;
-    -fx-border-color: #9F86C0;
-    -fx-border-radius: 30;
-    -fx-border-width: 2;
     -fx-cursor: hand;
 }
 
-.secondary-button:hover {
-    -fx-background-color: rgba(159,134,192,0.1);
-    -fx-border-color: #5E548E;
+.logout-button:hover {
+    -fx-background-color: rgba(255, 107, 107, 0.3);
+    -fx-border-color: #ff6b6b;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(255, 107, 107, 0.3), 10, 0, 0, 0);
 }
 
-/* ScrollPane Styling */
-.scroll-pane {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-}
-
-.scroll-pane > .viewport {
-    -fx-background-color: transparent;
-}
-
-.scroll-bar:vertical {
-    -fx-background-color: transparent;
-    -fx-pref-width: 12;
-}
-
-.scroll-bar:vertical .thumb {
-    -fx-background-color: rgba(94,84,142,0.3);
-    -fx-background-radius: 10;
-}
-
-.scroll-bar:vertical .thumb:hover {
-    -fx-background-color: rgba(94,84,142,0.5);
-}
-
-.scroll-bar:vertical .track {
-    -fx-background-color: transparent;
-}
-
-/* Animations */
-@keyframes slideIn {
-    0% { -fx-translate-x: -20; -fx-opacity: 0; }
-    100% { -fx-translate-x: 0; -fx-opacity: 1; }
-}
-
-.content-area {
-    -fx-animation: slideIn 0.3s ease-out;
-}
-
-/* ========================
-   PURPLE ICONS WITH WHITE HOVER
-   ========================= */
-
-/* Purple icons by default */
-.nav-icon-purple {
-    -fx-font-size: 18px;
-    -fx-min-width: 24;
-    -fx-alignment: CENTER;
-    -fx-text-fill: #8B5CF6; /* Purple color */
-    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.3), 5, 0, 0, 1);
-    -fx-transition: all 0.2s ease;
-}
-
-/* White icons on hover */
-.nav-link:hover .nav-icon-purple {
-    -fx-text-fill: #FFFFFF; /* White on hover */
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.5), 8, 0, 0, 2);
-    -fx-scale-x: 1.1;
-    -fx-scale-y: 1.1;
-}
-
-/* Active button icons - keep purple but brighter */
-.liquid-btn-active .nav-icon-purple {
-    -fx-text-fill: #7C3AED; /* Darker purple for active */
-    -fx-effect: dropshadow(gaussian, rgba(124, 58, 237, 0.5), 8, 0, 0, 2);
-}
-
-/* Logout button icon - purple by default */
-.logout-btn .nav-icon-purple {
-    -fx-text-fill: #8B5CF6;
-}
-
-/* Logout button icon - white on hover */
-.logout-btn:hover .nav-icon-purple {
-    -fx-text-fill: #FFFFFF;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.5), 8, 0, 0, 2);
-}
-
-/* Animation for icon hover */
-.nav-icon-purple {
-    -fx-transition: all 0.2s ease-in-out;
-}
-
-@keyframes iconPulse {
-    0% { -fx-scale-x: 1; -fx-scale-y: 1; }
-    50% { -fx-scale-x: 1.15; -fx-scale-y: 1.15; }
-    100% { -fx-scale-x: 1; -fx-scale-y: 1; }
-}
-
-.nav-link:hover .nav-icon-purple {
-    -fx-animation: iconPulse 0.3s ease-in-out;
-}
-
-/* Optional: Different purple shades for different states */
-.nav-icon-purple {
-    -fx-text-fill: #8B5CF6; /* Light purple */
-}
-
-.liquid-btn-active .nav-icon-purple {
-    -fx-text-fill: #6D28D9; /* Darker purple for active */
-}
-
-/* For better visibility on hover over purple background */
-.nav-link:hover {
-    -fx-background-color: rgba(139, 92, 246, 0.15); /* Light purple background on hover */
-}
-
-.nav-link:hover .nav-icon-purple {
-    -fx-text-fill: #5B21B6; /* Even darker purple for contrast on light purple bg */
-}
-
-.nav-icon-purple-gradient {
-    -fx-font-size: 18px;
-    -fx-min-width: 24;
-    -fx-alignment: CENTER;
-    -fx-text-fill: linear-gradient(135deg, #8B5CF6, #6D28D9);
-    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.3), 5, 0, 0, 1);
-    -fx-transition: all 0.2s ease;
-}
-
-/* White on hover with glow */
-.nav-link:hover .nav-icon-purple-gradient {
-    -fx-text-fill: #FFFFFF;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.6), 12, 0, 0, 3);
-    -fx-scale-x: 1.15;
-    -fx-scale-y: 1.15;
-}
-
-/* ========================
-   BLACK ICONS WITH WHITE-PURPLE SHADOW
-   ========================= */
-
-/* Black icons with white-purple shadow by default */
-.nav-icon-black {
-    -fx-font-size: 18px;
-    -fx-min-width: 24;
-    -fx-alignment: CENTER;
-    -fx-text-fill: #000000; /* Black */
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.8), 8, 0.3, 0, 0) /* White shadow */
-    , dropshadow(gaussian, rgba(248, 188, 255, 0.5), 10, 0.3, 0, 2); /* Purple shadow */
-    -fx-transition: all 0.2s ease;
-}
-
-/* Enhanced white-purple shadow on hover */
-.nav-link:hover .nav-icon-black {
-    -fx-text-fill: #000000; /* Keep black */
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 1), 12, 0.4, 0, 0) /* Stronger white shadow */
-    , dropshadow(gaussian, rgba(248, 188, 255, 0.8), 15, 0.4, 2, 4) /* Stronger purple shadow */
-    , dropshadow(gaussian, rgba(248, 188, 255, 0.3), 20, 0.2, -2, -2); /* Additional purple shadow for depth */
-    -fx-scale-x: 1.1;
-    -fx-scale-y: 1.1;
-}
-
-/* Active button icons - black with enhanced shadow */
-.liquid-btn-active .nav-icon-black {
-    -fx-text-fill: #000000; /* Keep black */
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 1), 10, 0.4, 0, 0)
-    , dropshadow(gaussian, rgba(248, 188, 255, 0.9), 15, 0.4, 2, 4)
-    , dropshadow(gaussian, rgba(248, 188, 255, 0.4), 25, 0.2, -2, -2);
-}
-
-/* Logout button icon - black with white-purple shadow */
-.logout-btn .nav-icon-black {
-    -fx-text-fill: #000000;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.8), 8, 0.3, 0, 0)
-    , dropshadow(gaussian, rgba(248, 188, 255, 0.5), 10, 0.3, 0, 2);
-}
-
-/* Enhanced shadow on hover for logout */
-.logout-btn:hover .nav-icon-black {
-    -fx-text-fill: #000000;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 1), 12, 0.4, 0, 0)
-    , dropshadow(gaussian, rgba(248, 188, 255, 0.8), 15, 0.4, 2, 4)
-    , dropshadow(gaussian, rgba(248, 188, 255, 0.3), 20, 0.2, -2, -2);
-    -fx-scale-x: 1.1;
-    -fx-scale-y: 1.1;
-}
-
-/* Animation for icon hover */
-.nav-icon-black {
-    -fx-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes shadowPulse {
-    0% {
-        -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.7), 8, 0.3, 0, 0)
-        , dropshadow(gaussian, rgba(248, 188, 255, 0.4), 10, 0.3, 0, 2);
-    }
-    50% {
-        -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 1), 12, 0.4, 0, 0)
-        , dropshadow(gaussian, rgba(248, 188, 255, 0.7), 15, 0.4, 2, 4)
-        , dropshadow(gaussian, rgba(248, 188, 255, 0.3), 20, 0.2, -2, -2);
-    }
-    100% {
-        -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.7), 8, 0.3, 0, 0)
-        , dropshadow(gaussian, rgba(248, 188, 255, 0.4), 10, 0.3, 0, 2);
-    }
-}
-
-.nav-link:hover .nav-icon-black {
-    -fx-animation: shadowPulse 1s infinite ease-in-out;
-}
-
-/* Different shadow variations for different states */
-
-/* Option 1: Purple glow around black icon */
-.nav-icon-black-purple-glow {
-    -fx-text-fill: #000000;
-    -fx-effect: dropshadow(gaussian, white, 10, 0.5, 0, 0)
-    , dropshadow(gaussian, #f8bcff, 15, 0.6, 0, 0)
-    , dropshadow(gaussian, #d8a0ff, 20, 0.3, 0, 0);
-}
-
-/* Option 2: Layered purple shadows */
-.nav-icon-black-layered {
-    -fx-text-fill: #000000;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.9), 8, 0.3, 0, 2)
-    , dropshadow(gaussian, #f8bcff, 12, 0.4, 2, 4)
-    , dropshadow(gaussian, #c084fc, 16, 0.2, 4, 6);
-}
-
-/* Option 3: Soft purple mist effect */
-.nav-icon-black-mist {
-    -fx-text-fill: #000000;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.7), 12, 0.3, -2, 0)
-    , dropshadow(gaussian, #f8bcff, 18, 0.5, 2, 2)
-    , dropshadow(gaussian, #a78bfa, 24, 0.2, 4, 4);
-}
-
-/* Hover effect with multiple colored shadows */
-.nav-link:hover .nav-icon-black-premium {
-    -fx-effect: dropshadow(gaussian, white, 12, 0.6, 0, 0)
-    , dropshadow(gaussian, #f8bcff, 16, 0.7, 2, 3)
-    , dropshadow(gaussian, #c084fc, 20, 0.4, 4, 6)
-    , dropshadow(gaussian, #8b5cf6, 24, 0.2, 6, 9);
-}
-
-/* Subtle background on hover to make shadow pop */
-.nav-link:hover {
-    -fx-background-color: rgba(248, 188, 255, 0.08);
-}
-
-/* For the logout button hover */
-.logout-btn:hover {
-    -fx-background-color: rgba(248, 188, 255, 0.08);
-}
-
-/* Light shadow version */
-.nav-icon-black-light {
-    -fx-text-fill: #000000;
-    -fx-effect: dropshadow(gaussian, white, 5, 0.2, 0, 1)
-    , dropshadow(gaussian, #f8bcff, 8, 0.2, 1, 2);
-}
-
-/* Medium shadow version (recommended) */
-.nav-icon-black-medium {
-    -fx-text-fill: #000000;
-    -fx-effect: dropshadow(gaussian, white, 10, 0.4, 0, 2)
-    , dropshadow(gaussian, #f8bcff, 12, 0.4, 2, 4);
-}
-
-/* Heavy shadow version */
-.nav-icon-black-heavy {
-    -fx-text-fill: #000000;
-    -fx-effect: dropshadow(gaussian, white, 15, 0.6, 0, 3)
-    , dropshadow(gaussian, #f8bcff, 18, 0.6, 4, 6)
-    , dropshadow(gaussian, #d8b4ff, 22, 0.3, 6, 8);
-}
-.nav-link-active {
-    /* example: slightly different background + left indicator feel */
-    -fx-background-color: rgba(0,0,0,0.08);
-}
-.user-profile-btn {
-    -fx-background-color: transparent;
-    -fx-padding: 0;
-}
-.user-profile-btn:hover {
-    -fx-background-color: rgba(0,0,0,0.06);
-}
+/* Backward-compat: your old logout-btn class */
+.logout-btn { -fx-background-color: transparent; -fx-padding: 0; }

@@ -12,6 +12,8 @@ module com.example.guser {
     requires org.fxmisc.richtext;
     requires javafx.media;
     requires org.fxmisc.flowless;
+    requires javafx.graphics;
+
 
 
     opens com.example.guser to javafx.fxml;

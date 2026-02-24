@@ -10,11 +10,6 @@
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.guser.controllers.ProfileController"
             stylesheets="@app.css">
-    <!-- OLD NAVBAR
-    <top>
-        <fx:include fx:id="appNav" source="app_nav.fxml"/>
-    </top>
-    -->
     <left>
         <fx:include fx:id="appNav" source="navbar.fxml"/>
     </left>

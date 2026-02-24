@@ -1,0 +1,414 @@
+/* =========================
+   Admin Users - Standalone CSS
+   Branding: 231942 / 5E548E / 9F86C0 / E0B1CB
+   ========================= */
+
+/* ---- Design tokens (copied/adapted from ThemeUnified.css) ---- */
+.root {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+
+    -adm-bg: #f5f3f7;
+    -adm-card: #ffffff;
+    -adm-card-glass: rgba(255,255,255,0.86);
+
+    -adm-text: #231942;
+    -adm-text2: #5E548E;
+    -adm-muted: #6b7280;
+
+    -adm-border: rgba(94, 84, 142, 0.15);
+    -adm-border2: rgba(94, 84, 142, 0.22);
+
+    -adm-primary: linear-gradient(from 0 0 to 100 100, #231942 0%, #5E548E 100%);
+    -adm-primary-hover: linear-gradient(from 0 0 to 100 100, #2d2a4e 0%, #7a6ba5 100%);
+
+    -adm-danger: #ff6b6b;
+    -adm-danger-hover: #ff5252;
+
+    -adm-shadow: rgba(94, 84, 142, 0.18);
+
+    -adm-table-header: linear-gradient(from 0 0 to 100 100, #f3e8ff 0%, #e8daf5 100%);
+    -adm-table-row: #ffffff;
+    -adm-table-row-odd: #fcfaff;
+    -adm-table-row-hover: #f8f4ff;
+    -adm-table-row-selected: #f3e8ff;
+}
+
+/* ---- Page shell ---- */
+.adm-root {
+    -fx-background-color: -adm-bg;
+}
+
+.adm-content {
+    -fx-background-color: -adm-bg;
+    -fx-padding: 22;
+}
+
+/* Top header (title + KPI chips) */
+.adm-header {
+    -fx-spacing: 14;
+    -fx-padding: 0 0 16 0;
+}
+
+.adm-titleRow {
+    -fx-spacing: 12;
+    -fx-alignment: center-left;
+}
+
+.adm-titleIcon {
+    -fx-background-color: -adm-primary;
+    -fx-background-radius: 18;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.28), 22, 0.22, 0, 10);
+}
+
+.adm-titleIcon .label {
+    -fx-text-fill: white;
+    -fx-font-size: 28px;
+    -fx-font-weight: 900;
+}
+
+.adm-title {
+    -fx-text-fill: -adm-text;
+    -fx-font-size: 30px;
+    -fx-font-weight: 900;
+}
+
+.adm-subtitle {
+    -fx-text-fill: rgba(35, 25, 66, 0.68);
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+
+.adm-chipRow {
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+}
+
+.adm-chip {
+    -fx-background-color: rgba(243, 232, 255, 0.9);
+    -fx-border-color: -adm-border;
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 8 12;
+    -fx-spacing: 6;
+    -fx-alignment: center-left;
+}
+
+.adm-chip .label {
+    -fx-text-fill: -adm-text2;
+    -fx-font-weight: 700;
+}
+
+/* ---- Admin navbar (left shell) ---- */
+.adm-sidebar {
+    -fx-background-color: linear-gradient(to bottom, #f8f4ff, #e8daf5, #d4c2e6);
+    -fx-effect: dropshadow(gaussian, -adm-shadow, 18, 0.2, 2, 0);
+    -fx-padding: 18 0 18 0;
+    -fx-spacing: 18;
+    -fx-min-width: 250;
+}
+
+.adm-brand {
+    -fx-padding: 0 18 14 18;
+    -fx-spacing: 6;
+    -fx-alignment: center-left;
+}
+
+.adm-brandTitle {
+    -fx-text-fill: -adm-text;
+    -fx-font-size: 15px;
+    -fx-font-weight: 900;
+}
+
+.adm-brandSub {
+    -fx-text-fill: -adm-text2;
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+    -fx-opacity: 0.95;
+}
+
+.adm-nav {
+    -fx-spacing: 6;
+    -fx-padding: 0 0 8 0;
+}
+
+.adm-navBtn {
+    -fx-background-color: transparent;
+    -fx-padding: 11 16;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+    -fx-min-width: 250;
+    -fx-background-radius: 0 26 26 0;
+}
+
+.adm-navBtn:hover {
+    -fx-background-color: rgba(255,255,255,0.38);
+    -fx-translate-x: 4px;
+}
+
+.adm-navBtnActive {
+    -fx-background-color: rgba(94, 84, 142, 0.18);
+    -fx-border-color: transparent transparent transparent #5E548E;
+    -fx-border-width: 0 0 0 3;
+}
+
+.adm-navIcon {
+    -fx-text-fill: #5E548E;
+    -fx-font-size: 18px;
+    -fx-min-width: 34px;
+}
+
+.adm-navText {
+    -fx-text-fill: -adm-text;
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+}
+
+/* Sidebar footer user card */
+.adm-sideFooter {
+    -fx-padding: 14 18 0 18;
+    -fx-border-color: rgba(94,84,142,0.22);
+    -fx-border-width: 1 0 0 0;
+    -fx-spacing: 10;
+}
+
+.adm-logoutBtn {
+    -fx-background-color: rgba(255,107,107,0.12);
+    -fx-text-fill: -adm-danger;
+    -fx-border-color: rgba(255,107,107,0.35);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 8 14;
+    -fx-font-weight: 800;
+    -fx-cursor: hand;
+}
+.adm-logoutBtn:hover {
+    -fx-background-color: rgba(255,107,107,0.28);
+    -fx-border-color: -adm-danger;
+}
+
+/* ---- Cards / panes ---- */
+.adm-card {
+    -fx-background-color: -adm-card;
+    -fx-border-color: -adm-border;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 18;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.05), 16, 0.15, 0, 6);
+}
+
+.adm-glass {
+    -fx-background-color: -adm-card-glass;
+    -fx-border-color: rgba(255,255,255,0.6);
+    -fx-border-width: 1.2;
+    -fx-border-radius: 22;
+    -fx-background-radius: 22;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.12), 26, 0.12, 0, 10);
+    -fx-padding: 18;
+}
+
+/* ---- Toolbar (search + filters + actions) ---- */
+.adm-toolbar {
+    -fx-spacing: 12;
+    -fx-alignment: center-left;
+}
+
+.adm-searchWrap {
+    -fx-background-color: white;
+    -fx-border-color: #d8c9f0;
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 6;
+    -fx-spacing: 8;
+    -fx-alignment: center-left;
+}
+
+.adm-searchField {
+    -fx-background-color: transparent;
+    -fx-text-fill: -adm-text;
+    -fx-prompt-text-fill: rgba(94,84,142,0.45);
+    -fx-padding: 8 10;
+    -fx-font-size: 13px;
+    -fx-pref-width: 260;
+}
+
+.adm-searchBtn {
+    -fx-background-color: -adm-primary;
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-padding: 9 18;
+    -fx-background-radius: 999;
+    -fx-cursor: hand;
+}
+.adm-searchBtn:hover {
+    -fx-background-color: -adm-primary-hover;
+}
+
+.adm-filterCombo, .adm-filterCombo.combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #d8c9f0;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 6 12;
+    -fx-font-size: 13px;
+    -fx-text-fill: -adm-text;
+}
+.adm-filterCombo:focused {
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.2), 10, 0, 0, 2);
+}
+
+/* ---- Buttons ---- */
+.adm-btnPrimary {
+    -fx-background-color: -adm-primary;
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-padding: 10 16;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+}
+.adm-btnPrimary:hover { -fx-background-color: -adm-primary-hover; }
+
+.adm-btnOutline {
+    -fx-background-color: transparent;
+    -fx-text-fill: -adm-text2;
+    -fx-border-color: #9F86C0;
+    -fx-border-width: 2;
+    -fx-font-weight: 800;
+    -fx-padding: 9 14;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-cursor: hand;
+}
+.adm-btnOutline:hover {
+    -fx-background-color: rgba(159,134,192,0.12);
+    -fx-border-color: #5E548E;
+}
+
+.adm-btnDanger {
+    -fx-background-color: -adm-danger;
+    -fx-text-fill: white;
+    -fx-font-weight: 800;
+    -fx-padding: 9 14;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+}
+.adm-btnDanger:hover { -fx-background-color: -adm-danger-hover; }
+
+/* Small icon button */
+.adm-iconBtn {
+    -fx-background-color: white;
+    -fx-text-fill: -adm-text2;
+    -fx-border-color: #d8c9f0;
+    -fx-border-width: 1;
+    -fx-padding: 8 10;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-cursor: hand;
+}
+.adm-iconBtn:hover { -fx-background-color: #f3e8ff; }
+
+/* ---- Table ---- */
+.adm-table {
+    -fx-background-color: transparent;
+    -fx-border-color: -adm-border;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+}
+
+.adm-table .column-header-background {
+    -fx-background-color: -adm-table-header;
+    -fx-background-radius: 16 16 0 0;
+    -fx-padding: 8 0 8 0;
+}
+
+.adm-table .column-header,
+.adm-table .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.adm-table .column-header .label {
+    -fx-text-fill: -adm-text;
+    -fx-font-weight: 900;
+    -fx-font-size: 12px;
+    -fx-alignment: center-left;
+}
+
+.adm-table .table-row-cell {
+    -fx-background-color: -adm-table-row;
+    -fx-border-color: transparent transparent rgba(94,84,142,0.08) transparent;
+}
+.adm-table .table-row-cell:odd { -fx-background-color: -adm-table-row-odd; }
+.adm-table .table-row-cell:hover { -fx-background-color: -adm-table-row-hover; }
+.adm-table .table-row-cell:selected { -fx-background-color: -adm-table-row-selected; }
+
+.adm-table .table-cell {
+    -fx-padding: 12 10;
+    -fx-text-fill: -adm-text;
+    -fx-font-size: 13px;
+}
+
+/* ---- Status pill badges ---- */
+.adm-badge {
+    -fx-padding: 4 10;
+    -fx-background-radius: 999;
+    -fx-font-size: 11px;
+    -fx-font-weight: 800;
+}
+.adm-badgeOk {
+    -fx-background-color: rgba(16,185,129,0.15);
+    -fx-text-fill: #065f46;
+}
+.adm-badgeMuted {
+    -fx-background-color: rgba(94,84,142,0.12);
+    -fx-text-fill: -adm-text2;
+}
+.adm-badgeDanger {
+    -fx-background-color: rgba(255,107,107,0.16);
+    -fx-text-fill: #dc2626;
+}
+
+/* ---- SplitPane preview (right panel) ---- */
+.adm-split {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.adm-previewHeader {
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+}
+
+.adm-previewTitle {
+    -fx-text-fill: -adm-text;
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+}
+
+.adm-previewMeta {
+    -fx-text-fill: -adm-muted;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.adm-empty {
+    -fx-text-fill: rgba(35,25,66,0.55);
+    -fx-font-size: 13px;
+    -fx-font-style: italic;
+}
+
+/* ---- Generic labels ---- */
+.adm-sectionTitle {
+    -fx-text-fill: -adm-text;
+    -fx-font-size: 18px;
+    -fx-font-weight: 900;
+}
+.adm-muted {
+    -fx-text-fill: -adm-muted;
+}
+.adm-error {
+    -fx-text-fill: -adm-danger;
+    -fx-font-weight: 700;
+}

@@ -2,11 +2,15 @@ package com.example.guser.controllers;
 
 import com.example.guser.SceneManager;
 import entities.User;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import services.UserService;
 import session.SessionContext;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+
+import java.io.InputStream;
 
 public class LoginController {
 
@@ -17,6 +21,7 @@ public class LoginController {
     @FXML private CheckBox showPassCheck;
 
     @FXML private Label errorLabel;
+    @FXML private ImageView brandLogo;
 
     private UserService userService;
 
@@ -24,6 +29,7 @@ public class LoginController {
     public void initialize() {
         userService = new UserService();
         hideError();
+        loadLogoSafe("/com/example/guser/images/logo.png", "/images/logo.png");
 
     }
 
@@ -44,6 +50,21 @@ public class LoginController {
             passwordVisibleField.setManaged(false);
         }
     }
+    // ========== SAFE RESOURCE LOADING ==========
+    private void loadLogoSafe(String... paths) {
+        try {
+            for (String p : paths) {
+                try (InputStream is = getClass().getResourceAsStream(p)) {
+                    if (is != null) {
+                        brandLogo.setImage(new Image(is));
+                        return;
+                    }
+                }
+            }
+        } catch (Exception ignored) { }
+        // fallback: no image, keep empty (or set a default placeholder in CSS)
+        brandLogo.setImage(null);
+    }
 
     @FXML
     private void onLogin() {
@@ -60,7 +81,7 @@ public class LoginController {
                     session.ProfileViewContext.clear();
                     SceneManager.switchTo("/com/example/guser/profile.fxml", "Carrieri • Profile");
                 }
-                case "ADMIN" -> SceneManager.switchTo("/com/example/guser/admin_home.fxml", "Carrieri • Admin");
+                case "ADMIN" -> SceneManager.switchTo("/com/example/guser/admin_users.fxml", "Carrieri • Admin");
                 default -> showError("Unknown role: " + u.getRoles());
             }
 
@@ -86,4 +107,6 @@ public class LoginController {
         errorLabel.setVisible(false);
         errorLabel.setManaged(false);
     }
+
+
 }

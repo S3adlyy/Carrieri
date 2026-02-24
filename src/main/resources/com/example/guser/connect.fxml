@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.guser.controllers.ConnectController"
+            styleClass="shell-root"
+            stylesheets="@workspace.css, @app.css   ">
+
+    <left>
+        <fx:include fx:id="appNav" source="navbar.fxml"/>
+    </left>
+
+    <center>
+        <VBox styleClass="content-area" spacing="18">
+
+            <!-- Header -->
+            <HBox styleClass="connect-header" spacing="14" alignment="CENTER_LEFT">
+                <StackPane styleClass="connect-header-icon">
+                    <Label text="🤝" styleClass="connect-header-emoji"/>
+                </StackPane>
+
+                <VBox spacing="2">
+                    <Label text="Connect" styleClass="connect-title"/>
+                    <Label text="Discover people you may know" styleClass="connect-subtitle"/>
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="Refresh" onAction="#onRefresh" styleClass="btn-icon connect-refresh-btn"/>
+            </HBox>
+
+            <!-- Filters -->
+            <VBox styleClass="glass-card connect-filters" spacing="12">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Search and filters" styleClass="section-title-small"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Clear" onAction="#onClearFilters" styleClass="btn-outline connect-clear-btn"/>
+                </HBox>
+
+                <FlowPane hgap="12" vgap="12" prefWrapLength="900">
+                    <TextField fx:id="searchNameField"
+                               promptText="Search by name"
+                               styleClass="search-field connect-input"
+                               prefWidth="260"/>
+
+                    <TextField fx:id="searchLocationField"
+                               promptText="Location"
+                               styleClass="search-field connect-input"
+                               prefWidth="220"/>
+
+                    <ComboBox fx:id="roleFilterBox"
+                              promptText="Role"
+                              styleClass="connect-combo"
+                              prefWidth="200">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Any"/>
+                                <String fx:value="Candidate"/>
+                                <String fx:value="Recruiter"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </FlowPane>
+            </VBox>
+
+            <!-- Results -->
+            <VBox styleClass="table-pane connect-results" spacing="12">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Recommended connections" styleClass="table-title"/>
+                    <Label fx:id="resultsCountLabel" text="" styleClass="count-badge"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                </HBox>
+
+                <Separator/>
+
+                <ScrollPane fitToWidth="true" styleClass="main-scroll connect-scroll">
+                    <content>
+                        <VBox fx:id="resultsBox" spacing="12" styleClass="connect-results-box"/>
+                    </content>
+                </ScrollPane>
+            </VBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>

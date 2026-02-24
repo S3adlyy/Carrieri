@@ -2,7 +2,9 @@ package com.example.guser.controllers;
 
 import com.example.guser.SceneManager;
 import entities.User;
+import javafx.scene.image.ImageView;
 import services.UserService;
+import utils.AlertUtils;
 import utils.FileStorage;
 
 import javafx.animation.*;
@@ -22,8 +24,12 @@ import javafx.scene.image.Image;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.regex.Pattern;
+
 
 import utils.S3KeyUtil;
 import utils.S3StorageService;
@@ -47,6 +53,22 @@ public class SignupController {
     );
 
     @FXML private ComboBox<String> roleCombo;
+    @FXML private Label passwordStrengthLabel; // create in FXML near password
+
+    private static final String WEAK = "Weak";
+    private static final String MEDIUM = "Medium";
+    private static final String STRONG = "Strong";
+
+    // Simple patterns
+    private static final Pattern NAME_PATTERN =
+            Pattern.compile("^[\\p{L} .'-]{2,40}$");
+
+    private static final Pattern PHONE_PATTERN =
+            Pattern.compile("^[0-9 +()\\-]{6,20}$");
+
+    private static final Pattern EMAIL_PATTERN =
+            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$", Pattern.CASE_INSENSITIVE);
+
 
     @FXML private TextField emailField;
     @FXML private TextField firstNameField;
@@ -138,7 +160,7 @@ public class SignupController {
     private static final String S3_BUCKET = "carrieri-storage-dev-islem";
     private static final String S3_REGION = "eu-west-3";
 
-
+    @FXML private ImageView brandLogo;
     private final LinkedHashSet<String> skills = new LinkedHashSet<>();
 
     // Animation helpers
@@ -158,7 +180,8 @@ public class SignupController {
         applyRoleVisibility();
         showStep(1, true);
         hideAllErrors();
-
+        loadLogoSafe("/com/example/guser/images/logo.png", "/images/logo.png");
+        updatePasswordStrengthUi();
         refreshPreview(true);
     }
 
@@ -170,6 +193,21 @@ public class SignupController {
         refreshPreview(true);
     }
 
+    // ========== SAFE RESOURCE LOADING ==========
+    private void loadLogoSafe(String... paths) {
+        try {
+            for (String p : paths) {
+                try (InputStream is = getClass().getResourceAsStream(p)) {
+                    if (is != null) {
+                        brandLogo.setImage(new Image(is));
+                        return;
+                    }
+                }
+            }
+        } catch (Exception ignored) { }
+        // fallback: no image, keep empty (or set a default placeholder in CSS)
+        brandLogo.setImage(null);
+    }
     // -------------------------
     // Wizard + Step animations
     // -------------------------
@@ -447,6 +485,42 @@ public class SignupController {
         chip.getStyleClass().add("chip");
         return chip;
     }
+    private String evaluatePasswordStrength(String pass) {
+        if (pass == null) pass = "";
+        int score = 0;
+        if (pass.length() >= 8) score++;
+        if (pass.length() >= 12) score++;
+        if (pass.matches(".*[a-z].*")) score++;
+        if (pass.matches(".*[A-Z].*")) score++;
+        if (pass.matches(".*\\d.*")) score++;
+// at least one non-alphanumeric character
+        if (pass.matches(".*[^A-Za-z0-9].*")) score++;
+
+        if (score <= 2) return WEAK;
+        if (score <= 4) return MEDIUM;
+        return STRONG;
+    }
+
+    private void updatePasswordStrengthUi() {
+        String pass = passwordField.getText();
+        String strength = evaluatePasswordStrength(pass);
+
+        if (isBlank(pass)) {
+            passwordStrengthLabel.setText("");
+            passwordStrengthLabel.getStyleClass().removeAll("pw-weak", "pw-medium", "pw-strong");
+            return;
+        }
+
+        passwordStrengthLabel.setText("Password strength: " + strength);
+
+        passwordStrengthLabel.getStyleClass().removeAll("pw-weak", "pw-medium", "pw-strong");
+        switch (strength) {
+            case WEAK -> passwordStrengthLabel.getStyleClass().add("pw-weak");
+            case MEDIUM -> passwordStrengthLabel.getStyleClass().add("pw-medium");
+            case STRONG -> passwordStrengthLabel.getStyleClass().add("pw-strong");
+        }
+    }
+
 
     // -------------------------
     // Pick images (optional)
@@ -674,8 +748,7 @@ public class SignupController {
     }
 
     // -------------------------
-    // Validation (pseudo-class)
-    // -------------------------
+    // Validation
     private boolean validateStep1() throws Exception {
         boolean ok = true;
 
@@ -686,16 +759,49 @@ public class SignupController {
         ok &= require(passwordField, passwordField.getText(), "Password is required.");
         ok &= require(confirmPasswordField, confirmPasswordField.getText(), "Confirm password is required.");
 
-        if (!isBlank(passwordField.getText()) && passwordField.getText().length() < 8) {
+        if (!ok) return false;
+
+        if (!isValidEmail(emailField.getText())) {
+            setError(emailField, true);
+            show(errorLabel, "Please enter a valid email address.");
+            ok = false;
+        }
+
+        if (!isValidName(firstNameField.getText())) {
+            setError(firstNameField, true);
+            show(errorLabel, "First name should contain only letters.");
+            ok = false;
+        }
+        if (!isValidName(lastNameField.getText())) {
+            setError(lastNameField, true);
+            show(errorLabel, "Last name should contain only letters.");
+            ok = false;
+        }
+
+        String pass = passwordField.getText();
+        if (!isBlank(pass) && pass.length() < 8) {
             setError(passwordField, true);
             ok = false;
             show(errorLabel, "Password must be at least 8 characters.");
         }
 
-        if (!isBlank(passwordField.getText()) && !passwordField.getText().equals(confirmPasswordField.getText())) {
+        if (!isBlank(pass) && !pass.equals(confirmPasswordField.getText())) {
             setError(confirmPasswordField, true);
             ok = false;
             show(errorLabel, "Passwords do not match.");
+        }
+
+        String strength = evaluatePasswordStrength(pass);
+        if(STRONG.equals(strength)) {
+            // ok
+        } else if (MEDIUM.equals(strength)) {
+            if (ok && isBlank(errorLabel.getText())) {
+                show(errorLabel, "Tip: Add a symbol and uppercase letter to strengthen your password.");
+            }
+        } else { // WEAK
+            if (ok && isBlank(errorLabel.getText())) {
+                show(errorLabel, "Your password is weak. Use at least 12 chars, mix of upper/lowercase, numbers, and symbols.");
+            }
         }
 
         if (!isBlank(emailField.getText())) {
@@ -733,6 +839,26 @@ public class SignupController {
             ok &= validateOptionalUrl(githubField);
             ok &= validateOptionalUrl(portfolioField);
 
+            // Candidate text validation
+            if (!isValidLocation(candidateLocationField.getText())) {
+                setError(candidateLocationField, true);
+                ok = false;
+                show(errorLabel2, "Location should not contain numbers-only or symbols.");
+            }
+
+            if (!isValidPhone(candidatePhoneField.getText())) {
+                setError(candidatePhoneField, true);
+                ok = false;
+                show(errorLabel2, "Phone must contain only digits and + (optional).");
+            }
+
+            if (!isLettersOnlyOrCommaSeparated(skillInputField.getText())) {
+                setError(skillInputField, true);
+                ok = false;
+                show(errorLabel2, "Skills should be words separated by commas, no numbers.");
+            }
+
+
             if (!ok && !errorLabel2.isVisible()) show(errorLabel2, "Please fix the highlighted fields.");
         } else {
             ok &= require(recruiterLocationField, recruiterLocationField.getText(), "Location is required.");
@@ -741,6 +867,18 @@ public class SignupController {
             ok &= require(recruiterDescArea, recruiterDescArea.getText(), "Description is required.");
 
             ok &= validateOptionalUrl(websiteField);
+            if (!isValidLocation(recruiterLocationField.getText())) {
+                setError(recruiterLocationField, true);
+                ok = false;
+                show(errorLabel3, "Location should not contain numbers-only or symbols.");
+            }
+
+            if (!isValidPhone(recruiterPhoneField.getText())) {
+                setError(recruiterPhoneField, true);
+                ok = false;
+                show(errorLabel3, "Phone must contain only digits and + (optional).");
+            }
+
 
             if (!ok && !errorLabel3.isVisible()) show(errorLabel3, "Please fix the highlighted fields.");
         }
@@ -819,7 +957,11 @@ public class SignupController {
                     u.setProfilepic(null);
                 }
 
-                userService.signupCandidate(u, pass);
+                try{
+                    userService.signupCandidate(u, pass);
+                }catch (SQLException s){
+                    AlertUtils.showError("Account Not Created.", s.getMessage());
+                }
 
             } else if ("RECRUITER".equals(role)) {
                 u.setLocation(recruiterLocationField.getText().trim());
@@ -841,18 +983,22 @@ public class SignupController {
                     u.setLogourl(null);
                 }
 
-                userService.signupRecruiter(u, pass);
+
+                try{
+                    userService.signupRecruiter(u, pass);
+                }catch (SQLException s){
+                    AlertUtils.showError("Account Not Created.", s.getMessage());
+                }
 
             } else {
+                AlertUtils.showError("Error", "Admins cannot sign up from UI.");
                 throw new IllegalArgumentException("Admins cannot sign up from UI.");
             }
         }
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Success");
-        alert.setHeaderText(null);
-        alert.setContentText("Account created successfully!");
-        alert.showAndWait();
+
+        AlertUtils.showSuccess("Success!", "Account created successfully!");
+
 
         SceneManager.switchTo("/com/example/guser/login.fxml", "Carrieri • Sign in");
     }
@@ -885,6 +1031,9 @@ public class SignupController {
 
         clearOnType(headlineField);
         clearOnType(bioArea);
+        clearOnType(passwordField);
+        passwordField.textProperty().addListener((obs, o, n) -> updatePasswordStrengthUi());
+
     }
 
     private void clearOnType(Control c) {
@@ -983,6 +1132,41 @@ public class SignupController {
     // -------------------------
     // Helpers
     // -------------------------
+    private boolean isValidName(String s) {
+        String t = safe(s);
+        if (t.isEmpty()) return false;
+        return NAME_PATTERN.matcher(t).matches();
+    }
+
+    private boolean isLettersOnlyOrCommaSeparated(String s) {
+        String t = safe(s);
+        if (t.isEmpty()) return true;
+        for (String part : t.split(",")) {
+            String p = part.trim();
+            if (p.isEmpty()) continue;
+            if (!p.matches("^[\\p{L} .'-]+$")) return false;
+        }
+        return true;
+    }
+
+    private boolean isValidLocation(String s) {
+        String t = safe(s);
+        if (t.isEmpty()) return false;
+        return t.matches("^[\\p{L}0-9 .,'-]{2,60}$");
+    }
+
+    private boolean isValidEmail(String s) {
+        String t = safe(s);
+        if (t.isEmpty()) return false;
+        return EMAIL_PATTERN.matcher(t).matches();
+    }
+
+    private boolean isValidPhone(String s) {
+        String t = safe(s);
+        if (t.isEmpty()) return true; // optional in your flow
+        return PHONE_PATTERN.matcher(t).matches();
+    }
+
     private static void setVisible(VBox box, boolean on) { box.setVisible(on); box.setManaged(on); }
 
     private static boolean isBlank(String s) { return s == null || s.trim().isEmpty(); }

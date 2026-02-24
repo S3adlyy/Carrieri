@@ -199,11 +199,22 @@ public class ProfileController {
             });
         }*/
 
-        int me = SessionContext.getCurrentUser().getId();
+        /*int me = SessionContext.getCurrentUser().getId();
         Integer targetId = ProfileViewContext.getTargetUserId();
         if (targetId == null) targetId = me;
 
-        loadProfile(targetId);
+        loadProfile(targetId);*/
+        int defaultId = SessionContext.getCurrentUser().getId();
+        Integer targetId = SessionContext.getProfileTargetUserId();
+
+        int idToLoad = (targetId != null) ? targetId : defaultId;
+
+        loadProfile(idToLoad);
+
+        // Optional: clear after use so normal navigation goes back to self-profile
+        SessionContext.clearProfileTargetUserId();
+
+
     }
 
     private void loadProfile(int userId) {

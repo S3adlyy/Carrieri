@@ -6,6 +6,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.image.ImageView?>
 <StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.example.guser.controllers.LoginController"
            stylesheets="@app.css">
@@ -21,7 +22,10 @@
     <HBox spacing="26" maxWidth="1020" maxHeight="580">
         <VBox spacing="14" styleClass="glass" HBox.hgrow="ALWAYS">
             <padding><Insets top="26" right="26" bottom="26" left="26"/></padding>
-            <Text text="Carrieri" styleClass="brand"/>
+            <HBox styleClass="sidebar-brand" alignment="CENTER_LEFT" spacing="12">
+                <ImageView fx:id="brandLogo" styleClass="brand-logo"/>
+                <Label text="Carrieri" styleClass="brandText"/>
+            </HBox>
             <Text text="Build a profile, then build workspaces. Tracks + snapshots show growth like a story."
                   wrappingWidth="440" styleClass="muted"/>
             <HBox spacing="10">
@@ -30,7 +34,7 @@
                 <Label text="Recruiter-ready" textFill="white" styleClass="pill"/>
             </HBox>
             <Region VBox.vgrow="ALWAYS"/>
-            <Text text="Palette: #231942 #5E548E #9F86C0 #BE95C4 #E0B1CB" styleClass="muted"/>
+
         </VBox>
 
         <VBox spacing="14" styleClass="card" prefWidth="430">
