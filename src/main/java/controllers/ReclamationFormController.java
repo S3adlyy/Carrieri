@@ -23,11 +23,11 @@ public class ReclamationFormController implements Initializable {
     @FXML private Label dialogTitle;
     @FXML private TextField objetField;
     @FXML private ComboBox<String> categorieCombo;
-    @FXML private ComboBox<String> prioriteCombo;
+    @FXML private ComboBox<String> prioriteCombo; // À SUPPRIMER DU FXML AUSSI
     @FXML private TextArea descriptionArea;
-    @FXML private TextField utilisateurIdField;
     @FXML private DatePicker datePicker;
     @FXML private TextField emailField;
+    // @FXML private ComboBox<String> prioriteCombo;  ← À SUPPRIMER
 
     private Reclamation reclamation;
     private boolean saved = false;
@@ -43,9 +43,7 @@ public class ReclamationFormController implements Initializable {
         categorieCombo.setItems(FXCollections.observableArrayList(
                 "Technique", "Facturation", "Service", "Autre"
         ));
-        prioriteCombo.setItems(FXCollections.observableArrayList(
-                "Haute", "Moyenne", "Basse"
-        ));
+        // prioriteCombo.setItems(...);  ← À SUPPRIMER
     }
 
     public void setReclamation(Reclamation reclamation) {
@@ -55,12 +53,8 @@ public class ReclamationFormController implements Initializable {
             dialogTitle.setText("Modifier la réclamation #" + reclamation.getId());
             objetField.setText(reclamation.getObjet());
             categorieCombo.setValue(reclamation.getCategorie());
-            prioriteCombo.setValue(reclamation.getPriorite());
+            // prioriteCombo.setValue(...);  ← À SUPPRIMER
             descriptionArea.setText(reclamation.getDescription());
-
-            if (reclamation.getUtilisateurId() != null) {
-                utilisateurIdField.setText(String.valueOf(reclamation.getUtilisateurId()));
-            }
 
             if (reclamation.getEmail() != null) {
                 emailField.setText(reclamation.getEmail());
@@ -73,7 +67,7 @@ public class ReclamationFormController implements Initializable {
             }
         } else {
             dialogTitle.setText("Ajouter une nouvelle réclamation");
-            prioriteCombo.setValue("Moyenne");
+            // prioriteCombo.setValue("Moyenne");  ← À SUPPRIMER
             categorieCombo.setValue("Technique");
         }
     }
@@ -88,43 +82,38 @@ public class ReclamationFormController implements Initializable {
 
         try {
             if (reclamation == null) {
+                // AJOUT
                 Reclamation newReclamation = new Reclamation();
                 newReclamation.setObjet(objetField.getText().trim());
                 newReclamation.setCategorie(categorieCombo.getValue());
-                newReclamation.setPriorite(prioriteCombo.getValue());
                 newReclamation.setDescription(descriptionArea.getText().trim());
                 newReclamation.setStatut("Nouvelle");
                 newReclamation.setDateCreation(Date.from(datePicker.getValue()
                         .atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
-                if (!utilisateurIdField.getText().trim().isEmpty()) {
-                    newReclamation.setUtilisateurId(Integer.parseInt(utilisateurIdField.getText().trim()));
-                }
-
                 if (emailField.getText() != null && !emailField.getText().trim().isEmpty()) {
                     newReclamation.setEmail(emailField.getText().trim());
                 }
 
+                // La priorité sera calculée automatiquement par PrioriteService
+                // Pas besoin de la setter ici
+
                 reclamationService.ajouter(newReclamation);
                 showAlert(Alert.AlertType.INFORMATION, "Succès", "Réclamation ajoutée avec succès !");
                 saved = true;
-                goBackToList(); // ← Retour à la liste après ajout
+
+                // RESTER SUR LE FORMULAIRE
+                clearForm();
 
             } else {
+                // MODIFICATION
                 reclamation.setObjet(objetField.getText().trim());
                 reclamation.setCategorie(categorieCombo.getValue());
-                reclamation.setPriorite(prioriteCombo.getValue());
                 reclamation.setDescription(descriptionArea.getText().trim());
 
                 if (datePicker.getValue() != null) {
                     reclamation.setDateCreation(Date.from(datePicker.getValue()
                             .atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                }
-
-                if (!utilisateurIdField.getText().trim().isEmpty()) {
-                    reclamation.setUtilisateurId(Integer.parseInt(utilisateurIdField.getText().trim()));
-                } else {
-                    reclamation.setUtilisateurId(null);
                 }
 
                 if (emailField.getText() != null && !emailField.getText().trim().isEmpty()) {
@@ -133,25 +122,39 @@ public class ReclamationFormController implements Initializable {
                     reclamation.setEmail(null);
                 }
 
+                // La priorité sera recalculée automatiquement par le système
+                // Pas besoin de la modifier ici
+
                 reclamationService.update(reclamation);
                 showAlert(Alert.AlertType.INFORMATION, "Succès", "Réclamation modifiée avec succès !");
                 saved = true;
-                goBackToList(); // ← Retour à la liste après modification
+
+                // RETOUR À LA LISTE
+                goBackToList();
             }
 
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de sauvegarde: " + e.getMessage());
         } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "L'ID utilisateur doit être un nombre valide.");
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Format invalide");
         }
+    }
+
+    private void clearForm() {
+        objetField.clear();
+        categorieCombo.setValue("Technique");
+        descriptionArea.clear();
+        emailField.clear();
+        datePicker.setValue(LocalDate.now());
+        reclamation = null;
+        dialogTitle.setText("Ajouter une nouvelle réclamation");
     }
 
     @FXML
     private void handleCancel() {
-        goBackToList(); // ← Annuler retourne aussi à la liste
+        goBackToList();
     }
 
-    // ✅ MÉTHODE AJOUTÉE - Retour à la liste des réclamations
     @FXML
     private void goBackToList() {
         try {
@@ -174,10 +177,6 @@ public class ReclamationFormController implements Initializable {
         }
         if (categorieCombo.getValue() == null) {
             showAlert(Alert.AlertType.WARNING, "Validation", "La catégorie est requise.");
-            return false;
-        }
-        if (prioriteCombo.getValue() == null) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "La priorité est requise.");
             return false;
         }
 

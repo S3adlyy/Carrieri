@@ -307,7 +307,6 @@ public class TraitementController implements Initializable {
         alert.setContentText(content);
         alert.showAndWait();
     }
-    // Ajoutez cette méthode dans TraitementController.java
     @FXML
     private void goBackToReclamations() {
         try {

@@ -21,8 +21,7 @@ public class HelloApplication extends Application {
             // Configurer la fenêtre principale
             primaryStage.setTitle("Carrieri - Gestion des Réclamations & Feedback");
             primaryStage.setScene(scene);
-            primaryStage.setMinWidth(900);
-            primaryStage.setMinHeight(600);
+            primaryStage.setMaximized(true);
             primaryStage.show();
 
         } catch (Exception e) {

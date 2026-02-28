@@ -23,7 +23,7 @@ public class FeedbackFormController implements Initializable {
     @FXML private TextArea commentaireArea;
     @FXML private Slider noteSlider;
     @FXML private Label noteLabel;
-    @FXML private TextField renduIdField;
+    // @FXML private TextField renduIdField;  ← SUPPRIMÉ
     @FXML private DatePicker datePicker;
 
     private Feedback feedback;
@@ -48,7 +48,7 @@ public class FeedbackFormController implements Initializable {
             dialogTitle.setText("Modifier le feedback #" + feedback.getId());
             commentaireArea.setText(feedback.getCommentaire());
             noteSlider.setValue(feedback.getNote());
-            renduIdField.setText(String.valueOf(feedback.getRenduId()));
+            // renduIdField.setText(String.valueOf(feedback.getRenduId()));  ← SUPPRIMÉ
 
             if (feedback.getCreatedAt() != null) {
                 datePicker.setValue(feedback.getCreatedAt().toInstant()
@@ -74,7 +74,7 @@ public class FeedbackFormController implements Initializable {
                 Feedback newFeedback = new Feedback();
                 newFeedback.setCommentaire(commentaireArea.getText().trim());
                 newFeedback.setNote((int) noteSlider.getValue());
-                newFeedback.setRenduId(Integer.parseInt(renduIdField.getText().trim()));
+                // newFeedback.setRenduId(0);  ← SUPPRIMÉ (ou valeur par défaut si nécessaire)
 
                 if (datePicker != null && datePicker.getValue() != null) {
                     newFeedback.setCreatedAt(Date.from(datePicker.getValue()
@@ -93,7 +93,7 @@ public class FeedbackFormController implements Initializable {
                 // Modification d'un feedback existant
                 feedback.setCommentaire(commentaireArea.getText().trim());
                 feedback.setNote((int) noteSlider.getValue());
-                feedback.setRenduId(Integer.parseInt(renduIdField.getText().trim()));
+                // feedback.setRenduId(Integer.parseInt(renduIdField.getText().trim()));  ← SUPPRIMÉ
 
                 if (datePicker != null && datePicker.getValue() != null) {
                     feedback.setCreatedAt(Date.from(datePicker.getValue()
@@ -103,16 +103,14 @@ public class FeedbackFormController implements Initializable {
                 feedbackService.update(feedback);
                 showAlert(Alert.AlertType.INFORMATION, "Succès", "Feedback modifié avec succès !");
 
-                // ✅ POUR LA MODIFICATION : on peut soit rester, soit retourner à la liste
-                // goBackToList(); // Décommentez si vous voulez retourner à la liste après modification
-                // Ou rester sur le formulaire :
-                clearFormForModification();
+                // ✅ POUR LA MODIFICATION : Retour à la liste
+                goBackToList();
             }
 
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de sauvegarde: " + e.getMessage());
         } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Le Rendu ID doit être un nombre valide.");
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Format invalide");
         }
     }
 
@@ -120,17 +118,7 @@ public class FeedbackFormController implements Initializable {
     private void clearForm() {
         commentaireArea.clear();
         noteSlider.setValue(50);
-        renduIdField.clear();
-        datePicker.setValue(LocalDate.now());
-        feedback = null;
-        dialogTitle.setText("Ajouter un nouveau feedback");
-    }
-
-    // ✅ Réinitialiser après modification (si on reste sur le formulaire)
-    private void clearFormForModification() {
-        commentaireArea.clear();
-        noteSlider.setValue(50);
-        renduIdField.clear();
+        // renduIdField.clear();  ← SUPPRIMÉ
         datePicker.setValue(LocalDate.now());
         feedback = null;
         dialogTitle.setText("Ajouter un nouveau feedback");
@@ -159,24 +147,7 @@ public class FeedbackFormController implements Initializable {
             return false;
         }
 
-        if (renduIdField.getText() == null || renduIdField.getText().trim().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Le Rendu ID est requis.");
-            renduIdField.requestFocus();
-            return false;
-        }
-
-        try {
-            int renduId = Integer.parseInt(renduIdField.getText().trim());
-            if (renduId <= 0) {
-                showAlert(Alert.AlertType.WARNING, "Validation", "Le Rendu ID doit être un nombre positif.");
-                renduIdField.requestFocus();
-                return false;
-            }
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Le Rendu ID doit être un nombre valide.");
-            renduIdField.requestFocus();
-            return false;
-        }
+        // ✅ Validation du Rendu ID supprimée
 
         return true;
     }

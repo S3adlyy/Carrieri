@@ -9,7 +9,6 @@
       spacing="20" style="-fx-padding: 20;" alignment="TOP_CENTER"
       prefWidth="500">
 
-    <!-- Label avec fx:id="dialogTitle" -->
     <Label fx:id="dialogTitle" text="Ajouter une nouvelle réclamation"
            style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
@@ -26,30 +25,22 @@
         <ComboBox fx:id="categorieCombo" GridPane.rowIndex="1" GridPane.columnIndex="1"
                   prefWidth="350" promptText="Choisir catégorie"/>
 
-        <!-- Priorité -->
-        <Label text="Priorité:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
-        <ComboBox fx:id="prioriteCombo" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                  prefWidth="350" promptText="Priorité"/>
+        <!-- ❌ LIGNE PRIORITÉ SUPPRIMÉE -->
 
         <!-- Description -->
-        <Label text="Description:" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
-        <TextArea fx:id="descriptionArea" GridPane.rowIndex="3" GridPane.columnIndex="1"
+        <Label text="Description:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <TextArea fx:id="descriptionArea" GridPane.rowIndex="2" GridPane.columnIndex="1"
                   prefRowCount="4" prefWidth="350" wrapText="true" promptText="Description détaillée..."/>
 
         <!-- Email -->
-        <Label text="Email de notification:" GridPane.rowIndex="4" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
-        <TextField fx:id="emailField" GridPane.rowIndex="4" GridPane.columnIndex="1"
+        <Label text="Email de notification:" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="emailField" GridPane.rowIndex="3" GridPane.columnIndex="1"
                    prefWidth="350" promptText="exemple@email.com (optionnel)"/>
 
         <!-- Date -->
-        <Label text="Date:" GridPane.rowIndex="5" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
-        <DatePicker fx:id="datePicker" GridPane.rowIndex="5" GridPane.columnIndex="1"
+        <Label text="Date:" GridPane.rowIndex="4" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <DatePicker fx:id="datePicker" GridPane.rowIndex="4" GridPane.columnIndex="1"
                     prefWidth="350" promptText="jj/mm/aaaa"/>
-
-        <!-- Utilisateur ID -->
-        <Label text="Utilisateur ID:" GridPane.rowIndex="6" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
-        <TextField fx:id="utilisateurIdField" GridPane.rowIndex="6" GridPane.columnIndex="1"
-                   prefWidth="350" promptText="ID de l'utilisateur (optionnel)"/>
     </GridPane>
 
     <!-- Boutons -->

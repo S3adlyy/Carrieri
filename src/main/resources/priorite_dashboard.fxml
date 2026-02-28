@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.PrioriteDashboardController"
+      spacing="20" style="-fx-padding: 20;">
+
+    <Label text="📊 Tableau de bord des priorités"
+           style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <HBox spacing="20" alignment="CENTER">
+        <VBox style="-fx-background-color: #ff6b6b; -fx-padding: 15; -fx-background-radius: 10;" alignment="CENTER">
+            <Label text="URGENT" textFill="white" style="-fx-font-weight: bold;"/>
+            <Label fx:id="urgentCount" text="0" textFill="white" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        </VBox>
+
+        <VBox style="-fx-background-color: #f39c12; -fx-padding: 15; -fx-background-radius: 10;" alignment="CENTER">
+            <Label text="HAUTE" textFill="white" style="-fx-font-weight: bold;"/>
+            <Label fx:id="hauteCount" text="0" textFill="white" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        </VBox>
+
+        <VBox style="-fx-background-color: #f1c40f; -fx-padding: 15; -fx-background-radius: 10;" alignment="CENTER">
+            <Label text="MOYENNE" style="-fx-font-weight: bold;"/>
+            <Label fx:id="moyenneCount" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        </VBox>
+
+        <VBox style="-fx-background-color: #2ecc71; -fx-padding: 15; -fx-background-radius: 10;" alignment="CENTER">
+            <Label text="BASSE" textFill="white" style="-fx-font-weight: bold;"/>
+            <Label fx:id="basseCount" text="0" textFill="white" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        </VBox>
+    </HBox>
+
+    <PieChart fx:id="prioriteChart" prefHeight="300"/>
+</VBox>

@@ -16,12 +16,14 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 import services.ReclamationService;
+import services.PrioriteService;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -35,6 +37,7 @@ public class ReclamationController implements Initializable {
 
     private ObservableList<Reclamation> reclamationList = FXCollections.observableArrayList();
     private ReclamationService reclamationService = new ReclamationService();
+    private PrioriteService prioriteService = new PrioriteService();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -83,10 +86,36 @@ public class ReclamationController implements Initializable {
                 updateReclamation(reclamation);
             });
 
-            // Colonne Priorité (éditable)
+            // Colonne Priorité avec couleurs (éditable)
             TableColumn<Reclamation, String> prioriteCol = (TableColumn<Reclamation, String>) reclamationTable.getColumns().get(4);
             prioriteCol.setCellValueFactory(new PropertyValueFactory<>("priorite"));
-            prioriteCol.setCellFactory(ComboBoxTableCell.forTableColumn("Haute", "Moyenne", "Basse"));
+
+            // Personnaliser l'affichage avec couleurs (sans ComboBox pour éviter les conflits)
+            prioriteCol.setCellFactory(column -> new TableCell<Reclamation, String>() {
+                @Override
+                protected void updateItem(String priorite, boolean empty) {
+                    super.updateItem(priorite, empty);
+
+                    if (empty || priorite == null) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        setText(priorite);
+
+                        // Appliquer le style selon la priorité
+                        if (priorite.contains("URGENT")) {
+                            setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
+                        } else if (priorite.contains("HAUTE")) {
+                            setStyle("-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
+                        } else if (priorite.contains("MOYENNE")) {
+                            setStyle("-fx-background-color: #f1c40f; -fx-font-weight: bold; -fx-background-radius: 5;");
+                        } else if (priorite.contains("BASSE")) {
+                            setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
+                        }
+                    }
+                }
+            });
+
             prioriteCol.setOnEditCommit(event -> {
                 Reclamation reclamation = event.getRowValue();
                 reclamation.setPriorite(event.getNewValue());
@@ -163,8 +192,12 @@ public class ReclamationController implements Initializable {
 
     private void updateReclamation(Reclamation reclamation) {
         try {
+            // Recalculer la priorité avant sauvegarde
+            String nouvellePriorite = prioriteService.calculerPriorite(reclamation);
+            reclamation.setPriorite(nouvellePriorite);
+
             reclamationService.update(reclamation);
-            System.out.println("✅ Réclamation #" + reclamation.getId() + " mise à jour");
+            System.out.println("✅ Réclamation #" + reclamation.getId() + " mise à jour avec priorité: " + nouvellePriorite);
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de mise à jour: " + e.getMessage());
             loadReclamations();
@@ -175,7 +208,7 @@ public class ReclamationController implements Initializable {
         filterStatut.getItems().addAll("Tous", "Nouvelle", "En cours", "Résolue", "Fermée");
         filterStatut.setValue("Tous");
 
-        filterPriorite.getItems().addAll("Toutes", "Haute", "Moyenne", "Basse");
+        filterPriorite.getItems().addAll("Toutes", "🔴 URGENT", "🟠 HAUTE", "🟡 MOYENNE", "🟢 BASSE");
         filterPriorite.setValue("Toutes");
 
         filterCategorie.getItems().addAll("Toutes", "Technique", "Facturation", "Service", "Autre");
@@ -185,10 +218,18 @@ public class ReclamationController implements Initializable {
     private void loadReclamations() {
         try {
             reclamationList.clear();
-            reclamationList.addAll(reclamationService.read());
+            List<Reclamation> list = reclamationService.read();
+
+            // Mettre à jour les priorités automatiquement
+            for (Reclamation r : list) {
+                String nouvellePriorite = prioriteService.calculerPriorite(r);
+                r.setPriorite(nouvellePriorite);
+            }
+
+            reclamationList.addAll(list);
             reclamationTable.setItems(reclamationList);
             updateTotalCount();
-            System.out.println("✅ " + reclamationList.size() + " réclamations chargées");
+            System.out.println("✅ " + reclamationList.size() + " réclamations chargées avec priorités");
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger les réclamations: " + e.getMessage());
         }
@@ -207,7 +248,8 @@ public class ReclamationController implements Initializable {
                 ObservableList<Reclamation> filteredList = FXCollections.observableArrayList();
                 for (Reclamation r : reclamationService.read()) {
                     boolean matchStatut = "Tous".equals(statut) || statut.equals(r.getStatut());
-                    boolean matchPriorite = "Toutes".equals(priorite) || priorite.equals(r.getPriorite());
+                    boolean matchPriorite = "Toutes".equals(priorite) ||
+                            (r.getPriorite() != null && r.getPriorite().contains(priorite.replace("🔴 ", "").replace("🟠 ", "").replace("🟡 ", "").replace("🟢 ", "")));
                     boolean matchCategorie = "Toutes".equals(categorie) || categorie.equals(r.getCategorie());
 
                     if (matchStatut && matchPriorite && matchCategorie) {
@@ -295,11 +337,11 @@ public class ReclamationController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/traitementForm.fxml"));
             Parent root = loader.load();
 
-            controllers.TraitementFormController controller = loader.getController();
+            TraitementFormController controller = loader.getController();
             controller.setReclamation(reclamation);
             controller.setMode("TRAITEMENT");
 
-            // Remplacer le contenu de la fenêtre
+            // Remplacer le contenu de la fenêtre principale
             reclamationTable.getScene().setRoot(root);
 
         } catch (IOException e) {
@@ -339,6 +381,32 @@ public class ReclamationController implements Initializable {
     @FXML
     private void showAddReclamationForm() {
         openReclamationForm(null);
+    }
+
+    @FXML
+    private void mettreAJourPriorites() {
+        try {
+            List<Reclamation> list = reclamationService.read();
+            int count = 0;
+
+            for (Reclamation r : list) {
+                String anciennePriorite = r.getPriorite();
+                String nouvellePriorite = prioriteService.calculerPriorite(r);
+
+                if (!anciennePriorite.equals(nouvellePriorite)) {
+                    r.setPriorite(nouvellePriorite);
+                    reclamationService.update(r);
+                    count++;
+                }
+            }
+
+            loadReclamations();
+            showAlert(Alert.AlertType.INFORMATION, "Succès",
+                    count + " réclamation(s) ont eu leur priorité mise à jour.");
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la mise à jour: " + e.getMessage());
+        }
     }
 
     private void updateTotalCount() {
