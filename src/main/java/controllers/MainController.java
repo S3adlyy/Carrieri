@@ -258,4 +258,8 @@ public class MainController implements Initializable {
         alert.setContentText(content);
         alert.show();
     }
+
+    public void setContent(Parent content) {
+        contentPane.getChildren().setAll(content);
+    }
 }

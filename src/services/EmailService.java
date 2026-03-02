@@ -10,7 +10,7 @@ public class EmailService {
     private static final String SMTP_HOST = "smtp.gmail.com";
     private static final String SMTP_PORT = "587";
     private static final String EMAIL_EXPEDITEUR = "selimbabk28@gmail.com"; // À remplacer
-    
+    private static final String MOT_DE_PASSE = ""; // À remplacer
 
     public static void envoyerEmail(String destinataire, String sujet, String contenu) {
         Properties props = new Properties();

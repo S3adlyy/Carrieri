@@ -11,14 +11,14 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            // Charger le fichier FXML principal depuis le dossier resources
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"));
             Parent root = loader.load();
 
-            // Créer la scène
-            Scene scene = new Scene(root);
+            // Store the MainController in the scene's userData for access
+            MainController mainController = loader.getController();
+            primaryStage.setUserData(mainController);
 
-            // Configurer la fenêtre principale
+            Scene scene = new Scene(root);
             primaryStage.setTitle("Carrieri - Gestion des Réclamations & Feedback");
             primaryStage.setScene(scene);
             primaryStage.setMaximized(true);

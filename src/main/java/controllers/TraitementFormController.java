@@ -249,8 +249,15 @@ public class TraitementFormController implements Initializable {
 
     private void goToTraitementList() {
         try {
-            Parent listPage = FXMLLoader.load(getClass().getResource("/traitementList.fxml"));
-            reponseArea.getScene().setRoot(listPage);
+            MainController mainController = MainController.getInstance();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/traitementList.fxml"));
+            Parent listPage = loader.load();
+
+            if (mainController != null) {
+                mainController.setContent(listPage);
+            } else {
+                reponseArea.getScene().setRoot(listPage);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

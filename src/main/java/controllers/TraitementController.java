@@ -25,9 +25,12 @@ import java.util.ResourceBundle;
 
 public class TraitementController implements Initializable {
 
-    @FXML private TableView<TraitementReclamation> traitementTable;
-    @FXML private TextField filterReclamationField;
-    @FXML private Label totalLabel;
+    @FXML
+    private TableView<TraitementReclamation> traitementTable;
+    @FXML
+    private TextField filterReclamationField;
+    @FXML
+    private Label totalLabel;
 
     private ObservableList<TraitementReclamation> traitementList = FXCollections.observableArrayList();
     private TraitementReclamationService traitementService = new TraitementReclamationService();
@@ -246,8 +249,13 @@ public class TraitementController implements Initializable {
             controller.setTraitement(traitement);
             controller.setTraitementList(traitementList);
 
-            // Remplacer le contenu de la fenêtre principale par le formulaire
-            traitementTable.getScene().setRoot(root);
+            // Use MainController to set content
+            MainController mainController = MainController.getInstance();
+            if (mainController != null) {
+                mainController.setContent(root);
+            } else {
+                traitementTable.getScene().setRoot(root);
+            }
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le formulaire: " + e.getMessage());
@@ -307,11 +315,19 @@ public class TraitementController implements Initializable {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
     @FXML
     private void goBackToReclamations() {
         try {
-            Parent reclamationList = FXMLLoader.load(getClass().getResource("/reclamationList.fxml"));
-            traitementTable.getScene().setRoot(reclamationList);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/reclamationList.fxml"));
+            Parent reclamationList = loader.load();
+
+            MainController mainController = MainController.getInstance();
+            if (mainController != null) {
+                mainController.setContent(reclamationList);
+            } else {
+                traitementTable.getScene().setRoot(reclamationList);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de retourner à la liste des réclamations");

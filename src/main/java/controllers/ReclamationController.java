@@ -332,8 +332,13 @@ public class ReclamationController implements Initializable {
     }
 
     // ✅ Méthode pour ouvrir le formulaire de traitement
+    // ✅ Méthode pour ouvrir le formulaire de traitement
     private void ouvrirFormulaireTraitement(Reclamation reclamation) {
         try {
+            // Get the MainController instance to access the contentPane
+            MainController mainController = MainController.getInstance();
+
+            // Load the traitement form
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/traitementForm.fxml"));
             Parent root = loader.load();
 
@@ -341,8 +346,19 @@ public class ReclamationController implements Initializable {
             controller.setReclamation(reclamation);
             controller.setMode("TRAITEMENT");
 
-            // Remplacer le contenu de la fenêtre principale
-            reclamationTable.getScene().setRoot(root);
+            // Set the root in the MainController's contentPane instead of replacing the scene
+            if (mainController != null) {
+                mainController.setContent(root);
+            } else {
+                // Fallback: try to get MainController from the scene
+                mainController = (MainController) reclamationTable.getScene().getUserData();
+                if (mainController != null) {
+                    mainController.setContent(root);
+                } else {
+                    // Last resort: replace the scene root (but will lose sidebar)
+                    reclamationTable.getScene().setRoot(root);
+                }
+            }
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le formulaire de traitement: " + e.getMessage());
