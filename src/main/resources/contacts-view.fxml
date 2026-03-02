@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.6"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.ContactsController"
+            stylesheets="@contacts-style.css"
+            styleClass="root-container"
+            prefWidth="1200"
+            prefHeight="800">
+
+    <!-- Header -->
+    <top>
+        <VBox styleClass="header-section">
+            <HBox styleClass="header-bar" alignment="CENTER_LEFT" spacing="15">
+                <StackPane styleClass="logo-container">
+                    <Circle radius="25" styleClass="logo-bg"/>
+                    <Label text="C" styleClass="logo-text"/>
+                </StackPane>
+                <Label text="Carrieri Contacts" styleClass="header-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="globalSearchField" promptText="Rechercher un contact..." styleClass="global-search" prefWidth="300"/>
+                <Button styleClass="header-btn" text="⚙️"/>
+                <Button styleClass="header-btn" text="👤"/>
+            </HBox>
+
+            <!-- Quick Stats -->
+            <HBox styleClass="quick-stats" alignment="CENTER" spacing="30">
+                <HBox spacing="10" alignment="CENTER">
+                    <Label text="👥" styleClass="stat-icon"/>
+                    <Label fx:id="totalContactsLabel" text="0" styleClass="stat-value"/>
+                    <Label text="contacts" styleClass="stat-label"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER">
+                    <Label text="🟢" styleClass="stat-icon"/>
+                    <Label fx:id="onlineContactsLabel" text="0" styleClass="stat-value"/>
+                    <Label text="en ligne" styleClass="stat-label"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER">
+                    <Label text="💬" styleClass="stat-icon"/>
+                    <Label fx:id="activeConversationsLabel" text="0" styleClass="stat-value"/>
+                    <Label text="conversations" styleClass="stat-label"/>
+                </HBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- Center Content -->
+    <center>
+        <SplitPane dividerPositions="0.35" styleClass="main-split">
+
+            <!-- Left Panel - Contacts List -->
+            <VBox styleClass="contacts-panel" spacing="15">
+
+                <!-- Section title -->
+                <HBox styleClass="section-header" alignment="CENTER_LEFT">
+                    <Label text="Mes contacts" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button styleClass="add-contact-btn" text="➕" onAction="#addContact"/>
+                </HBox>
+
+                <!-- Filter tabs -->
+                <HBox styleClass="filter-tabs" spacing="5">
+                    <Button fx:id="allTab" text="Tous" styleClass="filter-tab-active" onAction="#showAllContacts"/>
+                    <Button fx:id="onlineTab" text="En ligne" styleClass="filter-tab" onAction="#showOnlineContacts"/>
+                    <Button fx:id="favoritesTab" text="Favoris" styleClass="filter-tab" onAction="#showFavoriteContacts"/>
+                </HBox>
+
+                <!-- Search field -->
+                <HBox styleClass="search-box" alignment="CENTER_LEFT" spacing="10">
+                    <Label text="🔍" styleClass="search-icon"/>
+                    <TextField fx:id="searchField" promptText="Rechercher dans mes contacts..." styleClass="search-field" HBox.hgrow="ALWAYS"/>
+                </HBox>
+
+                <!-- Contacts list -->
+                <ListView fx:id="contactsListView" styleClass="contacts-list" VBox.vgrow="ALWAYS"/>
+            </VBox>
+
+            <!-- Right Panel - Preview / Selected Contact -->
+            <VBox styleClass="preview-panel" spacing="20" alignment="TOP_CENTER">
+
+                <!-- Selected contact card -->
+                <VBox fx:id="selectedContactCard" styleClass="selected-contact-card" visible="false" managed="false" spacing="15" alignment="CENTER">
+                    <StackPane>
+                        <Circle radius="60" styleClass="selected-avatar-bg"/>
+                        <Label fx:id="selectedAvatarInitials" text="?" styleClass="selected-avatar-text"/>
+                        <Circle fx:id="selectedStatus" radius="12" styleClass="status-online" translateX="45" translateY="45"/>
+                    </StackPane>
+
+                    <Label fx:id="selectedContactName" text="Sélectionnez un contact" styleClass="selected-contact-name"/>
+                    <Label fx:id="selectedContactHeadline" text="" styleClass="selected-contact-headline"/>
+
+                    <HBox spacing="20" alignment="CENTER" styleClass="contact-actions">
+                        <Button styleClass="action-btn" text="💬" onAction="#startChat">
+                            <tooltip>
+                                <Tooltip text="Envoyer un message"/>
+                            </tooltip>
+                        </Button>
+                        <Button styleClass="action-btn" text="📞" onAction="#callContact">
+                            <tooltip>
+                                <Tooltip text="Appeler"/>
+                            </tooltip>
+                        </Button>
+                        <Button styleClass="action-btn" text="📹" onAction="#videoCall">
+                            <tooltip>
+                                <Tooltip text="Appel vidéo"/>
+                            </tooltip>
+                        </Button>
+                        <Button styleClass="action-btn" text="⭐" onAction="#toggleFavorite">
+                            <tooltip>
+                                <Tooltip text="Ajouter aux favoris"/>
+                            </tooltip>
+                        </Button>
+                    </HBox>
+                </VBox>
+
+                <!-- Empty state -->
+                <VBox fx:id="emptyState" styleClass="empty-state" alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS">
+                    <Label text="👤" styleClass="empty-icon"/>
+                    <Label text="Aucun contact sélectionné" styleClass="empty-title"/>
+                    <Label text="Cliquez sur un contact pour voir ses informations" styleClass="empty-subtitle"/>
+                </VBox>
+
+                <!-- Recent conversations -->
+                <VBox styleClass="recent-conversations" spacing="10" VBox.vgrow="ALWAYS">
+                    <Label text="Conversations récentes" styleClass="recent-title"/>
+                    <ListView fx:id="recentConversationsList" styleClass="recent-list" VBox.vgrow="ALWAYS"/>
+                </VBox>
+            </VBox>
+        </SplitPane>
+    </center>
+</BorderPane>

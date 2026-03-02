@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.6"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.ConversationController"
+      spacing="10">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="tfStatut" promptText="Statut" prefWidth="100"/>
+        <TextField fx:id="tfDernierMessage" promptText="Dernier Message" HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="tfUser1Id" promptText="ID User1" prefWidth="80"/>
+        <TextField fx:id="tfUser2Id" promptText="ID User2" prefWidth="80"/>
+        <Button text="Ajouter" onAction="#addConversation"/>
+        <Button text="Modifier" onAction="#updateConversation"/>
+        <Button text="Supprimer" onAction="#deleteConversation"/>
+    </HBox>
+
+    <TableView fx:id="tableConversations" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="ID" fx:id="colId" prefWidth="50"/>
+            <TableColumn text="Dernier Message" fx:id="colDernierMessage" prefWidth="250"/>
+            <TableColumn text="Statut" fx:id="colStatut" prefWidth="100"/>
+            <TableColumn text="User1 ID" fx:id="colUser1" prefWidth="80"/>
+            <TableColumn text="User2 ID" fx:id="colUser2" prefWidth="80"/>
+            <TableColumn text="Date Création" fx:id="colDateCreation" prefWidth="150"/>
+        </columns>
+    </TableView>
+</VBox>

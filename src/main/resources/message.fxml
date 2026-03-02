@@ -1,14 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
+<BorderPane xmlns="http://javafx.com/javafx/17.0.6"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.MessengerController"
+            stylesheets="@messenger-premium.css"
+            styleClass="root-container"
+            prefWidth="1400"
+            prefHeight="900">
+    <!-- Center - Contenu principal -->
+    <center>
+        <HBox styleClass="main-content" spacing="20">
 
-</AnchorPane>
+            <!-- Liste des conversations -->
+            <VBox styleClass="conversations-panel" spacing="20" prefWidth="380">
+
+                <!-- En-tête avec recherche -->
+                <VBox spacing="15">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="Messages" styleClass="panel-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="conversationsCount" text="24 conversations" styleClass="panel-counter"/>
+                    </HBox>
+
+                    <HBox styleClass="search-wrapper" alignment="CENTER_LEFT" spacing="10">
+                        <Label text="🔍" styleClass="search-icon"/>
+                        <TextField fx:id="searchField" promptText="Rechercher une conversation..." styleClass="search-field" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Filtres rapides -->
+                <HBox styleClass="filter-chips" spacing="8">
+                    <Button fx:id="filterAllBtn" text="Toutes" styleClass="filter-chip-active" onAction="#filterAll"/>
+                    <Button fx:id="filterUnreadBtn" text="Non lues" styleClass="filter-chip" onAction="#filterUnread"/>
+                    <Button fx:id="filterGroupsBtn" text="Groupes" styleClass="filter-chip" onAction="#filterGroups"/>
+                    <Button fx:id="filterFavoritesBtn" text="Favoris" styleClass="filter-chip" onAction="#filterFavorites"/>
+                </HBox>
+
+                <!-- Liste des conversations -->
+                <ListView fx:id="conversationsListView" styleClass="conversations-list" VBox.vgrow="ALWAYS"/>
+            </VBox>
+
+            <!-- Zone de chat -->
+            <VBox styleClass="chat-panel" spacing="0" HBox.hgrow="ALWAYS">
+
+                <!-- En-tête du chat -->
+                <HBox styleClass="chat-header" spacing="15" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="32" styleClass="chat-avatar"/>
+                        <Label fx:id="chatAvatarInitials" text="?" styleClass="chat-avatar-text"/>
+                        <Circle radius="8" styleClass="status-online" translateX="22" translateY="22"/>
+                    </StackPane>
+
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label fx:id="chatWithLabel" text="Sélectionnez une conversation" styleClass="chat-name"/>
+                        <Label fx:id="onlineStatusLabel" text="Cliquez pour commencer à chatter" styleClass="chat-status"/>
+                    </VBox>
+
+                    <!-- Dans l'en-tête du chat, les boutons doivent avoir les bons onAction -->
+                    <HBox spacing="8">
+                        <Button styleClass="chat-action-btn" text="📞" onAction="#startAudioCall"/>
+                        <Button styleClass="chat-action-btn" text="📹" onAction="#startVideoCall"/>
+                        <Button styleClass="chat-action-btn" text="📧"/>
+                        <Button styleClass="chat-action-btn" text="🔍"/>
+                    </HBox>
+                </HBox>
+
+                <!-- Zone des messages -->
+                <ScrollPane fx:id="messagesScrollPane" styleClass="messages-scroll" VBox.vgrow="ALWAYS">
+                    <VBox fx:id="messagesContainer" spacing="12" styleClass="messages-container">
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
+                        </padding>
+                    </VBox>
+                </ScrollPane>
+
+                <!-- Zone de saisie - CORRIGÉE AVEC onAction SUR LE BOUTON PHOTO -->
+                <VBox styleClass="message-input-wrapper" spacing="10">
+                    <HBox styleClass="message-input-area" spacing="12" alignment="CENTER_LEFT">
+                        <!-- Le bouton 📎 doit avoir onAction="#sendFile" -->
+                        <Button styleClass="input-action-btn" text="📎" onAction="#sendFile"/>
+                        <!-- BOUTON PHOTO CORRIGÉ : ajout de onAction="#sendImage" -->
+                        <Button styleClass="input-action-btn" text="📷" onAction="#sendImage"/>
+                        <Button styleClass="input-action-btn" text="🎤"/>
+                        <TextField fx:id="messageInputField" promptText="Écrivez votre message..." styleClass="message-input" HBox.hgrow="ALWAYS"/>
+                        <Button styleClass="input-action-btn" text="😊" onAction="#showEmojiPicker"/>
+                        <Button fx:id="sendButton" text="Envoyer" styleClass="send-button" onAction="#sendMessage"/>
+                    </HBox>
+                    <HBox styleClass="input-footer" alignment="CENTER_RIGHT" spacing="10">
+                        <Label text="Appuyez sur Entrée pour envoyer" styleClass="input-hint"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </HBox>
+    </center>
+</BorderPane>

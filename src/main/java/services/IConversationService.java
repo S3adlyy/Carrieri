@@ -18,4 +18,3 @@ public interface IConversationService extends IService<Conversation> {
     // Vérifier si conversation existe déjà
     boolean existeConversation(int idUser1, int idUser2) throws SQLException;
 }
-

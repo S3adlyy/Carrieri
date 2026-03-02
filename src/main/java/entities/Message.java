@@ -4,40 +4,33 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Message {
-
     private int id;
     private String contenu;
+    private String imageData; // Nouveau champ pour stocker l'image en base64
     private LocalDateTime dateEnvoi;
     private LocalDateTime dateModification;
     private String statut;
-    private String type;
-
+    private String type; // "text" ou "image"
     private int conversationId;
     private int expediteurId;
     private int destinataireId;
+    private String senderName;
+    private String fileData;
+    private String fileName;
+    private long fileSize;
+    private String fileType;
 
     public Message() {}
 
-    public Message(String contenu, LocalDateTime dateEnvoi, String statut,
-                   String type, int conversationId,
-                   int expediteurId, int destinataireId) {
-
-        this.contenu = contenu;
-        this.dateEnvoi = dateEnvoi;
-        this.statut = statut;
-        this.type = type;
-        this.conversationId = conversationId;
-        this.expediteurId = expediteurId;
-        this.destinataireId = destinataireId;
-    }
-
-    // Getters & Setters
-
+    // Getters et Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
     public String getContenu() { return contenu; }
     public void setContenu(String contenu) { this.contenu = contenu; }
+
+    public String getImageData() { return imageData; }
+    public void setImageData(String imageData) { this.imageData = imageData; }
 
     public LocalDateTime getDateEnvoi() { return dateEnvoi; }
     public void setDateEnvoi(LocalDateTime dateEnvoi) { this.dateEnvoi = dateEnvoi; }
@@ -60,25 +53,18 @@ public class Message {
     public int getDestinataireId() { return destinataireId; }
     public void setDestinataireId(int destinataireId) { this.destinataireId = destinataireId; }
 
-    @Override
-    public String toString() {
-        return "Message{" +
-            "id=" + id +
-            ", contenu='" + contenu + '\'' +
-            ", dateEnvoi=" + dateEnvoi +
-            '}';
-    }
+    public String getSenderName() { return senderName; }
+    public void setSenderName(String senderName) { this.senderName = senderName; }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Message)) return false;
-        Message message = (Message) o;
-        return id == message.id;
-    }
+    public String getFileData() { return fileData; }
+    public void setFileData(String fileData) { this.fileData = fileData; }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+    public String getFileName() { return fileName; }
+    public void setFileName(String fileName) { this.fileName = fileName; }
+
+    public long getFileSize() { return fileSize; }
+    public void setFileSize(long fileSize) { this.fileSize = fileSize; }
+
+    public String getFileType() { return fileType; }
+    public void setFileType(String fileType) { this.fileType = fileType; }
 }

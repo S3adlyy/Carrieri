@@ -1,0 +1,443 @@
+/* =========================
+   CONTACTS VIEW STYLES
+   ========================= */
+.root-container {
+    -fx-background-color: #F9FAFB;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+.header-section {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);
+}
+
+.header-bar {
+    -fx-padding: 15 25;
+    -fx-alignment: center-left;
+    -fx-background-color: white;
+}
+
+.logo-container {
+    -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.3), 10, 0, 0, 2);
+}
+
+.logo-bg {
+    -fx-fill: linear-gradient(135deg, #8B5CF6, #A78BFA);
+    -fx-stroke: white;
+    -fx-stroke-width: 2;
+}
+
+.logo-text {
+    -fx-font-family: 'Poppins', 'Arial', sans-serif;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.header-title {
+    -fx-font-family: 'Poppins', 'Arial', sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1F2937;
+}
+
+.global-search {
+    -fx-background-color: #F3F4F6;
+    -fx-background-radius: 25;
+    -fx-padding: 10 15;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #9CA3AF;
+}
+
+.global-search:focused {
+    -fx-background-color: #EDE9FE;
+    -fx-border-color: #8B5CF6;
+    -fx-border-width: 2;
+    -fx-border-radius: 25;
+}
+
+.header-btn {
+    -fx-background-color: #F3F4F6;
+    -fx-background-radius: 50%;
+    -fx-min-width: 45;
+    -fx-min-height: 45;
+    -fx-font-size: 20px;
+    -fx-cursor: hand;
+}
+
+.header-btn:hover {
+    -fx-background-color: #E5E7EB;
+}
+
+/* Quick stats */
+.quick-stats {
+    -fx-background-color: #F9FAFB;
+    -fx-padding: 10 25;
+    -fx-border-color: #E5E7EB;
+    -fx-border-width: 1 0 0 0;
+}
+
+.stat-icon {
+    -fx-font-size: 18px;
+}
+
+.stat-value {
+    -fx-font-family: 'Poppins', 'Arial', sans-serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1F2937;
+}
+
+.stat-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6B7280;
+}
+
+/* =========================
+   MAIN SPLIT
+   ========================= */
+.main-split {
+    -fx-background-color: transparent;
+}
+
+.main-split > .split-pane-divider {
+    -fx-background-color: #E5E7EB;
+    -fx-pref-width: 1;
+}
+
+/* =========================
+   CONTACTS PANEL
+   ========================= */
+.contacts-panel {
+    -fx-background-color: white;
+    -fx-padding: 20;
+}
+
+.section-header {
+    -fx-padding: 0 0 10 0;
+}
+
+.section-title {
+    -fx-font-family: 'Poppins', 'Arial', sans-serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1F2937;
+}
+
+.add-contact-btn {
+    -fx-background-color: #8B5CF6;
+    -fx-background-radius: 50%;
+    -fx-min-width: 35;
+    -fx-min-height: 35;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+}
+
+.add-contact-btn:hover {
+    -fx-background-color: #7C3AED;
+}
+
+/* Filter tabs */
+.filter-tabs {
+    -fx-background-color: #F3F4F6;
+    -fx-background-radius: 25;
+    -fx-padding: 4;
+}
+
+.filter-tab {
+    -fx-background-color: transparent;
+    -fx-background-radius: 25;
+    -fx-padding: 6 15;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #6B7280;
+    -fx-cursor: hand;
+}
+
+.filter-tab:hover {
+    -fx-background-color: #E5E7EB;
+}
+
+.filter-tab-active {
+    -fx-background-color: #8B5CF6;
+    -fx-background-radius: 25;
+    -fx-padding: 6 15;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+/* Search box */
+.search-box {
+    -fx-background-color: #F3F4F6;
+    -fx-background-radius: 12;
+    -fx-padding: 8 12;
+    -fx-margin: 10 0;
+}
+
+.search-icon {
+    -fx-font-size: 14px;
+    -fx-text-fill: #9CA3AF;
+}
+
+.search-field {
+    -fx-background-color: transparent;
+    -fx-font-size: 13px;
+    -fx-prompt-text-fill: #9CA3AF;
+}
+
+.search-field:focused {
+    -fx-background-color: transparent;
+}
+
+/* Contacts list */
+.contacts-list {
+    -fx-background-color: transparent;
+}
+
+.contacts-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 5 0;
+}
+
+.contacts-list .list-cell:filled:selected {
+    -fx-background-color: #F5F3FF;
+    -fx-background-radius: 12;
+}
+
+/* Contact item */
+.contact-item {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-padding: 12;
+    -fx-border-color: #F3F4F6;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-cursor: hand;
+}
+
+.contact-item:hover {
+    -fx-background-color: #F9FAFB;
+    -fx-border-color: #8B5CF6;
+}
+
+.contact-avatar {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-color: #8B5CF6;
+    -fx-text-fill: white;
+    -fx-background-radius: 50%;
+    -fx-pref-width: 45;
+    -fx-pref-height: 45;
+    -fx-alignment: center;
+}
+
+.contact-name {
+    -fx-font-family: 'Inter', 'Arial', sans-serif;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1F2937;
+}
+
+.contact-status {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6B7280;
+}
+
+.contact-status.online {
+    -fx-text-fill: #10B981;
+}
+
+.contact-badge {
+    -fx-background-color: #8B5CF6;
+    -fx-background-radius: 20;
+    -fx-padding: 2 8;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+}
+
+/* =========================
+   PREVIEW PANEL
+   ========================= */
+.preview-panel {
+    -fx-background-color: #F9FAFB;
+    -fx-padding: 30;
+}
+
+.selected-contact-card {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-padding: 30;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);
+    -fx-max-width: 400;
+}
+
+.selected-avatar-bg {
+    -fx-fill: linear-gradient(135deg, #8B5CF6, #A78BFA);
+    -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.3), 15, 0, 0, 3);
+}
+
+.selected-avatar-text {
+    -fx-font-family: 'Poppins', 'Arial', sans-serif;
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.selected-contact-name {
+    -fx-font-family: 'Poppins', 'Arial', sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1F2937;
+}
+
+.selected-contact-headline {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6B7280;
+}
+
+.contact-actions {
+    -fx-padding: 20 0 0 0;
+}
+
+.action-btn {
+    -fx-background-color: #F3F4F6;
+    -fx-background-radius: 50%;
+    -fx-min-width: 50;
+    -fx-min-height: 50;
+    -fx-font-size: 20px;
+    -fx-cursor: hand;
+}
+
+.action-btn:hover {
+    -fx-background-color: #EDE9FE;
+    -fx-text-fill: #8B5CF6;
+}
+
+/* Empty state */
+.empty-state {
+    -fx-padding: 50;
+}
+
+.empty-icon {
+    -fx-font-size: 80px;
+    -fx-opacity: 0.3;
+}
+
+.empty-title {
+    -fx-font-family: 'Poppins', 'Arial', sans-serif;
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #9CA3AF;
+}
+
+.empty-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #D1D5DB;
+}
+
+/* Recent conversations */
+.recent-conversations {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 1);
+}
+
+.recent-title {
+    -fx-font-family: 'Poppins', 'Arial', sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #4B5563;
+    -fx-padding: 0 0 10 0;
+}
+
+.recent-list {
+    -fx-background-color: transparent;
+}
+
+.recent-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 5 0;
+}
+
+.recent-item {
+    -fx-padding: 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.recent-item:hover {
+    -fx-background-color: #F3F4F6;
+}
+
+.recent-avatar {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-color: #8B5CF6;
+    -fx-text-fill: white;
+    -fx-background-radius: 50%;
+    -fx-pref-width: 35;
+    -fx-pref-height: 35;
+    -fx-alignment: center;
+}
+
+.recent-name {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1F2937;
+}
+
+.recent-message {
+    -fx-font-size: 11px;
+    -fx-text-fill: #6B7280;
+}
+
+.recent-time {
+    -fx-font-size: 10px;
+    -fx-text-fill: #9CA3AF;
+}
+
+/* Status indicators */
+.status-online {
+    -fx-fill: #10B981;
+    -fx-stroke: white;
+    -fx-stroke-width: 2;
+}
+
+.status-offline {
+    -fx-fill: #9CA3AF;
+    -fx-stroke: white;
+    -fx-stroke-width: 2;
+}
+
+.status-away {
+    -fx-fill: #F59E0B;
+    -fx-stroke: white;
+    -fx-stroke-width: 2;
+}
+
+/* Boutons d'action pour les contacts */
+.contact-action-btn {
+    -fx-background-color: #F3F4F6;
+    -fx-background-radius: 6;
+    -fx-min-width: 30;
+    -fx-min-height: 30;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.contact-action-btn:hover {
+    -fx-background-color: #E5E7EB;
+}
+
+.contact-action-btn.delete:hover {
+    -fx-background-color: #FEE2E2;
+    -fx-text-fill: #EF4444;
+}

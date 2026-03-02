@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.6"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.ConversationManagementController"
+            stylesheets="@ThemeUnified.css"
+            styleClass="root-container"
+            prefWidth="1400"
+            prefHeight="900">
+
+    <!-- Header -->
+    <top>
+        <VBox styleClass="header-section">
+            <HBox styleClass="header-bar" alignment="CENTER_LEFT" spacing="20">
+                <StackPane styleClass="logo-container">
+                    <Circle radius="25" styleClass="logo-bg"/>
+                    <Label text="C" styleClass="logo-text"/>
+                </StackPane>
+                <VBox spacing="5">
+                    <Label text="Gestion des Conversations" styleClass="header-title"/>
+                    <Label text="Interface d'administration" styleClass="header-subtitle"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <HBox styleClass="header-actions" spacing="10">
+                    <Button text="Tableau de bord" styleClass="action-button"/>
+                    <Button text="Rafraîchir" styleClass="action-button" onAction="#refreshData"/>
+                    <Button text="Exporter" styleClass="action-button"/>
+                </HBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- Center Content -->
+    <center>
+        <VBox styleClass="main-content" spacing="25">
+
+            <!-- Stats Cards -->
+            <HBox styleClass="stats-container" spacing="20" alignment="CENTER">
+                <VBox styleClass="stat-card" alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                    <Label text="💬" styleClass="stat-icon"/>
+                    <Label fx:id="totalConversationsLabel" text="0" styleClass="stat-value"/>
+                    <Label text="Total conversations" styleClass="stat-label"/>
+                </VBox>
+                <VBox styleClass="stat-card" alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                    <Label text="🟢" styleClass="stat-icon"/>
+                    <Label fx:id="activeConversationsLabel" text="0" styleClass="stat-value" style="-fx-text-fill: #10B981;"/>
+                    <Label text="Conversations actives" styleClass="stat-label"/>
+                </VBox>
+                <VBox styleClass="stat-card" alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                    <Label text="📦" styleClass="stat-icon"/>
+                    <Label fx:id="archivedConversationsLabel" text="0" styleClass="stat-value" style="-fx-text-fill: #6B7280;"/>
+                    <Label text="Conversations archivées" styleClass="stat-label"/>
+                </VBox>
+                <VBox styleClass="stat-card" alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                    <Label text="👥" styleClass="stat-icon"/>
+                    <Label fx:id="totalUsersLabel" text="0" styleClass="stat-value" style="-fx-text-fill: #8B5CF6;"/>
+                    <Label text="Utilisateurs" styleClass="stat-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- Search and Filter Section -->
+            <HBox styleClass="search-section" spacing="15" alignment="CENTER_LEFT">
+                <HBox styleClass="search-box" HBox.hgrow="ALWAYS" spacing="10">
+                    <Label text="🔍" styleClass="search-icon"/>
+                    <TextField fx:id="searchField" promptText="Rechercher par ID, utilisateur ou message..." styleClass="search-field" HBox.hgrow="ALWAYS"/>
+                </HBox>
+                <ChoiceBox fx:id="statusFilter" styleClass="filter-dropdown" value="Tous les statuts">
+                    <String fx:value="Tous les statuts"/>
+                    <String fx:value="active"/>
+                    <String fx:value="archived"/>
+                    <String fx:value="blocked"/>
+                </ChoiceBox>
+                <ChoiceBox fx:id="userFilter" styleClass="filter-dropdown" value="Tous les utilisateurs">
+                    <String fx:value="Tous les utilisateurs"/>
+                    <String fx:value="Utilisateur 1"/>
+                    <String fx:value="Utilisateur 2"/>
+                </ChoiceBox>
+                <DatePicker fx:id="dateFilter" promptText="Filtrer par date" styleClass="date-picker"/>
+                <Button text="Réinitialiser" styleClass="reset-button" onAction="#resetFilters"/>
+            </HBox>
+
+            <!-- Conversations Table -->
+            <VBox styleClass="table-container" VBox.vgrow="ALWAYS" spacing="15">
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label text="Liste des conversations" styleClass="table-title"/>
+                    <Label fx:id="tableInfo" text="4 conversations" styleClass="table-info"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="➕ Nouvelle conversation" styleClass="new-button" onAction="#showNewConversationForm"/>
+                </HBox>
+
+                <TableView fx:id="conversationsTable" styleClass="conversations-table" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="idColumn" text="ID" prefWidth="80">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="id"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="dateColumn" text="Date création" prefWidth="150">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="dateCreation"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="user1Column" text="Utilisateur 1" prefWidth="150">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="user1Id"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="user2Column" text="Utilisateur 2" prefWidth="150">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="user2Id"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="lastMessageColumn" text="Dernier message" prefWidth="300">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="dernierMessage"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="statusColumn" text="Statut" prefWidth="120">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="statut"/>
+                            </cellValueFactory>
+                            <cellFactory>
+                                <TableColumnCell>
+                                    <Label styleClass="status-badge"/>
+                                </TableColumnCell>
+                            </cellFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="200">
+                            <cellFactory>
+                                <TableColumnCell>
+                                    <HBox alignment="CENTER" spacing="10">
+                                        <Button styleClass="table-action-btn" text="✎" onAction="#editConversation"/>
+                                        <Button styleClass="table-action-btn" text="📋" onAction="#viewDetails"/>
+                                        <Button styleClass="table-action-btn" text="📦" onAction="#archiveConversation"/>
+                                        <Button styleClass="table-action-btn delete" text="🗑" onAction="#deleteConversation"/>
+                                    </HBox>
+                                </TableColumnCell>
+                            </cellFactory>
+                        </TableColumn>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Pagination -->
+            <HBox styleClass="pagination-section" alignment="CENTER_RIGHT" spacing="15">
+                <Label text="Lignes par page:" styleClass="pagination-label"/>
+                <ChoiceBox fx:id="pageSizeChoice" styleClass="page-size-choice" value="10">
+                    <String fx:value="5"/>
+                    <String fx:value="10"/>
+                    <String fx:value="25"/>
+                    <String fx:value="50"/>
+                </ChoiceBox>
+                <HBox spacing="5">
+                    <Button text="◀" styleClass="pagination-btn" onAction="#previousPage"/>
+                    <Label fx:id="pageInfo" text="Page 1 sur 1" styleClass="page-info"/>
+                    <Button text="▶" styleClass="pagination-btn" onAction="#nextPage"/>
+                </HBox>
+            </HBox>
+        </VBox>
+    </center>
+
+    <!-- Bottom Status Bar -->
+    <bottom>
+        <HBox styleClass="status-bar" alignment="CENTER_LEFT" spacing="20">
+            <Label text="📊 Base de données: carrieri" styleClass="status-item"/>
+            <Label text="🟢 Connecté" styleClass="status-item online"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="Dernière mise à jour: " styleClass="status-item"/>
+            <Label fx:id="lastUpdateLabel" text="à l'instant" styleClass="status-item"/>
+        </HBox>
+    </bottom>
+</BorderPane>
