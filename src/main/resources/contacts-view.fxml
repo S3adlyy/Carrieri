@@ -23,9 +23,6 @@
                 </StackPane>
                 <Label text="Carrieri Contacts" styleClass="header-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <TextField fx:id="globalSearchField" promptText="Rechercher un contact..." styleClass="global-search" prefWidth="300"/>
-                <Button styleClass="header-btn" text="⚙️"/>
-                <Button styleClass="header-btn" text="👤"/>
             </HBox>
 
             <!-- Quick Stats -->

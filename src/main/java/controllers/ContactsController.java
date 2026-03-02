@@ -65,8 +65,13 @@ public class ContactsController {
             loadUsers();
             setupContactsList();
             setupSearch();
-            updateStats();
+            updateStats(); // Maintenant updateStats() utilisera les mêmes données que loadUsers()
             loadRecentConversations();
+
+            // Ajouter un listener pour surveiller les changements dans allUsers
+            allUsers.addListener((javafx.collections.ListChangeListener<User>) change -> {
+                updateStats();
+            });
 
         } catch (SQLException e) {
             showError("Erreur", "Impossible de charger les contacts: " + e.getMessage());
@@ -238,19 +243,25 @@ public class ContactsController {
             });
         });
 
-        globalSearchField.textProperty().bindBidirectional(searchField.textProperty());
+
     }
 
-    private void updateStats() throws SQLException {
-        List<User> users = userService.getAllUsers();
-        users.removeIf(user -> user.getId() == currentUserId);
+    private void updateStats() {
+        // Utiliser allUsers au lieu de recharger depuis la base de données
+        if (allUsers != null) {
+            long online = allUsers.stream().filter(User::isOnline).count();
 
-        long online = users.stream().filter(User::isOnline).count();
-        List<Conversation> conversations = conversationService.getConversationsByUser(currentUserId);
+            totalContactsLabel.setText(String.valueOf(allUsers.size()));
+            onlineContactsLabel.setText(String.valueOf(online));
 
-        totalContactsLabel.setText(String.valueOf(users.size()));
-        onlineContactsLabel.setText(String.valueOf(online));
-        activeConversationsLabel.setText(String.valueOf(conversations.size()));
+            // Pour les conversations, on garde l'appel à la base de données
+            try {
+                List<Conversation> conversations = conversationService.getConversationsByUser(currentUserId);
+                activeConversationsLabel.setText(String.valueOf(conversations.size()));
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void loadRecentConversations() throws SQLException {

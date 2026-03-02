@@ -66,8 +66,7 @@
                     <HBox spacing="8">
                         <Button styleClass="chat-action-btn" text="📞" onAction="#startAudioCall"/>
                         <Button styleClass="chat-action-btn" text="📹" onAction="#startVideoCall"/>
-                        <Button styleClass="chat-action-btn" text="📧"/>
-                        <Button styleClass="chat-action-btn" text="🔍"/>
+
                     </HBox>
                 </HBox>
 
