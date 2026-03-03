@@ -604,3 +604,261 @@
 .scroll-bar:vertical .thumb:hover {
     -fx-background-color: #9CA3AF;
 }
+/* =========================
+   SÉLECTEUR DE LANGUE PREMIUM
+   ========================= */
+.language-selector {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 25;
+    -fx-padding: 4 12 4 15;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-min-width: 130;
+    -fx-pref-width: 130;
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-cursor: hand;
+    -fx-border-color: linear-gradient(to right, #E5E7EB, #C4B5FD, #E5E7EB);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 25;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);
+    -fx-text-fill: #1F2937;
+}
+
+.language-selector:hover {
+    -fx-background-color: #F5F3FF;
+    -fx-border-color: #8B5CF6;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.3), 12, 0, 0, 3);
+    -fx-translate-y: -1;
+}
+
+.language-selector:focused {
+    -fx-background-color: #F5F3FF;
+    -fx-border-color: #6D28D9;
+    -fx-border-width: 2;
+    -fx-border-radius: 25;
+    -fx-effect: dropshadow(gaussian, rgba(109,40,217,0.3), 15, 0, 0, 3);
+}
+
+.language-selector .list-cell {
+    -fx-padding: 8 12;
+    -fx-background-color: transparent;
+    -fx-text-fill: #1F2937;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}
+
+.language-selector .list-cell:hover {
+    -fx-background-color: #EDE9FE;
+    -fx-text-fill: #6D28D9;
+    -fx-background-radius: 20;
+    -fx-font-weight: 600;
+}
+
+.language-selector .list-cell:selected {
+    -fx-background-color: #8B5CF6;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-font-weight: 600;
+}
+
+.language-selector .arrow-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0 20 20 0;
+    -fx-padding: 0 5;
+}
+
+.language-selector .arrow-button .arrow {
+    -fx-background-color: #8B5CF6;
+    -fx-scale-x: 0.9;
+    -fx-scale-y: 0.9;
+    -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.3), 4, 0, 0, 1);
+}
+
+.language-selector .context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: #E5E7EB;
+    -fx-border-width: 1;
+    -fx-padding: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);
+}
+
+.language-selector .menu-item {
+    -fx-background-radius: 12;
+    -fx-padding: 8 15;
+}
+
+.language-selector .menu-item:hover {
+    -fx-background-color: #F5F3FF;
+}
+
+.language-selector .menu-item:focused {
+    -fx-background-color: #8B5CF6;
+}
+
+.language-selector .menu-item .label {
+    -fx-text-fill: #1F2937;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}
+
+.language-selector .menu-item:focused .label {
+    -fx-text-fill: white;
+}
+
+/* =========================
+   BOUTON MICRO PREMIUM
+   ========================= */
+.voice-record-button {
+    -fx-background-color: linear-gradient(to bottom, #374151, #1F2937);
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-min-width: 45;
+    -fx-min-height: 45;
+    -fx-max-width: 45;
+    -fx-max-height: 45;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+    -fx-transition: all 0.2s ease;
+}
+
+.voice-record-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #4B5563, #374151);
+    -fx-border-color: #8B5CF6;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.4), 12, 0, 0, 3);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.voice-record-button:disabled {
+    -fx-opacity: 0.6;
+    -fx-cursor: wait;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+}
+
+.voice-record-button.recording {
+    -fx-background-color: linear-gradient(to bottom, #EF4444, #DC2626);
+    -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.5), 12, 0, 0, 3);
+    -fx-animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { -fx-scale-x: 1; -fx-scale-y: 1; -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.5), 12, 0, 0, 3); }
+    50% { -fx-scale-x: 1.1; -fx-scale-y: 1.1; -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.8), 18, 0, 0, 5); }
+    100% { -fx-scale-x: 1; -fx-scale-y: 1; -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.5), 12, 0, 0, 3); }
+}
+
+/* =========================
+   BOUTON MICRO MINIMALISTE (Alternative)
+   ========================= */
+.voice-record-button-minimal {
+    -fx-background-color: #F3F4F6;
+    -fx-text-fill: #4B5563;
+    -fx-font-size: 18px;
+    -fx-min-width: 42;
+    -fx-min-height: 42;
+    -fx-max-width: 42;
+    -fx-max-height: 42;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+    -fx-border-color: #E5E7EB;
+    -fx-border-width: 1;
+}
+
+.voice-record-button-minimal:hover {
+    -fx-background-color: #EDE9FE;
+    -fx-text-fill: #6D28D9;
+    -fx-border-color: #8B5CF6;
+}
+
+.voice-record-button-minimal.recording {
+    -fx-background-color: #FEE2E2;
+    -fx-text-fill: #EF4444;
+    -fx-border-color: #EF4444;
+}
+
+/* =========================
+   INDICATEUR DE TRANSCRIPTION
+   ========================= */
+.transcription-status {
+    -fx-font-size: 11px;
+    -fx-padding: 6 12;
+    -fx-background-radius: 25;
+    -fx-alignment: center;
+    -fx-max-width: 140;
+    -fx-font-weight: 600;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 4, 0, 0, 1);
+}
+
+.transcription-status.processing {
+    -fx-text-fill: #8B5CF6;
+    -fx-background-color: #F5F3FF;
+    -fx-border-color: #8B5CF6;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 25;
+}
+
+.transcription-status.success {
+    -fx-text-fill: #10B981;
+    -fx-background-color: #D1FAE5;
+    -fx-border-color: #10B981;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 25;
+}
+
+.transcription-status.error {
+    -fx-text-fill: #EF4444;
+    -fx-background-color: #FEE2E2;
+    -fx-border-color: #EF4444;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 25;
+}
+
+/* =========================
+   ZONE DE SAISIE AMÉLIORÉE
+   ========================= */
+.message-input-area {
+    -fx-background-color: white;
+    -fx-background-radius: 40;
+    -fx-padding: 8 15;
+    -fx-border-color: #E5E7EB;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 40;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 1);
+}
+
+.message-input-area:focused-within {
+    -fx-border-color: #8B5CF6;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.2), 10, 0, 0, 2);
+}
+
+.message-input {
+    -fx-background-color: transparent;
+    -fx-padding: 8 5;
+    -fx-font-size: 14px;
+}
+
+.input-action-btn {
+    -fx-background-color: #F3F4F6;
+    -fx-background-radius: 30;
+    -fx-min-width: 38;
+    -fx-min-height: 38;
+    -fx-font-size: 18px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 3, 0, 0, 1);
+}
+
+.input-action-btn:hover {
+    -fx-background-color: #EDE9FE;
+    -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.3), 8, 0, 0, 2);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}

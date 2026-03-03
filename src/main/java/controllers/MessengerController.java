@@ -3,6 +3,7 @@ package controllers;
 import entities.Conversation;
 import entities.Message;
 import entities.User;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -23,6 +24,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import services.ConversationService;
 import services.MessageService;
+import services.SpeechToTextService;
 import services.UserService;
 
 import java.awt.*;
@@ -48,82 +50,60 @@ import java.util.Map;
 public class MessengerController {
 
     // ==================== FIELDS ====================
-    @FXML
-    private ListView<Conversation> conversationsListView;
-    @FXML
-    private ListView<User> onlineUsersListView;
-    @FXML
-    private ListView<Conversation> archivedListView;
-    @FXML
-    private Label chatWithLabel;
-    @FXML
-    private Label onlineStatusLabel;
-    @FXML
-    private VBox messagesContainer;
-    @FXML
-    private ScrollPane messagesScrollPane;
-    @FXML
-    private TextField messageInputField;
-    @FXML
-    private Button sendButton;
-    @FXML
-    private Label chatAvatarInitials;
-    @FXML
-    private Label navAvatarInitials;
-    @FXML
-    private Label navNameLabel;
-    @FXML
-    private TextField searchField;
-    @FXML
-    private Label conversationsCount;
-    @FXML
-    private Label currentSectionTitle;
+    @FXML private ListView<Conversation> conversationsListView;
+    @FXML private ListView<User> onlineUsersListView;
+    @FXML private ListView<Conversation> archivedListView;
+    @FXML private Label chatWithLabel;
+    @FXML private Label onlineStatusLabel;
+    @FXML private VBox messagesContainer;
+    @FXML private ScrollPane messagesScrollPane;
+    @FXML private TextField messageInputField;
+    @FXML private Button sendButton;
+    @FXML private Label chatAvatarInitials;
+    @FXML private Label navAvatarInitials;
+    @FXML private Label navNameLabel;
+    @FXML private TextField searchField;
+    @FXML private Label conversationsCount;
+    @FXML private Label currentSectionTitle;
+    @FXML private Button voiceRecordButton;
 
-    @FXML
-    private Button btnMessages;
-    @FXML
-    private Button btnOnline;
-    @FXML
-    private Button btnArchived;
-    @FXML
-    private Button btnSettings;
-    @FXML
-    private Button btnStatistics;
-    @FXML
-    private Button btnPreviousConversations;
-    @FXML
-    private Button btnUnread;
-    @FXML
-    private Button btnFavorites;
-    @FXML
-    private Button btnGroups;
-    @FXML
-    private Button filterAllBtn;
-    @FXML
-    private Button filterUnreadBtn;
-    @FXML
-    private Button filterGroupsBtn;
-    @FXML
-    private Button filterFavoritesBtn;
+    @FXML private Button btnMessages;
+    @FXML private Button btnOnline;
+    @FXML private Button btnArchived;
+    @FXML private Button btnSettings;
+    @FXML private Button btnStatistics;
+    @FXML private Button btnPreviousConversations;
+    @FXML private Button btnUnread;
+    @FXML private Button btnFavorites;
+    @FXML private Button btnGroups;
+    @FXML private Button filterAllBtn;
+    @FXML private Button filterUnreadBtn;
+    @FXML private Button filterGroupsBtn;
+    @FXML private Button filterFavoritesBtn;
 
     private ConversationService conversationService;
     private MessageService messageService;
     private UserService userService;
+    private SpeechToTextService speechService;
+    private AudioRecorder audioRecorder;
+
     private Conversation currentConversation;
     private int currentUserId = 1;
     private Button activeButton = null;
     private User selectedUser;
     private List<User> favoriteUsers = new ArrayList<>();
+    private boolean isRecordingVoice = false;
 
     // ==================== INITIALIZE ====================
     @FXML
     public void initialize() {
         System.out.println("Initializing MessengerController...");
-
         try {
             conversationService = new ConversationService();
             messageService = new MessageService();
             userService = new UserService();
+            speechService = new SpeechToTextService();
+            audioRecorder = new AudioRecorder();
             System.out.println("✅ Services initialisés avec succès");
         } catch (Exception e) {
             System.err.println("❌ Erreur initialisation services: " + e.getMessage());
@@ -161,6 +141,7 @@ public class MessengerController {
         if (messagesContainer == null) System.err.println("❌ messagesContainer est null");
         if (messageInputField == null) System.err.println("❌ messageInputField est null");
         if (sendButton == null) System.err.println("❌ sendButton est null");
+        if (voiceRecordButton == null) System.err.println("❌ voiceRecordButton est null");
     }
 
     private void setupConversationsList() {
@@ -619,36 +600,10 @@ public class MessengerController {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmation");
         confirm.setHeaderText(null);
-
-        VBox content = new VBox(10);
-        content.setAlignment(Pos.CENTER_LEFT);
-
-        Label mainMessage = new Label("Supprimer le message");
-        mainMessage.getStyleClass().add("main-message");
-
-        Label warningMessage = new Label("Êtes-vous sûr de vouloir supprimer ce message ?");
-        warningMessage.getStyleClass().add("warning-message");
-
-        content.getChildren().addAll(mainMessage, warningMessage);
-        confirm.getDialogPane().setContent(content);
-
-        DialogPane dialogPane = confirm.getDialogPane();
-        dialogPane.getStyleClass().add("dialog-pane");
-        dialogPane.getStyleClass().add("confirmation");
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-
-        ButtonType okButtonType = new ButtonType("Supprimer", ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancelButtonType = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
-        confirm.getButtonTypes().setAll(okButtonType, cancelButtonType);
-
-        Button okButton = (Button) dialogPane.lookupButton(okButtonType);
-        Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
-
-        okButton.getStyleClass().add("btn-danger");
-        cancelButton.getStyleClass().add("btn-secondary");
+        confirm.setContentText("Êtes-vous sûr de vouloir supprimer ce message ?");
 
         Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == okButtonType) {
+        if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 messageService.supprimer(message.getId());
                 if (currentConversation != null) {
@@ -977,17 +932,6 @@ public class MessengerController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStyleClass().add("dialog-pane");
-        dialogPane.getStyleClass().add("info");
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.getStyleClass().add("btn-primary");
-        }
-
         alert.showAndWait();
     }
 
@@ -996,18 +940,6 @@ public class MessengerController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStyleClass().add("dialog-pane");
-        dialogPane.getStyleClass().add("info");
-        dialogPane.getStyleClass().add("success-alert");
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.getStyleClass().add("btn-primary");
-        }
-
         alert.showAndWait();
     }
 
@@ -1016,17 +948,6 @@ public class MessengerController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStyleClass().add("dialog-pane");
-        dialogPane.getStyleClass().add("warning");
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.getStyleClass().add("btn-primary");
-        }
-
         alert.showAndWait();
     }
 
@@ -1035,17 +956,6 @@ public class MessengerController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStyleClass().add("dialog-pane");
-        dialogPane.getStyleClass().add("error");
-        dialogPane.getStylesheets().add(getClass().getResource("/Alert.css").toExternalForm());
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        if (okButton != null) {
-            okButton.getStyleClass().add("btn-danger");
-        }
-
         alert.showAndWait();
     }
 
@@ -1073,11 +983,9 @@ public class MessengerController {
             return;
         }
 
-        // Créer le sélecteur de fichiers
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choisir un fichier");
 
-        // Ajouter des filtres pour différents types de fichiers
         fileChooser.getExtensionFilters().addAll(
             new FileChooser.ExtensionFilter("Tous les fichiers", "*.*"),
             new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp"),
@@ -1086,11 +994,9 @@ public class MessengerController {
             new FileChooser.ExtensionFilter("Archives", "*.zip", "*.rar", "*.7z")
         );
 
-        // Afficher la boîte de dialogue
         File selectedFile = fileChooser.showOpenDialog(messagesScrollPane.getScene().getWindow());
 
         if (selectedFile != null) {
-            // Vérifier la taille du fichier (max 10 MB)
             if (selectedFile.length() > 10 * 1024 * 1024) {
                 showWarning("Erreur", "Le fichier est trop volumineux (max 10 MB)");
                 return;
@@ -1103,14 +1009,11 @@ public class MessengerController {
 
                 System.out.println("📎 Fichier sélectionné: " + fileName + " (" + formatFileSize(fileSize) + ")");
 
-                // Déterminer le type de fichier
                 String fileType = determineFileType(fileExtension);
 
-                // Lire le fichier et le convertir en base64
                 byte[] fileBytes = java.nio.file.Files.readAllBytes(selectedFile.toPath());
                 String base64File = java.util.Base64.getEncoder().encodeToString(fileBytes);
 
-                // Créer le message
                 Message message = new Message();
                 message.setContenu("[" + fileType + "] " + fileName);
                 message.setFileData(base64File);
@@ -1127,14 +1030,11 @@ public class MessengerController {
                         currentConversation.getUser2Id() : currentConversation.getUser1Id()
                 );
 
-                // Sauvegarder dans la base de données
                 messageService.ajouter(message);
                 System.out.println("✅ Fichier sauvegardé avec ID: " + message.getId());
 
-                // Ajouter le fichier au conteneur de messages
                 addFileToContainer(message, selectedFile);
 
-                // Mettre à jour le dernier message de la conversation
                 String emoji = getFileEmoji(fileType);
                 conversationService.updateDernierMessage(currentConversation.getId(), emoji + " " + fileName);
 
@@ -1152,9 +1052,6 @@ public class MessengerController {
         }
     }
 
-    /**
-     * Ajoute un fichier au conteneur de messages
-     */
     private void addFileToContainer(Message message, File file) {
         try {
             String fileName = file.getName();
@@ -1162,7 +1059,6 @@ public class MessengerController {
             String fileType = determineFileType(fileExtension);
             String fileEmoji = getFileEmoji(fileType);
 
-            // Créer le conteneur pour le fichier
             VBox fileContainer = new VBox(8);
             fileContainer.setStyle(
                 "-fx-padding: 15;" +
@@ -1175,7 +1071,6 @@ public class MessengerController {
             );
             fileContainer.setMaxWidth(350);
 
-            // En-tête avec icône
             HBox headerBox = new HBox(12);
             headerBox.setAlignment(Pos.CENTER_LEFT);
 
@@ -1215,7 +1110,6 @@ public class MessengerController {
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
 
-            // Bouton de téléchargement
             Button downloadBtn = new Button("⬇️ Télécharger");
             downloadBtn.setStyle(
                 "-fx-background-color: #8B5CF6;" +
@@ -1228,33 +1122,8 @@ public class MessengerController {
             );
             downloadBtn.setOnAction(e -> downloadFile(message, file));
 
-            // Effet hover sur le bouton
-            downloadBtn.setOnMouseEntered(e ->
-                downloadBtn.setStyle(
-                    "-fx-background-color: #7C3AED;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-font-size: 12px;" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-padding: 6 12;" +
-                        "-fx-background-radius: 20;" +
-                        "-fx-cursor: hand;" +
-                        "-fx-effect: dropshadow(gaussian, rgba(124,58,237,0.4), 10, 0, 0, 2);"
-                ));
-
-            downloadBtn.setOnMouseExited(e ->
-                downloadBtn.setStyle(
-                    "-fx-background-color: #8B5CF6;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-font-size: 12px;" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-padding: 6 12;" +
-                        "-fx-background-radius: 20;" +
-                        "-fx-cursor: hand;"
-                ));
-
             headerBox.getChildren().addAll(fileIcon, infoBox, spacer, downloadBtn);
 
-            // Pied avec heure
             HBox footerBox = new HBox();
             footerBox.setAlignment(Pos.CENTER_RIGHT);
 
@@ -1265,7 +1134,6 @@ public class MessengerController {
 
             fileContainer.getChildren().addAll(headerBox, footerBox);
 
-            // Ajouter au conteneur des messages avec alignment
             HBox wrapper = new HBox();
             wrapper.setAlignment(message.getExpediteurId() == currentUserId ?
                 Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
@@ -1273,8 +1141,6 @@ public class MessengerController {
             wrapper.getChildren().add(fileContainer);
 
             messagesContainer.getChildren().add(wrapper);
-
-            // Scroll en bas
             messagesScrollPane.setVvalue(1.0);
 
         } catch (Exception e) {
@@ -1282,16 +1148,12 @@ public class MessengerController {
         }
     }
 
-    /**
-     * Télécharge un fichier
-     */
     private void downloadFile(Message message, File originalFile) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Enregistrer le fichier");
             fileChooser.setInitialFileName(message.getFileName());
 
-            // Ajouter les filtres selon le type
             String extension = getFileExtension(message.getFileName());
             fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Fichier " + extension.toUpperCase(), "*." + extension)
@@ -1300,7 +1162,6 @@ public class MessengerController {
             File saveFile = fileChooser.showSaveDialog(messagesScrollPane.getScene().getWindow());
 
             if (saveFile != null) {
-                // Décoder le base64 et sauvegarder
                 byte[] fileBytes = java.util.Base64.getDecoder().decode(message.getFileData());
                 java.nio.file.Files.write(saveFile.toPath(), fileBytes);
 
@@ -1312,11 +1173,6 @@ public class MessengerController {
         }
     }
 
-// ==================== MÉTHODES UTILITAIRES ====================
-
-    /**
-     * Formate la taille du fichier
-     */
     private String formatFileSize(long size) {
         if (size < 1024) return size + " o";
         if (size < 1024 * 1024) return String.format("%.1f Ko", size / 1024.0);
@@ -1324,9 +1180,6 @@ public class MessengerController {
         return String.format("%.1f Go", size / (1024.0 * 1024.0 * 1024.0));
     }
 
-    /**
-     * Récupère l'extension d'un fichier
-     */
     private String getFileExtension(String fileName) {
         int lastDot = fileName.lastIndexOf('.');
         if (lastDot > 0 && lastDot < fileName.length() - 1) {
@@ -1335,9 +1188,6 @@ public class MessengerController {
         return "";
     }
 
-    /**
-     * Détermine le type de fichier
-     */
     private String determineFileType(String extension) {
         extension = extension.toLowerCase();
 
@@ -1362,55 +1212,31 @@ public class MessengerController {
         }
     }
 
-    /**
-     * Récupère l'emoji correspondant au type de fichier
-     */
     private String getFileEmoji(String fileType) {
         switch (fileType) {
-            case "image":
-                return "🖼️";
-            case "pdf":
-                return "📄";
-            case "document":
-                return "📝";
-            case "tableur":
-                return "📊";
-            case "presentation":
-                return "📽️";
-            case "archive":
-                return "🗜️";
-            case "audio":
-                return "🎵";
-            case "video":
-                return "🎬";
-            default:
-                return "📎";
+            case "image": return "🖼️";
+            case "pdf": return "📄";
+            case "document": return "📝";
+            case "tableur": return "📊";
+            case "presentation": return "📽️";
+            case "archive": return "🗜️";
+            case "audio": return "🎵";
+            case "video": return "🎬";
+            default: return "📎";
         }
     }
 
-    /**
-     * Récupère la couleur correspondant au type de fichier
-     */
     private String getFileTypeColor(String fileType) {
         switch (fileType) {
-            case "image":
-                return "#8B5CF6";  // Violet
-            case "pdf":
-                return "#EF4444";     // Rouge
-            case "document":
-                return "#3B82F6"; // Bleu
-            case "tableur":
-                return "#10B981";  // Vert
-            case "presentation":
-                return "#F59E0B"; // Orange
-            case "archive":
-                return "#6B7280";   // Gris
-            case "audio":
-                return "#EC4899";     // Rose
-            case "video":
-                return "#8B5CF6";     // Violet
-            default:
-                return "#6B7280";          // Gris
+            case "image": return "#8B5CF6";
+            case "pdf": return "#EF4444";
+            case "document": return "#3B82F6";
+            case "tableur": return "#10B981";
+            case "presentation": return "#F59E0B";
+            case "archive": return "#6B7280";
+            case "audio": return "#EC4899";
+            case "video": return "#8B5CF6";
+            default: return "#6B7280";
         }
     }
 
@@ -1436,7 +1262,6 @@ public class MessengerController {
         startJitsiCall(otherUserName, true);
     }
 
-    // ==================== CONFIGURATION JITSI JAAS ====================
     private static final String JITSI_APP_ID = "vpaas-magic-cookie-bb1aec7cdb2f49f1a35868a078689c3e";
     private static final String JITSI_KEY_ID = "vpaas-magic-cookie-bb1aec7cdb2f49f1a35868a078689c3e/ed72eb";
     private static final String JITSI_PRIVATE_KEY = """
@@ -1472,7 +1297,6 @@ public class MessengerController {
 
     private void startJitsiCall(String otherUserName, boolean isVideo) {
         try {
-            // Générer le token JWT avec votre clé privée
             String token = generateJitsiToken("Bensaid Youssef");
 
             if (token == null) {
@@ -1480,19 +1304,14 @@ public class MessengerController {
                 return;
             }
 
-            // Créer un nom de salon unique avec votre App ID
             String roomName = JITSI_APP_ID + "/" + currentConversation.getId();
 
-            // Construire l'URL Jitsi JaaS avec le token
             String jitsiUrl = "https://8x8.vc/" + roomName
                 + "?jwt=" + token
                 + "#config.startWithAudioMuted=false"
                 + "&config.startWithVideoMuted=" + (!isVideo);
 
-            // Ouvrir dans le navigateur par défaut
             openInBrowser(jitsiUrl);
-
-            // Envoyer une notification dans le chat
             sendCallNotification(otherUserName, isVideo);
 
             System.out.println("🔗 URL de l'appel: " + jitsiUrl);
@@ -1505,19 +1324,16 @@ public class MessengerController {
 
     private String generateJitsiToken(String userName) {
         try {
-            // Nettoyer la clé privée
             String privateKeyContent = JITSI_PRIVATE_KEY
                 .replace("-----BEGIN PRIVATE KEY-----", "")
                 .replace("-----END PRIVATE KEY-----", "")
                 .replaceAll("\\s", "");
 
-            // Décoder la clé privée
             byte[] keyBytes = java.util.Base64.getDecoder().decode(privateKeyContent);
             PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
             KeyFactory kf = KeyFactory.getInstance("RSA");
             PrivateKey privateKey = kf.generatePrivate(spec);
 
-            // Créer le contexte utilisateur
             Map<String, Object> userContext = new HashMap<>();
             userContext.put("name", userName);
             userContext.put("id", String.valueOf(currentUserId));
@@ -1531,7 +1347,6 @@ public class MessengerController {
                 "outbound-call", true
             ));
 
-            // Créer le token
             long now = System.currentTimeMillis();
 
             return Jwts.builder()
@@ -1543,7 +1358,7 @@ public class MessengerController {
                 .claim("room", "*")
                 .claim("context", context)
                 .setIssuedAt(new Date(now))
-                .setExpiration(new Date(now + 3600000)) // 1 heure
+                .setExpiration(new Date(now + 3600000))
                 .signWith(privateKey, SignatureAlgorithm.RS256)
                 .compact();
 
@@ -1559,7 +1374,6 @@ public class MessengerController {
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                 Desktop.getDesktop().browse(new URI(url));
             } else {
-                // Fallback pour les systèmes sans Desktop support
                 String os = System.getProperty("os.name").toLowerCase();
                 if (os.contains("win")) {
                     Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
@@ -1621,6 +1435,48 @@ public class MessengerController {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    // Plus besoin de languageSelector
+// @FXML private ComboBox<SpeechToTextService.Language> languageSelector;
+
+    @FXML
+    private void toggleVoiceRecording() {
+        if (currentConversation == null) {
+            showAlert("Info", "Sélectionnez une conversation d'abord");
+            return;
+        }
+
+        if (!isRecordingVoice) {
+            audioRecorder.startRecording();
+            isRecordingVoice = true;
+            voiceRecordButton.setText("⏹️");
+            voiceRecordButton.setStyle("-fx-background-color: #EF4444;");
+        } else {
+            voiceRecordButton.setText("⏳");
+            voiceRecordButton.setDisable(true);
+
+            new Thread(() -> {
+                File audioFile = audioRecorder.stopRecording();
+                isRecordingVoice = false;
+
+                if (audioFile != null) {
+                    // Détection automatique - plus besoin de passer la langue
+                    String transcription = speechService.transcribeAudio(audioFile);
+
+                    javafx.application.Platform.runLater(() -> {
+                        String currentText = messageInputField.getText();
+                        messageInputField.setText(currentText + transcription);
+
+                        voiceRecordButton.setText("🎤");
+                        voiceRecordButton.setDisable(false);
+                        voiceRecordButton.setStyle("-fx-background-color: #374151;");
+
+                        audioFile.delete();
+                    });
+                }
+            }).start();
         }
     }
 }

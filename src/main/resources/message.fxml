@@ -86,7 +86,12 @@
                         <Button styleClass="input-action-btn" text="📎" onAction="#sendFile"/>
                         <!-- BOUTON PHOTO CORRIGÉ : ajout de onAction="#sendImage" -->
                         <Button styleClass="input-action-btn" text="📷" onAction="#sendImage"/>
-                        <Button styleClass="input-action-btn" text="🎤"/>
+                        <!-- Dans votre zone de saisie, ajoutez ce bouton -->
+                        <Button fx:id="voiceRecordButton"
+                                styleClass="input-action-btn"
+                                text="🎤"
+                                onAction="#toggleVoiceRecording"/>
+                        <!-- Dans la zone de saisie, ajoutez ce sélecteur de langue -->
                         <TextField fx:id="messageInputField" promptText="Écrivez votre message..." styleClass="message-input" HBox.hgrow="ALWAYS"/>
                         <Button styleClass="input-action-btn" text="😊" onAction="#showEmojiPicker"/>
                         <Button fx:id="sendButton" text="Envoyer" styleClass="send-button" onAction="#sendMessage"/>
