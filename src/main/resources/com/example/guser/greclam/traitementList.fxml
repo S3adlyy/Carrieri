@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.guser.controllers.greclam.TraitementController"
+      spacing="10" style="-fx-padding: 20;"
+      stylesheets="@css/ThemeUnified.css">
+
+    <!-- Titre et bouton retour -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="🛠️ Liste des traitements"
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <!-- ✅ BOUTON RETOUR AJOUTÉ -->
+        <Button text="⬅️ Retour aux réclamations" onAction="#goBackToReclamations"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 8 15;"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Filtre -->
+    <HBox spacing="10">
+        <Label text="Filtrer par Réclamation ID:" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="filterReclamationField" promptText="ID" prefWidth="100"/>
+        <Button text="Filtrer" onAction="#filterByReclamation"
+                style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="totalLabel" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+    </HBox>
+
+    <!-- Tableau des traitements -->
+    <TableView fx:id="traitementTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="ID" prefWidth="50">
+                <cellValueFactory><PropertyValueFactory property="id"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Date Traitement" prefWidth="150">
+                <cellValueFactory><PropertyValueFactory property="dateTraitement"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Réponse Admin" prefWidth="200">
+                <cellValueFactory><PropertyValueFactory property="reponseAdmin"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Statut Final" prefWidth="100">
+                <cellValueFactory><PropertyValueFactory property="statutFinal"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Réclamation ID" prefWidth="100">
+                <cellValueFactory><PropertyValueFactory property="reclamationId"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="User ID" prefWidth="80">
+                <cellValueFactory><PropertyValueFactory property="adminId"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Actions" prefWidth="50">
+                <!-- Colonne pour suppression uniquement -->
+            </TableColumn>
+        </columns>
+    </TableView>
+</VBox>

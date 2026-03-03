@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.6"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.guser.controllers.gcommu.HelloApplication"
+            prefWidth="800" prefHeight="600"
+            style="-fx-background-color: #f5f5f5;">
+
+    <top>
+        <Label text="Gestion Communication" style="-fx-font-size: 24px; -fx-padding: 10;" BorderPane.alignment="CENTER"/>
+    </top>
+
+    <center>
+        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
+            <Tab text="Messages">
+                <AnchorPane>
+                    <fx:include source="message.fxml"/>
+                </AnchorPane>
+            </Tab>
+            <Tab text="Conversations">
+                <AnchorPane>
+                    <fx:include source="conversation.fxml"/>
+                </AnchorPane>
+            </Tab>
+        </TabPane>
+    </center>
+</BorderPane>

@@ -1,0 +1,766 @@
+/* =========================================================
+   workspace.css — Carrieri (Clean Form / Signup-like)
+   - Unified tokens in *{}
+   - Better Track rows/cards UX
+   - Dialog "Create Track" matches signup card
+   ========================================================= */
+
+/* -------------------------
+   TOKENS (available everywhere)
+   ------------------------- */
+*{
+    /* Backgrounds */
+    -fx-base: #f5f3f7;
+    -fx-background: #f5f3f7;
+
+    -content-bg: #f5f3f7;
+    -card-bg: #ffffff;
+
+    /* Brand */
+    -deep:   #231942;
+    -purple: #5E548E;
+    -lilac:  #9F86C0;
+
+    /* Text */
+    -text-primary: #231942;
+    -text-secondary: #5E548E;
+    -text-muted: #6b7280;
+    -text-white: #ffffff;
+
+    /* Borders */
+    -border-strong: #d8c9f0;
+    -border-soft: rgba(94, 84, 142, 0.15);
+    -border-soft2: rgba(94, 84, 142, 0.10);
+
+    /* Table-ish */
+    -table-header-bg: linear-gradient(from 0% 0% to 100% 100%, #f3e8ff 0%, #e8daf5 100%);
+    -table-row-selected: #f3e8ff;
+    -table-row-hover: #f8f4ff;
+
+    /* Buttons */
+    -button-primary: linear-gradient(to right, #231942, #5E548E);
+    -button-primary-hover: linear-gradient(to right, #2d2a4e, #7a6ba5);
+    -button-soft-bg: rgba(94,84,142,0.10);
+    -button-soft-bg-hover: rgba(94,84,142,0.16);
+
+    /* States */
+    -danger: #ff6b6b;
+
+    /* Effects */
+    -shadow-color: rgba(35,25,66,0.10);
+    -shadow-strong: rgba(35,25,66,0.16);
+
+    /* Input tokens (signup-like) */
+    -input-bg: #ffffff;
+    -input-border: #d8c9f0;
+    -input-focus: #5E548E;
+    -input-text: #231942;
+    -input-prompt: rgba(94,84,142,0.45);
+}
+
+/* -------------------------
+   BASE / PAGE
+   ------------------------- */
+.root {
+    -fx-background-color: -content-bg;
+    -fx-font-family: "Inter", "Segoe UI", "System";
+}
+
+.wsp-page {
+    -fx-background-color: -content-bg;
+    -fx-padding: 14;
+    -fx-spacing: 12;
+}
+
+.wsp-pageTitle {
+    -fx-font-size: 22px;
+    -fx-font-weight: 900;
+    -fx-text-fill: -text-primary;
+}
+
+.wsp-subtitle {
+    -fx-text-fill: rgba(35,25,66,0.60);
+    -fx-font-weight: 700;
+    -fx-font-size: 11px;
+}
+
+.wsp-sectionTitle {
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+    -fx-padding: 2 10 2 10;
+    -fx-text-fill: rgba(35,25,66,0.82);
+}
+
+/* Avoid app-wide .label override: scope to workspace areas */
+.wsp-page .label,
+.wsp-workspaceRoot .label,
+.cv-sideCard .label,
+.cv-codeCard .label {
+    -fx-text-fill: -text-primary;
+}
+
+/* -------------------------
+   WORKSPACE ROOT
+   ------------------------- */
+.wsp-workspaceRoot {
+    -fx-background-color: rgba(255,255,255,0.92);
+    -fx-background-radius: 24;
+    -fx-border-radius: 24;
+    -fx-border-color: -border-soft;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.08), 22, 0.18, 0, 10);
+    -fx-padding: 16;
+    -fx-spacing: 12;
+}
+
+.wsp-topBar { -fx-padding: 2 2 10 2; }
+
+/* -------------------------
+   SPLITPANE
+   ------------------------- */
+.wsp-split { -fx-background-color: transparent; }
+.split-pane > .split-pane-divider {
+    -fx-padding: 0 1 0 1;
+    -fx-background-color: rgba(94,84,142,0.18);
+}
+
+/* -------------------------
+   CHIP / BADGE
+   ------------------------- */
+.wsp-chip,
+.wsp-trackChip {
+    -fx-text-fill: -text-secondary;
+    -fx-font-weight: 900;
+    -fx-font-size: 10px;
+    -fx-background-color: rgba(243,232,255,0.90);
+    -fx-border-color: -border-soft;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 4 10 4 10;
+}
+
+/* -------------------------
+   BUTTONS (workspace-specific)
+   ------------------------- */
+.button {
+    -fx-font-weight: 800;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-cursor: hand;
+}
+
+/* Link */
+.prf-linkBtn {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: -text-secondary;
+    -fx-padding: 6 10 6 10;
+}
+.prf-linkBtn:hover { -fx-text-fill: -text-primary; -fx-underline: true; }
+
+/* Outline */
+.prf-outlineBtn {
+    -fx-text-fill: -text-secondary;
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(94,84,142,0.30);
+    -fx-border-width: 1;
+}
+.prf-outlineBtn:hover {
+    -fx-background-color: rgba(243,232,255,0.70);
+    -fx-border-color: rgba(94,84,142,0.45);
+}
+
+/* Primary action */
+.prf-actBtn {
+    -fx-text-fill: white;
+    -fx-background-color: -button-primary;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.28), 18, 0.20, 0, 8);
+}
+.prf-actBtn:hover {
+    -fx-background-color: -button-primary-hover;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.40), 22, 0.22, 0, 10);
+}
+
+/* Icon button */
+.wsp-iconBtn {
+    -fx-min-width: 34;
+    -fx-pref-width: 34;
+    -fx-max-width: 34;
+    -fx-min-height: 34;
+    -fx-pref-height: 34;
+    -fx-max-height: 34;
+    -fx-padding: 0;
+}
+.wsp-smallAct { -fx-padding: 6 12 6 12; }
+
+/* Download emphasis */
+.wsp-downloadBtn {
+    -fx-background-color: linear-gradient(to right, -deep, -purple);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.18), 18, 0.22, 0, 8);
+    -fx-padding: 6 10 6 10;
+}
+.wsp-downloadBtn:hover {
+    -fx-background-color: linear-gradient(to right, #2d2a4e, #7a6ba5);
+}
+
+/* 3-dots menu */
+.wsp-moreBtn {
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-border-color: -border-soft;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-text-fill: rgba(35,25,66,0.78);
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+    -fx-padding: 6 8 6 8;
+}
+.wsp-moreBtn:hover {
+    -fx-background-color: rgba(243,232,255,0.70);
+    -fx-border-color: rgba(94,84,142,0.22);
+}
+
+/* -------------------------
+   MODE TABS
+   ------------------------- */
+.wsp-modeTabs {
+    -fx-background-color: rgba(35,25,66,0.05);
+    -fx-border-color: -border-soft;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-padding: 2;
+}
+.wsp-modeTab {
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: rgba(35,25,66,0.72);
+    -fx-font-weight: 900;
+    -fx-padding: 6 12 6 12;
+}
+.wsp-modeTab:hover { -fx-background-color: rgba(243,232,255,0.70); }
+.wsp-modeTab:selected {
+    -fx-text-fill: white;
+    -fx-background-color: -button-primary;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.22), 18, 0.22, 0, 8);
+}
+
+/* -------------------------
+   INPUTS — Signup-like everywhere in workspace
+   ------------------------- */
+.text-field,
+.password-field,
+.text-area,
+.combo-box,
+.date-picker {
+    -fx-background-color: -input-bg;
+    -fx-border-color: -input-border;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 10 14;
+    -fx-font-size: 13px;
+    -fx-text-fill: -input-text;
+    -fx-prompt-text-fill: -input-prompt;
+}
+
+/* Focus */
+.text-field:focused,
+.password-field:focused,
+.text-area:focused,
+.combo-box:focused,
+.date-picker:focused {
+    -fx-border-color: -input-focus;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.20), 10, 0, 0, 2);
+}
+
+/* TextArea inner */
+.text-area .content {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+}
+
+/* Combo arrow */
+.combo-box .arrow-button { -fx-background-color: transparent; }
+.combo-box .arrow { -fx-background-color: rgba(94,84,142,0.85); }
+
+/* Error pseudo-class */
+.text-field:error,
+.text-area:error,
+.combo-box:error,
+.date-picker:error,
+.password-field:error {
+    -fx-border-color: -danger;
+    -fx-border-width: 2;
+}
+.combo-box:error .arrow-button {
+    -fx-background-color: rgba(255,107,107,0.12);
+}
+
+/* Error labels (force red) */
+.wsp-trackError,
+.error-label,
+.error,
+.prf-error {
+    -fx-text-fill: -danger;
+    -fx-font-size: 11px;
+    -fx-font-weight: 800;
+    -fx-padding: 4 0 0 5;
+}
+
+/* Muted helpers */
+.prf-muted,
+.wsp-hint {
+    -fx-text-fill: rgba(94,84,142,0.80);
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+/* -------------------------
+   LISTS — Better UX
+   ------------------------- */
+.wsp-list {
+    -fx-background-color: rgba(255,255,255,0.94);
+    -fx-border-color: -border-soft2;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 6;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.06), 18, 0.18, 0, 8);
+}
+
+/* Generic list cells */
+.wsp-list .list-cell {
+    -fx-padding: 10 10 10 10;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent rgba(94,84,142,0.12) transparent;
+    -fx-border-width: 0 0 1 0;
+}
+.wsp-list .list-cell:empty { -fx-border-width: 0; }
+
+.wsp-list .list-cell:hover {
+    -fx-background-color: rgba(94,84,142,0.06);
+    -fx-background-radius: 16;
+}
+.wsp-list .list-cell:selected {
+    -fx-background-color: -table-row-selected;
+    -fx-background-radius: 16;
+    -fx-border-color: rgba(94,84,142,0.22);
+    -fx-border-width: 1;
+}
+
+/* -------------------------
+   TRACK FEED — Cards feel clickable + clearer hierarchy
+   ------------------------- */
+.wsp-tracksList {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-effect: null;
+}
+.wsp-tracksList:focused {
+    -fx-background-insets: 0;
+    -fx-background-color: transparent;
+}
+
+.wsp-tracksList .list-cell {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0 0 12 0;
+}
+
+/* Card inside each row */
+.wsp-trackCard {
+    -fx-background-color: rgba(255,255,255,0.96);
+    -fx-border-color: rgba(94,84,142,0.16);
+    -fx-border-width: 1;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-padding: 14;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.06), 16, 0.18, 0, 8);
+}
+
+.wsp-tracksList .list-cell:hover .wsp-trackCard {
+    -fx-border-color: rgba(94,84,142,0.28);
+    -fx-background-color: rgba(255,255,255,0.99);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.16), 24, 0.22, 0, 12);
+    -fx-translate-y: -1;
+}
+
+.wsp-tracksList .list-cell:filled:selected .wsp-trackCard {
+    -fx-background-color: -table-row-selected;
+    -fx-border-color: rgba(94,84,142,0.32);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.22), 28, 0.24, 0, 14);
+}
+
+.wsp-trackCardTitle {
+    -fx-font-size: 15px;
+    -fx-font-weight: 900;
+    -fx-text-fill: -text-primary;
+}
+
+.wsp-trackDesc {
+    -fx-text-fill: rgba(35,25,66,0.66);
+    -fx-font-weight: 700;
+    -fx-font-size: 12px;
+}
+
+.wsp-trackDates {
+    -fx-text-fill: rgba(35,25,66,0.62);
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+
+.wsp-trackVisIcon {
+    -fx-font-size: 14px;
+    -fx-min-width: 22;
+    -fx-alignment: center;
+    -fx-text-fill: rgba(35,25,66,0.80);
+}
+
+/* Small "meta row" helpers if you use them */
+.wsp-metaRow {
+    -fx-alignment: center-left;
+    -fx-spacing: 8;
+}
+
+/* Header-like cell (optional) */
+.wsp-headerCell {
+    -fx-font-weight: 900;
+    -fx-text-fill: rgba(35,25,66,0.80);
+    -fx-background-color: -table-header-bg;
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-border-radius: 14;
+    -fx-padding: 10 12 10 12;
+}
+
+/* -------------------------
+   VIEWER / PREVIEW
+   ------------------------- */
+.wsp-viewerHost {
+    -fx-background-color: rgba(35,25,66,0.03);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: -border-soft2;
+    -fx-padding: 12;
+}
+
+.wsp-textPreview {
+    -fx-background-color: rgba(255,255,255,0.98);
+    -fx-border-color: -border-soft2;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-padding: 12;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+/* -------------------------
+   TIMELINE
+   ------------------------- */
+.wsp-timelineScroll { -fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0; }
+.wsp-timelineScroll > .viewport { -fx-background-color: transparent; }
+.wsp-timelineSegments { -fx-padding: 10; -fx-alignment: center-left; }
+
+.wsp-seg {
+    -fx-min-width: 18; -fx-pref-width: 18; -fx-max-width: 18;
+    -fx-min-height: 12; -fx-pref-height: 12; -fx-max-height: 12;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-background-color: rgba(35,25,66,0.10);
+    -fx-border-color: rgba(94,84,142,0.18);
+}
+.wsp-seg:hover {
+    -fx-background-color: rgba(243,232,255,0.85);
+    -fx-border-color: rgba(94,84,142,0.28);
+}
+.wsp-seg:selected {
+    -fx-background-color: linear-gradient(to bottom right, #5E548E, #9F86C0, #E0B1CB);
+    -fx-border-color: rgba(94,84,142,0.30);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.22), 14, 0.20, 0, 6);
+}
+.wsp-snapMeta {
+    -fx-text-fill: rgba(35,25,66,0.60);
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+
+/* -------------------------
+   TREE VIEW
+   ------------------------- */
+.tree-view {
+    -fx-background-color: rgba(255,255,255,0.96);
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-border-radius: 18;
+    -fx-background-radius: 18;
+    -fx-padding: 6;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.10), 18, 0.18, 0, 8);
+}
+.tree-cell {
+    -fx-text-fill: -text-primary;
+    -fx-font-weight: 800;
+    -fx-padding: 8 10 8 10;
+}
+.tree-cell:hover {
+    -fx-background-color: rgba(243,232,255,0.65);
+    -fx-background-radius: 12;
+}
+.tree-cell:selected {
+    -fx-background-color: -table-row-selected;
+    -fx-background-radius: 12;
+}
+
+/* -------------------------
+   SCROLLBARS
+   ------------------------- */
+.scroll-bar:horizontal, .scroll-bar:vertical { -fx-background-color: transparent; }
+.scroll-bar .track {
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-background-radius: 999;
+    -fx-border-color: rgba(94,84,142,0.10);
+    -fx-border-radius: 999;
+}
+.scroll-bar .thumb {
+    -fx-background-color: rgba(94,84,142,0.30);
+    -fx-background-radius: 999;
+}
+.scroll-bar .thumb:hover { -fx-background-color: rgba(94,84,142,0.50); }
+.scroll-bar .increment-button, .scroll-bar .decrement-button { -fx-background-color: transparent; -fx-padding: 0; }
+
+/* -------------------------
+   CONTEXT MENU
+   ------------------------- */
+.context-menu {
+    -fx-background-color: rgba(255,255,255,0.98);
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: rgba(94,84,142,0.15);
+}
+.context-menu .menu-item:focused {
+    -fx-background-color: rgba(243,232,255,0.70);
+}
+
+/* -------------------------
+   DIALOGS (default) + signup-like variant
+   ------------------------- */
+.dialog-pane,
+.wsp-dialog {
+    -fx-background-color: rgba(255,255,255,0.98);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.16), 26, 0.20, 0, 12);
+}
+
+/* signup-like dialog skin (used by Create Track) */
+.dialog-pane.wsp-signupDialog,
+.wsp-dialog.wsp-signupDialog {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-border-color: #d8c9f0;
+    -fx-border-width: 1;
+    -fx-border-radius: 24;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.06), 15, 0, 0, 5);
+}
+
+.dialog-pane:header .header-panel,
+.wsp-dialog:header .header-panel {
+    -fx-background-color: -table-header-bg;
+    -fx-background-radius: 18 18 0 0;
+    -fx-padding: 14;
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-border-width: 0 0 1 0;
+}
+.dialog-pane:header .header-panel .label,
+.wsp-dialog:header .header-panel .label {
+    -fx-text-fill: -text-primary;
+    -fx-font-weight: 900;
+    -fx-font-size: 13px;
+}
+
+/* For signup dialog: no header panel tint (clean) */
+.dialog-pane.wsp-signupDialog:header .header-panel,
+.wsp-dialog.wsp-signupDialog:header .header-panel {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 14 14 0 14;
+}
+
+/* Dialog content padding */
+.dialog-pane > .content,
+.wsp-dialog > .content {
+    -fx-padding: 14;
+}
+
+/* Dialog buttons */
+.dialog-pane .button,
+.wsp-dialog .button {
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-padding: 10 16 10 16;
+    -fx-font-weight: 800;
+}
+.dialog-pane .button:default,
+.wsp-dialog .button:default {
+    -fx-background-color: linear-gradient(to right, #5E548E, #9F86C0);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.12), 12, 0, 0, 4);
+}
+.dialog-pane .button:default:hover,
+.wsp-dialog .button:default:hover {
+    -fx-background-color: linear-gradient(to right, #7a6ba5, #b8a3d3);
+}
+.dialog-pane .button:cancel,
+.wsp-dialog .button:cancel {
+    -fx-background-color: rgba(94,84,142,0.10);
+    -fx-text-fill: #5E548E;
+}
+.dialog-pane .button:cancel:hover,
+.wsp-dialog .button:cancel:hover {
+    -fx-background-color: rgba(94,84,142,0.16);
+}
+
+/* -------------------------
+   CODE VIEWER (cv-)
+   ------------------------- */
+.cv-split { -fx-background-color: transparent; }
+
+.cv-sideCard, .cv-codeCard {
+    -fx-background-color: rgba(255,255,255,0.94);
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-padding: 12;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.08), 18, 0.18, 0, 8);
+}
+
+.cv-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+    -fx-text-fill: rgba(35,25,66,0.82);
+}
+
+.cv-tree {
+    -fx-background-color: rgba(255,255,255,0.98);
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-padding: 6;
+}
+.cv-tree .tree-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -text-primary;
+    -fx-font-weight: 800;
+    -fx-padding: 8 10 8 10;
+}
+.cv-tree .tree-cell:hover {
+    -fx-background-color: rgba(243,232,255,0.65);
+    -fx-background-radius: 12;
+}
+.cv-tree .tree-cell:selected {
+    -fx-background-color: -table-row-selected;
+    -fx-background-radius: 12;
+}
+
+.cv-codeHost {
+    -fx-background-color: rgba(255,255,255,0.98);
+    -fx-border-color: rgba(94,84,142,0.15);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-padding: 10;
+}
+
+.cv-path {
+    -fx-text-fill: rgba(35,25,66,0.62);
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+
+/* RichTextFX */
+#cvArea .virtual-flow .paragraph-box .paragraph-text .text { -fx-fill: #24292f; }
+#cvArea .virtual-flow .paragraph-box .paragraph-text .text.kw  { -fx-fill: #8250df; -fx-font-weight: 900; }
+#cvArea .virtual-flow .paragraph-box .paragraph-text .text.str { -fx-fill: #116329; }
+#cvArea .virtual-flow .paragraph-box .paragraph-text .text.com { -fx-fill: #6e7781; -fx-font-style: italic; }
+#cvArea .virtual-flow .paragraph-box .paragraph-text .text.num { -fx-fill: #0550ae; }
+#cvArea .virtual-flow .paragraph-box .paragraph-text .text.typ { -fx-fill: #953800; -fx-font-weight: 900; }
+
+#cvArea .lineno {
+    -fx-background-color: rgba(27,31,36,0.04);
+    -fx-text-fill: rgba(27,31,36,0.45);
+    -fx-padding: 0 10 0 10;
+    -fx-font-size: 11px;
+}
+/* =========================================================
+   PROGRESS VIEW — revert to first workspace.css look
+   (timeline + snapshot message viewing + snapshot details)
+   Paste at END of workspace.css so it overrides newer styles.
+   ========================================================= */
+
+/* ---------- Timeline (keep the old feel) ---------- */
+.wsp-timelineScroll { -fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0; }
+.wsp-timelineScroll > .viewport { -fx-background-color: transparent; }
+.wsp-timelineSegments { -fx-padding: 10; -fx-alignment: center-left; }
+
+.wsp-seg {
+    -fx-min-width: 18; -fx-pref-width: 18; -fx-max-width: 18;
+    -fx-min-height: 12; -fx-pref-height: 12; -fx-max-height: 12;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-background-color: rgba(35,25,66,0.10);
+    -fx-border-color: rgba(94,84,142,0.18);
+}
+.wsp-seg:hover {
+    -fx-background-color: rgba(243,232,255,0.85);
+    -fx-border-color: rgba(94,84,142,0.28);
+}
+.wsp-seg:selected {
+    -fx-background-color: linear-gradient(to bottom right, #5E548E, #9F86C0, #E0B1CB);
+    -fx-border-color: rgba(94,84,142,0.30);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.22), 14, 0.20, 0, 6);
+}
+
+/* meta under timeline */
+.wsp-snapMeta {
+    -fx-text-fill: rgba(35,25,66,0.60);
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+
+/* ---------- Selected snapshot details card ---------- */
+.wsp-selectedSnapCard {
+    -fx-background-color: -table-row-selected;
+    -fx-border-color: rgba(94,84,142,0.22);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-padding: 10 12 10 12;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.14), 18, 0.25, 0, 8);
+}
+
+.wsp-selectedSnapTitle {
+    -fx-text-fill: -text-primary;
+    -fx-font-weight: 900;
+    -fx-font-size: 13px;
+}
+
+.wsp-selectedSnapMeta {
+    -fx-text-fill: rgba(35,25,66,0.62);
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+
+/* Snapshot message / text viewing */
+.wsp-snapshotMessage {
+    -fx-background-color: rgba(255,255,255,0.96);
+    -fx-border-color: -table-border;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-padding: 12;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.08), 18, 0.18, 0, 8);
+}
+.wsp-snapshotMessage .label {
+    -fx-text-fill: rgba(35,25,66,0.90);
+    -fx-font-weight: 800;
+}
+

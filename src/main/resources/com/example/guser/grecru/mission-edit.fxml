@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.guser.controllers.grecru.MissionEditController"
+           stylesheets="@Css/mission-edit-styles.css"
+           styleClass="prf-bg"
+           alignment="CENTER"
+           style="-fx-padding: 40;">
+
+    <!-- Subtle Background Elements -->
+    <Circle radius="80" fill="rgba(159,134,192,0.03)" style="-fx-translate-y: -150; -fx-translate-x: -200;"/>
+    <Circle radius="60" fill="rgba(190,149,196,0.02)" style="-fx-translate-y: 200; -fx-translate-x: 250;"/>
+    <Circle radius="40" fill="rgba(224,177,203,0.01)" style="-fx-translate-y: -100; -fx-translate-x: 180;"/>
+
+    <!-- Main Form Container -->
+    <VBox styleClass="mission-form-container"
+          spacing="25"
+          alignment="CENTER"
+          maxWidth="650">
+
+        <!-- Header -->
+        <VBox alignment="CENTER" spacing="12">
+            <HBox spacing="12" alignment="CENTER">
+                <StackPane style="-fx-background-color: linear-gradient(135deg, #231942 0%, #5E548E 100%);
+                                 -fx-background-radius: 14;
+                                 -fx-padding: 12;
+                                 -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.25), 15, 0.2, 0, 5);">
+                    <Label text="✏️" style="-fx-font-size: 22px; -fx-text-fill: white;"/>
+                </StackPane>
+                <VBox spacing="3">
+                    <Label text="Edit Mission" styleClass="mission-h1"/>
+                    <Label text="Update mission details and requirements"
+                           styleClass="mission-subtitle"/>
+                </VBox>
+            </HBox>
+
+            <!-- Decorative Line -->
+            <HBox alignment="CENTER" style="-fx-padding: 10 0 0 0;">
+                <HBox style="-fx-background-color: linear-gradient(to right, transparent, #9F86C0, transparent);
+                            -fx-min-height: 1.5px;
+                            -fx-pref-width: 180px;
+                            -fx-opacity: 0.5;"/>
+            </HBox>
+        </VBox>
+
+        <!-- Form Fields -->
+        <GridPane hgap="25" vgap="25" styleClass="grid-pane">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="35" halignment="RIGHT"/>
+                <ColumnConstraints percentWidth="65"/>
+            </columnConstraints>
+
+            <!-- Description Field -->
+            <Label text="Description:"
+                   styleClass="field-label"
+                   GridPane.rowIndex="0"
+                   GridPane.columnIndex="0"/>
+            <TextField fx:id="descriptionField"
+                       promptText="Enter mission description..."
+                       styleClass="form-field"
+                       GridPane.rowIndex="0"
+                       GridPane.columnIndex="1"/>
+
+            <!-- Min Score Field -->
+            <Label text="Min Score (%):"
+                   styleClass="field-label"
+                   GridPane.rowIndex="1"
+                   GridPane.columnIndex="0"/>
+            <TextField fx:id="scoreField"
+                       promptText="Enter minimum score (0-100)..."
+                       styleClass="form-field"
+                       GridPane.rowIndex="1"
+                       GridPane.columnIndex="1"/>
+
+            <!-- Creator ID Field -->
+            <Label text="Creator ID:"
+                   styleClass="field-label"
+                   GridPane.rowIndex="2"
+                   GridPane.columnIndex="0"/>
+            <TextField fx:id="creatorField"
+                       promptText="Enter creator user ID..."
+                       styleClass="form-field"
+                       GridPane.rowIndex="2"
+                       GridPane.columnIndex="1"/>
+        </GridPane>
+
+        <!-- Action Buttons -->
+        <HBox spacing="20" alignment="CENTER" styleClass="action-buttons">
+            <Button text="💾 Save Changes"
+                    onAction="#saveMission"
+                    styleClass="mission-btn"
+                    graphicTextGap="8"/>
+
+            <Button text="↩ Cancel"
+                    onAction="#cancel"
+                    styleClass="mission-btn-outline"
+                    graphicTextGap="8"/>
+        </HBox>
+
+        <!-- Help Text -->
+        <Label text="💡 All fields are required. Score must be between 0 and 100."
+               styleClass="help-text"/>
+    </VBox>
+</StackPane>

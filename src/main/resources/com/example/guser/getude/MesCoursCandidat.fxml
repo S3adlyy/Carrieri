@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.guser.controllers.getude.MesCoursController"
+           stylesheets="@css/ThemeUnified.css"
+           styleClass="shell-root">
+
+    <!-- Background Orbs (optionnel) -->
+    <Circle radius="250" fill="rgba(94,84,142,0.03)" mouseTransparent="true" style="-fx-translate-y: -150; -fx-translate-x: -280;" styleClass="bg-orb"/>
+    <Circle radius="200" fill="rgba(159,134,192,0.02)"  mouseTransparent="true" style="-fx-translate-y: 200; -fx-translate-x: 250;" styleClass="bg-orb"/>
+    <Circle radius="150" fill="rgba(224,177,203,0.02)" mouseTransparent="true" style="-fx-translate-y: -100; -fx-translate-x: 180;" styleClass="bg-orb"/>
+
+    <ScrollPane fitToWidth="true" fitToHeight="true"
+                style="-fx-background-color: transparent; -fx-border-color: transparent;">
+
+        <VBox spacing="25" style="-fx-padding: 30;">
+
+            <!-- Header -->
+            <VBox spacing="5">
+                <Label text="Mes cours" styleClass="header-title"
+                       style="-fx-font-size: 32px; -fx-font-weight: 900; -fx-text-fill: #231942;"/>
+                <Label fx:id="lblStats" text="0 cours en cours"
+                       style="-fx-font-size: 16px; -fx-text-fill: #6b7280;"/>
+            </VBox>
+
+            <!-- STATISTIQUES RAPIDES -->
+            <HBox spacing="20" alignment="CENTER">
+                <VBox styleClass="stat-card" style="-fx-padding: 25; -fx-min-width: 180;">
+                    <Label text="En cours" style="-fx-text-fill: #6b7280; -fx-font-size: 14px; -fx-font-weight: 600;"/>
+                    <Label fx:id="lblEnCours" text="0" style="-fx-font-size: 36px; -fx-font-weight: 900; -fx-text-fill: #f59e0b;"/>
+                </VBox>
+                <VBox styleClass="stat-card" style="-fx-padding: 25; -fx-min-width: 180;">
+                    <Label text="Terminés" style="-fx-text-fill: #6b7280; -fx-font-size: 14px; -fx-font-weight: 600;"/>
+                    <Label fx:id="lblTermines" text="0" style="-fx-font-size: 36px; -fx-font-weight: 900; -fx-text-fill: #10b981;"/>
+                </VBox>
+                <VBox styleClass="stat-card" style="-fx-padding: 25; -fx-min-width: 180;">
+                    <Label text="Heures étudiées" style="-fx-text-fill: #6b7280; -fx-font-size: 14px; -fx-font-weight: 600;"/>
+                    <Label fx:id="lblTotalHeures" text="0h" style="-fx-font-size: 36px; -fx-font-weight: 900; -fx-text-fill: #5E548E;"/>
+                </VBox>
+            </HBox>
+
+            <!-- FILTRES ET RECHERCHE -->
+            <VBox styleClass="glass-card" spacing="15" style="-fx-padding: 20;">
+                <HBox spacing="25" alignment="CENTER_LEFT">
+                    <!-- Filtres par statut -->
+                    <VBox spacing="8">
+                        <Label text="Statut" style="-fx-font-weight: 700; -fx-text-fill: #231942;"/>
+                        <HBox spacing="10">
+                            <ToggleButton fx:id="btnFiltreTous" text="Tous"
+                                          style="-fx-background-radius: 20; -fx-padding: 5 15; -fx-background-color: #5E548E; -fx-text-fill: white;"
+                                          selected="true"/>
+                            <ToggleButton fx:id="btnFiltreEnCours" text="En cours"
+                                          style="-fx-background-radius: 20; -fx-padding: 5 15; -fx-background-color: #f3e8ff; -fx-text-fill: #5E548E;"/>
+                            <ToggleButton fx:id="btnFiltreTermines" text="Terminés"
+                                          style="-fx-background-radius: 20; -fx-padding: 5 15; -fx-background-color: #f3e8ff; -fx-text-fill: #5E548E;"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- RECHERCHE -->
+            <HBox styleClass="search-container" style="-fx-background-color: white; -fx-background-radius: 50px; -fx-border-color: #d8c9f0; -fx-border-width: 1.5; -fx-border-radius: 50px; -fx-padding: 5;">
+                <TextField fx:id="txtRecherche"
+                           promptText="Rechercher dans mes cours..."
+                           style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 10 20;"
+                           HBox.hgrow="ALWAYS"/>
+
+            </HBox>
+
+            <!-- LISTE DES COURS -->
+            <VBox fx:id="coursContainer" spacing="15" style="-fx-padding: 10;">
+                <!-- Les cartes de cours seront ajoutées dynamiquement ici -->
+            </VBox>
+
+        </VBox>
+
+    </ScrollPane>
+
+</StackPane>

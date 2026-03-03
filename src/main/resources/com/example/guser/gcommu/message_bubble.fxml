@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+
+<HBox xmlns="http://javafx.com/javafx/17.0.6"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.guser.controllers.gcommu.MessageBubbleController"
+      spacing="10" alignment="TOP_RIGHT">
+
+    <padding>
+        <Insets left="10" right="10"/>
+    </padding>
+
+    <!-- Message envoyé (droite) -->
+    <VBox fx:id="sentMessageWrapper" visible="false" managed="false" HBox.hgrow="ALWAYS" styleClass="sent-message-wrapper">
+        <HBox alignment="CENTER_RIGHT">
+            <VBox styleClass="sent-message-bubble">
+                <!-- Label pour le texte -->
+                <Label fx:id="sentMessageLabel" wrapText="true" styleClass="sent-message-text"/>
+
+                <!-- Conteneur pour l'image -->
+                <VBox fx:id="sentImageContainer" visible="false" managed="false" alignment="CENTER" spacing="5">
+                    <ImageView fx:id="sentImageView" fitWidth="200" fitHeight="150" preserveRatio="true" styleClass="message-image"/>
+                    <Label fx:id="sentImageFileName" styleClass="image-file-name"/>
+                </VBox>
+
+                <HBox alignment="CENTER_RIGHT" spacing="10">
+                    <Label fx:id="sentTimeLabel" styleClass="sent-message-time"/>
+                    <Label fx:id="sentStatusLabel" text="✓✓" styleClass="sent-message-time"/>
+                    <Label fx:id="sentEditedLabel" text="modifié" visible="false" styleClass="sent-message-time"/>
+                    <HBox spacing="5" styleClass="message-actions">
+                        <Button fx:id="sentEditButton" text="✎" styleClass="message-action-btn" onAction="#editMessage"/>
+                        <Button fx:id="sentDeleteButton" text="🗑" styleClass="message-action-btn" onAction="#deleteMessage"/>
+                    </HBox>
+                </HBox>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <!-- Message reçu (gauche) -->
+    <VBox fx:id="receivedMessageWrapper" visible="false" managed="false" HBox.hgrow="ALWAYS" styleClass="received-message-wrapper">
+        <HBox alignment="CENTER_LEFT">
+            <VBox styleClass="received-message-bubble">
+                <Label fx:id="senderNameLabel" styleClass="received-message-sender"/>
+
+                <!-- Label pour le texte -->
+                <Label fx:id="receivedMessageLabel" wrapText="true" styleClass="received-message-text"/>
+
+                <!-- Conteneur pour l'image -->
+                <VBox fx:id="receivedImageContainer" visible="false" managed="false" alignment="CENTER" spacing="5">
+                    <ImageView fx:id="receivedImageView" fitWidth="200" fitHeight="150" preserveRatio="true" styleClass="message-image"/>
+                    <Label fx:id="receivedImageFileName" styleClass="image-file-name"/>
+                </VBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label fx:id="receivedTimeLabel" styleClass="received-message-time"/>
+                    <Label fx:id="receivedEditedLabel" text="modifié" visible="false" styleClass="received-message-time"/>
+                    <HBox fx:id="receivedActionsBox" spacing="5" styleClass="message-actions">
+                        <Button fx:id="receivedEditButton" text="✎" styleClass="message-action-btn" onAction="#editMessage"/>
+                        <Button fx:id="receivedDeleteButton" text="🗑" styleClass="message-action-btn" onAction="#deleteMessage"/>
+                    </HBox>
+                </HBox>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <!-- Zone d'édition -->
+    <VBox fx:id="editBox" visible="false" managed="false" spacing="5" styleClass="edit-box">
+        <TextArea fx:id="editTextArea" promptText="Modifier le message..." prefRowCount="3" wrapText="true" styleClass="edit-textarea"/>
+        <HBox spacing="5" alignment="CENTER_RIGHT">
+            <Button fx:id="cancelEditButton" text="Annuler" styleClass="cancel-btn" onAction="#cancelEdit"/>
+            <Button fx:id="saveEditButton" text="Enregistrer" styleClass="save-btn" onAction="#saveEdit"/>
+        </HBox>
+    </VBox>
+</HBox>

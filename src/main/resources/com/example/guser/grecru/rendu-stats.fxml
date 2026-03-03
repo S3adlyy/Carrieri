@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.guser.controllers.grecru.RenduStatsController"
+            stylesheets="@Css/rendu-stats.css"
+            prefWidth="1200" prefHeight="800">
+
+    <!-- Top: Header -->
+    <top>
+        <HBox spacing="15" alignment="CENTER_LEFT"
+              style="-fx-background-color: white; -fx-padding: 20; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;">
+            <StackPane style="-fx-background-radius: 12; -fx-background-color: linear-gradient(to right, #5E548E, #9F86C0); -fx-padding: 10;">
+                <Label text="📊" style="-fx-font-size: 24px; -fx-text-fill: white;"/>
+            </StackPane>
+            <VBox spacing="4">
+                <Label text="Submission Analytics" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #231942;"/>
+                <Label text="Comprehensive statistics and visualization of all code submissions"
+                       style="-fx-text-fill: #666; -fx-font-size: 14px;"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="← Back to List"
+                    onAction="#goBackToList"
+                    style="-fx-background-color: #5E548E; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 6;"/>
+        </HBox>
+    </top>
+
+    <!-- Center: Content -->
+    <center>
+        <AnchorPane>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                        style="-fx-background: transparent; -fx-border-color: transparent;"
+                        AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                        AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+
+                <!-- Main Container - Centered -->
+                <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 20;">
+
+                    <!-- Summary Cards -->
+                    <HBox spacing="20" alignment="CENTER">
+                        <VBox styleClass="summary-card">
+                            <Label text="Total Submissions" styleClass="summary-card-label"/>
+                            <Label fx:id="lblTotalSubmissions" text="0" styleClass="summary-card-value"/>
+                            <Label fx:id="lblTotalTrend" text="↗ +0%" styleClass="summary-card-trend"/>
+                        </VBox>
+
+                        <VBox styleClass="summary-card">
+                            <Label text="Success Rate" styleClass="summary-card-label"/>
+                            <Label fx:id="lblSuccessRate" text="0%" styleClass="summary-card-value-success"/>
+                            <Label fx:id="lblSuccessTrend" text="↗ +0%" styleClass="summary-card-trend"/>
+                        </VBox>
+
+                        <VBox styleClass="summary-card">
+                            <Label text="Avg Score" styleClass="summary-card-label"/>
+                            <Label fx:id="lblAvgScore" text="0%" styleClass="summary-card-value-warning"/>
+                            <Label fx:id="lblAvgScoreTrend" text="↗ +0%" styleClass="summary-card-trend"/>
+                        </VBox>
+
+                        <VBox styleClass="summary-card">
+                            <Label text="Top Performer" styleClass="summary-card-label"/>
+                            <Label fx:id="lblTopPerformer" text="N/A" styleClass="summary-card-value"/>
+                            <Label fx:id="lblTopScore" text="0%" styleClass="summary-card-trend"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- First Row Charts -->
+                    <HBox spacing="20" alignment="CENTER">
+                        <!-- Score Distribution -->
+                        <VBox styleClass="chart-container" spacing="10" prefWidth="550">
+                            <Label text="📈 Score Distribution" styleClass="chart-title"/>
+                            <BarChart fx:id="scoreDistributionChart"
+                                      styleClass="stats-bar-chart"
+                                      legendVisible="false"
+                                      prefHeight="250">
+                                <xAxis>
+                                    <CategoryAxis label="Score Range" />
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis label="Count" />
+                                </yAxis>
+                            </BarChart>
+                            <Label text="Distribution of scores across all submissions" styleClass="chart-description"/>
+                        </VBox>
+
+                        <!-- Status Distribution -->
+                        <VBox styleClass="chart-container" spacing="10" prefWidth="550">
+                            <Label text="📊 Submission Status" styleClass="chart-title"/>
+                            <PieChart fx:id="statusPieChart"
+                                      styleClass="stats-pie-chart"
+                                      prefHeight="250"/>
+                            <Label text="Breakdown of submission statuses" styleClass="chart-description"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Second Row Charts -->
+                    <HBox spacing="20" alignment="CENTER">
+                        <!-- Mission Performance -->
+                        <VBox styleClass="chart-container" spacing="10" prefWidth="550">
+                            <Label text="🎯 Mission Performance" styleClass="chart-title"/>
+                            <BarChart fx:id="missionPerformanceChart"
+                                      styleClass="stats-bar-chart"
+                                      legendVisible="false"
+                                      prefHeight="250">
+                                <xAxis>
+                                    <CategoryAxis label="Mission" />
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis label="Avg Score" />
+                                </yAxis>
+                            </BarChart>
+                            <Label text="Average scores by mission" styleClass="chart-description"/>
+                        </VBox>
+
+                        <!-- Timeline -->
+                        <VBox styleClass="chart-container" spacing="10" prefWidth="550">
+                            <Label text="📅 Submission Timeline" styleClass="chart-title"/>
+                            <LineChart fx:id="timelineChart"
+                                       styleClass="stats-line-chart"
+                                       legendVisible="false"
+                                       prefHeight="250">
+                                <xAxis>
+                                    <CategoryAxis label="Date" />
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis label="Submissions" />
+                                </yAxis>
+                            </LineChart>
+                            <Label text="Submission trends over time" styleClass="chart-description"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Metrics Table -->
+                    <VBox styleClass="metrics-container" spacing="15" alignment="CENTER" maxWidth="1140">
+                        <Label text="📋 Performance Metrics" styleClass="section-title"/>
+                        <GridPane styleClass="metrics-grid" hgap="15" vgap="10">
+                            <columnConstraints>
+                                <ColumnConstraints prefWidth="200"/>
+                                <ColumnConstraints prefWidth="120"/>
+                                <ColumnConstraints prefWidth="120"/>
+                                <ColumnConstraints prefWidth="120"/>
+                            </columnConstraints>
+
+                            <!-- Header -->
+                            <Label text="Metric" styleClass="metrics-header" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                            <Label text="Value" styleClass="metrics-header" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                            <Label text="Min" styleClass="metrics-header" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                            <Label text="Max" styleClass="metrics-header" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+
+                            <!-- Score Row -->
+                            <Label text="Overall Score" styleClass="metrics-label" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                            <Label fx:id="lblOverallScore" text="0%" styleClass="metrics-value" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                            <Label fx:id="lblMinScore" text="0%" styleClass="metrics-value-min" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                            <Label fx:id="lblMaxScore" text="0%" styleClass="metrics-value-max" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+
+                            <!-- Count Row -->
+                            <Label text="Submissions" styleClass="metrics-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                            <Label fx:id="lblSubmissionCount" text="0" styleClass="metrics-value" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                            <Label fx:id="lblAcceptedCount" text="0" styleClass="metrics-value-accepted" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                            <Label fx:id="lblRejectedCount" text="0" styleClass="metrics-value-rejected" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+
+                            <!-- Time Row -->
+                            <Label text="Avg Eval Time" styleClass="metrics-label" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                            <Label fx:id="lblAvgEvalTime" text="0s" styleClass="metrics-value" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                            <Label fx:id="lblFastestEval" text="0s" styleClass="metrics-value-min" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+                            <Label fx:id="lblSlowestEval" text="0s" styleClass="metrics-value-max" GridPane.columnIndex="3" GridPane.rowIndex="3"/>
+                        </GridPane>
+                    </VBox>
+
+                    <!-- Export Buttons -->
+                    <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0;">
+                        <Button text="📊 Export as PNG | CSV " onAction="#exportAsPNG"
+                                style="-fx-background-color: transparent; -fx-border-color: #5E548E; -fx-text-fill: #5E548E; -fx-font-weight: bold; -fx-padding: 8 16;"/>
+                        <Button text="📋 Full Report" onAction="#exportReport"
+                                style="-fx-background-color: #5E548E; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20;"/>
+                    </HBox>
+
+                    <!-- Footer -->
+                    <HBox alignment="CENTER" style="-fx-padding: 20 0 0 0; -fx-border-color: #e0e0e0; -fx-border-width: 1 0 0 0;">
+                        <Label text="💡 Statistics updated in real-time • Last updated: "
+                               style="-fx-text-fill: #666; -fx-font-size: 12px;"/>
+                        <Label fx:id="lblLastUpdated" text="Just now"
+                               style="-fx-text-fill: #5E548E; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+                    </HBox>
+
+                </VBox>
+            </ScrollPane>
+        </AnchorPane>
+    </center>
+</BorderPane>

@@ -1,0 +1,69 @@
+/* =========================================================
+   style.css  -  Global overrides / extra utilities
+   (imported alongside app.css and navbar.css)
+   ========================================================= */
+
+/* Tooltip styling */
+.tooltip {
+    -fx-background-color: #1a1225;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-background-radius: 6;
+    -fx-padding: 6 10;
+    -fx-font-family: "Segoe UI";
+}
+
+/* Alert dialog styling */
+.alert .dialog-pane {
+    -fx-background-color: #ffffff;
+    -fx-font-family: "Segoe UI";
+}
+
+.alert .dialog-pane .header-panel {
+    -fx-background-color: #f5f0fa;
+}
+
+.alert .dialog-pane .button-bar .button {
+    -fx-background-color: #7c3aed;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-family: "Segoe UI";
+}
+
+.alert .dialog-pane .button-bar .button:hover {
+    -fx-background-color: #6d28d9;
+}
+
+/* Confirmation dialog cancel button */
+.alert .dialog-pane .button-bar .button.cancel-button {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #5c5470;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 8;
+}
+
+/* DatePicker popup */
+.date-picker-popup {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0d4f5;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.date-picker-popup .month-year-pane {
+    -fx-background-color: #f5f0fa;
+}
+
+.date-picker-popup .day-cell {
+    -fx-font-family: "Segoe UI";
+}
+
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: #ede5f7;
+}
+
+.date-picker-popup .selected {
+    -fx-background-color: #7c3aed;
+    -fx-text-fill: white;
+}

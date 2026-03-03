@@ -1,0 +1,270 @@
+/* ========================================================================
+   MISSION EDIT STYLES - PURPLE COLOR SCHEME
+   ======================================================================== */
+
+/* Root Background */
+.prf-bg {
+    -fx-background-color: #F6F2FA;
+}
+
+/* Main Container */
+.mission-form-container {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-border-color: rgba(35,25,66,0.12);
+    -fx-border-width: 1px;
+    -fx-padding: 40px 50px;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.15), 35, 0.2, 0, 15);
+    -fx-max-width: 650px;
+    -fx-min-width: 500px;
+}
+
+/* Title */
+.mission-h1 {
+    -fx-text-fill: #231942;
+    -fx-font-size: 28px;
+    -fx-font-weight: 900;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial';
+    -fx-letter-spacing: -0.5px;
+}
+
+/* Subtitle */
+.mission-subtitle {
+    -fx-text-fill: rgba(35,25,66,0.75);
+    -fx-font-size: 15px;
+    -fx-font-weight: 500;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial';
+}
+
+/* Field Labels */
+.field-label {
+    -fx-text-fill: rgba(35,25,66,0.8) !important;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial';
+    -fx-padding: 8px 15px 8px 0;
+    -fx-alignment: center-right;
+}
+
+/* Form Fields */
+.form-field {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: rgba(35,25,66,0.2);
+    -fx-border-radius: 10px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 14px 16px;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial';
+    -fx-text-fill: #231942;
+    -fx-prompt-text-fill: rgba(35,25,66,0.5);
+    -fx-pref-height: 48px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.02), 2, 0, 0, 1);
+}
+
+.form-field:focused {
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.2), 8, 0.2, 0, 3);
+}
+
+.form-field:hover {
+    -fx-border-color: #9F86C0;
+}
+
+/* GridPane styling */
+.grid-pane {
+    -fx-padding: 20px 0;
+}
+
+/* Action Buttons Container */
+.action-buttons {
+    -fx-padding: 15px 0 0 0;
+}
+
+/* Primary Button */
+.mission-btn {
+    -fx-background-color: linear-gradient(135deg, #231942 0%, #5E548E 100%);
+    -fx-text-fill: white !important;
+    -fx-font-size: 15px;
+    -fx-font-weight: 900;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial';
+    -fx-padding: 15px 35px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.25), 10, 0.2, 0, 4);
+    -fx-min-width: 140px;
+    -fx-letter-spacing: 0.3px;
+}
+
+.mission-btn:hover {
+    -fx-background-color: linear-gradient(135deg, #5E548E 0%, #9F86C0 100%);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.35), 15, 0.25, 0, 6);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+    -fx-transition: all 0.2s ease;
+}
+
+.mission-btn:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.2), 8, 0.15, 0, 3);
+}
+
+.mission-btn:focused {
+    -fx-border-color: rgba(255,255,255,0.4);
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+}
+
+/* Outline Button */
+.mission-btn-outline {
+    -fx-background-color: transparent;
+    -fx-text-fill: #231942 !important;
+    -fx-font-size: 15px;
+    -fx-font-weight: 900;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial';
+    -fx-padding: 13px 33px;
+    -fx-border-color: rgba(35,25,66,0.3);
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-cursor: hand;
+    -fx-background-radius: 10px;
+    -fx-min-width: 140px;
+    -fx-letter-spacing: 0.3px;
+}
+
+.mission-btn-outline:hover {
+    -fx-background-color: rgba(190,149,196,0.15);
+    -fx-border-color: rgba(94,84,142,0.4);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.1), 5, 0, 0, 2);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+.mission-btn-outline:pressed {
+    -fx-background-color: rgba(190,149,196,0.25);
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* Help Text */
+.help-text {
+    -fx-text-fill: rgba(35,25,66,0.6);
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial';
+    -fx-padding: 20px 0 0 0;
+    -fx-font-style: italic;
+}
+
+/* Placeholder text styling */
+.form-field .prompt-text {
+    -fx-fill: rgba(35,25,66,0.5);
+    -fx-font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .mission-form-container {
+        -fx-padding: 30px 25px;
+        -fx-max-width: 90%;
+        -fx-min-width: 90%;
+    }
+
+    .mission-h1 {
+        -fx-font-size: 26px;
+    }
+
+    .mission-subtitle {
+        -fx-font-size: 14px;
+    }
+
+    .form-field {
+        -fx-pref-height: 44px;
+        -fx-padding: 12px 14px;
+        -fx-font-size: 13.5px;
+    }
+
+    .mission-btn, .mission-btn-outline {
+        -fx-padding: 13px 25px;
+        -fx-font-size: 14px;
+        -fx-min-width: 120px;
+    }
+
+    .field-label {
+        -fx-font-size: 14px;
+    }
+}
+
+/* Animation for form appearance */
+@keyframes fadeIn {
+    from {
+        -fx-opacity: 0;
+        -fx-translate-y: 20;
+    }
+    to {
+        -fx-opacity: 1;
+        -fx-translate-y: 0;
+    }
+}
+
+.mission-form-container {
+    -fx-animation: fadeIn 0.4s ease-out;
+}
+
+/* Validation states */
+.form-field:invalid {
+    -fx-border-color: #EF4444;
+    -fx-effect: dropshadow(gaussian, rgba(239, 68, 68, 0.1), 5, 0, 0, 1);
+}
+
+.form-field:valid {
+    -fx-border-color: #10B981;
+}
+
+/* Focus indicator for accessibility */
+.form-field:focused {
+    -fx-border-color: #7c3aed;
+    -fx-border-width: 2px;
+}
+
+/* Icons in buttons */
+.mission-btn .glyph-icon,
+.mission-btn-outline .glyph-icon {
+    -fx-font-size: 16px;
+    -fx-padding: 0 6px 0 0;
+}
+
+/* Grid alignment improvements */
+.grid-pane .label {
+    -fx-alignment: center-right;
+}
+
+/* Smooth transitions */
+.form-field, .mission-btn, .mission-btn-outline {
+    -fx-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Disabled state styling */
+.form-field:disabled {
+    -fx-background-color: rgba(35,25,66,0.05);
+    -fx-text-fill: rgba(35,25,66,0.4);
+    -fx-border-color: rgba(35,25,66,0.1);
+    -fx-cursor: default;
+}
+
+.mission-btn:disabled {
+    -fx-background-color: rgba(35,25,66,0.2);
+    -fx-text-fill: rgba(35,25,66,0.5) !important;
+    -fx-effect: none;
+    -fx-cursor: default;
+}
+
+.mission-btn-outline:disabled {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(35,25,66,0.2);
+    -fx-text-fill: rgba(35,25,66,0.4) !important;
+    -fx-cursor: default;
+}

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<ScrollPane fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="main-scroll"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.guser.controllers.goffre.OffreAddController"
+stylesheets="@css/theme-unified.css">
+
+    <StackPane>
+        <!-- Cercles décoratifs (optionnels, du thème) -->
+        <Circle radius="250" fill="rgba(94,84,142,0.03)" mouseTransparent="true"
+                style="-fx-translate-y: -150; -fx-translate-x: -280;" styleClass="bg-orb"/>
+        <Circle radius="200" fill="rgba(159,134,192,0.02)" mouseTransparent="true"
+                style="-fx-translate-y: 200; -fx-translate-x: 250;" styleClass="bg-orb-purple"/>
+        <Circle radius="150" fill="rgba(224,177,203,0.02)" mouseTransparent="true"
+                style="-fx-translate-y: -100; -fx-translate-x: 180;" styleClass="bg-orb-pink"/>
+
+        <VBox alignment="TOP_CENTER" spacing="30" style="-fx-padding: 40;">
+
+            <!-- En-tête -->
+            <VBox spacing="15" alignment="CENTER" styleClass="header-section">
+                <StackPane styleClass="header-icon-container">
+                    <Label text="➕" styleClass="header-icon"/>
+                </StackPane>
+                <Label text="Ajouter une Offre" styleClass="header-title"/>
+                <Label text="Remplissez les informations avec soin" styleClass="header-subtitle"/>
+            </VBox>
+
+            <!-- Cartes du formulaire -->
+            <VBox spacing="25" style="-fx-max-width: 1000px;">
+
+                <!-- Carte 1 : Informations principales -->
+                <VBox styleClass="glass-card" spacing="20">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Informations principales" styleClass="section-title-small"/>
+                        <Label text="Requis" styleClass="badge-required"/>
+                    </HBox>
+
+                    <VBox spacing="15">
+                        <!-- Titre + bouton d'amélioration -->
+                        <VBox spacing="8" styleClass="form-field">
+                            <Label text="Titre de l'offre" styleClass="field-label"/>
+                            <TextField fx:id="txtTitre" promptText="Ex: Développeur Full Stack Java"
+                                       styleClass="elegant-field"/>
+                            <Label fx:id="errTitre" styleClass="error-label" managed="false" visible="false"/>
+                        </VBox>
+                        <HBox alignment="CENTER_RIGHT">
+                            <Button text="✨ Améliorer le titre" onAction="#handleImproveTitle"
+                                    styleClass="btn-outline" prefWidth="200"/>
+                        </HBox>
+                    </VBox>
+
+                    <HBox spacing="20">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="form-field">
+                            <Label text="Type de contrat" styleClass="field-label"/>
+                            <ComboBox fx:id="comboTypeContrat" promptText="CDI, CDD, Stage..."
+                                      styleClass="combo-box" maxWidth="Infinity"/>
+                            <Label fx:id="errTypeContrat" styleClass="error-label" managed="false" visible="false"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="form-field">
+                            <Label text="Entreprise" styleClass="field-label"/>
+                            <TextField fx:id="txtEntreprise" promptText="Nom de l'entreprise"
+                                       styleClass="elegant-field"/>
+                            <Label fx:id="errEntreprise" styleClass="error-label" managed="false" visible="false"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Carte 2 : Détails du poste -->
+                <VBox styleClass="glass-card" spacing="20">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Détails du poste" styleClass="section-title-small"/>
+                        <Label text="Requis" styleClass="badge-required"/>
+                    </HBox>
+
+                    <HBox spacing="20">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="form-field">
+                            <Label text="Salaire mensuel (DT)" styleClass="field-label"/>
+                            <TextField fx:id="txtSalaire" promptText="Ex: 2800" styleClass="elegant-field"/>
+                            <Label fx:id="errSalaire" styleClass="error-label" managed="false" visible="false"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="form-field">
+                            <Label text="Localisation" styleClass="field-label"/>
+                            <TextField fx:id="txtLocalisation" promptText="Ex: Tunis, Ariana..."
+                                       styleClass="elegant-field"/>
+                            <Label fx:id="errLocalisation" styleClass="error-label" managed="false" visible="false"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="form-field">
+                            <Label text="Secteur d'activité" styleClass="field-label"/>
+                            <TextField fx:id="txtSecteur" promptText="Ex: IT, Banque..."
+                                       styleClass="elegant-field"/>
+                            <Label fx:id="errSecteur" styleClass="error-label" managed="false" visible="false"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="20">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="form-field">
+                            <Label text="Niveau de qualification" styleClass="field-label"/>
+                            <ComboBox fx:id="comboQualification" promptText="Bac+3, Bac+5..."
+                                      styleClass="combo-box" maxWidth="Infinity"/>
+                            <Label fx:id="errQualification" styleClass="error-label" managed="false" visible="false"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="form-field">
+                            <Label text="Expérience requise" styleClass="field-label"/>
+                            <TextField fx:id="txtExperience" promptText="Ex: 2-4 ans" styleClass="elegant-field"/>
+                            <Label fx:id="errExperience" styleClass="error-label" managed="false" visible="false"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="form-field">
+                            <Label text="Compétences clés" styleClass="field-label"/>
+                            <TextField fx:id="txtCompetences" promptText="Java, Spring, React..."
+                                       styleClass="elegant-field"/>
+                            <Label fx:id="errCompetences" styleClass="error-label" managed="false" visible="false"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Carte 3 : Description détaillée -->
+                <VBox styleClass="glass-card" spacing="20">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Description détaillée" styleClass="section-title-small"/>
+                        <Label text="Requis" styleClass="badge-required"/>
+                    </HBox>
+
+                    <VBox spacing="8" styleClass="form-field">
+                        <TextArea fx:id="txtDescription" prefRowCount="8" wrapText="true"
+                                  promptText="Décrivez le poste, les missions, l'équipe, les technologies utilisées..."
+                                  styleClass="elegant-field"/>
+                        <Label fx:id="errDescription" styleClass="error-label" managed="false" visible="false"/>
+                        <HBox alignment="CENTER_RIGHT" spacing="15">
+                            <Label fx:id="lblCharCount" text="0/2000" styleClass="char-counter"/>
+                            <Button fx:id="btnGenerateIA" text="✨ Générer avec IA" onAction="#handleGenerateIA"
+                                    styleClass="btn-outline" prefWidth="200"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Carte 4 : Contact et Validité -->
+                <VBox styleClass="glass-card" spacing="20">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Contact et Validité" styleClass="section-title-small"/>
+                        <Label text="Requis" styleClass="badge-required"/>
+                    </HBox>
+
+                    <HBox spacing="20">
+                        <!-- Email -->
+                        <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="form-field">
+                            <Label text="Contact recruteur (email)" styleClass="field-label"/>
+                            <TextField fx:id="txtContact" promptText="recrutement@entreprise.tn"
+                                       styleClass="elegant-field"/>
+                            <Label fx:id="errContact" styleClass="error-label" managed="false" visible="false"/>
+                        </VBox>
+
+                        <!-- Date et heure d'expiration -->
+                        <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="form-field">
+                            <Label text="Date et heure d'expiration" styleClass="field-label"/>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <DatePicker fx:id="dpExpirationDate" promptText="jj/mm/aaaa"
+                                            styleClass="date-picker-elegant" prefWidth="180"/>
+                                <Spinner fx:id="spExpirationTime" editable="true" prefWidth="110"
+                                         styleClass="spinner"/>
+                                <Label text=":" style="-fx-font-size: 18px; -fx-text-fill: #5E548E;"/>
+                                <Spinner fx:id="spExpirationMinute" editable="true" prefWidth="110"
+                                         styleClass="spinner"/>
+                            </HBox>
+                            <Label fx:id="errExpiration" styleClass="error-label" managed="false" visible="false"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Boutons d'action -->
+                <HBox spacing="30" alignment="CENTER" style="-fx-padding: 20 0 40 0;">
+                    <Button text="Réinitialiser" onAction="#handleReset"
+                            styleClass="btn-secondary" prefWidth="200" prefHeight="50"/>
+                    <Button text="Publier l'offre" onAction="#handleSave"
+                            styleClass="btn-primary-glow" prefWidth="280" prefHeight="58"/>
+                </HBox>
+
+            </VBox>
+        </VBox>
+    </StackPane>
+</ScrollPane>

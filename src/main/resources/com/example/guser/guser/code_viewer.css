@@ -1,0 +1,101 @@
+/* =========================
+   CODE VIEWER
+   ========================= */
+
+/* TreeView container */
+.wsp-tree {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 6;
+}
+
+/* Tree cells */
+.wsp-tree .tree-cell {
+    -fx-padding: 6 10 6 10;
+    -fx-background-color: transparent;
+    -fx-text-fill: rgba(35,25,66,0.88);
+}
+
+.wsp-tree .tree-cell:hover {
+    -fx-background-color: rgba(190,149,196,0.18);
+}
+
+.wsp-tree .tree-cell:selected {
+    -fx-background-color: rgba(94,84,142,0.25);
+    -fx-text-fill: #231942;
+}
+
+/* Optional: make rows same height for smoother scrolling */
+.wsp-tree {
+    -fx-fixed-cell-size: 26;
+}
+
+/* Code area (TextArea) */
+.wsp-codeArea {
+    -fx-font-family: "Consolas", "JetBrains Mono", "Monospaced";
+    -fx-font-size: 12px;
+    -fx-background-color: white;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+/* TextArea has an inner content region */
+.wsp-codeArea .content {
+    -fx-background-color: white;
+}
+
+/* SplitPane divider (optional, makes it feel cleaner) */
+.wsp-split > .split-pane-divider {
+    -fx-padding: 0 0.5em 0 0.5em;
+    -fx-background-color: rgba(35,25,66,0.06);
+}
+.wsp-codeHost {
+    -fx-background-color: white;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 8;
+}
+
+/* RichTextFX uses .text as the rendered text */
+.wsp-codeHost .text {
+    -fx-font-family: "Consolas", "JetBrains Mono", "Monospaced";
+    -fx-font-size: 12px;
+}
+
+/* Basic token styles (you can refine later) */
+.kw { -fx-fill: #5E548E; -fx-font-weight: 900; }
+.str { -fx-fill: #BE95C4; }
+.com { -fx-fill: rgba(35,25,66,0.45); }
+.num { -fx-fill: #9F86C0; }
+.typ { -fx-fill: #231942; -fx-font-weight: 900; }
+
+/* Line numbers area */
+.lineno {
+    -fx-background-color: rgba(35,25,66,0.03);
+    -fx-padding: 0 8 0 8;
+}
+/* ---------- RichTextFX token coloring (GitHub-ish light) ---------- */
+
+/* Default text color (must include the same prefix as RichTextFX default styling) */
+.styled-text-area .paragraph-box .text {
+    -fx-fill: #24292f;
+}
+
+/* Token classes applied by setStyleSpans(...) */
+.styled-text-area .paragraph-box .text.kw  { -fx-fill: #8250df; -fx-font-weight: 900; } /* keywords */
+.styled-text-area .paragraph-box .text.str { -fx-fill: #116329; }                       /* strings */
+.styled-text-area .paragraph-box .text.com { -fx-fill: #6e7781; -fx-font-style: italic; }/* comments */
+.styled-text-area .paragraph-box .text.num { -fx-fill: #0550ae; }                       /* numbers */
+.styled-text-area .paragraph-box .text.typ { -fx-fill: #953800; -fx-font-weight: 900; } /* types (optional) */
+
+/* Line numbers (Label nodes from LineNumberFactory) */
+.styled-text-area .lineno {
+    -fx-background-color: rgba(27,31,36,0.04);
+    -fx-text-fill: rgba(27,31,36,0.45);
+    -fx-padding: 0 10 0 10;
+    -fx-font-size: 11px;
+}

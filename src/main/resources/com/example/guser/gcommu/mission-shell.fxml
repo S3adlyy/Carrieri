@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.FontWeight?>
+<?import javafx.scene.image.ImageView?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.guser.controllers.gcommu.MissionShellController"
+            stylesheets="@ThemeUnified.css"
+            styleClass="shell-root"
+            prefWidth="1400"
+            prefHeight="900">
+
+    <!-- Left: Vertical Sidebar Navbar -->
+    <left>
+        <VBox fx:id="sidebar"
+              styleClass="sidebar-animated"
+              spacing="0"
+              prefWidth="70"
+              minWidth="70"
+              maxWidth="70"
+              onMouseEntered="#expandSidebar"
+              onMouseExited="#collapseSidebar">
+
+            <!-- Brand Section -->
+            <VBox styleClass="brand-container" alignment="CENTER">
+                <StackPane styleClass="brand-icon">
+                    <ImageView fx:id="brandLogo" styleClass="brand-logo" fitWidth="36" fitHeight="36" preserveRatio="true"/>
+                </StackPane>
+                <Label fx:id="brandText" text="Carrieri" styleClass="brand-text"/>
+                <Label fx:id="brandSubtext" text="Communication" styleClass="brand-subtext"/>
+            </VBox>
+
+            <!-- Navigation Links - Updated for Messaging App -->
+            <VBox styleClass="nav-container" alignment="CENTER" spacing="4">
+
+                <!-- Messages Button -->
+                <Button fx:id="btnMessages"
+                        text="Messages"
+                        onAction="#showMessagesView"
+                        styleClass="nav-button"
+                        maxWidth="Infinity">
+                    <graphic>
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Label text="💬" styleClass="nav-icon"/>
+                            <Label text="Messages" styleClass="nav-text"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+
+                <!-- Contacts Button -->
+                <Button fx:id="btnContacts"
+                        text="Contacts"
+                        onAction="#showContactsView"
+                        styleClass="nav-button"
+                        maxWidth="Infinity">
+                    <graphic>
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Label text="👥" styleClass="nav-icon"/>
+                            <Label text="Contacts" styleClass="nav-text"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+
+            </VBox>
+
+            <!-- Spacer -->
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- Theme Toggle Button -->
+            <Button fx:id="btnTheme" styleClass="theme-toggle" text="🌙" maxWidth="Infinity"/>
+
+            <!-- User Section at Bottom -->
+            <VBox styleClass="user-container" alignment="CENTER" spacing="12">
+                <StackPane>
+                    <Circle fx:id="userAvatar" radius="20" styleClass="user-avatar-glow"/>
+                </StackPane>
+                <Label fx:id="userName" text="Bensaid Youssef" styleClass="user-name"/>
+                <Label fx:id="userRole" text="Administrateur" styleClass="user-role"/>
+
+                <!-- Logout Button -->
+                <Button text="🚪" onAction="#logout" styleClass="logout-button" maxWidth="Infinity"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- Center: Content Area -->
+    <center>
+        <StackPane fx:id="contentPane" styleClass="content-area">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
+            <!-- This will be dynamically loaded with different views -->
+        </StackPane>
+    </center>
+
+</BorderPane>

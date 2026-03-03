@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.guser.controllers.grecru.MissionAddController"
+           stylesheets="@Css/mission-styles.css"
+           styleClass="root-container"
+           prefWidth="1400" prefHeight="900">
+
+    <!-- Background Orbs -->
+    <Circle radius="250" styleClass="bg-orb-1"/>
+    <Circle radius="200" styleClass="bg-orb-2"/>
+    <Circle radius="150" styleClass="bg-orb-3"/>
+
+    <!-- Main Content -->
+    <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="main-scroll">
+        <VBox alignment="TOP_CENTER" spacing="0" styleClass="content-wrapper-large">
+
+            <!-- Header -->
+            <VBox spacing="25" alignment="CENTER" styleClass="header-section-large">
+                <StackPane styleClass="icon-container-large">
+                    <Circle radius="45" styleClass="icon-pulse-large"/>
+                    <Circle radius="40" styleClass="icon-bg-large"/>
+                    <Label text="✦" styleClass="icon-symbol-large"/>
+                </StackPane>
+
+                <VBox spacing="20" alignment="CENTER">
+                    <Label text="Mission Control"
+                           styleClass="main-title-gradient-large"/>
+                </VBox>
+            </VBox>
+
+            <!-- MAIN 3-COLUMN FORM - COMPLETELY CENTERED -->
+            <HBox spacing="30" alignment="CENTER" styleClass="horizontal-form-large"
+                  HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+
+                <!-- COLUMN 1: Mission Description -->
+                <VBox spacing="20" styleClass="form-column-large" HBox.hgrow="ALWAYS" prefWidth="450">
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label text="Mission Description" styleClass="field-title-large"/>
+                        <Label text="Required" styleClass="badge-required-large"/>
+                    </HBox>
+
+                    <TextArea fx:id="descriptionField"
+                              promptText="Décrivez les objectifs de la mission, les livrables et les critères d'évaluation..."
+                              styleClass="description-area-large"
+                              wrapText="true"
+                              prefHeight="220"
+                              prefWidth="420"/>
+
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Label fx:id="characterCountLabel"
+                               text="0/1000"
+                               styleClass="char-counter-large"/>
+                    </HBox>
+
+                    <!-- Error label for description -->
+                    <Label fx:id="descriptionError"
+                           styleClass="error-label"
+                           visible="false"
+                           managed="false"/>
+
+                    <!-- Quick Preview -->
+                    <VBox spacing="8" styleClass="preview-box-large">
+                        <Label text="Aperçu" styleClass="preview-title-large"/>
+                        <Label text="Les objectifs de la mission seront affichés ici..."
+                               styleClass="preview-text-large"/>
+                    </VBox>
+                </VBox>
+
+                <!-- COLUMN 2: Score + Bonnes pratiques -->
+                <VBox spacing="25" styleClass="form-column-large" prefWidth="350">
+
+                    <!-- Minimum Passing Score -->
+                    <VBox spacing="15">
+                        <Label text="Minimum Passing Score" styleClass="field-title-large"/>
+
+                        <TextField fx:id="scoreField"
+                                   promptText="Entrez le score (ex: 75)"
+                                   styleClass="score-input-large"
+                                   prefWidth="280"/>
+
+                        <Label text="Le candidat doit atteindre ce score minimum"
+                               styleClass="field-hint-large"/>
+
+                        <!-- Error label for score -->
+                        <Label fx:id="scoreError"
+                               styleClass="error-label"
+                               visible="false"
+                               managed="false"/>
+
+                        <!-- Score Levels -->
+                        <VBox spacing="8" styleClass="score-levels-large">
+                            <HBox spacing="15" alignment="CENTER_LEFT">
+                                <Circle radius="6" styleClass="score-dot-fail"/>
+                                <Label text="Échec (0-49)" styleClass="score-level-fail-large"/>
+                            </HBox>
+                            <HBox spacing="15" alignment="CENTER_LEFT">
+                                <Circle radius="6" styleClass="score-dot-pass"/>
+                                <Label text="Réussite (50-79)" styleClass="score-level-pass-large"/>
+                            </HBox>
+                            <HBox spacing="15" alignment="CENTER_LEFT">
+                                <Circle radius="6" styleClass="score-dot-excellent"/>
+                                <Label text="Excellent (80-100)" styleClass="score-level-excellent-large"/>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Bonnes pratiques -->
+                    <VBox spacing="12" styleClass="tips-box-large">
+                        <Label text="📌 Bonnes pratiques" styleClass="tips-title-large"/>
+                        <VBox spacing="8">
+                            <Label text="• Soyez spécifique sur les objectifs" styleClass="tips-item-large"/>
+                            <Label text="• Définissez des livrables clairs" styleClass="tips-item-large"/>
+                            <Label text="• Mentionnez les critères d'évaluation" styleClass="tips-item-large"/>
+                            <Label text="• Incluez les contraintes éventuelles" styleClass="tips-item-large"/>
+                        </VBox>
+                    </VBox>
+                </VBox>
+
+                <!-- COLUMN 3: Creator + User -->
+                <VBox spacing="25" styleClass="form-column-large" prefWidth="320">
+
+                    <!-- Creator Identification -->
+                    <VBox spacing="15" visible="false" managed="false">
+                        <Label text="Creator Identification" styleClass="field-title-large"/>
+
+                        <TextField fx:id="createdByIdField"
+                                   promptText="Votre ID utilisateur"
+                                   styleClass="creator-input-large"
+                                   prefWidth="280"/>
+
+                        <Label text="Cet ID sera associé à la mission"
+                               styleClass="field-hint-large"/>
+
+                        <!-- Error label for creator ID -->
+                        <Label fx:id="creatorIdError"
+                               styleClass="error-label"
+                               visible="false"
+                               managed="false"/>
+
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Button text="Vérifier" styleClass="verify-button-large"/>
+                            <Label text="✓ Créateur vérifié" styleClass="verified-badge-large"/>
+                        </HBox>
+
+                        <Label text="Suivi des actions activé"
+                               styleClass="tracking-badge-large"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+
+            <!-- Submit Button Row -->
+            <HBox spacing="25" alignment="CENTER" styleClass="submit-row-large">
+                <Button text="Réinitialiser"
+                        onAction="#resetForm"
+                        styleClass="secondary-button-large"/>
+                <Button fx:id="submitButton"
+                        text="Lancer la mission"
+                        onAction="#ajouterMission"
+                        styleClass="submit-button-large"/>
+            </HBox>
+
+            <!-- Trust Badges -->
+            <HBox spacing="35" alignment="CENTER" styleClass="trust-badges-large">
+                <HBox spacing="10" alignment="CENTER">
+                    <Label text="⚡" styleClass="trust-icon-large"/>
+                    <Label text="Traitement instantané" styleClass="trust-text-large"/>
+                </HBox>
+                <Label text="•" styleClass="trust-separator-large"/>
+                <HBox spacing="10" alignment="CENTER">
+                    <Label text="🔒" styleClass="trust-icon-large"/>
+                    <Label text="Sécurisé" styleClass="trust-text-large"/>
+                </HBox>
+                <Label text="•" styleClass="trust-separator-large"/>
+                <HBox spacing="10" alignment="CENTER">
+                    <Label text="📊" styleClass="trust-icon-large"/>
+                    <Label text="Mise à jour temps réel" styleClass="trust-text-large"/>
+                </HBox>
+            </HBox>
+
+        </VBox>
+    </ScrollPane>
+</StackPane>

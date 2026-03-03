@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<ScrollPane fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="main-scroll"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.guser.controllers.goffre.PostulationsCandidatsController"
+            stylesheets="@css/theme-unified.css">
+
+    <StackPane>
+        <!-- Cercles décoratifs en arrière-plan -->
+        <Circle radius="250" fill="rgba(94,84,142,0.03)" mouseTransparent="true"
+                style="-fx-translate-y: -150; -fx-translate-x: -280;" styleClass="bg-orb"/>
+        <Circle radius="200" fill="rgba(159,134,192,0.02)" mouseTransparent="true"
+                style="-fx-translate-y: 200; -fx-translate-x: 250;" styleClass="bg-orb-purple"/>
+        <Circle radius="150" fill="rgba(224,177,203,0.02)" mouseTransparent="true"
+                style="-fx-translate-y: -100; -fx-translate-x: 180;" styleClass="bg-orb-pink"/>
+
+        <VBox alignment="TOP_CENTER" spacing="30" style="-fx-padding: 40;">
+
+            <!-- En‑tête -->
+            <VBox spacing="15" alignment="CENTER" styleClass="header-section">
+                <StackPane styleClass="header-icon-container">
+                    <Label text="👥" styleClass="header-icon"/>
+                </StackPane>
+                <Label text="Liste des Postulations" styleClass="header-title"/>
+                <Label text="Consultez toutes vos postulations" styleClass="header-subtitle"/>
+            </VBox>
+
+            <!-- Barre de recherche et filtre -->
+            <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-max-width: 1400px;">
+                <TextField fx:id="txtSearch"
+                           promptText="Rechercher par status, offre, entreprise..."
+                           HBox.hgrow="ALWAYS"
+                           styleClass="search-input"
+                           onKeyReleased="#handleSearch"/>
+                <Button fx:id="btnFilter" text="Filtrer" onAction="#handleFilter" styleClass="btn-filter">
+                    <graphic>
+                        <Label text="▼" style="-fx-font-size: 13; -fx-text-fill: #7c3aed;"/>
+                    </graphic>
+                </Button>
+            </HBox>
+
+            <!-- Compteur de résultats -->
+            <Label fx:id="lblStatus" text="0 postulations trouvées" styleClass="status-text"/>
+
+            <!-- Grille des cartes -->
+            <FlowPane fx:id="flowPostulations"
+                      hgap="32" vgap="32"
+                      alignment="CENTER"
+                      prefWrapLength="1400"
+                      style="-fx-padding: 10;"/>
+        </VBox>
+    </StackPane>
+</ScrollPane>

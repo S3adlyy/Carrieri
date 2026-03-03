@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+
+<?import javafx.scene.image.ImageView?>
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.guser.controllers.guser.LoginController"
+           stylesheets="@app.css">
+
+    <Pane styleClass="bg"/>
+
+    <Pane mouseTransparent="true">
+        <Circle radius="150" layoutX="160" layoutY="140" fill="rgba(255,255,255,0.16)"/>
+        <Circle radius="90"  layoutX="340" layoutY="260" fill="rgba(255,255,255,0.10)"/>
+        <Circle radius="180" layoutX="1040" layoutY="560" fill="rgba(255,255,255,0.14)"/>
+    </Pane>
+
+    <HBox spacing="26" maxWidth="1020" maxHeight="580">
+        <VBox spacing="14" styleClass="glass" HBox.hgrow="ALWAYS">
+            <padding><Insets top="26" right="26" bottom="26" left="26"/></padding>
+            <HBox styleClass="sidebar-brand" alignment="CENTER_LEFT" spacing="12">
+                <ImageView fx:id="brandLogo" styleClass="brand-logo"/>
+                <Label text="Carrieri" styleClass="brandText"/>
+            </HBox>
+            <Text text="Build a profile, then build workspaces. Tracks + snapshots show growth like a story."
+                  wrappingWidth="440" styleClass="muted"/>
+            <HBox spacing="10">
+                <Label text="Versioned" textFill="white" styleClass="pill"/>
+                <Label text="Shareable" textFill="white" styleClass="pill"/>
+                <Label text="Recruiter-ready" textFill="white" styleClass="pill"/>
+            </HBox>
+            <Region VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <VBox spacing="14" styleClass="card" prefWidth="430">
+            <padding><Insets top="26" right="26" bottom="26" left="26"/></padding>
+
+            <Text text="Sign in" styleClass="h1"/>
+            <Text text="Welcome back." styleClass="muted-dark"/>
+
+            <VBox spacing="8">
+                <Label text="Email" styleClass="label"/>
+                <TextField fx:id="emailField" promptText="you@example.com" styleClass="input"/>
+            </VBox>
+
+            <VBox spacing="8">
+                <Label text="Password" styleClass="label"/>
+                <PasswordField fx:id="passwordField" promptText="••••••••" styleClass="input"/>
+                <TextField fx:id="passwordVisibleField" promptText="Password" styleClass="input" visible="false" managed="false"/>
+                <CheckBox fx:id="showPassCheck" text="Show password" onAction="#onTogglePassword"/>
+            </VBox>
+
+            <Label fx:id="errorLabel" text="" styleClass="error" visible="false" managed="false"/>
+
+            <Button text="Sign in" onAction="#onLogin" styleClass="btn" maxWidth="Infinity"/>
+
+            <HBox spacing="6" alignment="CENTER">
+                <Label text="No account?" styleClass="muted-dark"/>
+                <Hyperlink text="Create one" onAction="#onGoSignup"/>
+            </HBox>
+        </VBox>
+    </HBox>
+</StackPane>

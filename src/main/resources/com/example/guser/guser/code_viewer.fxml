@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<SplitPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.guser.controllers.guser.CodeViewerController"
+           fx:id="codeSplitPane"
+           dividerPositions="0.33"
+           styleClass="cv-split"
+           stylesheets="@workspace.css">
+
+    <!-- LEFT: Repo panel -->
+    <VBox spacing="10" styleClass="cv-sideCard">
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label fx:id="repoTitleLabel" text="Repository" styleClass="cv-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="downloadZipBtn" text="Download ZIP" onAction="#onDownloadZip"
+                    styleClass="wsp-downloadBtn cv-zipBtn"/>
+        </HBox>
+
+        <TextField fx:id="searchField" promptText="Search file name…" styleClass="cv-search"/>
+
+        <TreeView fx:id="filesTreeView" styleClass="cv-tree" VBox.vgrow="ALWAYS"/>
+    </VBox>
+
+    <!-- RIGHT: Code panel -->
+    <VBox spacing="10" styleClass="cv-codeCard">
+
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <VBox spacing="2">
+                <Label text="Code" styleClass="cv-title"/>
+                <Label fx:id="filePathLabel" text="—" styleClass="cv-path"/>
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button fx:id="downloadFileBtn" text="Download file" onAction="#onDownloadFile"
+                    styleClass="wsp-downloadBtn cv-fileBtn"/>
+        </HBox>
+
+        <StackPane fx:id="codeAreaHost" styleClass="cv-codeHost" VBox.vgrow="ALWAYS"/>
+
+    </VBox>
+
+</SplitPane>

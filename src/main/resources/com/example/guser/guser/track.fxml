@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.guser.controllers.guser.TrackController"
+      stylesheets="@workspace.css"
+      fx:id="trackDetailPane"
+      styleClass="wsp-workspaceRoot"
+      spacing="12"
+      visible="false"
+      managed="false">
+
+    <!-- Top bar -->
+    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="wsp-topBar">
+        <Button fx:id="backToTracksBtn"
+                text="← Tracks"
+                onAction="#onBackToTracks"
+                styleClass="prf-linkBtn"/>
+
+        <VBox spacing="4">
+            <Label fx:id="trackTitleLabel" text="Track Title" styleClass="wsp-trackTitle"/>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label fx:id="trackTypeLabel" text="TYPE" styleClass="wsp-chip"/>
+                <Label fx:id="trackDatesLabel" text="—" styleClass="wsp-subtitle"/>
+            </HBox>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <HBox fx:id="modeTabs" spacing="0" styleClass="wsp-modeTabs">
+            <ToggleButton fx:id="currentModeBtn" text="Current" styleClass="wsp-modeTab"/>
+            <ToggleButton fx:id="progressModeBtn" text="Progress" styleClass="wsp-modeTab"/>
+        </HBox>
+
+        <ComboBox fx:id="trackVisibilityCombo" prefWidth="140" onAction="#onVisibilityChanged"/>
+
+        <Button fx:id="createSnapshotBtn"
+                text="+ Snapshot"
+                onAction="#onCreateSnapshot"
+                styleClass="prf-actBtn"/>
+    </HBox>
+
+    <!-- Progress section -->
+    <VBox fx:id="progressPane" spacing="10" visible="false" managed="false" styleClass="wsp-progressCard">
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="Progress timeline" styleClass="wsp-sectionTitle"/>
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button fx:id="prevSnapshotBtn" text="◀" styleClass="prf-outlineBtn wsp-iconBtn"/>
+            <Button fx:id="nextSnapshotBtn" text="▶" styleClass="prf-outlineBtn wsp-iconBtn"/>
+            <ComboBox fx:id="snapshotJumpCombo" prefWidth="300"/>
+        </HBox>
+
+        <ScrollPane fx:id="timelineScroll"
+                    fitToHeight="true"
+                    hbarPolicy="AS_NEEDED"
+                    vbarPolicy="NEVER"
+                    styleClass="wsp-timelineScroll">
+            <content>
+                <HBox fx:id="timelineSegmentsBox" spacing="8" styleClass="wsp-timelineSegments"/>
+            </content>
+        </ScrollPane>
+
+        <VBox fx:id="selectedSnapshotCard" spacing="4" styleClass="wsp-selectedSnapCard">
+            <Label fx:id="selectedSnapshotTitleLabel" text="" styleClass="wsp-selectedSnapTitle"/>
+            <Label fx:id="selectedSnapshotMetaLabel" text="" styleClass="wsp-selectedSnapMeta"/>
+        </VBox>
+    </VBox>
+
+    <!-- Content area -->
+    <SplitPane fx:id="artifactSplitPane"
+               dividerPositions="0.50"
+               orientation="HORIZONTAL"
+               styleClass="wsp-split">
+
+        <!-- Left: artifacts -->
+        <VBox fx:id="artifactsPane" spacing="10" styleClass="wsp-leftPane">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label fx:id="artifactsTitleLabel" text="Artifacts" styleClass="wsp-sectionTitle"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="addArtifactBtn"
+                        text="+ Add"
+                        onAction="#onAddArtifact"
+                        styleClass="prf-actBtn wsp-smallAct"/>
+            </HBox>
+
+            <ListView fx:id="artifactsListView" styleClass="wsp-list"/>
+        </VBox>
+
+        <!-- Right: preview (hidden until artifact click) -->
+        <VBox fx:id="previewPane" spacing="10" visible="false" managed="false" styleClass="wsp-rightPane">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Preview" styleClass="wsp-sectionTitle"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="closePreviewBtn"
+                        text="✕"
+                        onAction="#onClosePreview"
+                        styleClass="prf-outlineBtn wsp-iconBtn"/>
+            </HBox>
+
+            <StackPane fx:id="artifactViewerHost" styleClass="wsp-viewerHost">
+                <Label fx:id="viewerPlaceholderLabel" text="Select an artifact" styleClass="prf-muted"/>
+            </StackPane>
+        </VBox>
+
+    </SplitPane>
+
+    <Label fx:id="trackErrorLabel" text="" styleClass="prf-error" visible="false" managed="false"/>
+</VBox>

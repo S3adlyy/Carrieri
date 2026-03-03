@@ -1,0 +1,513 @@
+package com.example.guser.controllers.getude;
+
+import entities.getude.Cours;
+import javafx.animation.*;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import session.SessionContext;
+import utils.getude.AlertUtils;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class CandidatShellController implements Initializable {
+
+    @FXML private StackPane contentPane;
+    @FXML private VBox sidebar;
+
+    @FXML private Button btnCatalogue;
+    @FXML private Button btnMesCours;
+    @FXML private Button btnCertificats;
+    @FXML private Button btnProfil;
+
+    @FXML private Label catalogueText;
+    @FXML private Label mesCoursText;
+    @FXML private Label certificatsText;
+    @FXML private Label profilText;
+    @FXML private Label brandText;
+    @FXML private Label brandSubtext;
+    @FXML private Label userName;
+    @FXML private Label userRole;
+    @FXML private Circle userAvatar;
+    @FXML private Button btnTheme;
+    // Ajoutez ces déclarations avec les autres @FXML
+    @FXML private Button btnRecommandation;  // Note: sans 's' à la fin, comme dans le FXML
+    @FXML private Label recommandationText;   // Si vous voulez ajouter un label pour le texte
+    private Button activeButton = null;
+    private static CandidatShellController instance;
+
+    // Variables pour suivre le contexte
+    private Cours coursActif = null;
+    int me = SessionContext.getCurrentUser().getId();
+    private int candidatId = me;
+    // À remplacer par l'ID connecté
+    public void setCandidatId(int id) {
+        this.candidatId = id;
+    }
+
+    private Timeline expandAnimation;
+    private Timeline collapseAnimation;
+
+    public CandidatShellController() {
+        instance = this;
+    }
+
+    public static CandidatShellController getInstance() {
+        return instance;
+    }
+
+    // ============================================
+    // BASCULE VERS ADMIN - MODIFIÉ
+    // ============================================
+    @FXML
+    public void switchToAdmin() {
+        boolean confirmed = AlertUtils.showConfirmation(
+                "🔄 Changement de mode",
+                "Voulez-vous basculer vers l'espace Administrateur ?\n\n" +
+                        "Vous pourrez gérer les cours, modules et leçons.",
+                "Oui, basculer",
+                "Non, rester"
+        );
+
+        if (confirmed) {
+            try {
+                Stage stage = (Stage) sidebar.getScene().getWindow();
+
+                // ✅ Sauvegarder TOUS les paramètres
+                boolean etaitMaximized = stage.isMaximized();
+                boolean etaitFullScreen = stage.isFullScreen();
+                double width = stage.getWidth();
+                double height = stage.getHeight();
+                double x = stage.getX();
+                double y = stage.getY();
+
+                System.out.println("📊 Sauvegarde - Maximized: " + etaitMaximized +
+                        ", Width: " + width + ", Height: " + height);
+
+                Parent currentRoot = stage.getScene().getRoot();
+                FadeTransition fadeOut = new FadeTransition(Duration.millis(300), currentRoot);
+                fadeOut.setFromValue(1);
+                fadeOut.setToValue(0);
+
+                fadeOut.setOnFinished(e -> {
+                    try {
+                        Parent newRoot = FXMLLoader.load(getClass().getResource("/com/example/guser/getude/MainShell.fxml"));
+                        newRoot.setOpacity(0);
+
+                        Scene scene = new Scene(newRoot, width, height);
+                        stage.setScene(scene);
+                        stage.setTitle("E-Learning - Administration");
+
+                        stage.setX(x);
+                        stage.setY(y);
+
+                        if (etaitMaximized) {
+                            Platform.runLater(() -> stage.setMaximized(true));
+                        }
+
+                        if (etaitFullScreen) {
+                            Platform.runLater(() -> stage.setFullScreen(true));
+                        }
+
+                        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), newRoot);
+                        fadeIn.setFromValue(0);
+                        fadeIn.setToValue(1);
+                        fadeIn.play();
+
+                        // ✅ CORRECTION : Utiliser Platform.runLater pour l'alerte
+                        Platform.runLater(() -> {
+                            AlertUtils.showSuccess("✅ Bascule réussie",
+                                    "Vous êtes maintenant dans l'espace Administrateur.");
+                        });
+
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        Platform.runLater(() -> {
+                            AlertUtils.showError("❌ Erreur de chargement",
+                                    "Impossible de charger l'espace administrateur.\n\n" + ex.getMessage());
+                        });
+                    }
+                });
+
+                fadeOut.play();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() -> {
+                    AlertUtils.showError("❌ Erreur", "Impossible de basculer vers le mode Admin");
+                });
+            }
+        }
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        userName.setText("Bilal El Eter");
+        userRole.setText("Candidat");
+
+        // ✅ Installer le tooltip sur l'avatar
+        Tooltip candidatTooltip = new Tooltip("Cliquer pour basculer en mode Admin");
+        Tooltip.install(userAvatar, candidatTooltip);
+        setupThemeButton();
+
+        // ✅ NE PAS AJOUTER DE VUE ICI - juste montrer le catalogue
+        showCatalogue(); // Cette méthode utilise animateContentChange() qui gère proprement le contentPane
+        setActiveButton(btnCatalogue);
+
+        setupAnimations();
+
+        // ✅ Animation de fondu initiale
+        contentPane.setOpacity(0);
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(400), contentPane);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.play();
+    }
+    // ✅ AJOUTER CES MÉTHODES
+    private void setupThemeButton() {
+        updateThemeIcon();
+        btnTheme.setOnAction(e -> toggleTheme());
+    }
+
+    private void toggleTheme() {
+        Main.toggleTheme();
+        updateThemeIcon();
+    }
+
+    private void updateThemeIcon() {
+        if (Main.isDarkMode()) {
+            btnTheme.setText("☀");
+        } else {
+            btnTheme.setText("🌙");
+        }
+    }
+
+    private void setupAnimations() {
+        expandAnimation = new Timeline(
+                new KeyFrame(Duration.millis(300),
+                        new KeyValue(sidebar.prefWidthProperty(), 250, Interpolator.EASE_BOTH),
+                        new KeyValue(sidebar.minWidthProperty(), 250, Interpolator.EASE_BOTH),
+                        new KeyValue(sidebar.maxWidthProperty(), 250, Interpolator.EASE_BOTH)
+                )
+        );
+
+        collapseAnimation = new Timeline(
+                new KeyFrame(Duration.millis(300),
+                        new KeyValue(sidebar.prefWidthProperty(), 70, Interpolator.EASE_BOTH),
+                        new KeyValue(sidebar.minWidthProperty(), 70, Interpolator.EASE_BOTH),
+                        new KeyValue(sidebar.maxWidthProperty(), 70, Interpolator.EASE_BOTH)
+                )
+        );
+    }
+
+    @FXML
+    public void expandSidebar() {
+        expandAnimation.play();
+    }
+
+    @FXML
+    public void collapseSidebar() {
+        collapseAnimation.play();
+    }
+
+    @FXML
+    public void showCatalogue() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/guser/getude/CoursCandidat.fxml"));
+            Node view = loader.load();
+
+            // Récupérer le contrôleur et forcer le rechargement
+            CoursCandidatController controller = loader.getController();
+            controller.rafraichirAchats(); // Vous devez ajouter cette méthode
+
+            animateContentChange(view);
+            setActiveButton(btnCatalogue);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ============================================
+    // FONCTIONNALITÉS À VENIR - MODIFIÉES
+    // ============================================
+    @FXML
+    public void showMesCours() {
+        loadView("/com/example/guser/getude/MesCoursCandidat.fxml");
+        setActiveButton(btnMesCours);
+    }
+
+    // Modifiez la méthode showCertificats() :
+    @FXML
+    public void showCertificats() {
+        loadView("/com/example/guser/getude/CertificatsCandidat.fxml");
+        setActiveButton(btnCertificats);
+    }
+
+    @FXML
+    public void showProfil() {
+        AlertUtils.showInfo("👤 Mon profil",
+                "Cette fonctionnalité arrivera très bientôt !\n\n" +
+                        "Vous pourrez modifier vos informations personnelles.");
+    }
+
+    // ✅ Méthode pour ouvrir un cours
+    public void openCours(Cours cours) {
+        this.coursActif = cours;
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/guser/getude/CoursPlayer.fxml"));
+            Node view = loader.load();
+
+            CoursPlayerController controller = loader.getController();
+            controller.setCours(cours);
+            controller.setCandidatId(candidatId);
+
+            animateContentChange(view);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            AlertUtils.showError("❌ Erreur", "Impossible d'ouvrir le cours:\n\n" + e.getMessage());
+        }
+    }
+
+    // ✅ Méthode pour ouvrir un quiz
+    public void openQuiz(int moduleId, String moduleTitre) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/guser/getude/QuizModulePlayer.fxml"));
+            Node view = loader.load();
+
+            QuizModulePlayerController controller = loader.getController();
+            controller.setModuleId(moduleId, candidatId);
+
+            animateContentChange(view);
+
+            AlertUtils.showInfo("📝 Quiz du module",
+                    "Vous allez passer le quiz du module \"" + moduleTitre + "\".\n\n" +
+                            "Répondez aux 5 questions pour valider ce module.");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            AlertUtils.showError("❌ Erreur", "Impossible d'ouvrir le quiz:\n\n" + e.getMessage());
+        }
+    }
+
+    // ✅ Méthode pour ouvrir le test final
+    public void openTestFinal(int coursId) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/guser/getude/TestFinalPlayer.fxml"));
+            Node view = loader.load();
+
+            TestFinalPlayerController controller = loader.getController();
+            controller.setCoursId(coursId, candidatId);
+
+            animateContentChange(view);
+
+            AlertUtils.showInfo("🎯 Test final",
+                    "Vous allez passer le test final du cours.\n\n" +
+                            "15 questions pour valider l'ensemble du cours. Bonne chance !");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            AlertUtils.showError("❌ Erreur", "Impossible d'ouvrir le test final:\n\n" + e.getMessage());
+        }
+    }
+
+    // ✅ Retour au cours après quiz/test
+    public void retourAuCours() {
+        if (coursActif != null) {
+            openCours(coursActif);
+        } else {
+            showCatalogue();
+        }
+    }
+
+    // ============================================
+    // DÉCONNEXION - MODIFIÉE
+    // ============================================
+    @FXML
+    public void logout() {
+        boolean confirmed = AlertUtils.showConfirmation(
+                "🔒 Déconnexion",
+                "Êtes-vous sûr de vouloir vous déconnecter ?\n\n" +
+                        "Votre progression sera sauvegardée automatiquement.",
+                "Oui, me déconnecter",
+                "Non, rester connecté"
+        );
+
+        if (confirmed) {
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(500), sidebar.getScene().getRoot());
+            fadeOut.setFromValue(1);
+            fadeOut.setToValue(0);
+            fadeOut.setOnFinished(e -> {
+                Platform.exit();
+                System.exit(0);
+            });
+            fadeOut.play();
+
+            AlertUtils.showSuccess("👋 Au revoir !", "Déconnexion réussie. À bientôt !");
+        }
+    }
+
+    private void loadView(String fxmlFile) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+            Node view = loader.load();
+            animateContentChange(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+            AlertUtils.showError("❌ Erreur", "Impossible de charger la vue:\n\n" + fxmlFile);
+        }
+    }
+
+    private void animateContentChange(Node newView) {
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(150), contentPane);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+
+        fadeOut.setOnFinished(e -> {
+            contentPane.getChildren().setAll(newView);
+
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(300), contentPane);
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1);
+            fadeIn.play();
+        });
+
+        fadeOut.play();
+    }
+
+    private void setActiveButton(Button button) {
+        if (activeButton != null) {
+            activeButton.getStyleClass().remove("nav-button-active");
+        }
+
+        activeButton = button;
+        if (activeButton != null) {
+            activeButton.getStyleClass().add("nav-button-active");
+        }
+    }
+    @FXML
+    private void ouvrirChatbot() {
+        try {
+            // Chercher le chatbot existant
+            Node existingChatbot = contentPane.lookup("#chatbotOverlay");
+
+            if (existingChatbot != null) {
+                // Fermer le chatbot
+                contentPane.getChildren().remove(existingChatbot);
+                return;
+            }
+
+            // Charger le chatbot
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/guser/getude/Chatbot.fxml"));
+            Node chatbotView = loader.load();
+            chatbotView.setId("chatbotOverlay");
+
+            ChatbotController controller = loader.getController();
+
+            // ✅ PASSER LA RÉFÉRENCE DU CONTENTPANE
+            controller.setContentPane(contentPane);
+
+            // Passer le contexte si un cours est actif
+            if (coursActif != null) {
+                controller.setContexte(coursActif.getTitre(), "", "");
+            }
+
+            // Positionner le chatbot en bas à droite
+            StackPane.setAlignment(chatbotView, Pos.BOTTOM_RIGHT);
+            StackPane.setMargin(chatbotView, new Insets(0, 20, 20, 0));
+
+            // Animation d'entrée
+            chatbotView.setTranslateY(50);
+            chatbotView.setOpacity(0);
+
+            contentPane.getChildren().add(chatbotView);
+
+            Timeline showAnimation = new Timeline(
+                    new KeyFrame(Duration.millis(300),
+                            new KeyValue(chatbotView.translateYProperty(), 0, Interpolator.EASE_BOTH),
+                            new KeyValue(chatbotView.opacityProperty(), 1, Interpolator.EASE_BOTH)
+                    )
+            );
+            showAnimation.play();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Platform.runLater(() -> {
+                AlertUtils.showError("❌ Erreur", "Impossible d'ouvrir l'assistant.");
+            });
+        }
+    }
+    // ✅ Méthode publique pour fermer le chatbot (appelée par le X)
+    public void fermerChatbot() {
+        Node chatbot = contentPane.lookup("#chatbotOverlay");
+        if (chatbot != null) {
+            contentPane.getChildren().remove(chatbot);
+            System.out.println("✅ Chatbot fermé via bouton X");
+        }
+    }
+    @FXML
+    private void ouvrirRecommandation() {
+        try {
+            // Chercher si la vue recommandation existe déjà
+            Node existingView = contentPane.lookup("#recommandationView");
+
+            if (existingView != null) {
+                // Si elle existe déjà, on la ferme (toggle)
+                animateContentChange(getCurrentView()); // Retour à la vue précédente
+                return;
+            }
+
+            // Sauvegarder la vue actuelle si ce n'est pas déjà fait
+            if (contentPane.getChildren().isEmpty()) {
+                showCatalogue(); // Au cas où
+                return;
+            }
+
+            // Charger la vue recommandation
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/guser/getude/Recommandation.fxml"));
+            Node recommandationView = loader.load();
+            recommandationView.setId("recommandationView");
+
+            // Récupérer le contrôleur et passer l'ID du candidat
+            RecommandationController controller = loader.getController();
+            controller.setCandidatId(this.candidatId);
+
+            // Remplacer le contenu avec animation
+            animateContentChange(recommandationView);
+
+            // ✅ ACTIVER LE BOUTON RECOMMANDATION
+            setActiveButton(btnRecommandation);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            AlertUtils.showError("❌ Erreur", "Impossible d'ouvrir les recommandations.");
+        }
+    }
+
+    // Méthode utilitaire pour obtenir la vue actuelle
+    private Node getCurrentView() {
+        if (!contentPane.getChildren().isEmpty()) {
+            return contentPane.getChildren().get(0);
+        }
+        return null;
+    }
+    public void showView(Node view) {
+        animateContentChange(view); // Appelle la méthode privée existante
+    }
+}

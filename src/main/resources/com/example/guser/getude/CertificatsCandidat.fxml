@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.guser.controllers.getude.CertificatsCandidatController"
+           stylesheets="@css/ThemeUnified.css"
+           styleClass="shell-root, certificats-root">
+
+    <!-- Background Orbs décoratifs -->
+    <Circle radius="250" fill="rgba(94,84,142,0.03)" mouseTransparent="true"
+            style="-fx-translate-y: -150; -fx-translate-x: -280;" styleClass="bg-orb"/>
+    <Circle radius="200" fill="rgba(159,134,192,0.02)" mouseTransparent="true"
+            style="-fx-translate-y: 200; -fx-translate-x: 250;" styleClass="bg-orb-purple"/>
+    <Circle radius="150" fill="rgba(224,177,203,0.02)" mouseTransparent="true"
+            style="-fx-translate-y: -100; -fx-translate-x: 180;" styleClass="bg-orb-pink"/>
+
+    <ScrollPane fitToWidth="true" fitToHeight="true"
+                style="-fx-background-color: transparent; -fx-border-color: transparent;"
+                styleClass="main-scroll">
+
+        <VBox spacing="25" style="-fx-padding: 30;">
+
+            <!-- HEADER -->
+            <VBox spacing="5" styleClass="header-section">
+                <Label text="🎓 Mes Certificats" styleClass="header-title"
+                       style="-fx-font-size: 32px; -fx-font-weight: 900;"/>
+                <Label fx:id="lblTotalCertificats" text="0 certificats obtenus"
+                       styleClass="header-subtitle"
+                       style="-fx-font-size: 16px;"/>
+            </VBox>
+
+            <!-- STATISTIQUES -->
+            <HBox spacing="20" alignment="CENTER">
+                <VBox styleClass="stat-card" style="-fx-padding: 25; -fx-min-width: 180; -fx-alignment: center;">
+                    <Label text="Total certificats" styleClass="stat-label"/>
+                    <Label fx:id="lblTotalStats" text="0" styleClass="stat-value"/>
+                </VBox>
+                <VBox styleClass="stat-card" style="-fx-padding: 25; -fx-min-width: 180; -fx-alignment: center;">
+                    <Label text="Cette année" styleClass="stat-label"/>
+                    <Label fx:id="lblCetteAnnee" text="0" styleClass="stat-value"/>
+                </VBox>
+                <VBox styleClass="stat-card" style="-fx-padding: 25; -fx-min-width: 180; -fx-alignment: center;">
+                    <Label text="Ce mois" styleClass="stat-label"/>
+                    <Label fx:id="lblCeMois" text="0" styleClass="stat-value"/>
+                </VBox>
+            </HBox>
+
+            <!-- BARRE DE RECHERCHE -->
+            <HBox styleClass="search-container" alignment="CENTER_LEFT" spacing="0">
+                <TextField fx:id="txtRecherche"
+                           promptText="Rechercher un certificat par cours..."
+                           styleClass="search-field"
+                           HBox.hgrow="ALWAYS">
+                    <HBox.margin>
+                        <Insets left="5" right="5"/>
+                    </HBox.margin>
+                </TextField>
+                <Button text="Rechercher" onAction="#rechercherCertificats"
+                        styleClass="search-button"/>
+            </HBox>
+
+            <!-- LISTE DES CERTIFICATS -->
+            <TilePane fx:id="tileCertificats"
+                      prefColumns="3"
+                      hgap="20"
+                      vgap="20"
+                      style="-fx-padding: 10;"
+                      alignment="CENTER"/>
+
+            <!-- MESSAGE SI AUCUN CERTIFICAT -->
+            <VBox fx:id="boxEmpty"
+                  alignment="CENTER"
+                  spacing="20"
+                  visible="false"
+                  managed="false"
+                  style="-fx-padding: 50;">
+                <Label text="📜" style="-fx-font-size: 80px; -fx-opacity: 0.5;"/>
+                <Label text="Aucun certificat pour le moment"
+                       style="-fx-font-size: 20px; -fx-font-weight: 700;"/>
+                <Label text="Complétez vos cours à 100% pour obtenir des certificats !"
+                       style="-fx-font-size: 14px; -fx-text-fill: #6b7280;"/>
+                <Button text="📚 Voir le catalogue" onAction="#allerAuCatalogue"
+                        styleClass="btn-primary"/>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+</StackPane>

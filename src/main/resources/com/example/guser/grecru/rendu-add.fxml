@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.guser.controllers.grecru.RenduAddController"
+            stylesheets="@Css/rendu-styles.css"
+            styleClass="root"
+            fx:id="rootBorderPane">
+
+    <top>
+        <!-- Header Premium avec Timer -->
+        <HBox styleClass="header" spacing="10" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="15" right="20" bottom="15" left="20"/>
+            </padding>
+            <Label text="⚡" styleClass="header-icon"/>
+            <VBox spacing="2">
+                <Label text="AI Code Submission Platform" styleClass="header-title"/>
+                <Label text="Professional Python code evaluation" styleClass="header-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox styleClass="timer-box" spacing="10" alignment="CENTER">
+                <Label text="⏱️" styleClass="timer-icon"/>
+                <Label fx:id="lblTimer" text="20:00" styleClass="timer-display"/>
+                <Label text="remaining" styleClass="timer-label"/>
+                <Circle radius="6" styleClass="timer-pulse"/>
+            </HBox>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="scroll-pane">
+            <VBox spacing="20" styleClass="main-content">
+                <padding>
+                    <Insets top="0" right="20" bottom="20" left="20"/>
+                </padding>
+
+                <!-- Deux colonnes premium -->
+                <HBox spacing="20" styleClass="columns" VBox.vgrow="ALWAYS">
+                    <!-- Colonne gauche - Formulaire Premium -->
+                    <VBox spacing="15" styleClass="left-column" HBox.hgrow="ALWAYS" VBox.vgrow="NEVER">
+
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label text="📋" styleClass="section-icon"/>
+                            <Label text="Submission Form" styleClass="section-title"/>
+                            <Label text="• New submission" styleClass="section-badge"/>
+                        </HBox>
+
+                        <!-- Grille formulaire premium -->
+                        <GridPane hgap="15" vgap="12" styleClass="form-grid">
+                            <Label text="Candidate ID" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="0" visible="false" managed="false"/>
+                            <Label text="Mission ID" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="1" visible="false" managed="false"/>
+
+                            <TextField fx:id="txtCandidatId" promptText="Enter candidate ID" styleClass="form-field"
+                                       GridPane.rowIndex="1" GridPane.columnIndex="0" visible="false" managed="false"/>
+                            <TextField fx:id="txtMissionId" promptText="Auto-filled from selection" styleClass="form-field"
+                                       GridPane.rowIndex="1" GridPane.columnIndex="1" visible="false" managed="false"/>
+
+                            <Label fx:id="lblCandidatIdError" styleClass="field-error"
+                                   GridPane.rowIndex="2" GridPane.columnIndex="0" visible="false" managed="false"/>
+                            <Label fx:id="lblMissionIdError" styleClass="field-error"
+                                   GridPane.rowIndex="2" GridPane.columnIndex="1" visible="false" managed="false"/>
+
+                            <Label text="Mission Type" styleClass="form-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                            <ComboBox fx:id="comboMissionType" promptText="Select mission type" styleClass="form-combo"
+                                      GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                            <Label fx:id="lblMissionTypeError" styleClass="field-error"
+                                   GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+
+                            <Label text="Difficulty" styleClass="form-label" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                            <HBox spacing="5" GridPane.rowIndex="4" GridPane.columnIndex="1" alignment="CENTER_LEFT">
+                                <Label text="●" styleClass="difficulty-easy"/>
+                                <Label text="Easy" styleClass="difficulty-label"/>
+                            </HBox>
+                        </GridPane>
+
+                        <!-- Mission Details Premium -->
+                        <VBox spacing="8" styleClass="details-box">
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label text="📄" styleClass="details-icon"/>
+                                <Label text="Mission Details" styleClass="details-title"/>
+                            </HBox>
+                            <TextArea fx:id="lblMissionDescription" editable="false" wrapText="true"
+                                      prefHeight="80" styleClass="details-text"
+                                      text="Select a mission to see its description"/>
+                        </VBox>
+
+                        <!-- Timer Progress Premium -->
+                        <VBox spacing="5" styleClass="timer-progress-box">
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label text="⏳" styleClass="progress-icon"/>
+                                <Label text="Time Remaining" styleClass="progress-title"/>
+                            </HBox>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <ProgressBar fx:id="timerProgressBar" prefWidth="200" progress="1.0" styleClass="progress-bar"/>
+                                <Label fx:id="lblTimerProgress" text="100%" styleClass="progress-label"/>
+                                <Label text="• 20:00 total" styleClass="progress-total"/>
+                            </HBox>
+                            <Label fx:id="lblTimerWarning" styleClass="timer-warning" managed="false" visible="false"/>
+                        </VBox>
+
+                        <!-- Security Warning -->
+                        <VBox fx:id="securityWarningContainer" styleClass="security-warning" managed="false" visible="false">
+                            <Label fx:id="lblSecurityWarning" text="⚠️ Security Warning" styleClass="security-warning-text"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Colonne droite - Éditeur Premium et Console -->
+                    <VBox spacing="10" styleClass="right-column" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+
+                        <!-- En-tête éditeur premium -->
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="⌨️" styleClass="editor-icon"/>
+                            <Label text="Python Editor" styleClass="section-title"/>
+                            <Label text="• solution.py" styleClass="editor-filename"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button fx:id="btnFullScreen" text="⛶" onAction="#toggleFullScreen" styleClass="fullscreen-btn"/>
+                            <HBox styleClass="security-badge" spacing="5">
+                                <Label text="🛡️"/>
+                                <Label text="Secure Mode"/>
+                            </HBox>
+                        </HBox>
+
+                        <!-- Éditeur de code premium -->
+                        <VBox styleClass="editor-container" VBox.vgrow="ALWAYS">
+                            <HBox styleClass="editor-header" spacing="10">
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Circle radius="6" styleClass="window-control-red"/>
+                                    <Circle radius="6" styleClass="window-control-yellow"/>
+                                    <Circle radius="6" styleClass="window-control-green"/>
+                                </HBox>
+                                <Label text="solution.py - Python 3" styleClass="file-name"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Label text="🐍 Python 3.11" styleClass="lang-tag"/>
+                                <Label text="🚫 Copy/Paste disabled" styleClass="restriction-tag"/>
+                            </HBox>
+                            <TextArea fx:id="txtCode" styleClass="code-editor" wrapText="false" VBox.vgrow="ALWAYS"
+                                      promptText="# Write your Python solution here&#10;def add(a, b):&#10;    return a + b&#10;&#10;if __name__ == '__main__':&#10;    num1 = int(input())&#10;    num2 = int(input())&#10;    print(add(num1, num2))"/>
+
+                            <!-- Ligne de statut de l'éditeur -->
+                            <HBox styleClass="editor-status-line" spacing="15">
+                                <Label text="Ln 1, Col 1" styleClass="editor-position"/>
+                                <Label text="UTF-8" styleClass="editor-encoding"/>
+                                <Label text="Python" styleClass="editor-language"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Label text="Modified" styleClass="editor-modified" visible="false"/>
+                            </HBox>
+                        </VBox>
+
+                        <!-- ========== JUPYTER KERNEL CONSOLE SECTION - REDESIGNED ========== -->
+                        <VBox styleClass="jupyter-console-section" spacing="12" VBox.vgrow="ALWAYS">
+
+                            <!-- Console Header avec Kernel Status -->
+                            <HBox spacing="12" alignment="CENTER_LEFT">
+                                <Label text="📟" styleClass="console-icon"/>
+                                <Label text="Kernel Console" styleClass="console-title"/>
+                                <Label fx:id="lblKernelStatus" text="⏳ Starting kernel..." styleClass="kernel-status"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+
+                                <!-- Kernel Control Buttons - Redesigned -->
+                                <Button fx:id="btnExecute" text="▶ Execute" onAction="#executeWithPythonium"
+                                        styleClass="console-btn-execute" disable="true"/>
+                                <Button fx:id="btnClearConsole" text="✕ Clear" onAction="#clearConsole"
+                                        styleClass="console-btn-clear"/>
+                            </HBox>
+
+                            <!-- Console Output Area -->
+                            <TextArea fx:id="consoleOutput"
+                                      editable="false"
+                                      wrapText="true"
+                                      prefHeight="180"
+                                      styleClass="console-output"
+                                      promptText="Output will appear here..."/>
+                        </VBox>
+
+                        <!-- Bouton Submit et Status -->
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Button text="▶ Submit " onAction="#evaluer" styleClass="submit-button-large"/>
+                            <ProgressIndicator fx:id="progress" visible="false" prefWidth="24" prefHeight="24" styleClass="custom-progress"/>
+                            <Label fx:id="lblProcessing" text="Processing..." visible="false" styleClass="processing-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="⌨️ Ctrl+Enter (Kernel) | SMS with score" styleClass="shortcut-hint"/>
+                        </HBox>
+
+                        <!-- Result Label -->
+                        <Label fx:id="lblResultat" text="✓ System ready. Click 'Execute' to run your code."
+                               styleClass="result-label" wrapText="true"/>
+
+                        <!-- Status bar premium -->
+                        <HBox spacing="15" styleClass="status-bar">
+                            <Label text="🐍 Python 3.11" styleClass="status-item"/>
+                            <Label text="🛡️ Secure environment" styleClass="status-item"/>
+                            <Label text="⚡ Live execution" styleClass="status-item"/>
+                            <Label text="⏱️ Auto-submit: 20:00" styleClass="status-item"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="F11 fullscreen • SMS with score" styleClass="shortcut"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <!-- Footer Premium -->
+        <HBox styleClass="footer" alignment="CENTER">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
+            <HBox spacing="20" alignment="CENTER">
+                <Label text="⚡ Double-click a mission to auto-fill" styleClass="footer-text"/>
+                <Circle radius="3" styleClass="footer-separator"/>
+                <Label text="⏱️ Timer: 20:00" styleClass="footer-text"/>
+                <Circle radius="3" styleClass="footer-separator"/>
+                <Label text="🛡️ Secure Environment" styleClass="footer-text"/>
+                <Circle radius="3" styleClass="footer-separator"/>
+                <Label text="v2.0.1" styleClass="footer-version"/>
+            </HBox>
+        </HBox>
+    </bottom>
+
+    <!-- Full Screen Editor Overlay -->
+    <VBox fx:id="fullScreenEditorOverlay" styleClass="fullscreen-overlay" visible="false" managed="false">
+        <HBox styleClass="fullscreen-header">
+            <Label text="🚀 Full Screen Editor" styleClass="fullscreen-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="fullScreenTimer" text="20:00" styleClass="fullscreen-timer"/>
+            <Button text="✕ Close (ESC)" onAction="#exitFullScreen" styleClass="close-fullscreen-btn"/>
+        </HBox>
+        <TextArea fx:id="fullScreenCodeEditor" styleClass="fullscreen-editor" VBox.vgrow="ALWAYS"/>
+        <HBox styleClass="fullscreen-footer" alignment="CENTER">
+            <Button text="🚀 Execute (Ctrl+Enter)" onAction="#evaluateFromFullScreen" styleClass="submit-button-large"/>
+        </HBox>
+    </VBox>
+
+</BorderPane>

@@ -1,0 +1,1162 @@
+/* ========================================================================
+   STYLES AMÉLIORÉS - INTERFACE MODERNE ET ÉLÉGANTE
+   ======================================================================== */
+
+.root {
+    -fx-background-color: #f8f7fc;
+}
+
+/* ========================================================================
+   HEADER AMÉLIORÉ
+   ======================================================================== */
+.header {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);
+    -fx-background-radius: 0 0 20 20;
+}
+
+.header-icon {
+    -fx-font-size: 32px;
+    -fx-background-color: linear-gradient(135deg, #4776E6, #8E54E9);
+    -fx-background-radius: 14;
+    -fx-padding: 10;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(71,118,230,0.3), 10, 0, 0, 4);
+}
+
+.header-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+    -fx-font-family: 'Segoe UI', 'Poppins', sans-serif;
+}
+
+.header-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748b;
+    -fx-font-weight: 500;
+}
+
+.timer-box {
+    -fx-background-color: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    -fx-background-radius: 40;
+    -fx-padding: 8 24;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 40;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 2);
+}
+
+.timer-icon {
+    -fx-font-size: 20px;
+}
+
+.timer-display {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    -fx-text-fill: #059669;
+}
+
+.timer-critical {
+    -fx-text-fill: #dc2626 !important;
+    -fx-animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { -fx-opacity: 1; }
+    50% { -fx-opacity: 0.7; }
+    100% { -fx-opacity: 1; }
+}
+
+.timer-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #475569;
+    -fx-font-weight: 600;
+}
+
+/* ========================================================================
+   CONTENU PRINCIPAL
+   ======================================================================== */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical,
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical .thumb,
+.scroll-bar:horizontal .thumb {
+    -fx-background-color: #cbd5e1;
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:vertical .thumb:hover,
+.scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #94a3b8;
+}
+
+.main-content {
+    -fx-background-color: transparent;
+}
+
+.columns {
+    -fx-alignment: top-left;
+}
+
+/* ========================================================================
+   COLONNE GAUCHE AMÉLIORÉE
+   ======================================================================== */
+.left-column {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-padding: 24;
+    -fx-border-color: transparent;
+    -fx-border-radius: 24;
+    -fx-pref-width: 400;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 15, 0, 0, 5);
+    -fx-transition: all 0.2s ease;
+}
+
+.left-column:hover {
+    -fx-effect: dropshadow(gaussian, rgba(71,118,230,0.08), 20, 0, 0, 8);
+}
+
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+    -fx-font-family: 'Segoe UI', 'Poppins', sans-serif;
+    -fx-padding: 0 0 10 0;
+    -fx-border-color: linear-gradient(to right, #4776E6, #8E54E9);
+    -fx-border-width: 0 0 3 0;
+    -fx-border-insets: 0 0 10 0;
+}
+
+/* ========================================================================
+   FORM GRID
+   ======================================================================== */
+.form-grid {
+    -fx-padding: 15 0 5 0;
+    -fx-hgap: 15;
+    -fx-vgap: 15; /* Increased for validation labels */
+}
+
+.form-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #334155;
+    -fx-padding: 0 0 0 5;
+}
+
+.form-field, .form-combo {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 12;
+    -fx-border-width: 1.5;
+    -fx-padding: 10 14;
+    -fx-font-size: 13px;
+    -fx-background-radius: 12;
+    -fx-transition: all 0.2s ease;
+}
+
+.form-field:focused, .form-combo:focused {
+    -fx-border-color: #4776E6;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(71,118,230,0.15), 8, 0, 0, 2);
+}
+
+.form-field:hover, .form-combo:hover {
+    -fx-border-color: #94a3b8;
+}
+
+/* ========================================================================
+   VALIDATION STYLES
+   ======================================================================== */
+
+.validation-field {
+    -fx-transition: all 0.2s ease;
+}
+
+.validation-field-error {
+    -fx-border-color: #ef4444 !important;
+    -fx-background-color: #fef2f2 !important;
+    -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.2), 8, 0, 0, 2);
+}
+
+.validation-field-valid {
+    -fx-border-color: #10b981 !important;
+    -fx-background-color: #f0fdf4 !important;
+}
+
+/* Error labels */
+.error-label {
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-padding: 4px 0 0 5px;
+    -fx-graphic-text-gap: 4;
+    -fx-background-color: rgba(239,68,68,0.05);
+    -fx-background-radius: 4;
+    -fx-padding: 4 8;
+}
+
+/* Success message */
+.success-label {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-padding: 4px 0 0 5px;
+    -fx-background-color: rgba(16,185,129,0.05);
+    -fx-background-radius: 4;
+    -fx-padding: 4 8;
+}
+
+/* Info label for character count */
+.info-label {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+    -fx-font-style: italic;
+}
+
+/* Validation icons */
+.validation-icon-error {
+    -fx-font-family: 'Segoe UI Emoji';
+    -fx-font-size: 12px;
+}
+
+/* Add spacing for validation labels */
+.form-grid {
+    -fx-vgap: 15;
+}
+
+/* Add padding for validation messages */
+.form-field, .form-combo {
+    -fx-padding: 10 14 10 14;
+}
+
+/* Validation container for each field */
+.validation-container {
+    -fx-spacing: 2;
+}
+
+/* ========================================================================
+   DETAILS BOX
+   ======================================================================== */
+.details-box {
+    -fx-background-color: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    -fx-background-radius: 18;
+    -fx-padding: 16;
+    -fx-border-color: transparent;
+    -fx-border-radius: 18;
+}
+
+.details-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+    -fx-graphic-text-gap: 8;
+}
+
+.details-text {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-font-size: 13px;
+    -fx-padding: 12;
+    -fx-font-family: 'Segoe UI', sans-serif;
+}
+
+/* ========================================================================
+   TIMER PROGRESS
+   ======================================================================== */
+.timer-progress-box {
+    -fx-background-color: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    -fx-background-radius: 18;
+    -fx-padding: 16;
+}
+
+.progress-bar {
+    -fx-background-radius: 6;
+    -fx-min-height: 8;
+    -fx-max-height: 8;
+}
+
+.progress-bar .bar {
+    -fx-background-color: linear-gradient(to right, #059669, #10b981);
+    -fx-background-radius: 6;
+}
+
+.progress-bar .track {
+    -fx-background-color: #e2e8f0;
+    -fx-background-radius: 6;
+}
+
+.progress-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #059669;
+}
+
+/* ========================================================================
+   SUBMIT BUTTON
+   ======================================================================== */
+.submit-button {
+    -fx-background-color: linear-gradient(135deg, #4776E6, #8E54E9);
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 30;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(71,118,230,0.3), 15, 0, 0, 4);
+    -fx-transition: all 0.2s ease;
+}
+
+.submit-button:hover {
+    -fx-background-color: linear-gradient(135deg, #3965c9, #7a47d1);
+    -fx-effect: dropshadow(gaussian, rgba(71,118,230,0.4), 20, 0, 0, 6);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.submit-button:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+.submit-button:disabled {
+    -fx-opacity: 0.6;
+    -fx-cursor: not-allowed;
+}
+
+.processing-label {
+    -fx-text-fill: #64748b;
+    -fx-font-style: italic;
+}
+
+/* ========================================================================
+   CONSOLE
+   ======================================================================== */
+.console-box {
+    -fx-background-color: #0f172a;
+    -fx-background-radius: 18;
+    -fx-padding: 16;
+    -fx-border-color: #334155;
+    -fx-border-radius: 18;
+    -fx-border-width: 1;
+}
+
+.console-title {
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-graphic-text-gap: 8;
+}
+
+.console-output {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 12;
+    -fx-text-fill: #a5f3fc;
+    -fx-font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    -fx-font-size: 13px;
+    -fx-padding: 14;
+    -fx-border-color: #334155;
+    -fx-border-radius: 12;
+}
+
+/* ========================================================================
+   COLONNE DROITE AMÉLIORÉE - MODIFIÉ POUR PRENDRE TOUTE LA HAUTEUR
+   ======================================================================== */
+.right-column {
+    -fx-pref-width: 500;
+    -fx-max-height: Infinity;
+}
+
+.editor-icon {
+    -fx-font-size: 28px;
+    -fx-background-color: linear-gradient(135deg, #2563eb, #7c3aed);
+    -fx-background-radius: 12;
+    -fx-padding: 8;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.3), 10, 0, 0, 4);
+}
+
+.fullscreen-btn {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #334155;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 6 14;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+}
+
+.fullscreen-btn:hover {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #1e293b;
+}
+
+.security-badge {
+    -fx-background-color: linear-gradient(135deg, #334155, #475569);
+    -fx-background-radius: 30;
+    -fx-padding: 6 16;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+}
+
+/* ========================================================================
+   EDITOR - MODIFIÉ POUR PRENDRE TOUTE LA HAUTEUR
+   ======================================================================== */
+.editor-container {
+    -fx-background-color: #0f172a;
+    -fx-background-radius: 18;
+    -fx-border-color: #334155;
+    -fx-border-radius: 18;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 8);
+    -fx-max-height: Infinity;
+}
+
+.editor-header {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 18 18 0 0;
+    -fx-padding: 12 16;
+    -fx-border-color: #334155;
+    -fx-border-width: 0 0 1 0;
+}
+
+.file-name {
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 14px;
+    -fx-font-family: 'JetBrains Mono', monospace;
+    -fx-font-weight: bold;
+    -fx-background-color: #334155;
+    -fx-background-radius: 6;
+    -fx-padding: 4 12;
+}
+
+.lang-tag {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 10;
+    -fx-background-radius: 20;
+}
+
+.restriction-tag {
+    -fx-background-color: #dc2626;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 10;
+    -fx-background-radius: 20;
+}
+
+.code-editor {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #334155;
+    -fx-border-width: 0;
+    -fx-font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    -fx-font-size: 14px;
+    -fx-text-fill: #e2e8f0;
+    -fx-prompt-text-fill: #64748b;
+    -fx-padding: 16;
+    -fx-line-spacing: 4;
+    -fx-max-height: Infinity;
+}
+
+.code-editor .content {
+    -fx-background-color: #0f172a;
+}
+
+.code-editor .text {
+    -fx-fill: #e2e8f0;
+}
+
+/* Syntax highlighting-like colors for keywords */
+.code-editor .text:contains("def") { -fx-fill: #c792ea; }
+.code-editor .text:contains("return") { -fx-fill: #c792ea; }
+.code-editor .text:contains("if") { -fx-fill: #c792ea; }
+.code-editor .text:contains("else") { -fx-fill: #c792ea; }
+.code-editor .text:contains("for") { -fx-fill: #c792ea; }
+.code-editor .text:contains("while") { -fx-fill: #c792ea; }
+.code-editor .text:contains("import") { -fx-fill: #c792ea; }
+.code-editor .text:contains("from") { -fx-fill: #c792ea; }
+.code-editor .text:contains("class") { -fx-fill: #c792ea; }
+
+/* ========================================================================
+   STATUS BAR
+   ======================================================================== */
+.status-bar {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 14;
+    -fx-padding: 12 18;
+    -fx-font-size: 13px;
+    -fx-text-fill: #334155;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+}
+
+.shortcut {
+    -fx-background-color: #e2e8f0;
+    -fx-padding: 4 12;
+    -fx-background-radius: 20;
+    -fx-font-weight: 600;
+    -fx-font-size: 12px;
+    -fx-text-fill: #475569;
+}
+
+/* ========================================================================
+   SECURITY WARNING
+   ======================================================================== */
+.security-warning {
+    -fx-background-color: #fef9c3;
+    -fx-background-radius: 12;
+    -fx-padding: 12 16;
+    -fx-border-color: #fde047;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(253,224,71,0.2), 5, 0, 0, 2);
+}
+
+.security-warning .label {
+    -fx-text-fill: #854d0e;
+    -fx-font-weight: 600;
+}
+
+.security-warning .close-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #854d0e;
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+}
+
+.security-warning .close-btn:hover {
+    -fx-text-fill: #713f12;
+}
+
+/* ========================================================================
+   FULL SCREEN OVERLAY
+   ======================================================================== */
+.fullscreen-overlay {
+    -fx-background-color: #0f172a;
+    -fx-padding: 30;
+}
+
+.fullscreen-header {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 16;
+    -fx-padding: 15 20;
+    -fx-border-color: #334155;
+    -fx-border-radius: 16;
+}
+
+.fullscreen-title {
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.fullscreen-timer {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-font-family: monospace;
+    -fx-text-fill: #059669;
+    -fx-background-color: #0f172a;
+    -fx-background-radius: 12;
+    -fx-padding: 8 24;
+    -fx-border-color: #334155;
+    -fx-border-radius: 12;
+}
+
+.fullscreen-editor {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #334155;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-font-family: monospace;
+    -fx-font-size: 16px;
+    -fx-text-fill: #e2e8f0;
+}
+
+.fullscreen-footer {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 12;
+    -fx-padding: 12 20;
+    -fx-text-fill: #94a3b8;
+}
+
+.fullscreen-btn-primary {
+    -fx-background-color: linear-gradient(135deg, #4776E6, #8E54E9);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 12 30;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+}
+
+.fullscreen-btn-secondary {
+    -fx-background-color: #334155;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 12 30;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+}
+
+.fullscreen-btn-secondary:hover {
+    -fx-background-color: #475569;
+}
+
+/* ========================================================================
+   FOOTER AMÉLIORÉ
+   ======================================================================== */
+.footer {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, -2);
+    -fx-background-radius: 20 20 0 0;
+    -fx-padding: 12 20;
+}
+
+.footer-text {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}
+
+/* ========================================================================
+   ANIMATIONS
+   ======================================================================== */
+@keyframes slideIn {
+    from {
+        -fx-translate-y: 20;
+        -fx-opacity: 0;
+    }
+    to {
+        -fx-translate-y: 0;
+        -fx-opacity: 1;
+    }
+}
+
+.left-column, .right-column {
+    -fx-animation: slideIn 0.3s ease-out;
+}
+
+/* ========================================================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================================================== */
+@media (max-width: 1200px) {
+    .columns {
+        -fx-spacing: 15;
+    }
+
+    .left-column {
+        -fx-pref-width: 380;
+    }
+
+    .right-column {
+        -fx-pref-width: 450;
+    }
+}
+
+.window-control-red {
+    -fx-fill: #ef4444;
+    -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.3), 4, 0, 0, 1);
+}
+
+.window-control-yellow {
+    -fx-fill: #f59e0b;
+    -fx-effect: dropshadow(gaussian, rgba(245,158,11,0.3), 4, 0, 0, 1);
+}
+
+.window-control-green {
+    -fx-fill: #10b981;
+    -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.3), 4, 0, 0, 1);
+}
+
+/* ========================================================================
+   ÉDITEUR DE CODE - HAUTEUR MAXIMALE
+   ======================================================================== */
+.editor-status-line {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 0 0 18 18;
+    -fx-padding: 10 18;
+    -fx-border-color: #334155;
+    -fx-border-width: 1 0 0 0;
+}
+
+.editor-position {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 11px;
+    -fx-font-family: monospace;
+}
+
+.editor-encoding, .editor-language {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+}
+
+.editor-modified {
+    -fx-text-fill: #f59e0b;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+}
+
+.status-item {
+    -fx-padding: 4 8;
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 30;
+    -fx-font-weight: 500;
+}
+
+.custom-progress {
+    -fx-progress-color: #2563eb;
+}
+
+.shortcut-hint {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 30;
+    -fx-padding: 6 14;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #475569;
+}
+
+.difficulty-easy {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 16px;
+}
+
+.difficulty-label {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}
+
+.progress-total {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 12px;
+}
+
+.timer-pulse {
+    -fx-fill: #059669;
+    -fx-effect: dropshadow(gaussian, #059669, 8, 0.5, 0, 0);
+    -fx-opacity: 0.8;
+}
+
+.footer-separator {
+    -fx-fill: #cbd5e1;
+}
+
+.footer-version {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 12px;
+    -fx-font-family: monospace;
+}
+
+.editor-filename {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 30;
+    -fx-padding: 4 14;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #2563eb;
+}
+
+/* ========================================================================
+   JUPYTER CONSOLE - REDESIGNED UI
+   ======================================================================== */
+
+.jupyter-console-section {
+    -fx-background-color: #1a1e2a;
+    -fx-background-radius: 16;
+    -fx-border-color: #2d3345;
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+    -fx-padding: 16;
+    -fx-spacing: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+}
+
+.console-icon {
+    -fx-font-size: 20px;
+    -fx-background-color: #2d3345;
+    -fx-background-radius: 8;
+    -fx-padding: 6;
+    -fx-text-fill: #a0aec0;
+}
+
+.console-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e2e8f0;
+    -fx-font-family: 'Segoe UI', sans-serif;
+}
+
+.kernel-status {
+    -fx-background-color: #2d3345;
+    -fx-text-fill: #a0aec0;
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+    -fx-padding: 4 12;
+    -fx-background-radius: 20;
+}
+
+/* Console Buttons - Clean Design */
+.console-btn-execute {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-padding: 6 14;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+    -fx-effect: none;
+    -fx-min-width: 80;
+}
+
+.console-btn-execute:hover {
+    -fx-background-color: #059669;
+}
+
+.console-btn-execute:disabled {
+    -fx-opacity: 0.4;
+    -fx-cursor: default;
+}
+
+.console-btn-profile {
+    -fx-background-color: #8b5cf6;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-padding: 6 14;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+    -fx-min-width: 80;
+}
+
+.console-btn-profile:hover {
+    -fx-background-color: #7c3aed;
+}
+
+.console-btn-profile:disabled {
+    -fx-opacity: 0.4;
+    -fx-cursor: default;
+}
+
+.console-btn-restart {
+    -fx-background-color: #f59e0b;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-padding: 6 14;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+    -fx-min-width: 80;
+}
+
+.console-btn-restart:hover {
+    -fx-background-color: #d97706;
+}
+
+.console-btn-restart:disabled {
+    -fx-opacity: 0.4;
+    -fx-cursor: default;
+}
+
+.console-btn-clear {
+    -fx-background-color: #4a5568;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-padding: 6 14;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+    -fx-min-width: 70;
+}
+
+.console-btn-clear:hover {
+    -fx-background-color: #2d3748;
+}
+
+/* Console Output Area */
+.console-output {
+    -fx-background-color: #0d1117;
+    -fx-text-fill: #e2e8f0;
+    -fx-font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    -fx-font-size: 13px;
+    -fx-control-inner-background: #0d1117;
+    -fx-highlight-fill: #8b5cf6;
+    -fx-background-radius: 12;
+    -fx-border-color: #2d3345;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 4;
+}
+
+.console-output .content {
+    -fx-background-color: #0d1117;
+    -fx-background-radius: 10;
+}
+
+.console-output .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.console-output .scroll-bar:vertical,
+.console-output .scroll-bar:horizontal {
+    -fx-background-color: #1a1e2a;
+}
+
+.console-output .scroll-bar:vertical .thumb,
+.console-output .scroll-bar:horizontal .thumb {
+    -fx-background-color: #4a5568;
+    -fx-background-radius: 10;
+}
+
+.console-output .scroll-bar:vertical .thumb:hover,
+.console-output .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #718096;
+}
+
+/* Result Label */
+.result-label {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 13px;
+    -fx-padding: 8 0 0 0;
+    -fx-font-family: 'Consolas', monospace;
+}
+
+/* Timer Warning */
+.timer-warning {
+    -fx-text-fill: #f59e0b;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 5 0 0 0;
+}
+
+/* Field Error Labels */
+.field-error {
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 2 0 0 5;
+}
+
+/* ========================================================================
+   JUPYTER CONSOLE - REDESIGNED UI WITH PURPLE THEME
+   ======================================================================== */
+
+.jupyter-console-section {
+    -fx-background-color: #1a1e2a;
+    -fx-background-radius: 16;
+    -fx-border-color: #2d3345;
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+    -fx-padding: 16;
+    -fx-spacing: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+}
+
+.console-icon {
+    -fx-font-size: 20px;
+    -fx-background-color: #2d3345;
+    -fx-background-radius: 8;
+    -fx-padding: 6;
+    -fx-text-fill: #a0aec0;
+}
+
+.console-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e2e8f0;
+    -fx-font-family: 'Segoe UI', sans-serif;
+}
+
+.kernel-status {
+    -fx-background-color: #2d3345;
+    -fx-text-fill: #a0aec0;
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+    -fx-padding: 4 12;
+    -fx-background-radius: 20;
+}
+
+/* Console Buttons - Purple Theme like submit-button-large */
+.console-btn-execute {
+    -fx-background-color: #8B5CF6;
+    -fx-text-fill: white;
+    -fx-font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-padding: 8 18;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.3), 15, 0, 0, 4);
+    -fx-min-width: 85;
+}
+
+.console-btn-execute:hover {
+    -fx-background-color: #7C3AED;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.4), 20, 0, 0, 6);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.console-btn-execute:disabled {
+    -fx-opacity: 0.4;
+    -fx-cursor: default;
+    -fx-effect: none;
+}
+
+.console-btn-profile {
+    -fx-background-color: #8B5CF6;
+    -fx-text-fill: white;
+    -fx-font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-padding: 8 18;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.3), 15, 0, 0, 4);
+    -fx-min-width: 85;
+}
+
+.console-btn-profile:hover {
+    -fx-background-color: #7C3AED;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.4), 20, 0, 0, 6);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.console-btn-profile:disabled {
+    -fx-opacity: 0.4;
+    -fx-cursor: default;
+    -fx-effect: none;
+}
+
+.console-btn-restart {
+    -fx-background-color: #8B5CF6;
+    -fx-text-fill: white;
+    -fx-font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-padding: 8 18;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.3), 15, 0, 0, 4);
+    -fx-min-width: 85;
+}
+
+.console-btn-restart:hover {
+    -fx-background-color: #7C3AED;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.4), 20, 0, 0, 6);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.console-btn-restart:disabled {
+    -fx-opacity: 0.4;
+    -fx-cursor: default;
+    -fx-effect: none;
+}
+
+.console-btn-clear {
+    -fx-background-color: #4B5563;
+    -fx-text-fill: white;
+    -fx-font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-padding: 8 18;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(75, 85, 99, 0.3), 15, 0, 0, 4);
+    -fx-min-width: 75;
+}
+
+.console-btn-clear:hover {
+    -fx-background-color: #374151;
+    -fx-effect: dropshadow(gaussian, rgba(75, 85, 99, 0.4), 20, 0, 0, 6);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Console Output Area */
+.console-output {
+    -fx-background-color: #0d1117;
+    -fx-text-fill: #e2e8f0;
+    -fx-font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    -fx-font-size: 13px;
+    -fx-control-inner-background: #0d1117;
+    -fx-highlight-fill: #8B5CF6;
+    -fx-background-radius: 12;
+    -fx-border-color: #2d3345;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 4;
+}
+
+.console-output .content {
+    -fx-background-color: #0d1117;
+    -fx-background-radius: 10;
+}
+
+.console-output .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.console-output .scroll-bar:vertical,
+.console-output .scroll-bar:horizontal {
+    -fx-background-color: #1a1e2a;
+}
+
+.console-output .scroll-bar:vertical .thumb,
+.console-output .scroll-bar:horizontal .thumb {
+    -fx-background-color: #4B5563;
+    -fx-background-radius: 10;
+}
+
+.console-output .scroll-bar:vertical .thumb:hover,
+.console-output .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #8B5CF6;
+}
+
+/* Keep the submit-button-large style you provided */
+.submit-button-large {
+    -fx-background-color: #8B5CF6;
+    -fx-text-fill: white;
+    -fx-font-family: 'DM Sans', sans-serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-padding: 12 50 12 50;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.4), 20, 0, 0, 8);
+}
+
+.submit-button-large:hover {
+    -fx-background-color: #7C3AED;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.5), 25, 0, 0, 10);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}

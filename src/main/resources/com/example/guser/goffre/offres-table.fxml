@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<ScrollPane fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="main-scroll"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.guser.controllers.goffre.OffresTableController"
+            stylesheets="@css/theme-unified.css">
+
+    <StackPane>
+        <!-- Cercles décoratifs en arrière-plan -->
+        <Circle radius="250" fill="rgba(94,84,142,0.03)" mouseTransparent="true"
+                style="-fx-translate-y: -150; -fx-translate-x: -280;" styleClass="bg-orb"/>
+        <Circle radius="200" fill="rgba(159,134,192,0.02)" mouseTransparent="true"
+                style="-fx-translate-y: 200; -fx-translate-x: 250;" styleClass="bg-orb-purple"/>
+        <Circle radius="150" fill="rgba(224,177,203,0.02)" mouseTransparent="true"
+                style="-fx-translate-y: -100; -fx-translate-x: 180;" styleClass="bg-orb-pink"/>
+
+        <VBox alignment="TOP_CENTER" spacing="30" style="-fx-padding: 40;">
+
+            <!-- En-tête -->
+            <VBox spacing="15" alignment="CENTER" styleClass="header-section">
+                <StackPane styleClass="header-icon-container">
+                    <Label text="📋" styleClass="header-icon"/>
+                </StackPane>
+                <Label text="Liste des Offres" styleClass="header-title"/>
+                <Label text="Consultez, ajoutez, modifiez ou supprimez des offres" styleClass="header-subtitle"/>
+            </VBox>
+
+            <!-- Barre de recherche et bouton ajouter -->
+            <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-max-width: 1400px;">
+                <TextField fx:id="txtSearch"
+                           promptText="Rechercher par titre, entreprise, localisation, secteur, compétences..."
+                           HBox.hgrow="ALWAYS"
+                           styleClass="search-input"/>
+                <Button text="➕ Ajouter Offre" onAction="#handleGoToAddOffre"
+                        styleClass="btn-add-offre" prefWidth="180" prefHeight="48"/>
+            </HBox>
+
+            <!-- Compteur de résultats -->
+            <HBox alignment="CENTER_LEFT">
+                <Label fx:id="lblStatus" text="0 offres trouvées" styleClass="status-text"/>
+            </HBox>
+
+            <!-- Tableau -->
+            <TableView fx:id="tableOffres" editable="true" prefHeight="500" prefWidth="2400" styleClass="styled-table">
+                <columns>
+                    <TableColumn fx:id="colTitre" text="Titre" prefWidth="230"/>
+                    <TableColumn fx:id="colDescription" text="Description" prefWidth="350"/>
+                    <TableColumn fx:id="colSalaire" text="Salaire" prefWidth="100"/>
+                    <TableColumn fx:id="colType" text="Type" prefWidth="100"/>
+                    <TableColumn fx:id="colLocalisation" text="Localisation" prefWidth="140"/>
+                    <TableColumn fx:id="colPublication" text="Publication" prefWidth="120"/>
+                    <TableColumn fx:id="colExpiration" text="Expiration" prefWidth="120"/>
+                    <TableColumn fx:id="colNiveau" text="Niveau" prefWidth="120"/>
+                    <TableColumn fx:id="colExperience" text="Expérience" prefWidth="120"/>
+                    <TableColumn fx:id="colCompetences" text="Compétences" prefWidth="250"/>
+                    <TableColumn fx:id="colSecteur" text="Secteur" prefWidth="140"/>
+                    <TableColumn fx:id="colEntreprise" text="Entreprise" prefWidth="150"/>
+                    <TableColumn fx:id="colContact" text="Contact" prefWidth="180"/>
+                    <TableColumn fx:id="colActions" text="Actions" prefWidth="280" minWidth="250"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+            </TableView>
+
+            <!-- Espace en bas -->
+            <Region prefHeight="20"/>
+        </VBox>
+    </StackPane>
+</ScrollPane>

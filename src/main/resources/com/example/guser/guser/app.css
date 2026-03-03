@@ -1,0 +1,1537 @@
+/* =========================
+   GLOBALS
+   ========================= */
+.root {
+    -fx-font-family: "Segoe UI", "Inter", "Arial";
+    -fx-background-color: #F6F2FA;
+}
+
+.bg {
+    -fx-background-color: linear-gradient(to bottom right, #231942, #5E548E, #9F86C0, #BE95C4, #E0B1CB);
+}
+
+.glass {
+    -fx-background-color: rgba(255,255,255,0.12);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(255,255,255,0.22);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.28), 26, 0.2, 0, 10);
+}
+
+.card {
+    -fx-background-color: rgba(255,255,255,0.94);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(0,0,0,0.08);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.16), 24, 0.2, 0, 8);
+}
+
+.brand {
+    -fx-fill: white;
+    -fx-font-size: 30px;
+    -fx-font-weight: 900;
+}
+
+.h1 {
+    -fx-fill: #111827;
+    -fx-font-size: 22px;
+    -fx-font-weight: 900;
+}
+
+.h2 {
+    -fx-fill: #231942;
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+}
+
+.muted {
+    -fx-fill: rgba(255,255,255,0.9);
+    -fx-text-fill: rgba(255,255,255,0.9);
+}
+
+.muted-dark {
+    -fx-fill: #6B7280;
+    -fx-text-fill: #6B7280;
+}
+
+.label {
+    -fx-font-weight: 800;
+    -fx-text-fill: #231942;
+
+}
+
+.input {
+    -fx-background-color: white;
+    -fx-border-color: rgba(0,0,0,0.16);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 10 12 10 12;
+}
+
+.textarea {
+    -fx-background-color: white;
+    -fx-border-color: rgba(0,0,0,0.16);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+.btn {
+    -fx-background-color: #231942;
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-background-radius: 999;
+    -fx-padding: 10 14 10 14;
+}
+
+.btn:hover { -fx-background-color: #5E548E; }
+
+.btn-soft {
+    -fx-background-color: rgba(35,25,66,0.10);
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-background-radius: 999;
+    -fx-padding: 8 12 8 12;
+}
+
+.pill {
+    -fx-background-color: rgba(255,255,255,0.16);
+    -fx-background-radius: 999;
+    -fx-padding: 6 10 6 10;
+}
+
+.error {
+    -fx-text-fill: #B91C1C;
+    -fx-font-weight: 900;
+}
+
+/* Inline validation (PseudoClass "error") */
+.text-field:error,
+.password-field:error,
+.text-area:error,
+.combo-box-base:error {
+    -fx-border-color: #EF4444;
+    -fx-border-width: 2;
+    -fx-background-insets: 0;
+}
+
+/* Chips */
+.chips-wrap {
+    -fx-padding: 6 0 0 0;
+}
+
+.chip {
+    -fx-background-color: rgba(35,25,66,0.10);
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-border-color: rgba(35,25,66,0.22);
+    -fx-padding: 6 10 6 10;
+    -fx-spacing: 8;
+    -fx-alignment: center-left;
+}
+
+.chip-label {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+}
+
+.chip-x {
+    -fx-background-color: transparent;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-padding: 0 6 0 6;
+    -fx-cursor: hand;
+}
+
+.chip-x:hover {
+    -fx-text-fill: #5E548E;
+}
+
+/* Suggestions list */
+.suggest {
+    -fx-background-color: white;
+    -fx-border-color: rgba(0,0,0,0.12);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+/* Preview */
+.preview-title {
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+}
+
+.preview-card {
+    -fx-background-color: rgba(255,255,255,0.10);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: rgba(255,255,255,0.18);
+    -fx-padding: 14;
+}
+
+.preview-name {
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-font-size: 15px;
+}
+
+.preview-role {
+    -fx-text-fill: rgba(255,255,255,0.92);
+    -fx-font-weight: 900;
+    -fx-background-color: rgba(255,255,255,0.14);
+    -fx-background-radius: 999;
+    -fx-padding: 4 10 4 10;
+}
+
+.preview-primary {
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-font-size: 14px;
+}
+
+.preview-sub {
+    -fx-text-fill: rgba(255,255,255,0.88);
+    -fx-font-weight: 700;
+}
+
+.preview-small {
+    -fx-text-fill: rgba(255,255,255,0.82);
+}
+
+
+
+
+
+
+/* =========================
+   NAVBAR
+   ========================= */
+.navBar {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 10 14 10 14;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.08), 22, 0.18, 0, 10);
+}
+
+.navBrand {
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+}
+
+.navBrandDot {
+    -fx-min-width: 10; -fx-min-height: 10;
+    -fx-max-width: 10; -fx-max-height: 10;
+    -fx-background-radius: 999;
+    -fx-background-color: linear-gradient(to bottom right, #231942, #5E548E, #9F86C0, #BE95C4, #E0B1CB);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.22), 16, 0.22, 0, 0);
+}
+
+.navIconBtn {
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-border-color: rgba(35,25,66,0.14);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 6 10 6 10;
+    -fx-cursor: hand;
+}
+.navIconBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-border-color: rgba(94,84,142,0.22);
+}
+
+.navIco { -fx-fill: #231942; }
+
+.navSearch {
+    -fx-pref-width: 320;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-background-color: rgba(35,25,66,0.04);
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-padding: 9 14 9 14;
+    -fx-text-fill: #231942;
+    -fx-prompt-text-fill: rgba(35,25,66,0.50);
+}
+.navSearch:focused {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: rgba(159,134,192,0.75);
+    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.18), 18, 0.18, 0, 8);
+}
+
+.navLinkBtn {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgba(35,25,66,0.78);
+    -fx-font-weight: 900;
+    -fx-padding: 7 12 7 12;
+    -fx-background-radius: 999;
+    -fx-cursor: hand;
+}
+.navLinkBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-text-fill: #231942;
+}
+.navLinkBtnActive {
+    -fx-background-color: rgba(35,25,66,0.08);
+    -fx-border-color: rgba(35,25,66,0.14);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-text-fill: #231942;
+}
+
+.navAvatar { -fx-fill: rgba(35,25,66,0.10); }
+.navName { -fx-text-fill: #231942; -fx-font-weight: 900; }
+
+.navLogoutBtn {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(35,25,66,0.18);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-padding: 6 12 6 12;
+    -fx-cursor: hand;
+}
+.navLogoutBtn:hover {
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-border-color: rgba(94,84,142,0.26);
+}
+
+/* =========================
+   PROFILE LAYOUT
+   ========================= */
+.prf-bg { -fx-background-color: #F6F2FA; }
+
+/* ScrollPane viewport must be transparent. [web:238] */
+.prf-scroll { -fx-background-color: transparent; }
+.prf-scroll > .viewport { -fx-background-color: transparent; }
+
+.prf-centerWrap { -fx-background-color: transparent; }
+
+.prf-page {
+    -fx-max-width: 1120;
+    -fx-min-width: 920;
+    -fx-background-color: transparent;
+}
+
+/* =========================
+   HERO
+   ========================= */
+.prf-heroCard {
+    -fx-background-color: #FFFFFF;
+    -fx-background-insets: 0;
+    -fx-background-radius: 16;
+    -fx-border-color: rgba(35,25,66,0.12);
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.12), 30, 0.20, 0, 12);
+}
+
+.prf-cover {
+    -fx-background-insets: 0;
+    -fx-background-radius: 16 16 0 0;
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E, #9F86C0, #BE95C4);
+}
+
+.prf-heroBody { -fx-padding: 12 14 14 14; }
+
+.prf-avatarWrap { -fx-translate-y: -22; }
+.prf-avatarHalo {
+    -fx-fill: rgba(255,255,255,0.92);
+    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.28), 22, 0.18, 0, 0);
+}
+
+.prf-name {
+    -fx-font-size: 20px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+}
+
+.prf-headlineBadge {
+    -fx-font-size: 12px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+    -fx-background-color: rgba(159,134,192,0.22);
+    -fx-border-color: rgba(94,84,142,0.18);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 4 10 4 10;
+}
+
+.prf-meta {
+    -fx-font-size: 12px;
+    -fx-text-fill: rgba(35,25,66,0.62);
+}
+
+.prf-bioPreview {
+    -fx-font-size: 13px;
+    -fx-text-fill: rgba(17,24,39,0.88);
+    -fx-line-spacing: 2px;
+}
+
+/* Stats */
+.prf-statsRow { -fx-padding: 2 0 0 0; }
+
+.prf-statPill {
+    -fx-background-color: #F4F1FB;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 7 12 7 12;
+}
+.prf-statKey {
+    -fx-text-fill: rgba(35,25,66,0.70);
+    -fx-font-weight: 900;
+    -fx-font-size: 11px;
+}
+.prf-statVal {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 11px;
+}
+
+/* Open to work value badge */
+.prf-openToPill {
+    -fx-background-color: linear-gradient(to right, rgba(94,84,142,0.18), rgba(224,177,203,0.22));
+    -fx-border-color: rgba(94,84,142,0.22);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 7 12 7 12;
+    -fx-alignment: center-left;
+}
+.prf-openToText {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 11px;
+}
+
+.prf-ico { -fx-fill: #231942; }
+.prf-icoOnDark { -fx-fill: #FFFFFF; }
+.prf-icoBriefcase { -fx-fill: #5E548E; }
+
+/* =========================
+   CARDS (solid)
+   ========================= */
+.prf-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 16;
+    -fx-border-color: rgba(35,25,66,0.12);
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-padding: 14;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.08), 22, 0.18, 0, 10);
+}
+
+.prf-sideCard { -fx-padding: 12; }
+
+.prf-cardHeader { -fx-padding: 0 0 6 0; }
+
+.prf-cardTitle {
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+}
+
+.prf-label { -fx-font-size: 12px; -fx-font-weight: 900; -fx-text-fill: rgba(35,25,66,0.58); }
+.prf-value { -fx-font-size: 13px; -fx-text-fill: rgba(17,24,39,0.92); }
+.prf-paragraph { -fx-font-size: 13px; -fx-text-fill: rgba(17,24,39,0.90); -fx-line-spacing: 2px; }
+.prf-muted { -fx-text-fill: rgba(35,25,66,0.55); }
+
+.prf-linkBtn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: 900;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+.prf-linkBtn:hover { -fx-underline: true; }
+
+.prf-sideFooterBtn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: 900;
+    -fx-padding: 6 0 0 0;
+    -fx-cursor: hand;
+}
+.prf-sideFooterBtn:hover { -fx-underline: true; }
+
+/* Action icon buttons */
+.prf-actBtn {
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-border-color: rgba(35,25,66,0.14);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 6 10 6 10;
+    -fx-cursor: hand;
+}
+.prf-actBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-border-color: rgba(94,84,142,0.22);
+}
+
+.prf-actSave {
+    -fx-background-color: #231942;
+    -fx-border-color: #231942;
+}
+.prf-actSave:hover { -fx-background-color: #5E548E; -fx-border-color: #5E548E; }
+
+.prf-actCancel {
+    -fx-background-color: rgba(35,25,66,0.08);
+    -fx-border-color: rgba(35,25,66,0.18);
+}
+
+/* People suggestion rows (LinkedIn-like) */
+.prf-personRow {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-radius: 12;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+}
+.prf-personRow:hover {
+    -fx-background-color: #F4F1FB;
+}
+
+.prf-personName {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 13px;
+}
+
+.prf-personSub {
+    -fx-text-fill: rgba(35,25,66,0.65);
+    -fx-font-weight: 800;
+    -fx-font-size: 12px;
+}
+
+.prf-personMeta {
+    -fx-text-fill: rgba(35,25,66,0.55);
+    -fx-font-size: 11px;
+}
+
+/* Connect / Follow button */
+.prf-connectBtn {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(35,25,66,0.22);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-padding: 6 12 6 12;
+    -fx-cursor: hand;
+}
+.prf-connectBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-border-color: rgba(94,84,142,0.30);
+}
+
+/* Editors */
+.prf-editorField {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: rgba(35,25,66,0.16);
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-padding: 10 12 10 12;
+    -fx-text-fill: #231942;
+    -fx-prompt-text-fill: rgba(35,25,66,0.45);
+}
+.prf-editorField:focused {
+    -fx-border-color: rgba(159,134,192,0.75);
+    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.18), 18, 0.18, 0, 8);
+}
+
+/* TextArea inner background fix. [web:242] */
+.prf-editorArea {
+    -fx-border-color: rgba(35,25,66,0.16);
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-padding: 10 12 10 12;
+    -fx-text-fill: #231942;
+    -fx-prompt-text-fill: rgba(35,25,66,0.45);
+    -fx-control-inner-background: #FFFFFF;
+}
+.prf-editorArea .content {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12;
+    -fx-padding: 8;
+}
+.prf-editorArea:focused {
+    -fx-border-color: rgba(159,134,192,0.75);
+    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.18), 18, 0.18, 0, 8);
+}
+
+.prf-error { -fx-text-fill: #B91C1C; -fx-font-weight: 900; }
+/* Bigger + stronger hero than other cards */
+.prf-heroPop {
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.18), 38, 0.22, 0, 14);
+}
+
+.prf-coverLarge {
+    -fx-background-insets: 0;
+
+    -fx-background-radius: 16 16 0 0;
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E, #9F86C0, #BE95C4);
+}
+
+/* Headline editor inside hero */
+.prf-headlineEditor {
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 4 10 4 10;
+    -fx-pref-width: 370;
+}
+
+/* Remove emoji later if you replace with ImageView */
+.prf-eduRow { -fx-padding: 6 0 0 0; }
+
+.prf-eduLogo {
+    -fx-min-width: 46; -fx-min-height: 46;
+    -fx-max-width: 46; -fx-max-height: 46;
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-radius: 12;
+}
+.prf-eduLogoText {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+}
+
+.prf-eduTitle {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 13px;
+}
+.prf-eduSub {
+    -fx-text-fill: rgba(35,25,66,0.60);
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+}
+
+.prf-plusBtn {
+    -fx-font-size: 16px;
+    -fx-padding: 2 10 2 10;
+}
+
+/* Skills “Add skills” button */
+.prf-outlineBtn {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(35,25,66,0.26);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-padding: 6 14 6 14;
+    -fx-cursor: hand;
+}
+.prf-outlineBtn:hover {
+    -fx-background-color: rgba(190,149,196,0.20);
+    -fx-border-color: rgba(94,84,142,0.30);
+}
+
+/* Dashed edit panel like screenshot */
+.prf-editPanel {
+    -fx-border-color: rgba(35,25,66,0.25);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 12;
+}
+
+.prf-eduSubStrong {
+    -fx-text-fill: rgba(35,25,66,0.72);
+    -fx-font-weight: 900;
+    -fx-font-size: 12px;
+}
+
+.prf-eduLogoImg {
+    -fx-opacity: 0.98;
+}
+
+
+/* ===== CONNECT PAGE - COOL UPGRADES ===== */
+
+/* Glass search bar */
+.connect-search {
+    -fx-background-color: rgba(255,255,255,0.25);
+    -fx-background-radius: 16;
+    -fx-padding: 12 16 12 16;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 24, 0, 0, 6);
+    -fx-spacing: 12;
+}
+
+.connect-search .prf-editorField, .connect-search ComboBox {
+    -fx-background-color: rgba(255,255,255,0.7);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-border-color: rgba(255,255,255,0.9);
+    -fx-padding: 10 14;
+    -fx-font-size: 13px;
+    -fx-prompt-text-fill: rgba(107,114,128,0.6);
+}
+
+.connect-search .prf-editorField:focused {
+    -fx-background-color: rgba(255,255,255,0.95);
+    -fx-border-color: rgba(139,92,246,0.6); /* #8B5CF6 */
+    -fx-border-width: 2;
+    -fx-effect: innershadow(gaussian, rgba(139,92,246,0.2), 8, 0, 0, 0);
+}
+
+/* Liquid gradient buttons */
+.connect-liquid {
+    -fx-background-radius: 999;
+    -fx-padding: 10 18 10 18;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: black;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 12, 0, 0, 4);
+    -fx-transition: all 0.2s ease-out;
+}
+
+.connect-liquid:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 16, 0, 0, 6);
+}
+
+.connect-primary {
+    -fx-background-color: linear-gradient(to bottom right, #231942, #5E548E, #9F86C0, #BE95C4, #E0B1CB);
+}
+
+.connect-secondary {
+    -fx-background-color: linear-gradient(to bottom right, #6B7280, #9CA3AF);
+}
+.connect-liquid-reset{
+    -fx-background-radius: 999;
+    -fx-padding: 10 18 10 18;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: black;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 12, 0, 0, 4);
+    -fx-background-color: linear-gradient(to right, #6B7280, #9CA3AF);
+
+}.connect-liquid-refresh{
+     -fx-background-radius: 999;
+     -fx-padding: 10 18 10 18;
+     -fx-font-size: 12px;
+     -fx-font-weight: 600;
+     -fx-text-fill: black;
+     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 12, 0, 0, 4);
+     -fx-background-color: linear-gradient(to right, #8B5CF6, #e8baff);
+}
+
+/* Avatar card rows */
+.connect-person {
+    -fx-padding: 14 16 14 16;
+    -fx-background-radius: 12;
+    -fx-background-color: rgba(255,255,255,0.8);
+    -fx-alignment: CENTER_LEFT;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 20, 0, 0, 4);
+    -fx-spacing: 12;
+    -fx-cursor: hand;
+}
+
+.connect-person:hover {
+    -fx-background-color: white;
+    -fx-transform: translateY(-2%);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.16), 24, 0, 0, 8);
+}
+
+.connect-avatar {
+    -fx-radius: 20;
+    -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.12), 12, 0, 0, 3);
+}
+
+.connect-avatar:hover {
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+/* Action buttons */
+.connect-view {
+    -fx-background-radius: 999;
+    -fx-background-color: rgba(59,130,246,0.1);
+    -fx-text-fill: #2563EB;
+    -fx-padding: 6 12 6 12;
+    -fx-font-size: 11px;
+    -fx-font-weight: 500;
+}
+
+.connect-view:hover {
+    -fx-background-color: rgba(59,130,246,0.2);
+}
+
+.connect-action {
+    -fx-background-radius: 999;
+    -fx-background-color: linear-gradient(to right, #8B5CF6, #A78BFA);
+    -fx-text-fill: white;
+    -fx-padding: 8 16 8 16;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+}
+
+.connect-action:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* Results header */
+.connect-header {
+    -fx-padding: 0 0 0 4;
+}
+
+.connect-count {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1E293B;
+}
+
+/* Subtle shimmer for loading */
+@keyframes shimmer {
+    0% { -fx-background-position: -200% 0; }
+    100% { -fx-background-position: 200% 0; }
+}
+
+.connect-skeleton {
+    -fx-background-color: linear-gradient(to right, #F1F5F9, #E2E8F0, #F1F5F9);
+    -fx-background-size: 200% 100%;
+    -fx-background-radius: 12;
+    -fx-animation: shimmer 1.8s infinite;
+}
+
+
+.sidebar-brand {
+    -fx-padding: 0 0 6 0;    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 18;  /* Increased spacing between logo and text */
+}
+
+
+.brand-logo {
+    -fx-fit-width: 38px;
+    -fx-fit-height: 38px;
+    -fx-preserve-ratio: true;
+    -fx-transition: all 0.3s ease;
+}
+.brand-logo:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-cursor: hand;
+}
+
+
+.brandText {
+    -fx-font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
+    -fx-font-size: 45px !important;
+    -fx-font-weight: 800;
+    -fx-text-fill: #231942;
+    -fx-letter-spacing: 0.5px;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.2), 5, 0, 1, 1);
+    -fx-transition: all 0.3s ease;
+}
+.brandText:hover {
+    -fx-text-fill: #5E548E;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+    -fx-cursor: hand;
+}
+
+
+.brand-logo-signup {
+    -fx-fit-width: 14px !important;
+    -fx-fit-height: 14px !important;
+    -fx-preserve-ratio: true;
+    -fx-transition: all 0.3s ease;
+}
+.brandText-signup {
+    -fx-font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
+    -fx-font-size: 30px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #231942;
+    -fx-letter-spacing: 0.5px;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.2), 5, 0, 1, 1);
+    -fx-transition: all 0.3s ease;
+}
+.pw-weak   { -fx-text-fill: #DC2626; }
+.pw-medium { -fx-text-fill: #D97706; }
+.pw-strong { -fx-text-fill: #16A34A; }
+
+/* =========================================================
+   SIGNUP (Wizard) — Carrieri Branding Override
+   Put this at the END of app.css
+   Brand palette (from your new design):
+   - Deep:   #231942
+   - Purple: #5E548E
+   - Lilac:  #9F86C0
+   - Border: #d8c9f0
+   ========================================================= */
+
+/* ----- Background ----- */
+.bg {
+    -fx-background-color: linear-gradient(to bottom right, #231942, #5E548E, #9F86C0);
+}
+
+/* ----- Left glass panel ----- */
+.glass {
+    -fx-background-color: rgba(255,255,255,0.14);
+    -fx-background-radius: 24;
+    -fx-border-color: rgba(255,255,255,0.22);
+    -fx-border-width: 1;
+    -fx-border-radius: 24;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.25), 20, 0, 0, 6);
+}
+
+
+
+.brandText-signup {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: 900;
+    -fx-letter-spacing: 0.2px;
+}
+
+.brand-logo-signup {
+    -fx-fit-width: 34px;
+    -fx-fit-height: 34px;
+}
+
+/* Muted texts on glass */
+.muted {
+    -fx-fill: rgba(255,255,255,0.78);
+    -fx-font-size: 12px;
+}
+.muted-dark {
+    -fx-fill: rgba(35,25,66,0.65);
+    -fx-font-size: 12px;
+}
+
+/* ----- Wizard card (right) ----- */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-border-color: #d8c9f0;
+    -fx-border-width: 1;
+    -fx-border-radius: 24;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.06), 15, 0, 0, 5);
+}
+
+/* Titles */
+.h1 {
+    -fx-fill: #231942;
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+}
+.h2 {
+    -fx-fill: #231942;
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+}
+
+/* Labels */
+.label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #231942;
+
+}
+
+/* ----- Inputs (TextField / PasswordField / ComboBox) ----- */
+.input,
+.textarea,
+.combo-box,
+.password-field,
+.text-field,
+.text-area {
+    -fx-background-color: white;
+    -fx-border-color: #d8c9f0;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 10 14;
+    -fx-font-size: 13px;
+    -fx-text-fill: #231942;
+    -fx-prompt-text-fill: rgba(94,84,142,0.45);
+}
+
+/* Focus */
+.input:focused,
+.textarea:focused,
+.combo-box:focused,
+.password-field:focused,
+.text-field:focused,
+.text-area:focused {
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.20), 10, 0, 0, 2);
+}
+
+/* TextArea needs this to avoid inner blue focus ring (Modena) */
+.textarea .content,
+.text-area .content {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+}
+
+/* ComboBox arrow styling (nice + consistent) */
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+.combo-box .arrow {
+    -fx-background-color: rgba(94,84,142,0.85);
+}
+
+/* ----- Error state driven by pseudo-class "error" ----- */
+/* You do: c.pseudoClassStateChanged(PseudoClass.getPseudoClass("error"), true) */
+.input:error,
+.textarea:error,
+.text-field:error,
+.text-area:error,
+.combo-box:error,
+.password-field:error {
+    -fx-border-color: #ff6b6b;
+    -fx-border-width: 2;
+}
+
+.combo-box:error .arrow-button {
+    -fx-background-color: rgba(255,107,107,0.12);
+}
+
+/* Error labels in your FXML use styleClass="error" */
+.error {
+    -fx-text-fill: #ff6b6b;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-padding: 4 0 0 5;
+}
+
+/* ----- Password strength label (you used styleClass="prf-muted") ----- */
+.prf-muted {
+    -fx-text-fill: rgba(94,84,142,0.80);
+    -fx-font-size: 12px;
+}
+
+/* these classes are added by controller: pw-weak / pw-medium / pw-strong */
+.pw-weak   { -fx-text-fill: #ff6b6b; -fx-font-weight: 700; }
+.pw-medium { -fx-text-fill: #F59E0B; -fx-font-weight: 700; }
+.pw-strong { -fx-text-fill: #22C55E; -fx-font-weight: 800; }
+
+/* ----- Skills suggest list ----- */
+.suggest {
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: rgba(159,134,192,0.45);
+    -fx-background-color: rgba(255,255,255,0.95);
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.08), 14, 0, 0, 5);
+}
+
+.suggest .list-cell {
+    -fx-padding: 10 12;
+    -fx-text-fill: #231942;
+}
+
+.suggest .list-cell:hover {
+    -fx-background-color: rgba(94,84,142,0.08);
+}
+
+.suggest .list-cell:selected {
+    -fx-background-color: rgba(94,84,142,0.16);
+}
+
+/* ----- Chips ----- */
+.chips-wrap {
+    -fx-padding: 4 0 0 0;
+}
+
+.chip {
+    -fx-background-color: rgba(94,84,142,0.10);
+    -fx-border-color: rgba(94,84,142,0.25);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 6 10 6 10;
+    -fx-spacing: 8;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.chip-label {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 700;
+    -fx-font-size: 12px;
+}
+
+.chip-x {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgba(94,84,142,0.9);
+    -fx-font-weight: 900;
+    -fx-padding: 0 6 0 6;
+}
+.chip-x:hover {
+    -fx-background-color: rgba(94,84,142,0.10);
+    -fx-background-radius: 999;
+}
+
+/* ----- Buttons ----- */
+.btn {
+    -fx-background-color: linear-gradient(to right, #5E548E, #9F86C0);
+    -fx-text-fill: white;
+    -fx-font-weight: 800;
+    -fx-background-radius: 14;
+    -fx-padding: 10 16;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.12), 12, 0, 0, 4);
+}
+.btn:hover {
+    -fx-background-color: linear-gradient(to right, #7a6ba5, #b8a3d3);
+}
+
+.btn-soft {
+    -fx-background-color: rgba(94,84,142,0.10);
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: 800;
+    -fx-background-radius: 14;
+    -fx-padding: 10 16;
+}
+.btn-soft:hover {
+    -fx-background-color: rgba(94,84,142,0.16);
+}
+
+/* Hyperlink */
+.hyperlink {
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: 800;
+}
+.hyperlink:hover {
+    -fx-underline: true;
+}
+
+/* ----- ProgressBar branding ----- */
+.progress-bar {
+    -fx-accent: #5E548E;
+}
+.progress-bar .track {
+    -fx-background-color: rgba(216,201,240,0.55);
+    -fx-background-radius: 999;
+}
+.progress-bar .bar {
+    -fx-background-radius: 999;
+}
+
+/* ----- Preview card ----- */
+.preview-card {
+    -fx-background-color: rgba(255,255,255,0.10);
+    -fx-background-radius: 18;
+    -fx-border-color: rgba(255,255,255,0.22);
+    -fx-border-radius: 18;
+    -fx-padding: 14;
+}
+
+.preview-title {
+    -fx-text-fill: rgba(255,255,255,0.92);
+    -fx-font-weight: 900;
+    -fx-font-size: 12px;
+}
+
+.preview-name {
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-font-size: 14px;
+}
+
+.preview-role {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 11px;
+    -fx-padding: 3 10;
+    -fx-background-color: rgba(255,255,255,0.85);
+    -fx-background-radius: 999;
+}
+
+.preview-sub {
+    -fx-text-fill: rgba(255,255,255,0.80);
+    -fx-font-size: 11px;
+}
+
+.preview-primary {
+    -fx-text-fill: rgba(255,255,255,0.92);
+    -fx-font-weight: 800;
+}
+
+.preview-small {
+    -fx-text-fill: rgba(255,255,255,0.78);
+    -fx-font-size: 11px;
+}
+/* =========================================================
+   PROFILE — NEW FORM-STYLE THEME (Carrieri)
+   Paste at END of app.css
+   Palette:
+   Deep  #231942
+   Purple#5E548E
+   Lilac #9F86C0
+   Border #d8c9f0
+   Muted #6b7280
+   ========================================================= */
+
+/* Page background */
+.prf-bg { -fx-background-color: #F6F2FA; }
+
+/* ScrollPane viewport transparent */
+.prf-scroll { -fx-background-color: transparent; }
+.prf-scroll > .viewport { -fx-background-color: transparent; }
+
+.prf-centerWrap { -fx-background-color: transparent; }
+
+.prf-page {
+    -fx-max-width: 1120;
+    -fx-min-width: 920;
+    -fx-background-color: transparent;
+}
+
+/* -------------------------
+   Cards + Hero containers
+   ------------------------- */
+.prf-heroCard,
+.prf-card {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-border-color: #d8c9f0;
+    -fx-border-width: 1;
+    -fx-border-radius: 24;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(35, 25, 66, 0.06), 15, 0, 0, 5);
+}
+
+/* Stronger hero shadow */
+.prf-heroPop {
+    -fx-effect: dropshadow(gaussian, rgba(35, 25, 66, 0.10), 22, 0.18, 0, 10);
+}
+
+.prf-sideCard { -fx-padding: 14; }
+.prf-cardHeader { -fx-padding: 0 0 8 0; }
+
+/* Hero cover */
+.prf-cover,
+.prf-coverLarge {
+    -fx-background-insets: 0;
+    -fx-background-radius: 24 24 0 0;
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E, #9F86C0, #BE95C4);
+}
+
+.prf-heroBody { -fx-padding: 14 16 16 16; }
+
+/* Avatar */
+.prf-avatarWrap { -fx-translate-y: -22; }
+.prf-avatarHalo {
+    -fx-fill: rgba(255,255,255,0.96);
+    -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.22), 18, 0.18, 0, 0);
+}
+
+/* -------------------------
+   Typography utilities
+   ------------------------- */
+.prf-name {
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #231942;
+}
+
+.prf-cardTitle {
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #231942;
+}
+
+.prf-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #5E548E;
+}
+
+.prf-value {
+    -fx-font-size: 13px;
+    -fx-text-fill: rgba(35,25,66,0.92);
+}
+
+.prf-paragraph {
+    -fx-font-size: 13px;
+    -fx-text-fill: rgba(35,25,66,0.90);
+    -fx-line-spacing: 2px;
+}
+
+.prf-muted,
+.prf-meta {
+    -fx-text-fill: rgba(94,84,142,0.75);
+    -fx-font-size: 12px;
+}
+
+.prf-bioPreview {
+    -fx-font-size: 13px;
+    -fx-text-fill: rgba(35,25,66,0.88);
+    -fx-line-spacing: 2px;
+}
+
+/* -------------------------
+   Badges / pills
+   ------------------------- */
+.prf-headlineBadge {
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #231942;
+    -fx-background-color: rgba(243,232,255,0.85);
+    -fx-border-color: rgba(94,84,142,0.20);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 5 12 5 12;
+}
+
+.prf-statPill {
+    -fx-background-color: rgba(243,232,255,0.70);
+    -fx-border-color: rgba(94,84,142,0.18);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 7 12 7 12;
+}
+
+.prf-statKey {
+    -fx-text-fill: rgba(35,25,66,0.72);
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+
+.prf-statVal {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 11px;
+}
+
+.prf-openToPill {
+    -fx-background-color: rgba(243,232,255,0.85);
+    -fx-border-color: rgba(94,84,142,0.20);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 7 12 7 12;
+    -fx-alignment: center-left;
+}
+
+.prf-openToText {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+
+/* Icons */
+.prf-ico { -fx-fill: #231942; }
+.prf-icoOnDark { -fx-fill: #FFFFFF; }
+.prf-icoBriefcase { -fx-fill: #5E548E; }
+
+/* -------------------------
+   Buttons / links
+   ------------------------- */
+.prf-linkBtn,
+.prf-sideFooterBtn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: 800;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+.prf-linkBtn:hover,
+.prf-sideFooterBtn:hover { -fx-underline: true; }
+
+/* Action icon buttons: now look like "action-button" */
+.prf-actBtn {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(94,84,142,0.25);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 6 10 6 10;
+    -fx-cursor: hand;
+}
+.prf-actBtn:hover {
+    -fx-background-color: rgba(94,84,142,0.10);
+}
+
+/* Save button: brand gradient */
+.prf-actSave {
+    -fx-background-color: linear-gradient(to right, #5E548E, #9F86C0);
+    -fx-border-color: transparent;
+}
+.prf-actSave:hover {
+    -fx-background-color: linear-gradient(to right, #7a6ba5, #b8a3d3);
+}
+
+/* Cancel stays neutral */
+.prf-actCancel {
+    -fx-background-color: rgba(35,25,66,0.06);
+    -fx-border-color: rgba(35,25,66,0.14);
+}
+
+/*  CONNECT STYLING -------------------*/
+
+.connect-header {
+    -fx-background-color: rgba(255, 255, 255, 0.75);
+    -fx-background-radius: 20;
+    -fx-border-color: rgba(94, 84, 142, 0.12);
+    -fx-border-radius: 20;
+    -fx-padding: 16 18;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.12), 18, 0.15, 0, 6);
+}
+
+.connect-header-icon {
+    -fx-background-color: linear-gradient(to right, #231942 0%, #5E548E 100%);
+    -fx-background-radius: 16;
+    -fx-min-width: 44;
+    -fx-min-height: 44;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.25), 14, 0.2, 0, 6);
+}
+
+.connect-header-emoji {
+    -fx-font-size: 22px;
+    -fx-text-fill: white;
+}
+
+.connect-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #231942;
+}
+
+.connect-subtitle {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: rgba(35, 25, 66, 0.65);
+}
+
+.connect-refresh-btn {
+    -fx-background-radius: 12;
+    -fx-padding: 10 12;
+}
+
+/* Filters card */
+.connect-filters {
+    -fx-padding: 18;
+}
+
+.connect-input {
+    -fx-background-radius: 50px;
+    -fx-border-radius: 50px;
+}
+
+/* ComboBox aligned with theme inputs */
+.connect-combo {
+    -fx-background-color: white;
+    -fx-border-color: #d8c9f0;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 4 10;
+    -fx-text-fill: #231942;
+}
+.connect-combo:focused {
+    -fx-border-color: #5E548E;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.18), 10, 0, 0, 2);
+}
+.connect-combo .arrow-button {
+    -fx-background-color: transparent;
+}
+.connect-combo .arrow {
+    -fx-background-color: #5E548E;
+}
+
+/* Results container */
+.connect-results {
+    -fx-padding: 18;
+}
+
+/* Scrollpane polish */
+.connect-scroll,
+.connect-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+/* The list container inside scroll */
+.connect-results-box {
+    -fx-padding: 6 2 2 2;
+}
+
+/* Optional: if each result item is a VBox/HBox you add dynamically,
+   give it styleClass "connect-person-card" from controller for best look. */
+.connect-person-card {
+    -fx-background-color: rgba(255, 255, 255, 0.92);
+    -fx-background-radius: 18;
+    -fx-border-color: rgba(94, 84, 142, 0.14);
+    -fx-border-radius: 18;
+    -fx-padding: 14 14;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0.12, 0, 3);
+}
+.connect-person-card:hover {
+    -fx-border-color: rgba(94, 84, 142, 0.35);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.18), 18, 0.15, 0, 6);
+    -fx-translate-y: -2;
+}
+
+
+/* Headline editor pill */
+.prf-headlineEditor {
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 6 12 6 12;
+    -fx-pref-width: 370;
+}
+
+/* -------------------------
+   Education block
+   ------------------------- */
+.prf-eduLogo {
+    -fx-min-width: 46; -fx-min-height: 46;
+    -fx-max-width: 46; -fx-max-height: 46;
+    -fx-background-color: rgba(94,84,142,0.08);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(94,84,142,0.18);
+    -fx-border-radius: 12;
+}
+
+.prf-eduTitle {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 13px;
+}
+.prf-eduSub,
+.prf-eduSubStrong {
+    -fx-text-fill: rgba(94,84,142,0.85);
+    -fx-font-weight: 800;
+    -fx-font-size: 12px;
+}
+
+/* -------------------------
+   Outline button
+   ------------------------- */
+.prf-outlineBtn {
+    -fx-background-color: transparent;
+    -fx-border-color: #5E548E;
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-text-fill: #5E548E;
+    -fx-font-weight: 800;
+    -fx-padding: 6 14 6 14;
+    -fx-cursor: hand;
+}
+.prf-outlineBtn:hover {
+    -fx-background-color: rgba(94,84,142,0.10);
+}
+
+/* Edit panel dashed */
+.prf-editPanel {
+    -fx-border-color: rgba(94,84,142,0.25);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 12;
+}
+
+/* Error label */
+.prf-error {
+    -fx-text-fill: #ff6b6b;
+    -fx-font-weight: 800;
+}

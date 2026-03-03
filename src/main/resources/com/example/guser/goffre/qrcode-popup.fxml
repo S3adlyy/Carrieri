@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<ScrollPane fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="main-scroll"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.guser.controllers.goffre.QRCodeController"
+            stylesheets="@css/theme-unified.css">
+
+    <StackPane>
+        <!-- Cercles décoratifs en arrière-plan -->
+        <Circle radius="250" fill="rgba(94,84,142,0.03)" mouseTransparent="true"
+                style="-fx-translate-y: -150; -fx-translate-x: -280;" styleClass="bg-orb"/>
+        <Circle radius="200" fill="rgba(159,134,192,0.02)" mouseTransparent="true"
+                style="-fx-translate-y: 200; -fx-translate-x: 250;" styleClass="bg-orb-purple"/>
+        <Circle radius="150" fill="rgba(224,177,203,0.02)" mouseTransparent="true"
+                style="-fx-translate-y: -100; -fx-translate-x: 180;" styleClass="bg-orb-pink"/>
+
+        <VBox alignment="TOP_CENTER" spacing="30" style="-fx-padding: 40;">
+
+            <!-- En‑tête -->
+            <VBox spacing="15" alignment="CENTER" styleClass="header-section">
+                <StackPane styleClass="header-icon-container">
+                    <Label text="📱" styleClass="header-icon"/>
+                </StackPane>
+                <Label text="QR Code de l'Offre" styleClass="header-title"/>
+                <Label fx:id="lblOffreTitre" text="Statistiques de l'offre" styleClass="header-subtitle"/>
+            </VBox>
+
+            <!-- Barre de navigation -->
+            <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-max-width: 1400px;">
+                <Button fx:id="btnBack" onAction="#handleBack" styleClass="btn-back-arrow-inline">
+                    <graphic>
+                        <Label text="←" style="-fx-font-size: 20; -fx-text-fill: #7c3aed;"/>
+                    </graphic>
+                </Button>
+                <Label text="Retour aux offres" style="-fx-text-fill: #6b7280; -fx-font-size: 14; -fx-font-weight: 600;"/>
+            </HBox>
+
+            <!-- Contenu centré -->
+            <VBox spacing="25" alignment="CENTER" style="-fx-max-width: 600px;">
+
+                <!-- Informations offre -->
+                <VBox spacing="5" alignment="CENTER">
+                    <Label fx:id="lblOffreTitreDetail" text="Titre de l'Offre" styleClass="offer-title" style="-fx-font-size: 20px;"/>
+                    <HBox spacing="8" alignment="CENTER">
+                        <Label text="🏢" styleClass="offer-info" style="-fx-font-size: 14px;"/>
+                        <Label fx:id="lblEntreprise" text="Nom de l'entreprise" styleClass="offer-info" style="-fx-font-size: 14px;"/>
+                    </HBox>
+                </VBox>
+
+                <!-- QR Code Image -->
+                <StackPane styleClass="glass-card" prefWidth="300" prefHeight="300">
+                    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                    <ImageView fx:id="qrImageView" fitWidth="260" fitHeight="260" preserveRatio="true"/>
+                </StackPane>
+
+                <!-- Instruction -->
+                <Label fx:id="lblInstruction" text="Scannez ce QR Code pour accéder à l'offre d'emploi"
+                       wrapText="true" textAlignment="CENTER"
+                       styleClass="offer-description" style="-fx-font-size: 14px;"/>
+
+                <!-- Boutons d'action -->
+                <HBox spacing="15" alignment="CENTER">
+                    <Button fx:id="btnDownload" text="💾 Télécharger" onAction="#handleDownload"
+                            styleClass="btn-primary" prefWidth="180"/>
+                    <Button text="🖨 Imprimer" onAction="#handlePrint"
+                            styleClass="btn-secondary" prefWidth="150"/>
+                </HBox>
+
+                <!-- Pied de page -->
+                <Label text="💡 Astuce: Partagez ce QR Code sur vos réseaux sociaux, affiches ou flyers"
+                       wrapText="true" textAlignment="CENTER"
+                       styleClass="field-hint" style="-fx-font-size: 12px; -fx-font-style: italic;"/>
+            </VBox>
+        </VBox>
+    </StackPane>
+</ScrollPane>

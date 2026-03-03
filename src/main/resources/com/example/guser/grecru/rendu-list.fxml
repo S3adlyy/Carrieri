@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.guser.controllers.grecru.RenduListController"
+      styleClass="rendu-root"
+      stylesheets="@Css/rendu-list.css"
+      spacing="0"
+      alignment="TOP_CENTER"
+      VBox.vgrow="ALWAYS">
+
+    <!-- MAIN CARD CONTAINER - FIXED: Added VBox.vgrow -->
+    <VBox styleClass="rendu-main-card"
+          maxWidth="1400"
+          VBox.vgrow="ALWAYS"
+          spacing="15"
+          alignment="TOP_CENTER">
+        <padding>
+            <Insets top="20" right="25" bottom="20" left="25"/>
+        </padding>
+
+        <!-- HEADER SECTION -->
+        <HBox styleClass="rendu-header" alignment="CENTER_LEFT">
+            <HBox spacing="20" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                <!-- Title with Icon -->
+                <HBox styleClass="rendu-title-container" spacing="15" alignment="CENTER_LEFT">
+                    <StackPane styleClass="rendu-title-icon">
+                        <Label text="📊" style="-fx-font-size: 24px; -fx-text-fill: white;"/>
+                    </StackPane>
+                    <VBox spacing="5">
+                        <Label text="Submission Hub" styleClass="rendu-title-text"/>
+                        <Label text="Track manage candidate submissions" styleClass="rendu-subtitle"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Header Actions -->
+                <HBox styleClass="rendu-header-actions" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                    <Button text="🔍 Advanced Filter"
+                            styleClass="rendu-header-btn, filter-header-btn"
+                            onAction="#showFilter"/>
+                    <Button text="📈 Statistics"
+                            styleClass="rendu-header-btn, stats-header-btn"
+                            onAction="#showStatistics"/>
+                </HBox>
+            </HBox>
+        </HBox>
+
+        <!-- FILTER CARD -->
+        <VBox styleClass="rendu-filter-card">
+            <HBox spacing="25" alignment="CENTER_LEFT">
+                <!-- Status Filter -->
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="Status" styleClass="filter-label"/>
+                    <ComboBox fx:id="filterStatus"
+                              promptText="All Status"
+                              styleClass="filter-combo"
+                              prefWidth="140">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="All"/>
+                                <String fx:value="Accepted"/>
+                                <String fx:value="Rejected"/>
+                                <String fx:value="Pending"/>
+                                <String fx:value="Error"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </HBox>
+
+                <!-- Mission Filter -->
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="Mission" styleClass="filter-label"/>
+                    <ComboBox fx:id="filterMission"
+                              promptText="All Missions"
+                              styleClass="filter-combo"
+                              prefWidth="150"/>
+                </HBox>
+
+                <!-- Search Field -->
+                <HBox spacing="12" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                    <Label text="Search" styleClass="filter-label"/>
+                    <TextField fx:id="searchField"
+                               promptText="🔍 Search by candidate, mission, status..."
+                               styleClass="filter-field"
+                               HBox.hgrow="ALWAYS"/>
+                </HBox>
+
+                <!-- Action Buttons -->
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                    <Button text="Apply Filters"
+                            styleClass="rendu-header-btn, stats-header-btn"
+                            onAction="#applyFilters"/>
+                    <Button text="Clear"
+                            styleClass="filter-btn-clear"
+                            onAction="#clearFilters"/>
+                </HBox>
+            </HBox>
+        </VBox>
+
+        <!-- STATS CARDS -->
+        <HBox styleClass="rendu-stats-grid" alignment="CENTER" spacing="25">
+            <!-- Total Submissions Card -->
+            <VBox styleClass="rendu-stat-card" HBox.hgrow="ALWAYS">
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <StackPane styleClass="rendu-stat-icon">
+                        <Label text="📋" style="-fx-font-size: 22px;"/>
+                    </StackPane>
+                    <VBox spacing="5" alignment="CENTER_LEFT">
+                        <Label text="Total Submissions" styleClass="rendu-stat-label"/>
+                        <HBox alignment="CENTER_LEFT" spacing="5">
+                            <Label fx:id="lblTotal" text="0" styleClass="rendu-stat-value"/>
+                            <Label text="submissions" styleClass="rendu-stat-unit"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Success Rate Card -->
+            <VBox styleClass="rendu-stat-card" HBox.hgrow="ALWAYS">
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <StackPane styleClass="rendu-stat-icon">
+                        <Label text="✅" style="-fx-font-size: 22px;"/>
+                    </StackPane>
+                    <VBox spacing="5" alignment="CENTER_LEFT">
+                        <Label text="Success Rate" styleClass="rendu-stat-label"/>
+                        <HBox alignment="CENTER_LEFT" spacing="5">
+                            <Label fx:id="lblSuccessRate" text="0%" styleClass="rendu-stat-value"/>
+                            <Label text="accepted" styleClass="rendu-stat-unit"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Average Score Card -->
+            <VBox styleClass="rendu-stat-card" HBox.hgrow="ALWAYS">
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <StackPane styleClass="rendu-stat-icon">
+                        <Label text="📊" style="-fx-font-size: 22px;"/>
+                    </StackPane>
+                    <VBox spacing="5" alignment="CENTER_LEFT">
+                        <Label text="Average Score" styleClass="rendu-stat-label"/>
+                        <HBox alignment="CENTER_LEFT" spacing="5">
+                            <Label fx:id="lblAvgScore" text="0%" styleClass="rendu-stat-value"/>
+                            <Label text="avg" styleClass="rendu-stat-unit"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <!-- TABLE CONTAINER - FIXED: Added VBox.vgrow -->
+        <VBox styleClass="rendu-table-container"
+              prefHeight="520"
+              minHeight="520"
+              VBox.vgrow="ALWAYS"
+              spacing="0">
+            <TableView fx:id="table"
+                       styleClass="rendu-table"
+                       prefHeight="420"
+                       minHeight="420"
+                       VBox.vgrow="ALWAYS">
+                <columns>
+                    <!-- Score Column -->
+                    <TableColumn fx:id="colScore" text="Score" prefWidth="160">
+                        <graphic>
+                            <Label text="📊" style="-fx-font-size: 14px; -fx-padding: 0 8 0 0;"/>
+                        </graphic>
+                    </TableColumn>
+
+                    <!-- Result Column -->
+                    <TableColumn fx:id="colResultat" text="Status" prefWidth="140">
+                        <graphic>
+                            <Label text="🏷️" style="-fx-font-size: 14px; -fx-padding: 0 8 0 0;"/>
+                        </graphic>
+                    </TableColumn>
+
+                    <!-- Mission Column -->
+                    <TableColumn fx:id="colMission" text="Mission" prefWidth="200">
+                        <graphic>
+                            <Label text="🎯" style="-fx-font-size: 14px; -fx-padding: 0 8 0 0;"/>
+                        </graphic>
+                    </TableColumn>
+
+                    <!-- Candidate Column -->
+                    <TableColumn fx:id="colCandidat" text="Candidate" prefWidth="200">
+                        <graphic>
+                            <Label text="👤" style="-fx-font-size: 14px; -fx-padding: 0 8 0 0;"/>
+                        </graphic>
+                    </TableColumn>
+
+                    <!-- Actions Column -->
+                    <TableColumn fx:id="colActions" text="Actions" prefWidth="200">
+                        <graphic>
+                            <Label text="⚙️" style="-fx-font-size: 14px; -fx-padding: 0 8 0 0;"/>
+                        </graphic>
+                    </TableColumn>
+                </columns>
+
+                <!-- Empty Table Placeholder -->
+                <placeholder>
+                    <VBox styleClass="empty-placeholder" alignment="CENTER" spacing="10">
+                        <Label text="📭" styleClass="empty-icon"/>
+                        <Label text="No submissions yet" styleClass="empty-title"/>
+                        <Label text="Start by submitting code in the AI Code Submission tab"
+                               styleClass="empty-subtitle"/>
+                    </VBox>
+                </placeholder>
+            </TableView>
+        </VBox>
+
+        <!-- FOOTER CONTROLS -->
+        <HBox styleClass="rendu-footer" alignment="CENTER" spacing="20">
+            <Button text="🔄 Refresh Data"
+                    styleClass="footer-btn, btn-refresh"
+                    onAction="#load"/>
+            <Button text="📥 Export to CSV"
+                    styleClass="rendu-header-btn, stats-header-btn"
+                    onAction="#exportToCSV"/>
+        </HBox>
+
+        <!-- PAGINATION -->
+        <HBox styleClass="pagination-container" alignment="CENTER" spacing="15">
+            <Button text="⏮️" styleClass="pagination-btn"/>
+            <Label text="Page" styleClass="pagination-label"/>
+            <TextField text="1" prefWidth="60" styleClass="pagination-field"/>
+            <Label text="of 10" styleClass="pagination-label"/>
+            <Button text="⏭️" styleClass="pagination-btn"/>
+        </HBox>
+
+    </VBox>
+</VBox>

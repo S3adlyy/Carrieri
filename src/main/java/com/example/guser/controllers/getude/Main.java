@@ -1,0 +1,258 @@
+package com.example.guser.controllers.getude;
+
+import javafx.animation.FadeTransition;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Glow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.util.Duration;
+
+import java.util.prefs.Preferences;
+
+public class Main extends Application {
+
+    private Stage primaryStage;
+    private Stage splashStage;
+    private ProgressBar progressBar;
+    private Label statusLabel;
+
+    private static final String PREFS_DARK_MODE = "darkMode";
+    private static Preferences prefs;
+
+    // Chemins des fichiers CSS
+    private static final String CSS_LIGHT = "/com/example/guser/getude/css/ThemeUnified.css";
+    private static final String CSS_DARK = "/com/example/guser/getude/css/ThemeDark.css";
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        this.primaryStage = primaryStage;
+
+        prefs = Preferences.userNodeForPackage(Main.class);
+
+        createSplashScreen();
+
+        new Thread(this::loadApplication).start();
+    }
+
+    private void loadApplication() {
+        try {
+            updateProgress(0.2, "🎓 Chargement de l'application...");
+            Thread.sleep(400);
+
+            updateProgress(0.4, "🎨 Chargement des styles...");
+            Thread.sleep(400);
+
+            updateProgress(0.6, "💾 Connexion à la base de données...");
+            Thread.sleep(400);
+
+            updateProgress(0.8, "⚙️ Préparation de l'interface...");
+            Parent root = FXMLLoader.load(getClass().getResource("/com/example/guser/getude/MainShell.fxml"));
+
+            updateProgress(1.0, "🚀 Démarrage...");
+            Thread.sleep(300);
+
+            Platform.runLater(() -> {
+                closeSplashScreen();
+
+                Scene scene = new Scene(root, 1400, 900);
+
+                // ✅ Charger le CSS du thème clair (toujours présent)
+                try {
+                    scene.getStylesheets().add(getClass().getResource(CSS_LIGHT).toExternalForm());
+                } catch (Exception e) {
+                    System.err.println("⚠️ CSS clair non trouvé: " + CSS_LIGHT);
+                }
+
+                // ✅ Ajouter le CSS sombre et la classe dark si nécessaire
+                if (isDarkMode()) {
+                    try {
+                        scene.getStylesheets().add(getClass().getResource(CSS_DARK).toExternalForm());
+                    } catch (Exception e) {
+                        System.err.println("⚠️ CSS sombre non trouvé: " + CSS_DARK);
+                    }
+                    scene.getRoot().getStyleClass().add("dark");
+                }
+
+                primaryStage.setScene(scene);
+                primaryStage.setTitle("Carrieri");
+
+                try {
+                    primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/com/example/guser/images/logo.png")));
+                } catch (Exception e) {
+                    System.err.println("Logo non trouvé");
+                }
+
+                primaryStage.setMaximized(true);
+                primaryStage.show();
+
+                FadeTransition fadeIn = new FadeTransition(Duration.millis(400), root);
+                fadeIn.setFromValue(0);
+                fadeIn.setToValue(1);
+                fadeIn.play();
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Platform.runLater(() -> {
+                closeSplashScreen();
+                primaryStage.show();
+            });
+        }
+    }
+
+    // ============================================
+    // SPLASH SCREEN CORRIGÉ
+    // ============================================
+
+    private void createSplashScreen() {
+        splashStage = new Stage();
+        splashStage.initStyle(StageStyle.TRANSPARENT);
+        splashStage.setResizable(false);
+        splashStage.setAlwaysOnTop(true);
+
+        // Fond violet directement sur le StackPane
+        StackPane splashLayout = new StackPane();
+        splashLayout.setStyle("-fx-background-color: #231942; -fx-background-radius: 30;");
+        splashLayout.setPrefSize(600, 400);
+
+        // Ombre portée
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setColor(Color.rgb(0, 0, 0, 0.3));
+        dropShadow.setRadius(20);
+        dropShadow.setOffsetY(5);
+        splashLayout.setEffect(dropShadow);
+
+        // Contenu
+        VBox content = new VBox(20);
+        content.setAlignment(Pos.CENTER);
+        content.setMaxWidth(500);
+
+        // ✅ LOGO (au lieu de l'emoji)
+        ImageView logoView = null;
+        try {
+            Image logoImage = new Image(getClass().getResourceAsStream("/com/example/guser/images/logo.png"));
+            logoView = new ImageView(logoImage);
+            logoView.setFitWidth(120);
+            logoView.setFitHeight(120);
+            logoView.setPreserveRatio(true);
+
+            // Petit effet de brillance
+            Glow glow = new Glow();
+            glow.setLevel(0.3);
+            logoView.setEffect(glow);
+        } catch (Exception e) {
+            System.err.println("Logo non trouvé, utilisation du fallback");
+            // Fallback si l'image n'est pas trouvée
+            Label fallbackLogo = new Label("🎓");
+            fallbackLogo.setStyle("-fx-font-size: 80px; -fx-text-fill: white;");
+            content.getChildren().add(fallbackLogo);
+        }
+
+        if (logoView != null) {
+            content.getChildren().add(logoView);
+        }
+
+        Label titleLabel = new Label("Carrieri");
+        titleLabel.setStyle("-fx-font-size: 36px; -fx-font-weight: 900; -fx-text-fill: white;");
+
+        Label subtitleLabel = new Label("Gestion des Études");
+        subtitleLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: rgba(255,255,255,0.8);");
+
+        progressBar = new ProgressBar(0);
+        progressBar.setPrefWidth(400);
+        progressBar.setPrefHeight(10);
+        progressBar.setStyle("-fx-accent: #E0B1CB; -fx-control-inner-background: rgba(255,255,255,0.15);");
+
+        statusLabel = new Label("Initialisation...");
+        statusLabel.setStyle("-fx-text-fill: rgba(255,255,255,0.9); -fx-font-size: 14px;");
+
+        content.getChildren().addAll(titleLabel, subtitleLabel, progressBar, statusLabel);
+        splashLayout.getChildren().add(content);
+
+        Scene splashScene = new Scene(splashLayout, 600, 400);
+        splashScene.setFill(Color.TRANSPARENT);
+
+        splashStage.setScene(splashScene);
+        splashStage.centerOnScreen();
+        splashStage.show();
+    }
+
+    // ============================================
+    // GESTION DU THÈME
+    // ============================================
+
+    public static boolean isDarkMode() {
+        return prefs.getBoolean(PREFS_DARK_MODE, false);
+    }
+
+    public static void setDarkMode(boolean darkMode) {
+        prefs.putBoolean(PREFS_DARK_MODE, darkMode);
+    }
+
+    public static void toggleTheme() {
+        boolean newMode = !isDarkMode();
+        setDarkMode(newMode);
+        applyThemeToAllStages();
+    }
+
+    private static void applyThemeToAllStages() {
+        Platform.runLater(() -> {
+            for (Stage stage : Stage.getWindows().stream()
+                    .filter(w -> w instanceof Stage)
+                    .map(w -> (Stage) w)
+                    .toList()) {
+                Scene scene = stage.getScene();
+                if (scene != null && scene.getRoot() != null) {
+                    if (isDarkMode()) {
+                        // ✅ Ajouter le CSS sombre s'il n'est pas déjà présent
+                        String darkCssPath = Main.class.getResource(CSS_DARK).toExternalForm();
+                        if (!scene.getStylesheets().contains(darkCssPath)) {
+                            scene.getStylesheets().add(darkCssPath);
+                        }
+                        scene.getRoot().getStyleClass().add("dark");
+                    } else {
+                        // ✅ Retirer le CSS sombre
+                        String darkCssPath = Main.class.getResource(CSS_DARK).toExternalForm();
+                        scene.getStylesheets().remove(darkCssPath);
+                        scene.getRoot().getStyleClass().remove("dark");
+                    }
+                }
+            }
+        });
+    }
+
+    // ============================================
+    // MÉTHODES DU SPLASH
+    // ============================================
+
+    private void updateProgress(double value, String status) {
+        Platform.runLater(() -> {
+            progressBar.setProgress(value);
+            statusLabel.setText(status);
+        });
+    }
+
+    private void closeSplashScreen() {
+        if (splashStage != null) {
+            splashStage.close();
+            splashStage = null;
+        }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}

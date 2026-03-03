@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<ScrollPane fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="main-scroll"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.guser.controllers.goffre.PostulerPopupController"
+            stylesheets="@css/theme-unified.css">
+
+    <StackPane>
+        <!-- Cercles décoratifs en arrière-plan -->
+        <Circle radius="250" fill="rgba(94,84,142,0.03)" mouseTransparent="true"
+                style="-fx-translate-y: -150; -fx-translate-x: -280;" styleClass="bg-orb"/>
+        <Circle radius="200" fill="rgba(159,134,192,0.02)" mouseTransparent="true"
+                style="-fx-translate-y: 200; -fx-translate-x: 250;" styleClass="bg-orb-purple"/>
+        <Circle radius="150" fill="rgba(224,177,203,0.02)" mouseTransparent="true"
+                style="-fx-translate-y: -100; -fx-translate-x: 180;" styleClass="bg-orb-pink"/>
+
+        <VBox alignment="TOP_CENTER" spacing="30" style="-fx-padding: 40;">
+
+            <!-- En‑tête -->
+            <VBox spacing="15" alignment="CENTER" styleClass="header-section">
+                <StackPane styleClass="header-icon-container">
+                    <Label text="📨" styleClass="header-icon"/>
+                </StackPane>
+                <Label text="Postuler à cette offre" styleClass="header-title"/>
+                <Label fx:id="lblOfferTitle" text="Offre: [Titre]" styleClass="header-subtitle"/>
+            </VBox>
+
+            <!-- Barre de navigation -->
+            <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-max-width: 1400px;">
+                <Button fx:id="btnBack" onAction="#handleBack" styleClass="btn-back-arrow-inline">
+                    <graphic>
+                        <Label text="←" style="-fx-font-size: 20; -fx-text-fill: #7c3aed;"/>
+                    </graphic>
+                </Button>
+                <Label text="Retour à la liste des offres" style="-fx-text-fill: #6b7280; -fx-font-size: 14; -fx-font-weight: 600;"/>
+            </HBox>
+
+            <!-- Contenu du formulaire -->
+            <VBox spacing="20" alignment="TOP_CENTER" style="-fx-max-width: 700px;">
+
+                <VBox spacing="20" styleClass="glass-card" style="-fx-padding: 30;">
+
+                    <!-- Lettre de motivation -->
+                    <VBox spacing="8">
+                        <HBox spacing="6" alignment="CENTER_LEFT">
+                            <Label text="Lettre de motivation" styleClass="field-label"/>
+                            <Label text="Requis" styleClass="badge-required"/>
+                        </HBox>
+                        <TextArea fx:id="txtMotivation" promptText="Expliquez pourquoi vous êtes le candidat idéal pour ce poste..."
+                                  prefRowCount="8" wrapText="true" styleClass="elegant-field"/>
+                        <Label fx:id="lblMotivationError" styleClass="error-label" wrapText="true" managed="false" visible="false"/>
+                        <HBox alignment="CENTER_RIGHT">
+                            <Label fx:id="lblCharCount" text="0/1500 | 0 mots" styleClass="char-counter"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Upload CV -->
+                    <VBox spacing="8">
+                        <HBox spacing="6" alignment="CENTER_LEFT">
+                            <Label text="Curriculum Vitae (CV)" styleClass="field-label"/>
+                            <Label text="Requis" styleClass="badge-required"/>
+                        </HBox>
+                        <HBox spacing="12" alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
+                            <Button fx:id="btnSelectCV" text="📎 Choisir un fichier" onAction="#handleSelectCV" styleClass="btn-secondary" prefWidth="190"/>
+                            <Label fx:id="lblCVFileName" text="Aucun fichier sélectionné" style="-fx-text-fill: #9ca3af; -fx-font-size: 12;"/>
+                        </HBox>
+                        <Label fx:id="lblCVError" styleClass="error-label" wrapText="true" managed="false" visible="false"/>
+                        <Label text="Formats acceptés : PDF, DOC, DOCX (max 5 MB)" styleClass="field-hint"/>
+                    </VBox>
+
+                    <!-- Numéro de téléphone -->
+                    <VBox spacing="8">
+                        <HBox spacing="6" alignment="CENTER_LEFT">
+                            <Label text="Numéro de téléphone" styleClass="field-label"/>
+                            <Label text="Optionnel - Pour SMS de confirmation" styleClass="badge-optional"/>
+                        </HBox>
+                        <TextField fx:id="txtPhone" promptText="+33 6 12 34 56 78" styleClass="elegant-field"/>
+                        <Label fx:id="lblPhoneError" styleClass="error-label" wrapText="true" managed="false" visible="false"/>
+                        <Label text="Format international recommandé (ex: +33612345678)" styleClass="field-hint"/>
+                    </VBox>
+
+                    <!-- Conseils -->
+                    <VBox spacing="12" styleClass="tips-card">
+                        <Label text="💡 Conseils pour votre candidature" styleClass="tips-title"/>
+                        <Label text="• Personnalisez votre lettre selon l'offre" styleClass="tips-item"/>
+                        <Label text="• Mettez en avant vos compétences pertinentes" styleClass="tips-item"/>
+                        <Label text="• Restez professionnel et concis" styleClass="tips-item"/>
+                    </VBox>
+
+                    <!-- Boutons -->
+                    <HBox spacing="20" alignment="CENTER" style="-fx-padding: 10 0 0 0;">
+                        <Button fx:id="btnCancel" text="Annuler" onAction="#handleBack" styleClass="btn-secondary" prefWidth="180" prefHeight="50"/>
+                        <Button fx:id="btnSubmit" text="Envoyer ma candidature" onAction="#handleSubmit" styleClass="btn-primary" prefWidth="260" prefHeight="52"/>
+                    </HBox>
+
+                </VBox>
+            </VBox>
+        </VBox>
+    </StackPane>
+</ScrollPane>

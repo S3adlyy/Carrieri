@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.guser.controllers.greclam.ReclamationFormController"
+      spacing="20" style="-fx-padding: 20;" alignment="TOP_CENTER"
+      prefWidth="500"
+      stylesheets="@css/ThemeUnified.css">
+
+    <Label fx:id="dialogTitle" text="Ajouter une nouvelle réclamation"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+    <Separator/>
+
+    <GridPane vgap="15" hgap="10" alignment="CENTER" maxWidth="500">
+        <!-- Objet -->
+        <Label text="Objet:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="objetField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                   prefWidth="350" promptText="Objet de la réclamation"/>
+
+        <!-- Catégorie -->
+        <Label text="Catégorie:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <ComboBox fx:id="categorieCombo" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                  prefWidth="350" promptText="Choisir catégorie"/>
+
+        <!-- ❌ LIGNE PRIORITÉ SUPPRIMÉE -->
+
+        <!-- Description -->
+        <Label text="Description:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <TextArea fx:id="descriptionArea" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                  prefRowCount="4" prefWidth="350" wrapText="true" promptText="Description détaillée..."/>
+
+        <!-- Email -->
+        <Label text="Email de notification:" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="emailField" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                   prefWidth="350" promptText="exemple@email.com (optionnel)"/>
+
+        <!-- Date -->
+        <Label text="Date:" GridPane.rowIndex="4" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <DatePicker fx:id="datePicker" GridPane.rowIndex="4" GridPane.columnIndex="1"
+                    prefWidth="350" promptText="jj/mm/aaaa"/>
+    </GridPane>
+
+    <!-- Boutons -->
+    <HBox spacing="15" alignment="CENTER">
+        <Button text="Sauvegarder" onAction="#handleSave"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-width: 120; -fx-padding: 10; -fx-cursor: hand;"/>
+        <Button text="Retour à la liste" onAction="#goBackToList"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-width: 120; -fx-padding: 10; -fx-cursor: hand;"/>
+    </HBox>
+</VBox>

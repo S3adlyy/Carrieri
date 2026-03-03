@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.guser.controllers.getude.CoursController"
+           stylesheets="@css/ThemeUnified.css"
+           styleClass="mission-bg"
+           prefWidth="1400" prefHeight="900">
+
+    <!-- Background Orbs (bulles) -->
+    <Circle radius="250" fill="rgba(94,84,142,0.03)" mouseTransparent="true" style="-fx-translate-y: -150; -fx-translate-x: -280;" styleClass="bg-orb"/>
+    <Circle radius="200" fill="rgba(159,134,192,0.02)"  mouseTransparent="true" style="-fx-translate-y: 200; -fx-translate-x: 250;" styleClass="bg-orb"/>
+    <Circle radius="150" fill="rgba(224,177,203,0.02)" mouseTransparent="true" style="-fx-translate-y: -100; -fx-translate-x: 180;" styleClass="bg-orb"/>
+
+    <!-- Main Content -->
+    <ScrollPane fitToWidth="true" fitToHeight="true"
+                style="-fx-background-color: transparent; -fx-border-color: transparent;"
+                styleClass="main-scroll">
+
+        <VBox alignment="TOP_CENTER" spacing="25" style="-fx-padding: 30;">
+
+            <!-- Header avec icône -->
+            <VBox spacing="20" alignment="CENTER" style="-fx-padding: 0 0 10 0;">
+                <StackPane styleClass="header-icon-container"
+                           style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #231942 0%, #5E548E 100%);
+                                 -fx-background-radius: 20;
+                                 -fx-padding: 20;
+                                 -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.3), 25, 0.25, 0, 10);">
+                    <Label text="📚" styleClass="header-icon" style="-fx-font-size: 36px; -fx-text-fill: white;"/>
+                </StackPane>
+
+                <VBox spacing="5" alignment="CENTER">
+                    <Label text="Création de Cours" styleClass="header-title"/>
+                    <Label text="Définissez les paramètres de votre cours académique"
+                           styleClass="header-subtitle"/>
+                </VBox>
+            </VBox>
+
+            <!-- FORMULAIRE 3 COLONNES -->
+            <VBox fx:id="formPane" spacing="25" visible="false" managed="false" styleClass="form-pane">
+
+                <!-- Les 3 colonnes en HBox -->
+                <HBox spacing="30" alignment="TOP_CENTER" styleClass="form-columns">
+
+                    <!-- COLONNE 1: Description -->
+                    <VBox spacing="20" styleClass="glass-card" HBox.hgrow="ALWAYS" prefWidth="450">
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <Label text="Description du cours" styleClass="card-title"
+                                   style="-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #231942;"/>
+                        </HBox>
+
+                        <TextArea fx:id="txtDescription"
+                                  promptText="Décrivez les objectifs du cours, les prérequis, le programme et les compétences acquises..."
+                                  wrapText="true"
+                                  prefHeight="180"
+                                  styleClass="form-textarea"/>
+
+                        <Label fx:id="errorDescription" text="" styleClass="error-label"
+                               visible="false" managed="false"/>
+
+                        <HBox alignment="CENTER_RIGHT">
+                            <Label fx:id="charCountLabel" text="0/1000" styleClass="char-counter"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- COLONNE 2: Titre, Niveau, Durée, Compétences, Conseils -->
+                    <VBox spacing="20" styleClass="glass-card" prefWidth="350">
+
+                        <!-- Titre -->
+                        <VBox spacing="5" styleClass="form-field">
+                            <Label text="Titre du cours *" styleClass="field-label"/>
+                            <TextField fx:id="txtTitre" promptText="Ex: JavaFX - Création d'applications"
+                                       styleClass="form-field"/>
+                            <Label fx:id="errorTitre" text="" styleClass="error-label"
+                                   visible="false" managed="false"/>
+                        </VBox>
+
+                        <!-- Niveau -->
+                        <VBox spacing="5" styleClass="form-field">
+                            <Label text="Niveau du cours *" styleClass="field-label"/>
+                            <ComboBox fx:id="comboNiveau" promptText="Sélectionner le niveau"
+                                      styleClass="form-combo"/>
+                            <Label fx:id="errorNiveau" text="" styleClass="error-label"
+                                   visible="false" managed="false"/>
+                            <Label text="Le niveau de difficulté du cours" styleClass="field-hint"/>
+                        </VBox>
+
+                        <!-- Durée -->
+                        <VBox spacing="5" styleClass="form-field">
+                            <Label text="Durée (heures) *" styleClass="field-label"/>
+                            <TextField fx:id="txtDuree" promptText="Ex: 45"
+                                       styleClass="form-field"/>
+                            <Label fx:id="errorDuree" text="" styleClass="error-label"
+                                   visible="false" managed="false"/>
+                            <Label text="Nombre d'heures total du cours" styleClass="field-hint"/>
+                        </VBox>
+
+                        <!-- Compétences -->
+                        <VBox spacing="5" styleClass="form-field">
+                            <Label text="Compétences visées" styleClass="field-label"/>
+                            <TextField fx:id="txtCompetences" promptText="Ex: Programmation, Algorithmes, Java"
+                                       styleClass="form-field"/>
+                            <Label fx:id="errorCompetences" text="" styleClass="error-label"
+                                   visible="false" managed="false"/>
+                        </VBox>
+
+                        <!-- Conseils -->
+                        <VBox spacing="12" styleClass="tips-section">
+                            <Label text="📌 Conseils pour votre cours" styleClass="tips-title"/>
+                            <VBox spacing="8" styleClass="tips-list">
+                                <Label text="• Titre clair et explicite (3-200 caract.)" styleClass="tips-item"/>
+                                <Label text="• Description détaillée (10-1000 car.)" styleClass="tips-item"/>
+                                <Label text="• Niveau adapté au public cible" styleClass="tips-item"/>
+                                <Label text="• Durée réaliste (heures totales)" styleClass="tips-item"/>
+                                <Label text="• Image de couverture de qualité" styleClass="tips-item"/>
+                            </VBox>
+                        </VBox>
+                    </VBox>
+
+                    <!-- COLONNE 3: Image et options -->
+                    <VBox spacing="20" styleClass="glass-card" prefWidth="320">
+
+                        <!-- Image -->
+                        <VBox spacing="5" styleClass="form-field">
+                            <Label text="Image du cours *" styleClass="field-label"/>
+
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Button fx:id="btnChoisirImage" text="Choisir une image" styleClass="btn-outline"/>
+                                <Label fx:id="lblImageNom" text="Aucune image" styleClass="image-name"/>
+                            </HBox>
+
+                            <Label fx:id="errorImage" text="" styleClass="error-label"
+                                   visible="false" managed="false"/>
+
+                            <ImageView fx:id="imageViewForm" fitWidth="200" fitHeight="120" preserveRatio="true"
+                                       styleClass="form-image"/>
+
+                            <Label text="Cette image sera la couverture du cours" styleClass="field-hint"/>
+                        </VBox>
+                        <!-- ✅ NOUVEAU : Prix du cours -->
+                        <VBox spacing="10" styleClass="form-field">
+                            <Label text="Prix du cours" styleClass="field-label"/>
+
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <TextField fx:id="txtPrix" promptText="0.00" prefWidth="150" styleClass="form-field"/>
+                                <Label text="TND" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #5E548E;"/>
+                            </HBox>
+
+                            <CheckBox fx:id="chkEstPayant" text="Cours payant" styleClass="form-checkbox"/>
+                            <Label text="Laissez 0.00 pour un cours gratuit" styleClass="field-hint"/>
+
+                            <Label fx:id="errorPrix" text="" styleClass="error-label"
+                                   visible="false" managed="false"/>
+                        </VBox>
+                        <!-- Obligatoire -->
+                        <VBox spacing="10" styleClass="form-field">
+                            <Label text="Statut du cours" styleClass="field-label"/>
+                            <HBox spacing="15" alignment="CENTER_LEFT">
+                                <CheckBox fx:id="chkObligatoire" text="Cours obligatoire" styleClass="form-checkbox"/>
+                                <Label fx:id="lblObligatoire" text="Optionnel" styleClass="status-badge"/>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </HBox>
+
+                <!-- Bouton AJOUTER -->
+                <HBox spacing="25" alignment="CENTER" style="-fx-padding: 10 0 0 0;">
+                    <Button fx:id="btnAjouter" text="AJOUTER LE COURS" onAction="#ajouter"
+                            styleClass="btn-primary-glow" prefWidth="300"/>
+                </HBox>
+            </VBox>
+
+            <!-- TABLE PANEL -->
+            <VBox fx:id="tablePane" spacing="15" visible="true" managed="true" styleClass="table-pane" >
+
+                <HBox spacing="15" alignment="CENTER_LEFT" styleClass="table-toolbar">
+                    <Label text="Liste des cours" styleClass="table-title"/>
+                    <Label fx:id="lblCount" text="0 cours" styleClass="count-badge"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <TextField fx:id="txtSearch" promptText="Rechercher un cours..." styleClass="search-field"/>
+                    <Button text="🤖 GÉNÉRER TEST FINAL" styleClass="btn-generate-test" onAction="#genererTestFinalAutomatique"/>
+                    <Button text="➕" onAction="#toggleForm" styleClass="btn-add-course" prefWidth="100"/>
+                </HBox>
+
+                <!-- TABLEAU -->
+                <TableView fx:id="tableCours" VBox.vgrow="ALWAYS" editable="true" styleClass="cours-table">
+                    <columns>
+                        <TableColumn fx:id="colTitre" text="TITRE" prefWidth="180" styleClass="table-column"/>
+                        <TableColumn fx:id="colNiveau" text="NIVEAU" prefWidth="200" styleClass="table-column"/>
+                        <TableColumn fx:id="colDuree" text="DURÉE" prefWidth="100" styleClass="table-column"/>
+                        <TableColumn fx:id="colDescription" text="DESCRIPTION" prefWidth="250" styleClass="table-column"/>
+                        <TableColumn fx:id="colCompetences" text="COMPÉTENCES" prefWidth="200" styleClass="table-column"/>
+                        <TableColumn fx:id="colObligatoire" text="STATUT" prefWidth="150" styleClass="table-column"/>
+                        <TableColumn fx:id="colImage" text="IMAGE" prefWidth="80" styleClass="table-column"/>
+                        <TableColumn fx:id="colActions" text="ACTIONS" prefWidth="120" styleClass="table-column"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Status Bar -->
+            <HBox alignment="CENTER" styleClass="status-bar">
+                <Label fx:id="lblStatus" text="✅ Prêt" styleClass="status-label"/>
+            </HBox>
+
+        </VBox>
+    </ScrollPane>
+
+</StackPane>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.WebView?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.guser.controllers.getude.CoursPlayerController"
+            stylesheets="@css/ThemeUnified.css"
+            styleClass="candidat-root"
+            prefWidth="1200" prefHeight="800">
+
+    <top>
+        <VBox styleClass="header-gradient" spacing="10" alignment="CENTER_LEFT">
+            <padding><Insets top="15" bottom="15" left="20" right="20"/></padding>
+            <Label fx:id="lblCoursTitre" styleClass="lecon-title"/>
+            <Label fx:id="lblProgression" text="0%" styleClass="header-subtitle"/>
+        </VBox>
+    </top>
+
+    <left>
+        <ScrollPane fitToWidth="true" prefWidth="300"
+                    style="-fx-background-color: transparent; -fx-border-color: transparent;">
+            <VBox fx:id="boxModules" spacing="10" style="-fx-padding: 15;">
+                <!-- Les modules seront ajoutés dynamiquement -->
+            </VBox>
+        </ScrollPane>
+    </left>
+
+    <center>
+        <VBox spacing="15" style="-fx-padding: 20;">
+            <Label fx:id="lblLeconTitre"
+                   style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: #231942;"/>
+
+            <WebView fx:id="webViewContenu" prefHeight="500" styleClass="web-view"
+                     style="-fx-background-radius: 16; -fx-border-radius: 16;"/>
+
+            <Button fx:id="btnTerminer" styleClass="quiz-terminer-button" text="✅ Marquer comme terminée"
+                     visible="false"
+                    maxWidth="300" alignment="CENTER"/>
+
+            <Label fx:id="lblStatus"
+                   style="-fx-text-fill: #6b7280; -fx-font-size: 14px; -fx-font-style: italic;"/>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox styleClass="progress-bottom" spacing="15" alignment="CENTER_LEFT">
+            <Label text="Progression globale :" styleClass="progress-label"/>
+            <ProgressBar fx:id="progressBar" prefWidth="400"/>
+            <Label fx:id="lblProgressionValue" text="0%" styleClass="progress-value"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

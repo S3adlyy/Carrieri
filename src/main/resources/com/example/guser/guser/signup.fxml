@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+
+<?import javafx.scene.image.ImageView?>
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.guser.controllers.guser.SignupController"
+           stylesheets="@app.css">
+
+    <Pane styleClass="bg"/>
+
+    <Pane mouseTransparent="true">
+        <Circle radius="160" layoutX="220" layoutY="160" fill="rgba(255,255,255,0.14)"/>
+        <Circle radius="90"  layoutX="380" layoutY="280" fill="rgba(255,255,255,0.10)"/>
+        <Circle radius="180" layoutX="1050" layoutY="560" fill="rgba(255,255,255,0.14)"/>
+    </Pane>
+
+    <HBox spacing="26" maxWidth="1120" maxHeight="630">
+
+        <!-- Left brand + LIVE PREVIEW -->
+        <VBox spacing="14" styleClass="glass" prefWidth="430">
+            <padding><Insets top="26" right="26" bottom="26" left="26"/></padding>
+
+            <HBox styleClass="sidebar-brand" alignment="CENTER_LEFT" spacing="12">
+                <ImageView fx:id="brandLogo" styleClass="brand-logo-signup"/>
+                <Label text="Carrieri" styleClass="brandText-signup"/>
+            </HBox>
+            <Text text="A profile above your workspaces: the person + the proof."
+                  wrappingWidth="380" styleClass="muted"/>
+
+            <Label text="Live preview" styleClass="preview-title"/>
+
+            <!-- fx:id added so controller can animate it -->
+            <VBox fx:id="previewCard" styleClass="preview-card" spacing="10">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <StackPane prefWidth="58" prefHeight="58">
+                        <Circle radius="29" fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.30)" strokeWidth="1.2"/>
+                        <Circle fx:id="previewAvatarCircle" radius="26" fill="rgba(255,255,255,0.18)"/>
+                    </StackPane>
+
+                    <VBox spacing="6">
+                        <Label fx:id="previewNameLabel" text="Your Name" styleClass="preview-name"/>
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label fx:id="previewRoleLabel" text="CANDIDATE" styleClass="preview-role"/>
+                            <Label fx:id="previewLocationLabel" text="Location" styleClass="preview-sub"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+
+                <Separator/>
+
+                <Label fx:id="previewPrimaryLabel" text="Headline / Organization" styleClass="preview-primary"/>
+
+                <VBox spacing="4">
+                    <Label fx:id="previewAboutTitleLabel" text="About" styleClass="preview-title"/>
+                    <Label fx:id="previewAboutLabel" text="Bio / Description preview…" wrapText="true" styleClass="preview-small"/>
+                </VBox>
+
+                <VBox fx:id="previewEduBox" spacing="4">
+                    <Label text="Education" styleClass="preview-title"/>
+                    <Label fx:id="previewEducationLabel" text="Degree • Field • School • Year" wrapText="true" styleClass="preview-small"/>
+                </VBox>
+
+                <VBox fx:id="previewSkillsBox" spacing="6">
+                    <Label text="Skills" styleClass="preview-title"/>
+                    <FlowPane fx:id="previewSkillsPane" hgap="8" vgap="8"/>
+                </VBox>
+
+                <VBox spacing="4">
+                    <Label fx:id="previewLinksLabel" text="Links: —" styleClass="preview-small"/>
+                    <Label fx:id="previewPhoneLabel" text="Phone: —" styleClass="preview-small"/>
+                </VBox>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+        </VBox>
+
+        <!-- Wizard card -->
+        <VBox spacing="14" styleClass="card" prefWidth="640">
+            <padding><Insets top="22" right="22" bottom="22" left="22"/></padding>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <VBox spacing="4">
+                    <Text text="Create account" styleClass="h1"/>
+                    <Text fx:id="stepSubtitle" text="Step 1 of 3 • Account" styleClass="muted-dark"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <ProgressBar fx:id="progressBar" prefWidth="180" progress="0.33"/>
+            </HBox>
+
+            <Separator/>
+
+            <StackPane VBox.vgrow="ALWAYS">
+
+                <!-- STEP 1: Account -->
+                <VBox fx:id="step1Box" spacing="12">
+                    <Text text="Account" styleClass="h2"/>
+
+                    <HBox spacing="12">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Role" styleClass="label"/>
+                            <ComboBox fx:id="roleCombo" onAction="#onRoleChange" styleClass="input"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Email" styleClass="label"/>
+                            <TextField fx:id="emailField" promptText="you@example.com" styleClass="input"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="12">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="First name" styleClass="label"/>
+                            <TextField fx:id="firstNameField" promptText="First name" styleClass="input"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Last name" styleClass="label"/>
+                            <TextField fx:id="lastNameField" promptText="Last name" styleClass="input"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="12">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Password" styleClass="label"/>
+                            <PasswordField fx:id="passwordField" promptText="Min 8 characters" styleClass="input"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Confirm password" styleClass="label"/>
+                            <PasswordField fx:id="confirmPasswordField" promptText="Repeat password" styleClass="input"/>
+                        </VBox>
+                    </HBox>
+                    <Label fx:id="passwordStrengthLabel"
+                           text=""
+                           styleClass="prf-muted"/>
+
+
+                    <Label fx:id="errorLabel" text="" styleClass="error" visible="false" managed="false"/>
+                </VBox>
+
+                <!-- STEP 2: Profile (Candidate) -->
+                <VBox fx:id="step2CandidateBox" spacing="12" visible="false" managed="false">
+                    <Text text="Profile (Candidate)" styleClass="h2"/>
+
+                    <HBox spacing="12">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Location" styleClass="label"/>
+                            <TextField fx:id="candidateLocationField" promptText="City, Country" styleClass="input"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Phone (optional)" styleClass="label"/>
+                            <TextField fx:id="candidatePhoneField" promptText="+216 ..." styleClass="input"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="12">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="School" styleClass="label"/>
+                            <TextField fx:id="schoolField" promptText="University / School" styleClass="input"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Degree" styleClass="label"/>
+                            <TextField fx:id="degreeField" promptText="Licence / Master / ..." styleClass="input"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="12">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Field of study" styleClass="label"/>
+                            <TextField fx:id="fieldOfStudyField" promptText="Computer Science, MIAGE..." styleClass="input"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Graduation year" styleClass="label"/>
+                            <TextField fx:id="graduationYearField" promptText="2026" styleClass="input"/>
+                        </VBox>
+                    </HBox>
+
+                    <VBox spacing="8">
+                        <Label text="Skills (optional) — type and press Enter" styleClass="label"/>
+                        <TextField fx:id="skillInputField" promptText="Start typing (e.g., Java, SQL, Marketing...)" styleClass="input" onAction="#onAddSkillFromInput"/>
+                        <ListView fx:id="skillSuggestList" prefHeight="120" visible="false" managed="false" styleClass="suggest"/>
+                        <FlowPane fx:id="skillsPane" hgap="8" vgap="8" styleClass="chips-wrap"/>
+                    </VBox>
+
+                    <HBox spacing="12">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="GitHub URL (optional)" styleClass="label"/>
+                            <TextField fx:id="githubField" promptText="https://github.com/..." styleClass="input"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Portfolio URL (optional)" styleClass="label"/>
+                            <TextField fx:id="portfolioField" promptText="https://..." styleClass="input"/>
+                        </VBox>
+                    </HBox>
+
+                    <Label fx:id="errorLabel2" text="" styleClass="error" visible="false" managed="false"/>
+                </VBox>
+
+                <!-- STEP 2: Profile (Recruiter) -->
+                <VBox fx:id="step2RecruiterBox" spacing="12" visible="false" managed="false">
+                    <Text text="Profile (Recruiter)" styleClass="h2"/>
+
+                    <HBox spacing="12">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Location" styleClass="label"/>
+                            <TextField fx:id="recruiterLocationField" promptText="City, Country" styleClass="input"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Phone (optional)" styleClass="label"/>
+                            <TextField fx:id="recruiterPhoneField" promptText="+216 ..." styleClass="input"/>
+                        </VBox>
+                    </HBox>
+
+                    <VBox spacing="8">
+                        <Label text="Organization name" styleClass="label"/>
+                        <TextField fx:id="orgNameField" promptText="Company / Agency" styleClass="input"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Label text="Website URL" styleClass="label"/>
+                        <TextField fx:id="websiteField" promptText="https://..." styleClass="input"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Label text="Description" styleClass="label"/>
+                        <TextArea fx:id="recruiterDescArea" promptText="What you do, what you hire for..." styleClass="textarea" prefRowCount="5"/>
+                    </VBox>
+
+                    <Label fx:id="errorLabel3" text="" styleClass="error" visible="false" managed="false"/>
+                </VBox>
+
+                <!-- STEP 3: Finish (Candidate) -->
+                <VBox fx:id="step3CandidateBox" spacing="12" visible="false" managed="false">
+                    <Text text="Finish (Candidate)" styleClass="h2"/>
+
+                    <VBox spacing="8">
+                        <Label text="Headline" styleClass="label"/>
+                        <TextField fx:id="headlineField" promptText="e.g., Java Developer • MIAGE L3" styleClass="input"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Label text="Bio" styleClass="label"/>
+                        <TextArea fx:id="bioArea" promptText="Short summary..." styleClass="textarea" prefRowCount="5"/>
+                    </VBox>
+
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Button text="Choose profile picture (optional)" onAction="#onPickProfilePic" styleClass="btn-soft"/>
+                        <Label fx:id="profilePicLabel" text="No file selected" styleClass="muted-dark"/>
+                    </HBox>
+
+                    <Label fx:id="errorLabel4" text="" styleClass="error" visible="false" managed="false"/>
+                </VBox>
+
+                <!-- STEP 3: Finish (Recruiter) -->
+                <VBox fx:id="step3RecruiterBox" spacing="12" visible="false" managed="false">
+                    <Text text="Finish (Recruiter)" styleClass="h2"/>
+
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Button text="Choose organization logo (optional)" onAction="#onPickLogo" styleClass="btn-soft"/>
+                        <Label fx:id="logoLabel" text="No file selected" styleClass="muted-dark"/>
+                    </HBox>
+
+                    <Text text="You can change the logo later when S3 is ready." styleClass="muted-dark"/>
+
+                    <Label fx:id="errorLabel5" text="" styleClass="error" visible="false" managed="false"/>
+                </VBox>
+
+            </StackPane>
+
+            <Separator/>
+
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button fx:id="backBtn" text="Back" onAction="#onBack" styleClass="btn-soft"/>
+                <Button fx:id="nextBtn" text="Next" onAction="#onNext" styleClass="btn"/>
+            </HBox>
+
+            <HBox spacing="6" alignment="CENTER">
+                <Label text="Already have an account?" styleClass="muted-dark"/>
+                <Hyperlink text="Sign in" onAction="#onGoLogin"/>
+            </HBox>
+
+        </VBox>
+    </HBox>
+
+</StackPane>

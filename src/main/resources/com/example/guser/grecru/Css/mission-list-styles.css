@@ -1,0 +1,369 @@
+/* ========================================================================
+   MISSION LIST STYLES - PURPLE COLOR SCHEME
+   ======================================================================== */
+
+/* Root Background */
+.prf-bg {
+    -fx-background-color: #F6F2FA;
+}
+
+/* Main Container */
+.mission-list-container {
+    -fx-background-color: transparent;
+    -fx-padding: 20px;
+    -fx-spacing: 25px;
+    -fx-alignment: top-center;
+}
+
+/* Header */
+.mission-list-header {
+    -fx-alignment: center-left;
+    -fx-spacing: 15px;
+    -fx-padding: 0 0 25px 0;
+}
+
+.mission-list-title {
+    -fx-text-fill: #231942 !important;
+    -fx-font-size: 32px !important;
+    -fx-font-weight: 900 !important;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial' !important;
+    -fx-letter-spacing: -0.5px;
+}
+
+.mission-list-subtitle {
+    -fx-text-fill: rgba(35,25,66,0.75) !important;
+    -fx-font-size: 16px !important;
+    -fx-font-weight: 500 !important;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial' !important;
+}
+
+/* Stats Cards */
+.stats-container {
+    -fx-spacing: 25px;
+    -fx-alignment: center;
+    -fx-padding: 0 0 25px 0;
+}
+
+.stats-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 16px;
+    -fx-border-radius: 16px;
+    -fx-border-color: rgba(35,25,66,0.12);
+    -fx-border-width: 1px;
+    -fx-padding: 25px 30px;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.10), 25, 0.2, 0, 8);
+    -fx-min-width: 160px;
+    -fx-alignment: center;
+    -fx-spacing: 8px;
+}
+
+.stats-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.15), 30, 0.22, 0, 10);
+    -fx-translate-y: -2px;
+}
+
+.stats-value {
+    -fx-text-fill: #231942 !important;
+    -fx-font-size: 32px !important;
+    -fx-font-weight: 900 !important;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial' !important;
+}
+
+.stats-label {
+    -fx-text-fill: rgba(35,25,66,0.65) !important;
+    -fx-font-size: 14px !important;
+    -fx-font-weight: 700 !important;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial' !important;
+}
+
+/* Table Container */
+.table-container {
+    -fx-background-color: #FFFFFF !important;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-border-color: rgba(35,25,66,0.12);
+    -fx-border-width: 1px;
+    -fx-padding: 25px;
+    -fx-effect: dropshadow(gaussian, rgba(35,25,66,0.12), 35, 0.2, 0, 12);
+}
+
+/* Table */
+.mission-table {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #231942 !important;
+    -fx-font-size: 14px !important;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial' !important;
+    -fx-table-cell-border-color: rgba(35,25,66,0.08);
+}
+
+/* Column Headers */
+.mission-table .column-header {
+    -fx-background-color: linear-gradient(to right, #231942, #5E548E) !important;
+    -fx-text-fill: white !important;
+    -fx-font-weight: 900 !important;
+    -fx-font-size: 13.5px !important;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial' !important;
+    -fx-padding: 16px 20px !important;
+    -fx-border-color: transparent !important;
+}
+
+.mission-table .column-header .label {
+    -fx-text-fill: white !important;
+    -fx-font-weight: 900 !important;
+}
+
+.mission-table .column-header-background {
+    -fx-background-color: transparent !important;
+    -fx-border-color: transparent !important;
+}
+
+/* Table Cells */
+.mission-table .table-cell {
+    -fx-text-fill: #231942 !important;
+    -fx-font-size: 14px !important;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial' !important;
+    -fx-padding: 14px 20px !important;
+    -fx-border-color: rgba(35,25,66,0.08) !important;
+    -fx-border-width: 0 0 1px 0 !important;
+    -fx-alignment: center-left !important;
+    -fx-background-color: transparent !important;
+}
+
+/* Row Styling */
+.mission-table .table-row-cell {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #231942 !important;
+}
+
+.mission-table .table-row-cell:even {
+    -fx-background-color: #FFFFFF !important;
+}
+
+.mission-table .table-row-cell:odd {
+    -fx-background-color: #FCFAFE !important;
+}
+
+.mission-table .table-row-cell:hover {
+    -fx-background-color: #F4F1FB !important;
+}
+
+.mission-table .table-row-cell:selected {
+    -fx-background-color: rgba(94,84,142,0.15) !important;
+    -fx-text-fill: #231942 !important;
+}
+
+/* Specific column styling */
+#idColumn .table-cell {
+    -fx-alignment: center !important;
+    -fx-text-fill: #5E548E !important;
+    -fx-font-weight: 900 !important;
+}
+
+#scoreColumn .table-cell {
+    -fx-alignment: center !important;
+    -fx-font-weight: 900 !important;
+    -fx-text-fill: #231942 !important;
+}
+
+#dateColumn .table-cell {
+    -fx-alignment: center !important;
+    -fx-text-fill: rgba(35,25,66,0.75) !important;
+}
+
+/* Empty Table Placeholder */
+.empty-table-placeholder {
+    -fx-alignment: center;
+    -fx-spacing: 15px;
+    -fx-padding: 60px 20px;
+}
+
+.empty-table-icon {
+    -fx-font-size: 48px !important;
+    -fx-text-fill: rgba(35,25,66,0.2) !important;
+}
+
+.empty-table-text {
+    -fx-text-fill: rgba(35,25,66,0.6) !important;
+    -fx-font-size: 18px !important;
+    -fx-font-weight: 700 !important;
+}
+
+.empty-table-hint {
+    -fx-text-fill: rgba(35,25,66,0.5) !important;
+    -fx-font-size: 14px !important;
+    -fx-font-weight: 500 !important;
+}
+
+/* Action Buttons Container */
+.action-buttons-container {
+    -fx-spacing: 20px;
+    -fx-padding: 25px 0 0 0;
+}
+
+.edit-button {
+    -fx-background-color: linear-gradient(135deg, #231942 0%, #5E548E 100%);
+    -fx-text-fill: white !important;
+    -fx-font-size: 14.5px;
+    -fx-font-weight: 900;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial';
+    -fx-padding: 14px 32px;
+    -fx-background-radius: 12px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.25), 15, 0.2, 0, 5);
+}
+
+.edit-button:hover {
+    -fx-background-color: linear-gradient(135deg, #5E548E 0%, #9F86C0 100%);
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.35), 20, 0.25, 0, 8);
+    -fx-translate-y: -2px;
+}
+
+.edit-button:pressed {
+    -fx-translate-y: 0px;
+    -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.2), 10, 0.15, 0, 3);
+}
+
+.delete-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #B91C1C !important;
+    -fx-font-size: 14.5px;
+    -fx-font-weight: 900;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial';
+    -fx-padding: 12px 30px;
+    -fx-border-color: #B91C1C;
+    -fx-border-width: 2px;
+    -fx-border-radius: 12px;
+    -fx-cursor: hand;
+}
+
+.delete-button:hover {
+    -fx-background-color: rgba(185,28,28,0.08);
+    -fx-border-color: #DC2626;
+    -fx-text-fill: #DC2626 !important;
+    -fx-translate-y: -2px;
+}
+
+.delete-button:pressed {
+    -fx-translate-y: 0px;
+    -fx-background-color: rgba(185,28,28,0.12);
+}
+
+/* Footer Container */
+.footer-container {
+    -fx-padding: 20px 0 0 0;
+}
+
+.footer-text {
+    -fx-text-fill: rgba(35,25,66,0.6) !important;
+    -fx-font-size: 13px !important;
+    -fx-font-weight: 600 !important;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial' !important;
+}
+
+/* Scrollbar Styling */
+.mission-table .scroll-bar:vertical,
+.mission-table .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.mission-table .scroll-bar:vertical .track,
+.mission-table .scroll-bar:horizontal .track {
+    -fx-background-color: rgba(35,25,66,0.05);
+    -fx-background-radius: 0;
+}
+
+.mission-table .scroll-bar:vertical .thumb,
+.mission-table .scroll-bar:horizontal .thumb {
+    -fx-background-color: rgba(94,84,142,0.3);
+    -fx-background-radius: 4px;
+}
+
+.mission-table .scroll-bar:vertical .thumb:hover,
+.mission-table .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: rgba(94,84,142,0.5);
+}
+
+/* Focus styling */
+.mission-table:focused .table-row-cell:selected {
+    -fx-background-color: rgba(94,84,142,0.2) !important;
+    -fx-text-fill: #231942 !important;
+}
+
+/* ========================================================================
+   STATS CARDS WITH GRADIENT SHADOWS - WIDE VERSION
+   ======================================================================== */
+
+.stats-card-gradient-wide {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 18px;
+    -fx-border-radius: 18px;
+    -fx-border-color: rgba(248,188,255,0.25);
+    -fx-border-width: 1.5px;
+    -fx-padding: 25px 35px;      /* More horizontal padding */
+    -fx-min-width: 200px;         /* Much wider */
+    -fx-max-width: 240px;         /* Max width */
+    -fx-pref-width: 220px;        /* Preferred width - MUCH BIGGER */
+    -fx-alignment: center;
+    -fx-spacing: 8px;
+
+    /* White-Purple Gradient Shadow - Enhanced for bigger cards */
+    -fx-effect:
+            dropshadow(gaussian, rgba(255, 255, 255, 0.9), 20, 0.5, -4, -4)
+            , dropshadow(gaussian, rgba(248, 188, 255, 0.6), 25, 0.5, 4, 4)
+            , dropshadow(gaussian, rgba(200, 150, 255, 0.4), 30, 0.4, 8, 8)
+            , dropshadow(gaussian, rgba(35, 25, 66, 0.15), 35, 0.3, 10, 10);
+
+    -fx-transition: all 0.2s ease;
+}
+
+.stats-card-gradient-wide:hover {
+    -fx-effect:
+            dropshadow(gaussian, rgba(255, 255, 255, 1), 25, 0.6, -5, -5)
+            , dropshadow(gaussian, rgba(248, 188, 255, 0.8), 30, 0.6, 5, 5)
+            , dropshadow(gaussian, rgba(200, 150, 255, 0.6), 35, 0.5, 10, 10)
+            , dropshadow(gaussian, rgba(35, 25, 66, 0.2), 40, 0.4, 12, 12);
+    -fx-translate-y: -3px;
+}
+
+.stats-value-gradient-wide {
+    -fx-text-fill: linear-gradient(135deg, #231942, #5E548E, #9F86C0);
+    -fx-font-size: 36px !important;     /* Bigger font */
+    -fx-font-weight: 900 !important;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial' !important;
+    -fx-effect: dropshadow(gaussian, rgba(248,188,255,0.5), 10, 0.4, 2, 2);
+}
+
+.stats-label-gradient-wide {
+    -fx-text-fill: #4a3a6a;
+    -fx-font-size: 16px !important;     /* Bigger font */
+    -fx-font-weight: 700 !important;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial' !important;
+    -fx-letter-spacing: 0.3px;
+}
+
+.stats-hint-wide {
+    -fx-text-fill: rgba(139, 92, 246, 0.7);
+    -fx-font-size: 13px;                 /* Bigger font */
+    -fx-font-weight: 600;
+    -fx-font-family: 'Segoe UI', 'Inter', 'Arial';
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 5, 0.2, 0, 1);
+    -fx-padding: 5px 0 0 0;
+    -fx-background-color: rgba(248,188,255,0.1);
+    -fx-background-radius: 20px;
+    -fx-padding: 5px 15px;
+}
+
+/* Even WIDER option if you need more */
+.stats-card-gradient-extra-wide {
+    -fx-min-width: 250px;
+    -fx-pref-width: 280px;
+    -fx-padding: 28px 40px;
+}
+
+.stats-card-gradient-extra-wide .stats-value-gradient-wide {
+    -fx-font-size: 40px !important;
+}
+
+.stats-card-gradient-extra-wide .stats-label-gradient-wide {
+    -fx-font-size: 18px !important;
+}

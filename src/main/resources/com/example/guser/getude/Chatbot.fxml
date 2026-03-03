@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.guser.controllers.getude.ChatbotController"
+            stylesheets="@css/ThemeUnified.css"
+            prefWidth="350" prefHeight="500"
+            styleClass="chatbot-floating">
+
+    <!-- Header avec styleClass -->
+    <top>
+        <VBox styleClass="chatbot-header" spacing="10">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <ImageView fitWidth="35" fitHeight="35" preserveRatio="true" styleClass="bot-avatar">
+                    <Image url="@../images/logo_chatbot.png" />
+                </ImageView>
+                <Label text="Carrieri Chatbot" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="✖" onAction="#fermer"/>
+            </HBox>
+            <Label fx:id="lblContexte" text="Cours: Aucun" styleClass="chatbot-contexte"/>
+        </VBox>
+    </top>
+
+    <!-- Zone des messages -->
+    <center>
+        <VBox styleClass="chatbot-messages" VBox.vgrow="ALWAYS">
+            <ScrollPane fx:id="scrollPane" fitToWidth="true" VBox.vgrow="ALWAYS">
+                <VBox fx:id="messageContainer" spacing="10" style="-fx-padding: 5;">
+                    <!-- Message de bienvenue avec styleClass -->
+                    <HBox spacing="10">
+                        <ImageView fitWidth="30" fitHeight="30" preserveRatio="true" styleClass="bot-avatar">
+                            <Image url="@../images/logo_chatbot.png" />
+                        </ImageView>
+                        <VBox spacing="5" styleClass="message-bulle-bot" style="-fx-max-width: 250;">
+                            <Label text="Bonjour ! Je suis votre assistant. Posez-moi des questions !" wrapText="true"/>
+                            <Label text="Maintenant" styleClass="message-heure-bot"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </center>
+
+    <!-- Pied du chatbot -->
+    <bottom>
+        <VBox styleClass="chatbot-footer" spacing="10">
+            <Separator/>
+            <HBox spacing="10" alignment="CENTER">
+                <TextField fx:id="txtQuestion" promptText="Posez votre question..."
+                           HBox.hgrow="ALWAYS" styleClass="chatbot-input"
+                           onAction="#envoyerQuestion"/>
+                <Button fx:id="btnEnvoyer" text="Envoyer" onAction="#envoyerQuestion"
+                        styleClass="chatbot-send-button"/>
+            </HBox>
+
+
+
+            <Label fx:id="lblStatut" text="Prêt" styleClass="chatbot-status"/>
+        </VBox>
+    </bottom>
+
+</BorderPane>

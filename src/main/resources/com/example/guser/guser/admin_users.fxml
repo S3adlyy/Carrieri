@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx/17"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.example.guser.controllers.guser.AdminUsersController"
+        stylesheets="@admin_users.css"
+        styleClass="adm-root main-scroll">
+<VBox styleClass="adm-content" spacing="14">
+    <VBox styleClass="adm-header">
+        <HBox styleClass="adm-titleRow">
+            <StackPane styleClass="adm-titleIcon">
+                <Label text="👥"/>
+            </StackPane>
+            <VBox spacing="2">
+                <Label text="Admin • Users" styleClass="adm-title"/>
+                <Label text="Search users, update roles, enable/disable accounts, and open profiles."
+                       styleClass="adm-subtitle"/>
+            </VBox>
+        </HBox>
+
+        <HBox styleClass="adm-chipRow">
+            <HBox styleClass="adm-chip" spacing="6">
+                <Label text="Count:"/>
+                <Label fx:id="countBadge" text="0"/>
+            </HBox>
+            <HBox styleClass="adm-chip" spacing="6">
+                <Label text="Selected:"/>
+                <Label fx:id="selectedLabel" text="None"/>
+            </HBox>
+        </HBox>
+    </VBox>
+
+    <VBox styleClass="adm-card" spacing="12">
+        <!-- Toolbar row 1 -->
+        <HBox styleClass="adm-toolbar">
+            <HBox styleClass="adm-searchWrap">
+                <TextField fx:id="qField"
+                           promptText="Search by name, email..."
+                           styleClass="adm-searchField"/>
+                <Button text="Search"
+                        mnemonicParsing="false"
+                        onAction="#onSearch"
+                        styleClass="adm-searchBtn"/>
+            </HBox>
+
+            <ComboBox fx:id="roleBox"
+                      promptText="Role"
+                      styleClass="adm-filterCombo"/>
+
+            <ComboBox fx:id="statusBox"
+                      promptText="Status"
+                      styleClass="adm-filterCombo"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="Clear"
+                    mnemonicParsing="false"
+                    onAction="#onClear"
+                    styleClass="adm-btnOutline"/>
+
+            <Button text="Refresh"
+                    mnemonicParsing="false"
+                    onAction="#onRefresh"
+                    styleClass="adm-btnOutline"/>
+        </HBox>
+
+        <!-- Table -->
+        <TableView fx:id="usersTable"
+                   styleClass="adm-table">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="90"/>
+                <TableColumn fx:id="colName" text="Name" prefWidth="220"/>
+                <TableColumn fx:id="colEmail" text="Email" prefWidth="260"/>
+                <TableColumn fx:id="colRole" text="Role" prefWidth="140"/>
+                <TableColumn fx:id="colStatus" text="Status" prefWidth="140"/>
+            </columns>
+        </TableView>
+
+        <!-- Actions row (applies to selected user) -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Button text="View profile"
+                    mnemonicParsing="false"
+                    onAction="#onViewProfile"
+                    styleClass="adm-btnPrimary"/>
+
+            <Button text="Enable"
+                    mnemonicParsing="false"
+                    onAction="#onEnable"
+                    styleClass="adm-btnOutline"/>
+
+            <Button text="Disable"
+                    mnemonicParsing="false"
+                    onAction="#onDisable"
+                    styleClass="adm-btnDanger"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Label text="Set role:" styleClass="adm-muted"/>
+                <ComboBox fx:id="setRoleBox"
+                          promptText="Choose role"
+                          styleClass="adm-filterCombo"/>
+                <Button text="Apply"
+                        mnemonicParsing="false"
+                        onAction="#onApplyRole"
+                        styleClass="adm-btnPrimary"/>
+            </HBox>
+        </HBox>
+
+        <Label fx:id="feedbackLabel"
+               text=""
+               visible="false"
+               managed="false"
+               styleClass="adm-muted"/>
+    </VBox>
+</VBox>
+</ScrollPane>

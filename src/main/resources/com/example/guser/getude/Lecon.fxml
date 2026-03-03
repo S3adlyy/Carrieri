@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.guser.controllers.getude.LeconController"
+           stylesheets="@css/ThemeUnified.css"
+           styleClass="mission-bg"
+           prefWidth="1400" prefHeight="900">
+
+     <Circle radius="250" fill="rgba(94,84,142,0.03)" mouseTransparent="true" style="-fx-translate-y: -150; -fx-translate-x: -280;" styleClass="bg-orb"/>
+    <Circle radius="200" fill="rgba(159,134,192,0.02)"  mouseTransparent="true" style="-fx-translate-y: 200; -fx-translate-x: 250;" styleClass="bg-orb"/>
+    <Circle radius="150" fill="rgba(224,177,203,0.02)" mouseTransparent="true" style="-fx-translate-y: -100; -fx-translate-x: 180;" styleClass="bg-orb"/>
+
+    <ScrollPane fitToWidth="true" fitToHeight="true"
+                style="-fx-background-color: transparent; -fx-border-color: transparent;"
+                styleClass="main-scroll">
+
+        <VBox alignment="TOP_CENTER" spacing="25" style="-fx-padding: 30;">
+
+            <!-- Header -->
+            <VBox spacing="20" alignment="CENTER" style="-fx-padding: 0 0 10 0;">
+                <StackPane styleClass="header-icon-container">
+                    <Label text="📖" styleClass="header-icon" style="-fx-font-size: 36px; -fx-text-fill: white;"/>
+                </StackPane>
+
+                <VBox spacing="5" alignment="CENTER">
+                    <Label text="Gestion des Leçons" styleClass="header-title"/>
+                    <Label fx:id="lblModuleInfo" text="Sélectionnez un module" styleClass="header-subtitle"/>
+                </VBox>
+            </VBox>
+
+            <!-- FORMULAIRE -->
+            <VBox fx:id="formBox" spacing="25" visible="false" managed="false" styleClass="form-container">
+
+                <Label text="📝 Nouvelle Leçon" styleClass="form-title"/>
+
+                <VBox spacing="20">
+                    <!-- Module -->
+                    <VBox spacing="5" styleClass="form-field">
+                        <Label text="Module *" styleClass="field-label"/>
+                        <ComboBox fx:id="comboModules" promptText="Sélectionner un module" styleClass="form-combo"/>
+                        <Label fx:id="errorModule" text="" styleClass="error-label" visible="false" managed="false"/>
+                    </VBox>
+
+                    <!-- Titre -->
+                    <VBox spacing="5" styleClass="form-field">
+                        <Label text="Titre de la leçon *" styleClass="field-label"/>
+                        <TextField fx:id="txtTitre" promptText="Ex: Introduction" styleClass="form-field"/>
+                        <Label fx:id="errorTitre" text="" styleClass="error-label" visible="false" managed="false"/>
+                    </VBox>
+
+                    <!-- Contenu -->
+                    <VBox spacing="5" styleClass="form-field">
+                        <Label text="Contenu *" styleClass="field-label"/>
+                        <TextArea fx:id="txtContenu" promptText="Rédigez le contenu de la leçon..."
+                                  wrapText="true" prefHeight="150" styleClass="form-textarea"/>
+
+                        <HBox alignment="CENTER_RIGHT" spacing="5">
+                            <Label fx:id="charCountLabel" text="0/500" styleClass="char-counter"/>
+                            <Label text="minimum 500" styleClass="field-hint"/>
+                        </HBox>
+
+                        <Label fx:id="errorContenu" text="" styleClass="error-label" visible="false" managed="false"/>
+                    </VBox>
+
+                    <!-- Vidéo -->
+                    <VBox spacing="8" styleClass="form-field">
+                        <Label text="Vidéo (optionnelle)" styleClass="field-label"/>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Button fx:id="btnChoisirVideo" text="🎬 Choisir une vidéo MP4" styleClass="btn-outline"/>
+                            <Label fx:id="lblVideoNom" text="Aucune vidéo" styleClass="image-name"/>
+                        </HBox>
+                        <Label fx:id="lblTailleVideo" text="" styleClass="field-hint"/>
+                    </VBox>
+
+                    <!-- Conseils -->
+                    <VBox spacing="10" styleClass="tips-section">
+                        <Label text="📌 Conseils" styleClass="tips-title"/>
+                        <VBox spacing="5" styleClass="tips-list">
+                            <Label text="• Titre clair (3-200 caractères)" styleClass="tips-item"/>
+                            <Label text="• Contenu détaillé (10-5000 car.)" styleClass="tips-item"/>
+                            <Label text="• Vidéo optionnelle (max 64MB)" styleClass="tips-item"/>
+                        </VBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Bouton AJOUTER -->
+                <HBox spacing="25" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+                    <Button fx:id="btnAjouter" text="AJOUTER LA LEÇON" onAction="#ajouterLecon"
+                            styleClass="btn-primary-glow" prefWidth="300"/>
+                </HBox>
+            </VBox>
+
+            <!-- TABLE PANEL -->
+            <VBox fx:id="tablePane" spacing="15" visible="true" managed="true" styleClass="table-pane">
+
+                <HBox spacing="15" alignment="CENTER_LEFT" styleClass="table-header">
+                    <Label text="Liste des leçons" styleClass="table-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <!-- Bouton nouvelle leçon -->
+                    <Button fx:id="btnToggleForm" text="➕" onAction="#toggleForm" styleClass="btn-add-course" prefWidth="100"/>
+                </HBox>
+
+                <!-- TABLEAU -->
+                <TableView fx:id="tableLecons" VBox.vgrow="ALWAYS" editable="true" styleClass="cours-table">
+                    <columns>
+                        <TableColumn fx:id="colTitre" text="TITRE" prefWidth="300" styleClass="table-column"/>
+                        <TableColumn fx:id="colContenu" text="CONTENU" prefWidth="400" styleClass="table-column"/>
+                        <TableColumn fx:id="colVideo" text="VIDÉO" prefWidth="80" styleClass="table-column"/>
+                        <TableColumn fx:id="colOrdre" text="ORDRE" prefWidth="100" styleClass="table-column"/>
+                        <TableColumn fx:id="colActions" text="ACTIONS" prefWidth="100" styleClass="table-column"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+</StackPane>

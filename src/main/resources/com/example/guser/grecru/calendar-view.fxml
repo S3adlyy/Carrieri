@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.FontWeight?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.guser.controllers.grecru.CalendarViewController"
+           stylesheets="@Css/calendar-styles.css"
+           styleClass="root-container"
+           prefWidth="1400" prefHeight="900">
+
+    <!-- Background Orbs with Purple Theme -->
+    <Circle radius="250" styleClass="bg-orb-1"/>
+    <Circle radius="200" styleClass="bg-orb-2"/>
+    <Circle radius="150" styleClass="bg-orb-3"/>
+
+    <!-- Main Content -->
+    <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="main-scroll">
+        <VBox alignment="TOP_CENTER" spacing="0" styleClass="content-wrapper">
+
+            <!-- Header Section -->
+            <VBox spacing="25" alignment="CENTER" styleClass="header-section">
+                <StackPane styleClass="icon-container">
+                    <Circle radius="45" styleClass="icon-pulse"/>
+                    <Circle radius="40" styleClass="icon-bg"/>
+                    <Label text="📅" styleClass="icon-symbol"/>
+                </StackPane>
+
+                <VBox spacing="12" alignment="CENTER">
+                    <Label text="Interview Calendar" styleClass="main-title-gradient"/>
+                    <Label text="Manage and track all scheduled interviews"
+                           styleClass="subtitle-text"
+                           wrapText="true"/>
+                </VBox>
+
+                <!-- Stats Cards -->
+                <HBox spacing="25" alignment="CENTER" styleClass="stats-container">
+                    <VBox styleClass="stats-card-gradient-wide">
+                        <Label fx:id="totalInterviewsLabel" text="0" styleClass="stats-value-gradient-wide"/>
+                        <Label text="Total Interviews" styleClass="stats-label-gradient-wide"/>
+                        <Label text="All scheduled" styleClass="stats-hint-wide"/>
+                    </VBox>
+
+                    <VBox styleClass="stats-card-gradient-wide">
+                        <Label fx:id="todayInterviewsLabel" text="0" styleClass="stats-value-gradient-wide"/>
+                        <Label text="Today" styleClass="stats-label-gradient-wide"/>
+                        <Label text="Interviews today" styleClass="stats-hint-wide"/>
+                    </VBox>
+
+                    <VBox styleClass="stats-card-gradient-wide">
+                        <Label fx:id="upcomingInterviewsLabel" text="0" styleClass="stats-value-gradient-wide"/>
+                        <Label text="Upcoming" styleClass="stats-label-gradient-wide"/>
+                        <Label text="Next 7 days" styleClass="stats-hint-wide"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Calendar Controls -->
+            <HBox spacing="20" alignment="CENTER" styleClass="calendar-controls">
+                <Button fx:id="prevMonthButton" text="◀" onAction="#previousMonth" styleClass="nav-button-month"/>
+                <Label fx:id="monthYearLabel" text="March 2024" styleClass="month-year-label"/>
+                <Button fx:id="nextMonthButton" text="▶" onAction="#nextMonth" styleClass="nav-button-month"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="todayButton" text="Today" onAction="#goToToday" styleClass="today-button"/>
+                <ComboBox fx:id="viewFilterCombo" promptText="All Interviews" styleClass="filter-combo"/>
+            </HBox>
+
+            <!-- Calendar Grid -->
+            <VBox styleClass="calendar-container">
+                <!-- Weekday Headers -->
+                <HBox styleClass="weekday-header">
+                    <Label text="Monday" styleClass="weekday-label"/>
+                    <Label text="Tuesday" styleClass="weekday-label"/>
+                    <Label text="Wednesday" styleClass="weekday-label"/>
+                    <Label text="Thursday" styleClass="weekday-label"/>
+                    <Label text="Friday" styleClass="weekday-label"/>
+                    <Label text="Saturday" styleClass="weekday-label"/>
+                    <Label text="Sunday" styleClass="weekday-label"/>
+                </HBox>
+
+                <!-- Calendar Grid (6 rows x 7 columns) -->
+                <GridPane fx:id="calendarGrid" styleClass="calendar-grid" hgap="10" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="14.2857"/>
+                        <ColumnConstraints percentWidth="14.2857"/>
+                        <ColumnConstraints percentWidth="14.2857"/>
+                        <ColumnConstraints percentWidth="14.2857"/>
+                        <ColumnConstraints percentWidth="14.2857"/>
+                        <ColumnConstraints percentWidth="14.2857"/>
+                        <ColumnConstraints percentWidth="14.2857"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints percentHeight="16.666"/>
+                        <RowConstraints percentHeight="16.666"/>
+                        <RowConstraints percentHeight="16.666"/>
+                        <RowConstraints percentHeight="16.666"/>
+                        <RowConstraints percentHeight="16.666"/>
+                        <RowConstraints percentHeight="16.666"/>
+                    </rowConstraints>
+                </GridPane>
+            </VBox>
+
+            <!-- Legend and Filters -->
+            <HBox spacing="30" alignment="CENTER" styleClass="legend-container">
+                <HBox spacing="10" alignment="CENTER">
+                    <Circle radius="8" styleClass="legend-dot-scheduled"/>
+                    <Label text="Scheduled" styleClass="legend-text"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER">
+                    <Circle radius="8" styleClass="legend-dot-completed"/>
+                    <Label text="Completed" styleClass="legend-text"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER">
+                    <Circle radius="8" styleClass="legend-dot-cancelled"/>
+                    <Label text="Cancelled" styleClass="legend-text"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER">
+                    <Circle radius="8" styleClass="legend-dot-today"/>
+                    <Label text="Today" styleClass="legend-text"/>
+                </HBox>
+            </HBox>
+
+            <!-- Upcoming Interviews List -->
+            <VBox styleClass="upcoming-container">
+                <HBox alignment="CENTER_LEFT" spacing="15" styleClass="upcoming-header">
+                    <Label text="📋" styleClass="upcoming-icon"/>
+                    <Label text="Upcoming Interviews" styleClass="upcoming-title"/>
+                    <Label fx:id="upcomingCount" text="(0)" styleClass="upcoming-count"/>
+                </HBox>
+
+                <ListView fx:id="upcomingListView" styleClass="upcoming-list">
+                    <placeholder>
+                        <VBox alignment="CENTER" spacing="10" styleClass="empty-placeholder">
+                            <Label text="📅" styleClass="empty-icon"/>
+                            <Label text="No upcoming interviews" styleClass="empty-text"/>
+                            <Label text="Schedule an interview to see it here" styleClass="empty-hint"/>
+                        </VBox>
+                    </placeholder>
+                </ListView>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+</StackPane>

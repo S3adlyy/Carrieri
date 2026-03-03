@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.guser.controllers.grecru.MissionListController"
+           stylesheets="@Css/mission-list-styles.css"
+           styleClass="prf-bg"
+           style="-fx-padding: 30;">
+
+    <!-- Subtle Background Elements -->
+    <Circle radius="100" fill="rgba(159,134,192,0.03)" style="-fx-translate-y: -150; -fx-translate-x: -280;"/>
+    <Circle radius="70" fill="rgba(190,149,196,0.02)" style="-fx-translate-y: 120; -fx-translate-x: 250;"/>
+
+    <!-- Main Container -->
+    <VBox styleClass="mission-list-container" maxWidth="1200">
+        <!-- Header -->
+        <VBox styleClass="mission-list-header">
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <StackPane style="-fx-background-color: linear-gradient(135deg, #231942 0%, #5E548E 100%);
+                                 -fx-background-radius: 14;
+                                 -fx-padding: 12;
+                                 -fx-effect: dropshadow(gaussian, rgba(94,84,142,0.25), 20, 0.2, 0, 6);">
+                    <Label text="📋" style="-fx-font-size: 24px; -fx-text-fill: white;"/>
+                </StackPane>
+                <VBox spacing="4">
+                    <Label text="Mission List" styleClass="mission-list-title"/>
+                    <Label text="Manage and review all available missions" styleClass="mission-list-subtitle"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <!-- Stats Cards -->
+        <!-- Stats Cards with Gradient Shadows -->
+        <!-- Stats Cards with Gradient Shadows - BIGGER WIDTH -->
+        <HBox styleClass="stats-container">
+            <VBox styleClass="stats-card-gradient-wide">
+                <Label fx:id="lblTotalMissions" text="0" styleClass="stats-value-gradient-wide"/>
+                <Label text="Total Missions" styleClass="stats-label-gradient-wide"/>
+                <Label text="All time" styleClass="stats-hint-wide"/>
+            </VBox>
+
+            <VBox styleClass="stats-card-gradient-wide">
+                <Label fx:id="lblAvgScore" text="0%" styleClass="stats-value-gradient-wide"/>
+                <Label text="Avg. Min Score" styleClass="stats-label-gradient-wide"/>
+                <Label text="Required" styleClass="stats-hint-wide"/>
+            </VBox>
+
+            <VBox styleClass="stats-card-gradient-wide">
+                <Label fx:id="lblActiveMissions" text="0" styleClass="stats-value-gradient-wide"/>
+                <Label text="Active" styleClass="stats-label-gradient-wide"/>
+                <Label text="Current" styleClass="stats-hint-wide"/>
+            </VBox>
+        </HBox>
+
+        <!-- Table Container -->
+        <VBox styleClass="table-container">
+            <!-- Table -->
+            <TableView fx:id="missionTable"
+                       styleClass="mission-table"
+                       prefHeight="450">
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+
+                <columns>
+                    <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="500">
+                        <graphic>
+                            <Label text="📄"/>
+                        </graphic>
+                    </TableColumn>
+
+                    <TableColumn fx:id="scoreColumn" text="Min Score" prefWidth="120">
+                        <graphic>
+                            <Label text="🎯"/>
+                        </graphic>
+                    </TableColumn>
+
+                    <TableColumn fx:id="creatorColumn" text="Creator" prefWidth="150">
+                        <graphic>
+                            <Label text="👤"/>
+                        </graphic>
+                    </TableColumn>
+                    <TableColumn fx:id="dateColumn" text="Created" prefWidth="150">
+                        <graphic>
+                            <Label text="📅"/>
+                        </graphic>
+                    </TableColumn>
+                </columns>
+
+                <!-- Empty table placeholder -->
+                <placeholder>
+                    <VBox styleClass="empty-table-placeholder">
+                        <Label text="📭" styleClass="empty-table-icon"/>
+                        <Label text="No missions available" styleClass="empty-table-text"/>
+                        <Label text="Create your first mission to get started" styleClass="empty-table-hint"/>
+                    </VBox>
+                </placeholder>
+            </TableView>
+        </VBox>
+
+        <!-- REMOVED: Action Buttons Container - Now using Actions column in table -->
+
+        <!-- Footer Note -->
+        <HBox alignment="CENTER" styleClass="footer-container">
+            <Label text="💡 Double-click a mission to submit code • ✏️ Edit / 🗑️ Delete via Actions column"
+                   styleClass="footer-text"/>
+        </HBox>
+    </VBox>
+</StackPane>

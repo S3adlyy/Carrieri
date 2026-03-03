@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.guser.controllers.guser.WorkspaceController"
+      stylesheets="@workspace.css"
+      spacing="12"
+      styleClass="root wsp-page">
+
+    <VBox styleClass="wsp-workspaceRoot" spacing="12">
+
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="wsp-topBar">
+            <VBox spacing="2">
+                <Label text="Workspace" styleClass="wsp-pageTitle"/>
+                <Label text="Tracks timeline and artifacts" styleClass="wsp-subtitle"/>
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button fx:id="newTrackBtn"
+                    text="+ New track"
+                    onAction="#onNewTrack"
+                    styleClass="prf-actBtn"/>
+        </HBox>
+
+        <!-- Track list -->
+        <VBox fx:id="tracksListPane" spacing="10">
+            <ListView fx:id="tracksListView" styleClass="wsp-list wsp-tracksList wsp-trackCard"/>
+        </VBox>
+
+        <!-- Track detail include -->
+        <fx:include fx:id="trackSection" source="track.fxml"/>
+
+        <Label fx:id="workspaceErrorLabel" text="" styleClass="prf-error" visible="false" managed="false"/>
+    </VBox>
+</VBox>

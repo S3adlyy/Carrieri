@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.guser.controllers.greclam.ReclamationController" spacing="10" style="-fx-padding: 20;"
+      stylesheets="@css/ThemeUnified.css">
+
+    <!-- Titre de la page -->
+    <Label text="📋 Liste des réclamations"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+    <Separator/>
+
+    <!-- Filtres -->
+    <HBox spacing="10">
+        <ComboBox fx:id="filterStatut" promptText="Filtrer par statut" onAction="#filterReclamations"
+                  style="-fx-min-width: 150;"/>
+        <ComboBox fx:id="filterPriorite" promptText="Filtrer par priorité" onAction="#filterReclamations"
+                  style="-fx-min-width: 150;"/>
+        <ComboBox fx:id="filterCategorie" promptText="Filtrer par catégorie" onAction="#filterReclamations"
+                  style="-fx-min-width: 150;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="Total: " fx:id="totalLabel" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+    </HBox>
+
+    <!-- Tableau des réclamations -->
+    <TableView fx:id="reclamationTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="ID" prefWidth="50">
+                <cellValueFactory>
+                    <PropertyValueFactory property="id" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Objet" prefWidth="200">
+                <cellValueFactory>
+                    <PropertyValueFactory property="objet" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Catégorie" prefWidth="100">
+                <cellValueFactory>
+                    <PropertyValueFactory property="categorie" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Statut" prefWidth="80">
+                <cellValueFactory>
+                    <PropertyValueFactory property="statut" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Priorité" prefWidth="80">
+                <cellValueFactory>
+                    <PropertyValueFactory property="priorite" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Date" prefWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="dateCreation" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Actions" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+    <!-- Boutons d'export (optionnels) -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="📄 Exporter PDF" onAction="#exportToPDF"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand;"/>
+        <Button text="📊 Exporter Excel" onAction="#exportToExcel"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand;"/>
+    </HBox>
+</VBox>

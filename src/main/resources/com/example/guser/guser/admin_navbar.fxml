@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.image.ImageView?>
+
+<VBox fx:id="sidebar"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.guser.controllers.guser.AppNavController"
+      stylesheets="@navbar.css"
+      styleClass="sidebar-animated"
+      prefWidth="70" minWidth="70" maxWidth="70"
+      onMouseEntered="#expandSidebar"
+      onMouseExited="#collapseSidebar">
+
+    <!-- Brand -->
+    <VBox styleClass="brand-container" alignment="CENTER">
+        <StackPane styleClass="brand-icon">
+            <!-- keep same id -->
+            <ImageView fx:id="brandLogo" fitWidth="32" fitHeight="32" preserveRatio="true"/>
+        </StackPane>
+
+        <!-- keep id optional; old controller doesn’t reference it usually -->
+        <Label text="Carrieri" styleClass="brand-text"/>
+
+        <!-- optional; remove if you don't want it -->
+        <Label text="Admin" styleClass="brand-subtext"/>
+    </VBox>
+
+    <!-- Navigation (keep same button ids + onAction) -->
+    <VBox styleClass="nav-container" alignment="CENTER">
+        <Button fx:id="btnFeed" text="" onAction="#onAdmin" styleClass="nav-button">
+            <graphic>
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Label text="➕" styleClass="nav-icon"/>
+                    <Label text="Manage Users" styleClass="nav-text"/>
+                </HBox>
+            </graphic>
+        </Button>
+
+
+    </VBox>
+
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <!-- (Optional) Theme toggle — only keep if controller has it -->
+    <!-- <Button fx:id="btnTheme" styleClass="theme-toggle" text="🌙"/> -->
+
+    <!-- User section (keep ids/actions) -->
+    <VBox styleClass="user-container" alignment="CENTER" spacing="10">
+
+        <!-- Clickable profile block (keeps btnUserProfile) -->
+        <Button fx:id="btnAdmin" onAction="#onAdmin"
+                styleClass="user-profile-btn" maxWidth="Infinity">
+            <graphic>
+                <VBox alignment="CENTER" spacing="6">
+                    <StackPane>
+                        <!-- keep same id -->
+                        <Circle fx:id="navAvatar" radius="20" styleClass="user-avatar-glow"/>
+                    </StackPane>
+                    <Label fx:id="navNameLabel" text="User Name" styleClass="user-name"/>
+                    <Label fx:id="navRoleLabel" text="Role" styleClass="user-role"/>
+                </VBox>
+            </graphic>
+        </Button>
+
+        <!-- keep same id + onAction -->
+        <Button fx:id="logoutBtn" text="🚪" onAction="#onLogout" styleClass="logout-button"/>
+    </VBox>
+
+</VBox>

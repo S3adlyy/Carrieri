@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.image.ImageView?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.guser.controllers.guser.AppNavController"
+            stylesheets="@navbar.css">
+
+    <left>
+        <VBox fx:id="sidebar"
+              styleClass="sidebar-animated"
+              prefWidth="70" minWidth="70" maxWidth="70"
+              onMouseEntered="#expandSidebar"
+              onMouseExited="#collapseSidebar">
+
+            <!-- Brand -->
+            <VBox styleClass="brand-container" alignment="CENTER">
+                <StackPane styleClass="brand-icon">
+                    <ImageView fx:id="brandLogo" fitWidth="32" fitHeight="32" preserveRatio="true"/>
+                </StackPane>
+
+                <Label text="Carrieri" styleClass="brand-text"/>
+                <Label fx:id="brandSubtext" text="Carrieri" styleClass="brand-subtext"/>
+            </VBox>
+
+            <!-- Scroll ONLY the navigation -->
+            <ScrollPane fx:id="navScroll"
+                        fitToWidth="true"
+                        hbarPolicy="NEVER"
+                        vbarPolicy="AS_NEEDED"
+                        styleClass="nav-scroll">
+                <content>
+                    <VBox styleClass="nav-container" alignment="CENTER" spacing="8">
+
+                        <!-- ========================= -->
+                        <!-- Candidate menu -->
+                        <!-- ========================= -->
+                        <VBox fx:id="candidateNavBox" spacing="6" fillWidth="true">
+
+                            <Button fx:id="btnFeed" onAction="#onFeed" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="➕" styleClass="nav-icon"/>
+                                    <Label text="Feed" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Button fx:id="btnJobs" onAction="#onJobs" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="📋" styleClass="nav-icon"/>
+                                    <Label text="Jobs" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Button fx:id="btnConnect" onAction="#onConnect" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="🤖" styleClass="nav-icon"/>
+                                    <Label text="Connect" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Separator/>
+
+                            <Button fx:id="btnListMission" onAction="#onMissionShow" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="🎯" styleClass="nav-icon"/>
+                                    <Label text="Missions" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Separator/>
+
+                            <!-- GETUDE (Candidate) -->
+                            <Button fx:id="btnCatalogue" onAction="#onEtudeCatalogue" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="📚" styleClass="nav-icon"/>
+                                    <Label text="Catalogue" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Button fx:id="btnMesCours" onAction="#onEtudeMesCours" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="📖" styleClass="nav-icon"/>
+                                    <Label text="Mes cours" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Button fx:id="btnCertificats" onAction="#onEtudeCertificats" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="📜" styleClass="nav-icon"/>
+                                    <Label text="Certificats" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Button fx:id="btnRecommandation" onAction="#onEtudeRecommandations" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="🎯" styleClass="nav-icon"/>
+                                    <Label text="Recommandations" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Separator/>
+
+                            <Button fx:id="btnEtudeChatbot" onAction="#onEtudeChatbot" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="💬" styleClass="nav-icon"/>
+                                    <Label text="Carrieri ChatBot" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Separator/>
+
+                            <!-- GOFFRE (Candidate) -->
+                            <Button fx:id="btnOffresList" onAction="#showOffresList" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="👁️" styleClass="nav-icon"/>
+                                    <Label text="Offres (liste)" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Button fx:id="btnPostulationsCandidats" onAction="#showPostulationsCandidats" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="👤" styleClass="nav-icon"/>
+                                    <Label text="Mes postulations" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+                            <Separator/>
+
+                            <!-- Messages Button -->
+                            <Button fx:id="btnMessages"
+                                    text="Messages"
+                                    onAction="#showMessagesView"
+                                    styleClass="nav-button"
+                                    maxWidth="Infinity">
+                                <graphic>
+                                    <HBox spacing="15" alignment="CENTER_LEFT">
+                                        <Label text="💬" styleClass="nav-icon"/>
+                                        <Label text="Messages" styleClass="nav-text"/>
+                                    </HBox>
+                                </graphic>
+                            </Button>
+
+                            <!-- Contacts Button -->
+                            <Button fx:id="btnContacts"
+                                    text="Contacts"
+                                    onAction="#showContactsView"
+                                    styleClass="nav-button"
+                                    maxWidth="Infinity">
+                                <graphic>
+                                    <HBox spacing="15" alignment="CENTER_LEFT">
+                                        <Label text="👥" styleClass="nav-icon"/>
+                                        <Label text="Contacts" styleClass="nav-text"/>
+                                    </HBox>
+                                </graphic>
+                            </Button>
+                            <Separator/>
+
+
+                        </VBox>
+
+                        <!-- ========================= -->
+                        <!-- Recruiter menu -->
+                        <!-- ========================= -->
+                        <VBox fx:id="recruiterNavBox" spacing="6" fillWidth="true">
+
+                            <Button fx:id="btnAddMission" onAction="#onMissionAdd" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="➕" styleClass="nav-icon"/>
+                                    <Label text="Ajouter Mission" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Button fx:id="btnListRendu" onAction="#onRenduShow" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="📊" styleClass="nav-icon"/>
+                                    <Label text="Rendus" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Button fx:id="btnViewCalendar" onAction="#onCalendarShow" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="📅" styleClass="nav-icon"/>
+                                    <Label text="Calendar" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Separator/>
+
+                            <!-- GETUDE (Recruiter) -->
+                            <Button fx:id="btnCours" onAction="#onEtudeCours" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="📚" styleClass="nav-icon"/>
+                                    <Label text="Cours" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Button fx:id="btnModules" onAction="#onEtudeModules" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="📦" styleClass="nav-icon"/>
+                                    <Label text="Modules" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Button fx:id="btnLecons" onAction="#onEtudeLecons" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="📖" styleClass="nav-icon"/>
+                                    <Label text="Leçons" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Separator/>
+
+                            <!-- GOFFRE (Recruiter) -->
+                            <Button fx:id="btnOffresTable" onAction="#showOffresTable" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="⚙️" styleClass="nav-icon"/>
+                                    <Label text="Gérer les Offres" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Button fx:id="btnOffreAdd" onAction="#showOffreAdd" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="➕" styleClass="nav-icon"/>
+                                    <Label text="Ajouter une Offre" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+                            <Separator/>
+
+                            <!-- Messages Button -->
+                            <Button fx:id="btnMessages"
+                                    text="Messages"
+                                    onAction="#showMessagesView"
+                                    styleClass="nav-button"
+                                    maxWidth="Infinity">
+                                <graphic>
+                                    <HBox spacing="15" alignment="CENTER_LEFT">
+                                        <Label text="💬" styleClass="nav-icon"/>
+                                        <Label text="Messages" styleClass="nav-text"/>
+                                    </HBox>
+                                </graphic>
+                            </Button>
+
+                            <!-- Contacts Button -->
+                            <Button fx:id="btnContacts"
+                                    text="Contacts"
+                                    onAction="#showContactsView"
+                                    styleClass="nav-button"
+                                    maxWidth="Infinity">
+                                <graphic>
+                                    <HBox spacing="15" alignment="CENTER_LEFT">
+                                        <Label text="👥" styleClass="nav-icon"/>
+                                        <Label text="Contacts" styleClass="nav-text"/>
+                                    </HBox>
+                                </graphic>
+                            </Button>
+                            <Separator/>
+
+
+                        </VBox>
+
+                        <!-- ========================= -->
+                        <!-- Admin menu -->
+                        <!-- ========================= -->
+                        <VBox fx:id="adminNavBox" spacing="6" fillWidth="true">
+
+                            <Button fx:id="btnAdmin" onAction="#onAdmin" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="🛡" styleClass="nav-icon"/>
+                                    <Label text="Admin" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <Button fx:id="btnAdminDashboard" onAction="#showAdminDashboard" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="👑" styleClass="nav-icon"/>
+                                    <Label text="Dashboard Admin" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                        </VBox>
+
+                        <!-- ========================= -->
+                        <!-- GRECLAM buttons (single set of fx:ids) -->
+                        <!-- ========================= -->
+                        <VBox fx:id="reclamNavBox" spacing="6" fillWidth="true">
+
+                            <!-- Admin only -->
+                            <Button fx:id="btnReclamations" onAction="#showReclamationList" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="📋" styleClass="nav-icon"/>
+                                    <Label text="Réclamations" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <!-- Candidate + Recruiter -->
+                            <Button fx:id="btnAjoutReclamation" onAction="#showReclamationForm" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="➕" styleClass="nav-icon"/>
+                                    <Label text="Nouvelle réclamation" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <!-- Admin only -->
+                            <Button fx:id="btnFeedbacks" onAction="#showFeedbackList" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="⭐" styleClass="nav-icon"/>
+                                    <Label text="Feedbacks" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <!-- Candidate + Recruiter -->
+                            <Button fx:id="btnAjoutFeedback" onAction="#showFeedbackForm" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="➕" styleClass="nav-icon"/>
+                                    <Label text="Nouveau feedback" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                            <!-- Admin only -->
+                            <Button fx:id="btnTraitements" onAction="#showTraitementList" styleClass="nav-button" maxWidth="Infinity">
+                                <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Label text="⚡" styleClass="nav-icon"/>
+                                    <Label text="Traitements" styleClass="nav-text"/>
+                                </HBox></graphic>
+                            </Button>
+
+                        </VBox>
+
+                    </VBox>
+                </content>
+            </ScrollPane>
+
+            <!-- User section -->
+            <VBox styleClass="user-container" alignment="CENTER" spacing="10">
+
+                <Button fx:id="btnUserProfile" onAction="#onProfile"
+                        styleClass="user-profile-btn" maxWidth="Infinity">
+                    <graphic>
+                        <VBox alignment="CENTER" spacing="6">
+                            <StackPane>
+                                <Circle fx:id="navAvatar" radius="20" styleClass="user-avatar-glow"/>
+                            </StackPane>
+                            <Label fx:id="navNameLabel" text="User Name" styleClass="user-name"/>
+                            <Label fx:id="navRoleLabel" text="Role" styleClass="user-role"/>
+                        </VBox>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="logoutBtn" text="🚪" onAction="#onLogout" styleClass="logout-button"/>
+            </VBox>
+
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contentPane" styleClass="content-area">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
+        </StackPane>
+    </center>
+</BorderPane>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.guser.controllers.getude.CoursCandidatController"
+           stylesheets="@css/ThemeUnified.css"
+           styleClass="shell-root">
+
+    <!-- Background Orbs (optionnel) -->
+    <Circle radius="250" fill="rgba(94,84,142,0.03)" mouseTransparent="true" style="-fx-translate-y: -150; -fx-translate-x: -280;" styleClass="bg-orb"/>
+    <Circle radius="200" fill="rgba(159,134,192,0.02)"  mouseTransparent="true" style="-fx-translate-y: 200; -fx-translate-x: 250;" styleClass="bg-orb"/>
+    <Circle radius="150" fill="rgba(224,177,203,0.02)" mouseTransparent="true" style="-fx-translate-y: -100; -fx-translate-x: 180;" styleClass="bg-orb"/>
+
+    <ScrollPane fitToWidth="true" fitToHeight="true"
+                style="-fx-background-color: transparent; -fx-border-color: transparent;">
+
+        <VBox spacing="25" style="-fx-padding: 30;">
+
+            <!-- Header -->
+            <VBox spacing="5">
+                <Label text="Catalogue de cours" styleClass="header-title"
+                       style="-fx-font-size: 32px; -fx-font-weight: 900; -fx-text-fill: #231942;"/>
+                <Label fx:id="lblTotalCours" text="8 cours disponibles"
+                       style="-fx-font-size: 16px; -fx-text-fill: #6b7280;"/>
+            </VBox>
+
+            <!-- FILTRES -->
+            <VBox styleClass="glass-card" spacing="15" style="-fx-padding: 20;">
+                <HBox spacing="25" alignment="CENTER_LEFT">
+                    <!-- Domaine -->
+
+
+                    <!-- Niveau -->
+                    <VBox spacing="8">
+                        <Label text="Niveau" style="-fx-font-weight: 700; -fx-text-fill: #231942;"/>
+                        <ComboBox fx:id="comboNiveau" styleClass="filter-combo"
+                                  style="-fx-background-color: white; -fx-border-color: #d8c9f0; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 8 16; -fx-min-width: 200;"/>
+                    </VBox>
+                    <!-- Après les filtres ou avant les statistiques -->
+                    <HBox styleClass="langue-container">
+                        <Label text="Langue:" styleClass="langue-label"/>
+                        <ComboBox fx:id="comboLangueTest"
+                                  promptText="Choisir une langue"
+                                  styleClass="langue-combo"/>
+                    </HBox>
+                </HBox>
+            </VBox>
+
+            <!-- RECHERCHE -->
+            <HBox styleClass="search-container" style="-fx-background-color: white; -fx-background-radius: 50px; -fx-border-color: #d8c9f0; -fx-border-width: 1.5; -fx-border-radius: 50px; -fx-padding: 5;">
+                <TextField fx:id="txtRecherche"
+                           promptText="Rechercher un cours par titre ou description..."
+                           style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 10 20;"
+                           HBox.hgrow="ALWAYS"/>
+                <Button text="Rechercher" onAction="#rechercherCours" styleClass="search-button"/>
+            </HBox>
+
+            <!-- STATISTIQUES -->
+            <HBox spacing="20" alignment="CENTER">
+                <VBox styleClass="stat-card" style="-fx-padding: 25; -fx-min-width: 180;">
+                    <Label text="Cours disponibles" style="-fx-text-fill: #6b7280; -fx-font-size: 14px; -fx-font-weight: 600;"/>
+                    <Label fx:id="lblTotalCoursStat" text="0" style="-fx-font-size: 36px; -fx-font-weight: 900; -fx-text-fill: #231942;"/>
+                </VBox>
+                <VBox styleClass="stat-card" style="-fx-padding: 25; -fx-min-width: 180;">
+                    <Label text="En cours" style="-fx-text-fill: #6b7280; -fx-font-size: 14px; -fx-font-weight: 600;"/>
+                    <Label fx:id="lblEnCours" text="0" style="-fx-font-size: 36px; -fx-font-weight: 900; -fx-text-fill: #231942;"/>
+                </VBox>
+                <VBox styleClass="stat-card" style="-fx-padding: 25; -fx-min-width: 180;">
+                    <Label text="Complétés" style="-fx-text-fill: #6b7280; -fx-font-size: 14px; -fx-font-weight: 600;"/>
+                    <Label fx:id="lblCompletes" text="0" style="-fx-font-size: 36px; -fx-font-weight: 900; -fx-text-fill: #231942;"/>
+                </VBox>
+            </HBox>
+
+            <!-- COURS -->
+            <TilePane fx:id="tileCours" prefColumns="3" hgap="20" vgap="20"
+                      style="-fx-padding: 10;" alignment="CENTER"/>
+
+        </VBox>
+
+    </ScrollPane>
+
+</StackPane>

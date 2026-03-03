@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.guser.controllers.grecru.EntretienCreateController"
+           stylesheets="@Css/entretien-styles.css"
+           styleClass="root-container"
+           prefWidth="1400" prefHeight="900">
+
+    <!-- Enhanced Background Elements with Purple Glow -->
+    <Circle radius="180" fill="rgba(248,188,255,0.04)" style="-fx-translate-y: -220; -fx-translate-x: -350;"/>
+    <Circle radius="130" fill="rgba(200,150,255,0.03)" style="-fx-translate-y: 150; -fx-translate-x: 320;"/>
+    <Circle radius="100" fill="rgba(159,134,192,0.02)" style="-fx-translate-y: 300; -fx-translate-x: -200;"/>
+
+    <!-- Main Scrollable Container -->
+    <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="main-scroll">
+        <VBox alignment="TOP_CENTER" spacing="0" styleClass="content-wrapper">
+
+            <!-- ======================= HEADER SECTION ======================= -->
+            <VBox spacing="25" alignment="CENTER" styleClass="header-section">
+
+                <!-- Icon with Enhanced Glow -->
+                <StackPane styleClass="icon-glow-container">
+                    <Circle radius="45" styleClass="icon-pulse-ring"/>
+                    <Circle radius="40" styleClass="icon-bg-gradient"/>
+                    <Label text="📅" styleClass="icon-main"/>
+                </StackPane>
+
+                <!-- Title with Gradient Shadow -->
+                <VBox spacing="12" alignment="CENTER">
+                    <Label text="Schedule Interview" styleClass="main-title-gradient"/>
+                    <Label text="Create a new interview meeting with the candidate"
+                           styleClass="subtitle-text"
+                           wrapText="true"/>
+                </VBox>
+
+                <!-- Elegant Divider -->
+                <HBox alignment="CENTER" styleClass="divider-container">
+                    <HBox styleClass="divider-line"/>
+                </HBox>
+            </VBox>
+
+            <!-- ======================= MAIN FORM CARD ======================= -->
+            <VBox styleClass="form-card" maxWidth="1000">
+
+                <!-- ======================= CANDIDATE SECTION ======================= -->
+                <VBox spacing="20" styleClass="form-section">
+
+                    <!-- Section Title with Icon -->
+                    <HBox spacing="12" alignment="CENTER_LEFT" styleClass="section-header">
+                        <Label text="👤" styleClass="section-icon"/>
+                        <Label text="Candidate Information" styleClass="section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblCandidatInfo" text="Selected from Rendu List" styleClass="selection-badge"/>
+                    </HBox>
+
+                    <!-- Candidate Details Grid -->
+                    <GridPane hgap="20" vgap="15" styleClass="form-grid">
+                        <!-- Row 0: Labels -->
+                        <Label text="Candidate ID" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0" visible="false" managed="false"/>
+                        <Label text="Candidate Email" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                        <Label text="Candidate Name" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+
+                        <!-- Row 1: Fields -->
+                        <TextField fx:id="txtCandidatId" editable="false" styleClass="field-disabled"
+                                   GridPane.rowIndex="1" GridPane.columnIndex="0" visible="false" managed="false"/>
+                        <TextField fx:id="txtCandidatEmail" promptText="candidate@email.com" styleClass="field-input"
+                                   GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                        <TextField fx:id="txtCandidatName" promptText="Enter candidate name" styleClass="field-input"
+                                   GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                    </GridPane>
+                </VBox>
+
+                <!-- ======================= DIVIDER ======================= -->
+                <HBox styleClass="divider-light"/>
+
+                <!-- ======================= INTERVIEW DETAILS SECTION ======================= -->
+                <VBox spacing="25" styleClass="form-section">
+
+                    <!-- Section Title -->
+                    <HBox spacing="12" alignment="CENTER_LEFT" styleClass="section-header">
+                        <Label text="📋" styleClass="section-icon"/>
+                        <Label text="Interview Details" styleClass="section-title"/>
+                        <Label text="(All fields marked with * are required)" styleClass="required-hint"/>
+                    </HBox>
+
+                    <!-- Interview Date -->
+                    <VBox spacing="10">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="Interview Date" styleClass="field-title"/>
+                            <Label text="*" styleClass="required-star"/>
+                        </HBox>
+
+                        <HBox spacing="20" alignment="CENTER_LEFT">
+                            <DatePicker fx:id="datePicker" promptText="Select date" styleClass="date-picker"/>
+                            <Label text="Choose the interview date" styleClass="field-hint"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Interview Time -->
+                    <VBox spacing="10">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="Interview Time" styleClass="field-title"/>
+                            <Label text="*" styleClass="required-star"/>
+                        </HBox>
+
+                        <HBox spacing="20" alignment="CENTER_LEFT">
+                            <HBox spacing="10" styleClass="time-selector">
+                                <VBox spacing="3">
+                                    <Label text="Hour" styleClass="time-label"/>
+                                    <ComboBox fx:id="comboHour" promptText="HH" prefWidth="90" styleClass="time-combo"/>
+                                </VBox>
+                                <Label text=":" styleClass="time-separator"/>
+                                <VBox spacing="3">
+                                    <Label text="Minute" styleClass="time-label"/>
+                                    <ComboBox fx:id="comboMinute" promptText="MM" prefWidth="90" styleClass="time-combo"/>
+                                </VBox>
+                            </HBox>
+                            <Label text="Select hour and minute" styleClass="field-hint"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Interview Type -->
+                    <VBox spacing="10">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="Interview Type" styleClass="field-title"/>
+                            <Label text="*" styleClass="required-star"/>
+                        </HBox>
+
+                        <HBox spacing="20" alignment="CENTER_LEFT">
+                            <ComboBox fx:id="comboType" promptText="Select interview type" prefWidth="300" styleClass="type-combo"/>
+                            <Label text="Technical, HR, Managerial, etc." styleClass="field-hint"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Notes (Optional) -->
+                    <VBox spacing="10">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="Additional Notes" styleClass="field-title"/>
+                            <Label text="(Optional)" styleClass="optional-badge"/>
+                        </HBox>
+
+                        <HBox spacing="20" alignment="TOP_LEFT">
+                            <TextArea fx:id="txtNotes" promptText="Add any additional notes or instructions for the interview..."
+                                      prefRowCount="4" prefWidth="400" wrapText="true" styleClass="notes-area"/>
+                            <VBox spacing="8">
+                                <Label text="📝 Internal notes" styleClass="field-hint"/>
+                                <Label text="Not sent to candidate" styleClass="note-hint"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Status Message -->
+                <HBox alignment="CENTER" styleClass="status-container">
+                    <Label fx:id="lblStatus" text="" styleClass="status-label"/>
+                </HBox>
+
+                <!-- ======================= ACTION BUTTONS ======================= -->
+                <VBox spacing="25" alignment="CENTER" styleClass="action-section">
+
+                    <!-- Decorative Line -->
+                    <HBox alignment="CENTER">
+                        <HBox styleClass="action-divider"/>
+                    </HBox>
+
+                    <!-- Buttons -->
+                    <HBox spacing="20" alignment="CENTER">
+                        <Button fx:id="btnSchedule" text="📅 Schedule Interview" onAction="#scheduleInterview"
+                                styleClass="schedule-button"/>
+                        <Button text="❌ Cancel" onAction="#cancel" styleClass="cancel-button"/>
+                    </HBox>
+
+                    <!-- Notification Info -->
+                    <HBox spacing="25" alignment="CENTER" styleClass="notification-bar">
+                        <HBox spacing="8" alignment="CENTER">
+                            <Label text="📧" styleClass="notification-icon"/>
+                            <Label text="Email notification" styleClass="notification-text"/>
+                        </HBox>
+                        <Label text="•" styleClass="notification-dot"/>
+                        <HBox spacing="8" alignment="CENTER">
+                            <Label text="📅" styleClass="notification-icon"/>
+                            <Label text="Calendar invite" styleClass="notification-text"/>
+                        </HBox>
+                        <Label text="•" styleClass="notification-dot"/>
+                        <HBox spacing="8" alignment="CENTER">
+                            <Label text="🔔" styleClass="notification-icon"/>
+                            <Label text="Reminder" styleClass="notification-text"/>
+                        </HBox>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </VBox>
+    </ScrollPane>
+</StackPane>

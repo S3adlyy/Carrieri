@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<ScrollPane fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="main-scroll"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.guser.controllers.goffre.OffresListController"
+            stylesheets="@css/theme-unified.css">
+
+    <StackPane>
+        <!-- Cercles décoratifs en arrière-plan -->
+        <Circle radius="250" fill="rgba(94,84,142,0.1)" mouseTransparent="true"
+                style="-fx-translate-y: -30; -fx-translate-x: -200;" styleClass="bg-orb"/>
+        <Circle radius="200" fill="rgba(159,134,192,0.08)" mouseTransparent="true"
+                style="-fx-translate-y: 80; -fx-translate-x: 300;" styleClass="bg-orb-purple"/>
+        <Circle radius="150" fill="rgba(224,177,203,0.08)" mouseTransparent="true"
+                style="-fx-translate-y: 150; -fx-translate-x: -100;" styleClass="bg-orb-pink"/>
+
+        <VBox alignment="TOP_CENTER" spacing="30" style="-fx-padding: 40;">
+
+            <!-- En-tête -->
+            <VBox spacing="15" alignment="CENTER" styleClass="header-section">
+                <StackPane styleClass="header-icon-container">
+                    <Label text="📋" styleClass="header-icon"/>
+                </StackPane>
+                <Label text="Liste des Offres" styleClass="header-title"/>
+                <Label text="Consultez et Postulez aux offres disponibles" styleClass="header-subtitle"/>
+            </VBox>
+
+            <!-- Barre de recherche + boutons Filtrer et Favoris -->
+            <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-max-width: 1400px;">
+                <TextField fx:id="txtSearch"
+                           promptText="Rechercher par titre, entreprise, localisation, compétences, secteur..."
+                           HBox.hgrow="ALWAYS"
+                           styleClass="search-input"/>
+                <Button fx:id="btnFilter" text="Filtrer" onAction="#toggleFilterPanel" styleClass="btn-filter">
+                    <graphic>
+                        <Label text="▼" style="-fx-font-size: 13; -fx-text-fill: #7c3aed;"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="btnShowFavorites" text="❤️ Mes Favoris" onAction="#showFavorites"
+                        styleClass="btn-primary" prefWidth="180"/>
+            </HBox>
+
+            <!-- Panneau de filtres (collapsible) -->
+            <VBox fx:id="filterPanel" spacing="20" styleClass="glass-card" visible="false" managed="false">
+                <Label text="🔍 Filtres avancés" styleClass="section-title-small"/>
+
+                <GridPane hgap="20" vgap="16">
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Type de contrat" styleClass="field-label"/>
+                        <ComboBox fx:id="comboFilterTypeContrat" maxWidth="Infinity" styleClass="combo-box" prefWidth="250"/>
+                    </VBox>
+                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Niveau de qualification" styleClass="field-label"/>
+                        <ComboBox fx:id="comboFilterNiveau" maxWidth="Infinity" styleClass="combo-box" prefWidth="250"/>
+                    </VBox>
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <Label text="Salaire minimum (DT)" styleClass="field-label"/>
+                        <TextField fx:id="txtFilterSalaireMin" promptText="Ex: 1500" styleClass="elegant-field"/>
+                    </VBox>
+                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <Label text="Salaire maximum (DT)" styleClass="field-label"/>
+                        <TextField fx:id="txtFilterSalaireMax" promptText="Ex: 5000" styleClass="elegant-field"/>
+                    </VBox>
+                </GridPane>
+
+                <HBox spacing="16" alignment="CENTER_RIGHT">
+                    <Button fx:id="btnResetFilters" text="Réinitialiser" onAction="#handleResetFilters" styleClass="btn-secondary" prefWidth="150"/>
+                    <Button fx:id="btnApplyFilters" text="Appliquer" onAction="#handleApplyFilters" styleClass="btn-primary" prefWidth="150"/>
+                </HBox>
+            </VBox>
+
+            <!-- Compteur de résultats -->
+            <Label fx:id="lblStatus" text="0 offres trouvées" styleClass="status-text"/>
+
+            <!-- Grille des cartes -->
+            <FlowPane fx:id="flowOffers"
+                      hgap="32" vgap="32"
+                      alignment="CENTER"
+                      prefWrapLength="1400"
+                      style="-fx-padding: 10;"/>
+        </VBox>
+    </StackPane>
+</ScrollPane>
